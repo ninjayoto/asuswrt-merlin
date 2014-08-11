@@ -1250,7 +1250,7 @@ send_file(struct upnphttp * h, int sendfd, off_t offset, off_t end_offset)
 	int try_sendfile = 1;
 #endif
 
-	while( offset < end_offset )
+	while( offset <= end_offset ) /* Fix for MKV streaming abort */
 	{
 #if HAVE_SENDFILE
 		if( try_sendfile )
