@@ -4767,7 +4767,11 @@ void dnsfilter6_settings() {
 				continue;
 			if (!*mac || (atoi(mode) == 0) || !ether_atoe(mac, ea))
 				continue;
-			eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "DROP");
+			if (atoi(mode) == 0) 
+ 					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "RETURN"); 
+ 				else 
+ 					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "DROP"); 
+
 		}
 		free(nv);
 	}
