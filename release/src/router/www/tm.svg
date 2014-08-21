@@ -267,7 +267,7 @@ function updateSVG(rxData, txData, maxValue, mode, rxColor, txColor, intv, maxLe
 	drawData(polyRx, rxData, mode, rxColor);
 	drawData(polyTx, txData, mode, txColor);
 
-	setText(xpst[0], xps(maxV * 0.70));
+	setText(xpst[0], xps(maxV * 0.75));
 	setText(xpst[1], xps(maxV * 0.5));
 	setText(xpst[2], xps(maxV * 0.25));
 	setText(xpst[3], xps(maxV));
