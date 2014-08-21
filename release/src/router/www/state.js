@@ -1014,7 +1014,7 @@ function show_menu(){
 			notification.desc[4] = '<#ASUSGATE_note4_1#>';
 			notification.action_desc[4] = '<#web_redirect_suggestion_etc#>';
 			notification.clickCallBack[4] = "showLoading();setTimeout('document.noti_ftp.submit();', 1);setTimeout('notification.redirectftp()', 2000);";
-	}else if(usb_support && enable_ftp == 1 && st_ftp_mode != 2 && st_ftp_force_mode != 2){	//case4
+	}else if(usb_support && enable_ftp == 1 && st_ftp_mode != 2 && st_ftp_mode != st_ftp_force_mode){ //case4
 			notification.array[4] = 'noti_ftp';
 			notification.ftp = 1;
 			notification.desc[4] = '<#ASUSGATE_note4#>';
@@ -1030,7 +1030,7 @@ function show_menu(){
 			notification.desc[5] = '<#ASUSGATE_note5_1#>';
 			notification.action_desc[5] = '<#web_redirect_suggestion_etc#>';	
 			notification.clickCallBack[5] = "showLoading();setTimeout('document.noti_samba.submit();', 1);setTimeout('notification.redirectsamba()', 2000);";
-	}else if(usb_support && enable_samba == 1 && st_samba_mode != 4){	//case5
+	}else if(usb_support && enable_samba == 1 && st_samba_mode != 4 && st_samba_mode != st_samba_force_mode){ //case5
 			notification.array[5] = 'noti_samba';
 			notification.samba = 1;
 			notification.desc[5] = '<#ASUSGATE_note5#>';
