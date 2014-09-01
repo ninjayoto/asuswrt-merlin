@@ -54,6 +54,8 @@ p{
 <script type="text/JavaScript">
 var aplist = new Array();
 var wlc_scan_state = '<% nvram_get("wlc_scan_state"); %>';
+var wl0_macmode = '<% nvram_get("wl0_macmode"); %>';
+var wl1_macmode = '<% nvram_get("wl1_macmode"); %>';
 var _wlc_ssid;
 var _sw_mode;
 
@@ -77,6 +79,10 @@ function initial(){
 		E("radio2warn").style.display = "";
 	if ((band5g_support) && (radio_5 == 0))
 		E("radio5warn").style.display = "";
+	if ((wl0_macmode != "disabled") && (radio_2 != 0))
+                E("radio2macfilter").style.display = ""
+	if ((wl1_macmode != "disabled") && (radio_5 != 0))
+                E("radio5macfilter").style.display = ""
 
 	update_site_info();
 	showSiteTable();
@@ -306,7 +312,9 @@ function rescan(){
 			<div class="formfonttitle">Wireless - Visible Networks</div>
 			<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 			<span style="display:none; color:#FFCC00; padding-right:20px;" id="radio2warn">2.4 GHz radio is disabled - cannot scan that band!</span>
+			<span style="display:none; color:#FFCC00; padding-right:20px;" id="radio2macfilter">2.4 GHz radio MAC filter is enabled - cannot scan that band!</span>
 			<span style="display:none; color:#FFCC00;" id="radio5warn">5 GHz radio is disabled - cannot scan that band!</span>
+			<span style="display:none; color:#FFCC00;" id="radio5macfilter">5 GHz radio MAC filter is enabled - cannot scan that band!</span>
 
 			<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 				<tr>
