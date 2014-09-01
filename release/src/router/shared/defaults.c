@@ -1151,6 +1151,11 @@ struct nvram_tuple router_defaults[] = {
 	{ "jffs2_on", "0" },
 	{ "jffs2_exec", "" },
 	{ "jffs2_format", "0" },
+#ifdef RTCONFIG_JFFS2LOG
+	{ "jffs2_log", "1" },
+#else
+	{ "jffs2_log", "0" },
+#endif
 #endif
 
 #ifdef RTCONFIG_UBIFS

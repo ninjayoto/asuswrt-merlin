@@ -3781,6 +3781,10 @@ static void sysinit(void)
 	char s[256];
 	char t[256];
 	int model;
+#if defined(RTCONFIG_PSISTLOG) || defined(RTCONFIG_JFFS2LOG)
+	int j2l = 0;
+	if (nvram_match("jffs2_log", "1")) j2l = 1;
+#endif
 
 #define MKNOD(name,mode,dev)		if(mknod(name,mode,dev))		perror("## mknod " name)
 #define MOUNT(src,dest,type,flag,data)	if(mount(src,dest,type,flag,data))	perror("## mount " src)
@@ -3960,7 +3964,8 @@ static void sysinit(void)
 #endif
 
 #if defined(RTCONFIG_PSISTLOG) || defined(RTCONFIG_JFFS2LOG)
-	f_write_string("/proc/sys/net/unix/max_dgram_qlen", "150", 0, 0);
+	if (j2l == 1)
+		f_write_string("/proc/sys/net/unix/max_dgram_qlen", "150", 0, 0);
 #endif
 
 	for (i = 0; i < sizeof(fatalsigs) / sizeof(fatalsigs[0]); i++) {

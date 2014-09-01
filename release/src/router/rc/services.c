@@ -2503,11 +2503,17 @@ asusddns_reg_domain(int reg)
 void
 stop_syslogd(void)
 {
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
+	int j2l = 0;
+	if (nvram_match("jffs2_log", "1")) j2l = 1;
+#endif
+
 	if (pids("syslogd"))
 	{
 		killall("syslogd", SIGTERM);
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-		eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
+		if (j2l == 1)
+			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 	}
 }
@@ -2535,6 +2541,10 @@ start_syslogd(void)
 		NULL,					/* -L log locally too */
 		NULL};
 	char tmp[64];
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
+	int j2l = 0;
+	if (nvram_match("jffs2_log", "1")) j2l = 1;
+#endif
 
 	strcpy(syslog_path, get_syslog_fname(0));
 
@@ -2563,7 +2573,8 @@ start_syslogd(void)
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	eval("cp", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
+	if (j2l == 1)
+		eval("cp", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
 #endif
 
 	// TODO: make sure is it necessary?
@@ -3802,6 +3813,10 @@ void handle_notifications(void)
 	int action = 0;
 	int count;
 	int i;
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
+	int j2l = 0;
+	if (nvram_match("jffs2_log", "1")) j2l = 1;
+#endif
 
 	// handle command one by one only
 	// handle at most 7 parameters only
@@ -3859,7 +3874,8 @@ again:
 #endif
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-		eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
+		if (j2l == 1)
+			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 		if(strcmp(script,"rebootandrestore")==0) {
 			for(i=1;i<count;i++) {
