@@ -2284,6 +2284,7 @@ endif
 
 minidlna: zlib sqlite ffmpeg libogg flac jpeg libexif libid3tag libvorbis
 	@$(SEP)
+	@cd minidlna && ./genosver.sh
 	@$(MAKE) -C minidlna CC=$(CC) $(if $(MEDIA_SERVER_STATIC),STATIC=1,) minidlna $(PARALLEL_BUILD)
 
 libgdbm/stamp-h1: 
