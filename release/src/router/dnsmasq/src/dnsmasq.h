@@ -1239,9 +1239,6 @@ char *host_from_dns(struct in_addr addr);
 
 /* lease.c */
 #ifdef HAVE_DHCP
-#ifdef HAVE_LEASEFILE_EXPIRE
-void lease_flush_file(time_t now);
-#endif
 void lease_update_file(time_t now);
 void lease_update_dns(int force);
 void lease_init(time_t now);

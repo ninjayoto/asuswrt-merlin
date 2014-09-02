@@ -650,7 +650,7 @@ int main (int argc, char **argv)
   else
     my_syslog(LOG_INFO, _("started, version %s cache disabled"), VERSION);
   
-  my_syslog(LOG_DEBUG, _("compile time options: %s"), compile_opts);
+  my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
   
 #ifdef HAVE_DBUS
   if (option_bool(OPT_DBUS))
@@ -1229,10 +1229,6 @@ static void async_event(int pipe, time_t now)
 	   we leave them logging to the old file. */
 	if (daemon->log_file != NULL)
 	  log_reopen(daemon->log_file);
-#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
-	if (daemon->dhcp || daemon->dhcp6)
-	  lease_flush_file(now);
-#endif
 	break;
 	
       case EVENT_TERM:
@@ -1255,10 +1251,6 @@ static void async_event(int pipe, time_t now)
 	  }
 #endif
 	
-#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
-	if (daemon->dhcp || daemon->dhcp6)
-	  lease_flush_file(now);
-#endif
 	if (daemon->lease_stream)
 	  fclose(daemon->lease_stream);
 
