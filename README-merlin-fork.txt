@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-01j9527 (13-August-2014)
+Asuswrt-Merlin fork - build 374.43_2-02j9527 (03-September-2014)
 =============================================
 
 About
@@ -18,22 +18,34 @@ Asuswrt-merlin base.
 History
 -------
 
-374.43_2-01j9527 (13-August-2014)
-   - Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
-   - Desc:    Incremental update to remap fixes from 376.44+, update1 (01)
+374.43_2-02j9527 (03-September-2014)
+- Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
+- Desc:    Incremental update to remap key fixes through 376.46, update-02
 
-   - FIXED: System Log wouldn't properly be positioned
-            at the bottom (Patch by John9527)
-   - FIXED: DNSFilter clients configured to bypass DNSFilter
-            would still be prevented from using an IPv6 DNS.
-   - FIXED: Incorrect IPv6 prefix if not a multiple of 8
-            (patch by NickZ)
-   - FIXED: OpenVPN firewall cleanup was missing rules
-            (patch by sinshiva)
-   - FIXED: Minidlna issues with Philips smart TVs
-   - FIXED: Miniupnpd error flood in Syslog when using a
-            Plex server on your LAN (fix from upstream)
-   - FIXED: Miniupnpd NAT-PMP errors
-   - CHANGED: Updated openssl to 1.0.0n
+- FIXED: Traffic monitor in mobile IE11
+- FIXED: MSIE 10 detection
+- FIXED: IPv6 firewall rules can be incomplete when using PPP
+- FIXED: Minidlna issues with Philips smart TVs (reapplied after minidlna update)
+- CHANGED: Updated dnsmasq to 2.71
+- CHANGED: Updated minidlna to 1.1.3
+- CHANGED: Updated lzo to 2.08
+- NEW: banner description now reads 'Merlin fork'
+- NEW: Warning msg on Site Survey with MAC filtering on
+- NEW: Correct 3rd grid line label in traffic monitor
+- NEW: Correct IE10 support for selected pages
+- NEW: nvram variable to control syslog to jffs copy
+
+374.43_2-01j9527 (13-August-2014)
+- Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
+- Desc:    Incremental update to remap fixes from 376.44+, update-01
+
+- FIXED: System Log wouldn't properly be positioned at the bottom (Patch by John9527)
+- FIXED: DNSFilter clients configured to bypass DNSFilter would still be prevented from using an IPv6 DNS.
+- FIXED: Incorrect IPv6 prefix if not a multiple of 8 (patch by NickZ)
+- FIXED: OpenVPN firewall cleanup was missing rules (patch by sinshiva)
+- FIXED: Minidlna issues with Philips smart TVs
+- FIXED: Miniupnpd error flood in Syslog when using a Plex server on your LAN (fix from upstream)
+- FIXED: Miniupnpd NAT-PMP errors
+- CHANGED: Updated openssl to 1.0.0n
 
 
