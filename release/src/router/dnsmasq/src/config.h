@@ -65,6 +65,12 @@ HAVE_BROKEN_RTC
    NOTE: when enabling or disabling this, be sure to delete any old
    leases file, otherwise dnsmasq may get very confused.
 
+HAVE_LEASEFILE_EXPIRE
+   define this if you want to enable lease file update with expire
+   timeouts instead of expiry times or lease lengths, if HAVE_BROKEN_RTC
+   is also enabled. Lease file will be rewritten upon SIGUSR2 signal
+   reception and/or dnsmasq termination.
+
 HAVE_TFTP
    define this to get dnsmasq's built-in TFTP server.
 
@@ -105,6 +111,8 @@ HAVE_AUTH
    define this to include the facility to act as an authoritative DNS
    server for one or more zones.
 
+HAVE_DNSSEC
+   include DNSSEC validator.
 
 NO_IPV6
 NO_TFTP
@@ -113,10 +121,16 @@ NO_DHCP6
 NO_SCRIPT
 NO_LARGEFILE
 NO_AUTH
+NO_IPSET
    these are avilable to explictly disable compile time options which would 
    otherwise be enabled automatically (HAVE_IPV6, >2Gb file sizes) or 
    which are enabled  by default in the distributed source tree. Building dnsmasq
    with something like "make COPTS=-DNO_SCRIPT" will do the trick.
+
+NO_NETTLE_ECC
+   Don't include the ECDSA cypher in DNSSEC validation. Needed for older Nettle versions.
+NO_GMP
+   Don't use and link against libgmp, Useful if nettle is built with --enable-mini-gmp.
 
 LEASEFILE
 CONFFILE
@@ -131,6 +145,7 @@ RESOLVFILE
 */
 
 /* #define HAVE_BROKEN_RTC */
+/* #define HAVE_LEASEFILE_EXPIRE */
 
 /* The default set of options to build. Built with these options, dnsmasq
    has no library dependencies other than libc */
@@ -229,10 +244,12 @@ HAVE_SOCKADDR_SA_LEN
 #if !defined(__ARCH_HAS_MMU__) && !defined(__UCLIBC_HAS_MMU__)
 #  define NO_FORK
 #endif
-#if defined(__UCLIBC_HAS_IPV6__)
+#if defined(__UCLIBC_HAS_IPV6__) && defined(USE_IPV6)
 #  ifndef IPV6_V6ONLY
 #    define IPV6_V6ONLY 26
 #  endif
+#elif !defined(NO_IPV6)
+#  define NO_IPV6
 #endif
 
 /* This is for glibc 2.x */
@@ -261,6 +278,7 @@ HAVE_SOCKADDR_SA_LEN
 /* Select the RFC_3542 version of the IPv6 socket API. 
    Define before netinet6/in6.h is included. */
 #define __APPLE_USE_RFC_3542 
+#define NO_IPSET
 
 #elif defined(__NetBSD__)
 #define HAVE_BSD_NETWORK
@@ -330,7 +348,7 @@ HAVE_SOCKADDR_SA_LEN
 #undef HAVE_AUTH
 #endif
 
-#if defined(NO_IPSET) || !defined(HAVE_LINUX_NETWORK)
+#if defined(NO_IPSET)
 #undef HAVE_IPSET
 #endif
 

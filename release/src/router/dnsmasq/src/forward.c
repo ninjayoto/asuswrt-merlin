@@ -1349,12 +1349,12 @@ static int do_check_sign(time_t now, struct dns_header *header, size_t plen, cha
   unsigned char *p;
   int status;
 
-  /* In this case only, a SERVFAIL reply allows us to continue up the tree, looking for a
+  /* In this case only, a SERVFAIL reply allows us to continue up the tree, looking for a 
      suitable NSEC reply to DS queries. */
   if (RCODE(header) != SERVFAIL)
-    {
+    { 
       status = dnssec_validate_ds(now, header, plen, name, keyname, class);
-
+      
       if (status != STAT_INSECURE)
 	{
 	  if (status == STAT_NO_DS)
@@ -1453,7 +1453,7 @@ static int  tcp_check_for_unsigned_zone(time_t now, struct dns_header *header, s
 	      newhash = hash_questions(header, (unsigned int)m, name);
 	      if (newhash && memcmp(hash, newhash, HASH_SIZE) == 0)
 		{
-		   /* In this case only, a SERVFAIL reply allows us to continue up the tree, looking for a
+		   /* In this case only, a SERVFAIL reply allows us to continue up the tree, looking for a 
 		      suitable NSEC reply to DS queries. */
 		  if (RCODE(header) == SERVFAIL)
 		    status = STAT_INSECURE;
@@ -2129,6 +2129,25 @@ static struct frec *lookup_frec_by_sender(unsigned short id,
       return f;
    
   return NULL;
+}
+ 
+/* Send query packet again, if we can. */
+void resend_query()
+{
+  if (daemon->srv_save)
+    {
+      int fd;
+      
+      if (daemon->srv_save->sfd)
+	fd = daemon->srv_save->sfd->fd;
+      else if (daemon->rfd_save && daemon->rfd_save->refcount != 0)
+	fd = daemon->rfd_save->fd;
+      else
+	return;
+      
+      while(sendto(fd, daemon->packet, daemon->packet_len, 0,
+		   &daemon->srv_save->addr.sa, sa_len(&daemon->srv_save->addr)) == -1 && retry_send()); 
+    }
 }
 
 /* A server record is going away, remove references to it */
