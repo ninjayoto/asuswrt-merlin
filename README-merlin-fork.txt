@@ -18,6 +18,14 @@ Asuswrt-merlin base.
 History
 -------
 
+374.43_2-03j9527 (06-September-2014)
+- Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
+- Desc:    Incremental update to remap key fixes through 376.46, update-03
+
+- FIXED: miniupnpd:  Correct friendly name in Windows Network (from 376.44)
+- CHANGED: Updated dnsmasq to 2.72 (ASUS master 376.44) - fixes DHCP leases display
+
+
 374.43_2-02j9527 (03-September-2014)
 - Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 - Desc:    Incremental update to remap key fixes through 376.46, update-02
@@ -34,6 +42,7 @@ History
 - NEW: Correct 3rd grid line label in traffic monitor
 - NEW: Correct IE10 support for selected pages
 - NEW: nvram variable to control syslog to jffs copy
+
 
 374.43_2-01j9527 (13-August-2014)
 - Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
