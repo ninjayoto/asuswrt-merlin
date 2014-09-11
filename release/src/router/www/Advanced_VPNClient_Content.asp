@@ -201,7 +201,6 @@ function addRow_Group(upper, flag, idx){
 
 		if(validForm(flag)){
 			
-			duplicateCheck.tmpIdx = "";
 			duplicateCheck.saveTotmpIdx(idx);
 			duplicateCheck.tmpStr = "";
 			duplicateCheck.saveToTmpStr(type_obj, 0);
@@ -246,6 +245,7 @@ function addRow_Group(upper, flag, idx){
 
 		if(validForm(flag)){
 
+			duplicateCheck.tmpIdx = -1;
 			duplicateCheck.tmpStr = "";
 			duplicateCheck.saveToTmpStr(type_obj, 0);
 			duplicateCheck.saveToTmpStr(server_obj, 0);
@@ -275,7 +275,7 @@ function addRow_Group(upper, flag, idx){
 }
 
 var duplicateCheck = {
-	tmpIdx: "",
+	tmpIdx: "-1",
 	
 	saveTotmpIdx: function(obj){
 		this.tmpIdx = obj;	
@@ -294,7 +294,7 @@ var duplicateCheck = {
 		var vpnc_clientlist_row = vpnc_clientlist_array.split('<');
 		for(var i=0; i<vpnc_clientlist_row.length; i++){
 			//alert(i+"; "+this.tmpIdx+" ; "+vpnc_clientlist_row[i].search(this.tmpStr)+" ; "+this.tmpStr);
-			if((this.tmpIdx == "" || i != this.tmpIdx) && vpnc_clientlist_row[i].search(this.tmpStr) >= 0)
+			if((this.tmpIdx == "-1" || i != this.tmpIdx) && vpnc_clientlist_row[i].search(this.tmpStr) >= 0)
 					return true;
 		}
 		return false;		
