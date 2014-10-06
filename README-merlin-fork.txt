@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-02j9527 (03-September-2014)
+Asuswrt-Merlin fork - build 374.43_2-04j9527 (07-October-2014)
 =============================================
 
 About
@@ -15,8 +15,22 @@ These releases are provided AS IS, and no additional support is committed or
 implied by either the individual author or the author of the original
 Asuswrt-merlin base.
 
+Changes/fixes marked as (*) are unique to this fork, but do not affect the
+basic/default function of the firmware.
+
 History
 -------
+
+374.43_2-04j9527 (07-October-2014)
+- Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
+- Desc:    Incremental update to remap key fixes through 376.47, update-04
+
+- CHANGE: Enable sha256 sha512 encryption for SSH 
+- CHANGE: Increase allowed max FTP connections limit to 10
+- CHANGE: Move OpenVPN postconf execution right before client/server launch
+- FIXED: Fix duplicate check on VPN Client page
+- FIXED: Add missing mDNSResponder to MIPS builds (Apple Bonjour)
+* FIXED: Wireless status incorrect after applying changes
 
 374.43_2-03j9527 (06-September-2014)
 - Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
@@ -37,12 +51,11 @@ History
 - CHANGED: Updated dnsmasq to 2.71
 - CHANGED: Updated minidlna to 1.1.3
 - CHANGED: Updated lzo to 2.08
-- NEW: banner description now reads 'Merlin fork'
-- NEW: Warning msg on Site Survey with MAC filtering on
-- NEW: Correct 3rd grid line label in traffic monitor
-- NEW: Correct IE10 support for selected pages
-- NEW: nvram variable to control syslog to jffs copy
-
+* NEW: banner description now reads 'Merlin fork'
+* NEW: Warning msg on Site Survey with MAC filtering on
+* FIXED: Correct 3rd grid line label in traffic monitor
+* FIXED: Correct IE10 support for selected pages
+* NEW: nvram variable to control syslog to jffs copy
 
 374.43_2-01j9527 (13-August-2014)
 - Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
