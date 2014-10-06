@@ -531,7 +531,7 @@ function check_ampdu_rts(){
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="action_mode" value="apply_new">
 <input type="hidden" name="action_script" value="restart_wireless">
-<input type="hidden" name="action_wait" value="3">
+<input type="hidden" name="action_wait" value="20">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
 <input type="hidden" name="wl_radio_date_x" value="<% nvram_get("wl_radio_date_x"); %>">
