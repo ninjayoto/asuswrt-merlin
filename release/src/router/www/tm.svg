@@ -100,11 +100,12 @@ function pad(n)
 	return n;
 }
 
-function xps(n)
-{
-	n /= 1024;
-	return n.toFixed(2) + ' KB/s';
-}
+// Function moved to tmcal.js to allow nvram access
+// function xps(n)
+// {
+//	n /= 1024;
+//	return n.toFixed(2) + ' KB/s';
+// }
 
 function setText(e, text)
 {
@@ -267,10 +268,10 @@ function updateSVG(rxData, txData, maxValue, mode, rxColor, txColor, intv, maxLe
 	drawData(polyRx, rxData, mode, rxColor);
 	drawData(polyTx, txData, mode, txColor);
 
-	setText(xpst[0], xps(maxV * 0.75));
-	setText(xpst[1], xps(maxV * 0.5));
-	setText(xpst[2], xps(maxV * 0.25));
-	setText(xpst[3], xps(maxV));
+	setText(xpst[0], top.xps(maxV * 0.75));
+	setText(xpst[1], top.xps(maxV * 0.5));
+	setText(xpst[2], top.xps(maxV * 0.25));
+	setText(xpst[3], top.xps(maxV));
 	if (eraseL > 0) {
 		if (--eraseL == 0) pointG.setAttribute('visibility', 'visible');
 	}
@@ -321,7 +322,7 @@ function mMove(ev)
 		}
 	}
   
-	setText(pointText, pointTime(ev.clientX) + ' / ' + xps(vY(ev.clientY)));
+	setText(pointText, pointTime(ev.clientX) + ' / ' + top.xps(vY(ev.clientY)));
 
 	x = 230;
 //	pointTextBack.setAttribute('x', (vWidth - x) - 22);
@@ -384,7 +385,7 @@ function mClick(ev)
 
 	crossH = ev.clientX;
 	crossV = vY(ev.clientY);
-	setText(crossText, xps(crossV));
+	setText(crossText, top.xps(crossV));
 	setText(crossTime, pointTime(crossH));
 	drawCross(ev.clientX, ev.clientY);
 

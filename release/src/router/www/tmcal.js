@@ -34,6 +34,21 @@ var colors = [
 var colorRX = [ '#FF9000', '#3CF', '#000000',  '#dd0000', '#999999',  '#118811'];
 var colorTX = ['#FF9000', '#3CF', '#000000',  '#dd0000', '#999999',  '#118811'];
 
+// Function moved from tm.svg
+function xps(n)
+{
+        var e;
+        if (nvram.rstats_units == '1') {
+                e = (n / 1024) * (8 / 1024);
+                if (e < 10) return e.toFixed(3) + ' Mb/s';
+                else return e.toFixed(2) + ' Mb/s';
+        }
+        else {
+                e = (n / 1024);
+                return e.toFixed(2) + ' KB/s';
+        }
+}
+
 function xpsb(byt)
 {
 /* REMOVE-BEGIN
@@ -41,7 +56,16 @@ function xpsb(byt)
 	125 = 1000 / 8
 	((B * 8) / 1000)
 REMOVE-END */
-	return (byt / 1024).toFixed(2) + ' <small>KB/s</small>';
+	var e;
+	if (nvram.rstats_units == '1') {
+		e = (byt / 1024) * (8 / 1024);
+		if (e < 10) return e.toFixed(3) + ' <small>Mb/s</small>';
+		else return e.toFixed(2) + '<small>Mb/s</small>';
+	}
+	else {
+		e = (byt / 1024);
+                return e.toFixed(2) + ' <small>KB/s</small>';
+        }
 }
 
 function showCTab()
