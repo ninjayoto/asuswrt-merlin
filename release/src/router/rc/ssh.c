@@ -6,6 +6,10 @@
 */
 
 #include "rc.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <shutils.h>
 #include <shared.h>
 
 static inline int check_host_key(const char *ktype, const char *nvname, const char *hkfn)
@@ -42,14 +46,28 @@ void start_sshd(void)
 	xstart("dropbear", "-a", "-p", nvram_safe_get("sshd_port"), nvram_get_int("sshd_pass") ? "" : "-s");
 */
 
-	char *argv[9];
+	char *argv[12];
 	int argc;
-	char *p;
+	char *p, *p2;
+	char saddr[32];
 
 	argv[0] = "dropbear";
-	argv[1] = "-p";
-	argv[2] = nvram_safe_get("sshd_port");
-	argc = 3;
+	argc = 1;
+
+	p = nvram_safe_get("sshd_port");
+	if (((p2 = nvram_get("sshd_addr")) != NULL) && (*p2)) {
+		strlcpy(saddr, p2, sizeof(saddr));
+		strncat(saddr, ":", sizeof(saddr));
+		strncat(saddr, p, sizeof(saddr));
+		argv[argc++] = "-p";
+		argv[argc++] = saddr;
+/*		logmessage ("sshd", "Listening on address:port %s", saddr); */
+	} else {
+		strlcpy(saddr, p, sizeof(saddr));
+		argv[argc++]= "-p";
+		argv[argc++] = saddr;
+/*		logmessage ("sshd", "Listening on port %s", saddr); */
+	}
 
 	if (!nvram_get_int("sshd_pass")) argv[argc++] = "-s";
 

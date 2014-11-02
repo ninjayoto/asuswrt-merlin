@@ -1399,6 +1399,7 @@ struct nvram_tuple router_defaults[] = {
 
 #if defined(RTCONFIG_SSH)
 	{"sshd_enable", "0"},
+	{"sshd_addr", ""},
 	{"sshd_port", "22"},
 	{"sshd_pass","1"},
 	{"sshd_authkeys",""},
