@@ -354,9 +354,18 @@ function check_NOnly_to_GN(){
 function regen_5G_mode(obj,flag){
 	if(flag == 1){
 		free_options(obj);
-		obj.options[0] = new Option("<#Auto#>", 0);
-		obj.options[1] = new Option("N + AC", 1);
-		obj.options[2] = new Option("Legacy", 2);
+		if(based_modelid == "DSL-AC68U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC53U"){
+			obj.options[0] = new Option("<#Auto#>", 0);
+//			obj.options[1] = new Option("AC only", 3); // Add
+			obj.options[1] = new Option("N only", 1);  // Correct from N+AC -> N only
+//			obj.options[2] = new Option("N + AC", 8);  // Add
+			obj.options[2] = new Option("Legacy", 7);  // Correct from 2=b/g -> 7=a only
+		}
+		else{
+			obj.options[0] = new Option("<#Auto#>", 0);
+			obj.options[1] = new Option("N only", 1);  // For AC66U correct from N+AC -> N only
+			obj.options[2] = new Option("Legacy", 7);  // Correct from 2=b/g -> 7=a only
+		}
 	}
 	
 	obj.value = '<% nvram_get("wl_nmode_x"); %>';
