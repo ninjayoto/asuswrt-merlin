@@ -224,6 +224,7 @@ function _change_wl_unit_status(__unit){
 }
 
 function goToACLFilter(){
+	applyRule();
 	if(sw_mode == 2 || sw_mode == 4) return false;
 	
 	var page_temp = "";
