@@ -341,9 +341,15 @@ auth_check( char* dirname, char* authorization ,char* url)
 	char *temp_ip_str;
 	time_t dt;
 
+	// Get ip addr
+	temp_ip_addr.s_addr = login_ip_tmp;
+	temp_ip_str = inet_ntoa(temp_ip_addr);
+
 	if(isLogout == 1){
 		isLogout = 0;
 		send_authenticate( dirname );
+		// Send login msg to syslog
+		//logmessage(HEAD_HTTP_LOGIN, "login user %s", temp_ip_str);
 		return 0;
 	}
 
@@ -357,8 +363,6 @@ auth_check( char* dirname, char* authorization ,char* url)
 	if (MAX_login <= DEFAULT_LOGIN_MAX_NUM)
 		MAX_login = DEFAULT_LOGIN_MAX_NUM;
 	if(login_try >= MAX_login){
-		temp_ip_addr.s_addr = login_ip_tmp;
-		temp_ip_str = inet_ntoa(temp_ip_addr);
 
 		if(login_try%MAX_login == 0)
 			logmessage(HEAD_HTTP_LOGIN, "Detect abnormal logins at %d times. The newest one was from %s.", login_try, temp_ip_str);
@@ -407,7 +411,16 @@ auth_check( char* dirname, char* authorization ,char* url)
 		//}
 		login_try = 0;
 		last_login_timestamp = 0;
+		if ( login_ip != login_ip_tmp || last_login_ip != 0 ) {
+			// Send login msg to syslog
+			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s", authinfo, temp_ip_str);
+		}
 		return 1;
+	}
+	else
+	{
+		// Failed login msg to syslog
+		logmessage(HEAD_HTTP_LOGIN, "login '%s' failed from %s", authinfo, temp_ip_str);
 	}
 
 	send_authenticate( dirname );
@@ -907,7 +920,9 @@ handle_request(void)
 					handler->auth(auth_userid, auth_passwd, auth_realm);
 					if (!auth_check(auth_realm, authorization, url))
 					{
-						if(!fromapp) http_logout(login_ip_tmp);
+						if(!fromapp) {
+							http_logout(login_ip_tmp);
+						}
 						return;
 					}
 				}
@@ -982,6 +997,9 @@ handle_request(void)
 		if(!strcmp(file, "Logout.asp")){
 			isLogout = 1;
 			http_logout(login_ip_tmp);
+			// Send logout msg to syslog
+			logmessage (HEAD_HTTP_LOGIN, "logout successful");
+
 		}
 	}
 }
