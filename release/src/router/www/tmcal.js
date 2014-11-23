@@ -206,9 +206,11 @@ function loadData()
 				h.rx_total = h.rx_max = 0;
 				h.tx_total = h.tx_max = 0;
 				for (j = (h.rx.length - updateMaxL); j < h.rx.length; ++j) {
+					if (((h.rx[j] / 1024) > (4 * 131072 * updateDiv)) || (h.rx[j] < 0)) h.rx[j] = (j<1 ? 0 : h.rx[j-1]); // Filter bad data
 					t = h.rx[j];
 					if (t > h.rx_max) h.rx_max = t;
 					h.rx_total += t;
+					if (((h.tx[j] / 1024) > (4 * 131072 * updateDiv)) || (h.tx[j] < 0)) h.tx[j] = (j<1 ? 0 : h.tx[j-1]); // Filter bad data
 					t = h.tx[j];
 					if (t > h.tx_max) h.tx_max = t;
 					h.tx_total += t;
