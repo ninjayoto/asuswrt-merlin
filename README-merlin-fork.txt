@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-05j9527 (02-November-2014)
+Asuswrt-Merlin fork - build 374.43_2-06j9527 (23-November-2014)
 =============================================
 
 About
@@ -18,15 +18,21 @@ Asuswrt-merlin base.
 History
 -------
 
+374.43_2-06j9527 (23-November-2014)
+* CHANGED: webui: standardize wireless modes across all radios
+* FIXED: init-broadcom: allow guest macmode independent of base
+* FIXED: webui: apply settings on guest network before branch to mac filtering
+* FIXED: miniupnpd: Use merlin makefile for clean
+* NEW: httpd: Add HTTP login/logout events to syslog (user request)
+
 374.43_2-05j9527 (02-November-2014)
 - CHANGED: OpenSSL: Upgraded to 1.0.0o
 - CHANGED: SSL: disable SSLv2 and SSLv3 support - we now only support TLS 1.0 for https access (IE6 browser is no longer supported)
 - CHANGED: Updated miniupnpd to 1.9 (plus upstream PCP fix)
 - CHANGED: Updated dropbear to 2014.66
 - FIXED: init-broadcom: fix typo preventing wireless mac filter from working on guest networks
-* CHANGED: ssh: Add option to listen on single address (user request)
 * FIXED: Password obscured on Wireless/General tab unless has focus (user request)
-* FIXED: false dropbear error exiting SCP apps
+* NEW: ssh: Add option to listen on single address (user request)
 
 374.43_2-04j9527 (07-October-2014)
 - Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
