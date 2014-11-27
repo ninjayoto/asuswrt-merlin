@@ -976,10 +976,17 @@ void start_ipv6_tunnel(void)
 			nvram_get_int("ipv6_tun_addrlen") ? : 64);
 
 		/* TODO: add & allow gateway */
-		gateway = NULL;
+		/* gateway = NULL; */
+
+		/* remap from 376 */
+		gateway = nvram_safe_get("ipv6_tun_peer");
+		if (gateway && *gateway)
+			eval("ip", "-6", "route", "add", gateway, "dev", tun_dev, "metric", "1");
+
 	}
 
 	eval("ip", "-6", "addr", "add", ip, "dev", tun_dev);
+	eval("ip", "-6", "route", "del", "::/0");
 	if (gateway && *gateway)
 		eval("ip", "-6", "route", "add", "::/0", "via", gateway, "dev", tun_dev, "metric", "1");
 	else	eval("ip", "-6", "route", "add", "::/0", "dev", tun_dev, "metric", "1");

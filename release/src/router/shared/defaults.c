@@ -1729,7 +1729,8 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_relay",		"192.88.99.1"	},	// IPv6 Anycast Address
 	{ "ipv6_tun_v4end",	"0.0.0.0"	},	// Foreign IPv4 endpoint of SIT tunnel
 	{ "ipv6_tun_addr",	""		},	// IPv6 address to assign to local tunnel endpoint
-	{ "ipv6_tun_addrlen",	"64"		},	// CIDR prefix length for tunnel's IPv6 address	
+	{ "ipv6_tun_addrlen",	"64"		},	// CIDR prefix length for tunnel's IPv6 address
+	{ "ipv6_tun_peer",	""		},	// IPv6 address of remote tunnel endpoint
 	{ "ipv6_tun_mtu",	"0"		},	// Tunnel MTU, 0 for default
 	{ "ipv6_tun_ttl",	"255"		},	// Tunnel TTL
 	{ "ipv6_6rd_dhcp",	"1"		},

@@ -114,6 +114,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_6rd_ip4size, 0);
 		inputCtrl(document.form.ipv6_tun_addr, 0);
 		inputCtrl(document.form.ipv6_tun_addrlen, 0);
+		inputCtrl(document.form.ipv6_tun_peer, 0);  /* Remap from 376 */
 		inputCtrl(document.form.ipv6_tun_mtu, 0);
 		inputCtrl(document.form.ipv6_tun_ttl, 0);
 		$("ipv6_wan_setting").style.display="none";
@@ -167,6 +168,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_6rd_ip4size, 0);
 		inputCtrl(document.form.ipv6_tun_addr, 0);
 		inputCtrl(document.form.ipv6_tun_addrlen, 0);
+		inputCtrl(document.form.ipv6_tun_peer, 0);  //Remap from 376
 		inputCtrl(document.form.ipv6_tun_mtu, 1);
 		inputCtrl(document.form.ipv6_tun_ttl, 1);
 		$("ipv6_wan_setting").style.display="none";
@@ -215,6 +217,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_6rd_ip4size, 0);
 		inputCtrl(document.form.ipv6_tun_addr, 1);
 		inputCtrl(document.form.ipv6_tun_addrlen, 1);
+		inputCtrl(document.form.ipv6_tun_peer, 1);  //Remap from 376
 		inputCtrl(document.form.ipv6_tun_mtu, 1);
 		inputCtrl(document.form.ipv6_tun_ttl, 1);
 		$("ipv6_wan_setting").style.display="none";
@@ -263,6 +266,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_6rd_ip4size, enable);
 		inputCtrl(document.form.ipv6_tun_addr, 0);
 		inputCtrl(document.form.ipv6_tun_addrlen, 0);
+		inputCtrl(document.form.ipv6_tun_peer, 0);  //Remap from 376
 		inputCtrl(document.form.ipv6_tun_mtu, 1);
 		inputCtrl(document.form.ipv6_tun_ttl, 1);
 		$("ipv6_wan_setting").style.display="none";
@@ -308,6 +312,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_6rd_ip4size, 0);		
 		inputCtrl(document.form.ipv6_tun_addr, 0);
 		inputCtrl(document.form.ipv6_tun_addrlen, 0);
+		inputCtrl(document.form.ipv6_tun_peer, 0);  //Remap from 376
 		inputCtrl(document.form.ipv6_tun_mtu, 0);
 		inputCtrl(document.form.ipv6_tun_ttl, 0);		
 		$("ipv6_wan_setting").style.display="";
@@ -363,6 +368,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_6rd_ip4size, 0);
 		inputCtrl(document.form.ipv6_tun_addr, 0);
 		inputCtrl(document.form.ipv6_tun_addrlen, 0);
+		inputCtrl(document.form.ipv6_tun_peer, 0);  //Remap from 376
 		inputCtrl(document.form.ipv6_tun_mtu, 0);
 		inputCtrl(document.form.ipv6_tun_ttl, 0);
 		$("ipv6_wan_setting").style.display="none";
@@ -718,6 +724,7 @@ function validForm(){
 			if(!validate_iprange(document.form.ipv6_tun_v4end, "")) return false;  //6in4 tun endpoint	
 			if(!ipv6_valid(document.form.ipv6_tun_addr)) return false;  //6in4 Client IPv6 Address			
 			if(!validate_range(document.form.ipv6_tun_addrlen, 3, 64))  return false;
+			if(document.form.ipv6_tun_peer.value != "" && !ipv6_valid(document.form.ipv6_tun_peer)) return false; //Remap from 376
 	}	
 	
 	if(document.form.ipv6_service.value=="6rd" && document.form.ipv6_6rd_dhcp[1].checked){
@@ -988,6 +995,14 @@ function showInfo(){
 							<input type="text" maxlength="2" class="input_3_table" name="ipv6_tun_addrlen" value="<% nvram_get("ipv6_tun_addrlen"); %>">
 		     		</td>
 		     	</tr>
+
+					<!-- Remap from 376 -->
+					<tr style="display:none;">
+						<th><#ipv6_peer_addr#></th>
+				<td>
+							<input type="text" maxlength="39" class="input_32_table" name="ipv6_tun_peer" value="<% nvram_get("ipv6_tun_peer"); %>">
+				</td>
+			</tr>
 		     	
 					<tr style="display:none;">
 						<th><#tunnel_MTU#></th>
