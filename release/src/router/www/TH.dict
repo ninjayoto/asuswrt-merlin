@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=ตัวเลือก DHCP
 ipv6_6rd_Prefix=รหัสนำ IPv6
 ipv6_auto_config=การตั้งค่าการกำหนดค่าอัตโนมัติ
 ipv6_client_ip=ลูกค้า IPv6 แอดเดรส
+ipv6_peer_addr=เซิร์ฟเวอร์ IPv6 แอดเดรส
 ipv6_dns_serv=IPv6 DNS เซิร์ฟเวอร์
 IPv6_DNS_Setting=การตั้งค่า IPv6 DNS
 ipv6_info=ข้อมูลเครือข่าย IPv6

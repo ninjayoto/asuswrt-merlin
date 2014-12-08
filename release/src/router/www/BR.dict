@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=Opção DHCP
 ipv6_6rd_Prefix=Prefixo IPv6
 ipv6_auto_config=Configuração Automática
 ipv6_client_ip=Endereço do cliente IPv6
+ipv6_peer_addr=Endereço do servidor IPv6
 ipv6_dns_serv=IPv6 Servidor DNS
 IPv6_DNS_Setting=Configuração DNS IPv6
 ipv6_info=Informação de Rede IPv6

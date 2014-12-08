@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=DHCP Seçeneği
 ipv6_6rd_Prefix=IPv6 Öneki
 ipv6_auto_config=Oto Yapılandırma Ayarı
 ipv6_client_ip=İstemci IPv6 Adresi
+ipv6_peer_addr=Sunucusu IPv6 Adresi
 ipv6_dns_serv=IPv6 DNS Sunucusu
 IPv6_DNS_Setting=IPv6 DNS Ayarı
 ipv6_info=IPv6 Ağ Bilgisi

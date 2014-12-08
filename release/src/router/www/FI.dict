@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=DHCP-asetus
 ipv6_6rd_Prefix=IPv6-etuliite
 ipv6_auto_config=Autom määritysasetus
 ipv6_client_ip=Asiakkaan IPv6-osoite
+ipv6_peer_addr=Palvelimen IPv6-osoite
 ipv6_dns_serv=IPv6 DNS-nimipalvelin
 IPv6_DNS_Setting=IPv6 DNS-asetus
 ipv6_info=IPv6-verkon tiedot

@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=DHCP-opciók
 ipv6_6rd_Prefix=IPv6 előtag
 ipv6_auto_config=Automatikus konfiguráció
 ipv6_client_ip=Kliens IPv6 cím
+ipv6_peer_addr=Szerver IPv6 cím
 ipv6_dns_serv=IPv6 DNS-kiszolgáló
 IPv6_DNS_Setting=IPv6 DNS beállítás
 ipv6_info=IPv6 hálózati információ

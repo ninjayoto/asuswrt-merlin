@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=DHCP 选项
 ipv6_6rd_Prefix=IPv6 前缀
 ipv6_auto_config=自动配置设置
 ipv6_client_ip=用户端 IPv6 地址
+ipv6_peer_addr=服务器 IPv6 地址
 ipv6_dns_serv=IPv6 DNS 服务器
 IPv6_DNS_Setting=IPv6 DNS 设置
 ipv6_info=IPv6 网络信息

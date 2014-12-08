@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=DHCP オプション
 ipv6_6rd_Prefix=IPv6 プレフィックス
 ipv6_auto_config=自動構成の設定
 ipv6_client_ip=クライアントの IPv6 のアドレス
+ipv6_peer_addr=サーバーの IPv6 のアドレス
 ipv6_dns_serv=IPv6 DNS サーバー
 IPv6_DNS_Setting=IPv6 の DNS 設定
 ipv6_info=IPv6 ネットワーク情報

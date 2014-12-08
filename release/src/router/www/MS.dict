@@ -1006,6 +1006,7 @@ ipv6_6rd_dhcp_option=Pilihan DHCP
 ipv6_6rd_Prefix=Awalan IPv6
 ipv6_auto_config=Tetapan Konfigurasi Auto
 ipv6_client_ip=Pelanggan Alamat IPv6
+ipv6_peer_addr=Pelayan Alamat IPv6
 ipv6_dns_serv=IPv6 Pelayan DNS
 IPv6_DNS_Setting=Tetapan DNS IPv6
 ipv6_info=Maklumat Rangkaian IPv6
