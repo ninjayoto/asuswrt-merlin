@@ -1105,16 +1105,16 @@ function showInfo(){
 					<tr>
 		     		<th>DHCP pool start</th>	
 		     		<td>
-		     				<input type="text" maxlength="19" class="input_20_table" name="ipv6_prefix_span_for_start" style="color:#BBBBBB" readonly>		     				
-		     				::
-		     				<input type="text" maxlength="4" class="input_6_table" name="ipv6_dhcp_start_start">
+					<input type="text" maxlength="19" class="readonly_20_table" name="ipv6_prefix_span_for_start" style="color:#FFFFFF" readonly>
+					::
+					<input type="text" maxlength="4" class="input_6_table" name="ipv6_dhcp_start_start">
 		     		</td>
 		    	</tr>
 
 		     	<tr>
 		     		<th>DHCP pool end</th>	
 		     		<td>
-		     			<input type="text" maxlength="19" class="input_20_table" name="ipv6_prefix_span_for_end" style="color:#BBBBBB" readonly>
+					<input type="text" maxlength="19" class="readonly_20_table" name="ipv6_prefix_span_for_end" style="color:#FFFFFF" readonly>
 		     			::
 		     			<input type="text" maxlength="4" class="input_6_table" name="ipv6_dhcp_end_end">
 		     		</td>

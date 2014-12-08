@@ -387,6 +387,19 @@
 	border-width:0;
 	color:#FFFFFF;
 }
+.readonly_20_table{
+	margin-left:2px;
+	padding-left:0.4em;
+	height:23px;
+	width:160px;
+	line-height:23px \9;    /*IE*/
+	font-size:12px;
+	font-family: Lucida Console;
+	/* background-image:url(/images/New_ui/inputbg.png); */
+	background-color:transparent;
+	border-width:0;
+	color:#FFFFFF;
+}
 .input_18_table{
 	margin-left:2px;
 	padding-left:0.4em;
