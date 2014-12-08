@@ -768,8 +768,9 @@ function applyRule(){
 				document.form.ipv6_ifdev.value = document.form.ipv6_ifdev_select.value;
 		}			
 				
-		if(document.form.ipv6_service.value!="static6" && document.form.ipv6_service.value!="other"
-				&& (document.form.ipv6_service.value!="dhcp6" && document.form.ipv6_dhcp_pd.value!="0"))	//clean up ipv6_rtr_addr if not static6 or not other or dhcp_pd=1
+		//clean up ipv6_rtr_addr if not static6 or not other or dhcp_pd=1
+		if((document.form.ipv6_service.value!="static6" && document.form.ipv6_service.value!="other" && document.form.ipv6_service.value!="dhcp6")
+			|| (document.form.ipv6_service.value=="dhcp6" && document.form.ipv6_dhcp_pd.value=="1"))
 				document.form.ipv6_rtr_addr.value = "";
 
 		/*if(machine_arm)	//Viz 2013.06 Don't need to reboot anymore
