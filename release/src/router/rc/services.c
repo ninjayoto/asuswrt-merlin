@@ -1030,8 +1030,12 @@ void start_dhcp6s(void)
 		return;
 
 	if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_match("ipv6_dnsenable", "1")
-		&& nvram_match("ipv6_get_dns", "") && !nvram_get_int("ipv6_autoconf_type"))
+		&& nvram_match("ipv6_get_dns", "") && !nvram_get_int("ipv6_autoconf_type")) {
+                // clear dhcp pool addr
+		nvram_set("ipv6_dhcp_start","");
+		nvram_set("ipv6_dhcp_end","");
 		return;
+	}
 
 	/* create dhcp6s.conf */
 	if ((fp = fopen("/etc/dhcp6s.conf", "w")) == NULL)
@@ -1071,6 +1075,34 @@ void start_dhcp6s(void)
 		fprintf(fp,	"option domain-name \"%s\";\n", p);
 
 	if (nvram_get_int("ipv6_autoconf_type")) {
+		/* support stateful with dhcp_pd, update dhcp addr range now that prefix is available */
+		if (nvram_match("ipv6_dhcp_pd", "1")) {
+			char ipv6_pool_addr[64], tmp[64], *p1, *p2, *ipv6_dhcp_start, *ipv6_dhcp_end;
+
+			p1 = strrchr(nvram_safe_get("ipv6_dhcp_start"), ':');
+			memset(ipv6_pool_addr, 0, 64);
+			strcpy(ipv6_pool_addr, p1);
+			p2 = strndup(ipv6_pool_addr+1,4);
+			if (nvram_match("ipv6_prefix", ""))
+				ipv6_dhcp_start=strcat_r("::", p2, tmp);
+			else
+				ipv6_dhcp_start=strcat_r(nvram_safe_get("ipv6_prefix"), p2, tmp);
+			nvram_set("ipv6_dhcp_start",ipv6_dhcp_start);
+
+			p1 = strrchr(nvram_safe_get("ipv6_dhcp_end"), ':');
+			memset(ipv6_pool_addr, 0, 64);
+			strcpy(ipv6_pool_addr, p1);
+			p2= strndup(ipv6_pool_addr+1,4);
+			if (nvram_match("ipv6_prefix", ""))
+				ipv6_dhcp_end=strcat_r("::", p2, tmp);
+			else
+				ipv6_dhcp_end=strcat_r(nvram_safe_get("ipv6_prefix"), p2, tmp);
+			nvram_set("ipv6_dhcp_end",ipv6_dhcp_end);
+
+			nvram_commit();
+		}
+		/* end stateful dhcp_pd */
+
 		fprintf(fp,	"host kame {\n"
 					"\tprefix %s/%d infinity;\n"
 				"};\n", nvram_safe_get("ipv6_rtr_addr"), nvram_get_int("ipv6_prefix_length"));
