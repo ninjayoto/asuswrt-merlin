@@ -719,9 +719,9 @@ struct nvram_tuple router_defaults[] = {
 	{ "wans_routing_enable", "0" },
 	{ "wans_routing_rulelist", "" },
 	{ "wan0_routing_isp_enable", "0" },
-	{ "wan0_routing_isp", "china_mobile" },
+	{ "wan0_routing_isp", "" },
 	{ "wan1_routing_isp_enable", "0" },
-	{ "wan1_routing_isp", "china_mobile" },
+	{ "wan1_routing_isp", "" },
 
 	{ "wandog_enable", "0" },
 	{ "wandog_target", "" },
