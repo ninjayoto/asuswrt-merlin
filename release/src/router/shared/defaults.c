@@ -75,7 +75,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "wl_bss_hs2_enabled", "1", 0 },	/* Service set Hotspot Enable (1), disable (0) radio */
 						/* See "default_get" below. */
 #endif  /* __CONFIG_HSPOT__ */
-//	{ "wl_country_code", "", 0 },		/* Country Code (default obtained from driver) */
+	{ "wl_country_code", "", 0 },		/* Country Code (default obtained from driver) */
 #ifndef RTCONFIG_RALINK
 	{ "wl_country_rev", "", 0 },		/* Regrev Code (default obtained from driver) */
 #endif
