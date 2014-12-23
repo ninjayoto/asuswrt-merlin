@@ -46,27 +46,29 @@ void start_sshd(void)
 	xstart("dropbear", "-a", "-p", nvram_safe_get("sshd_port"), nvram_get_int("sshd_pass") ? "" : "-s");
 */
 
-	char *argv[12];
-	int argc;
-	char *p, *p2;
-	char saddr[32];
+	char *argv[16];
+	int j, argc;
+	char *p, *str, *token, *saveptr;
+	char saddr[128];
 
 	argv[0] = "dropbear";
 	argc = 1;
 
-	p = nvram_safe_get("sshd_port");
-	if (((p2 = nvram_get("sshd_addr")) != NULL) && (*p2)) {
-		strlcpy(saddr, p2, sizeof(saddr));
-		strncat(saddr, ":", sizeof(saddr));
-		strncat(saddr, p, sizeof(saddr));
-		argv[argc++] = "-p";
-		argv[argc++] = saddr;
-/*		logmessage ("sshd", "Listening on address:port %s", saddr); */
-	} else {
+	if (((p = nvram_get("sshd_addr")) != NULL) && (*p)) {
 		strlcpy(saddr, p, sizeof(saddr));
+		for (j = 1, str = saddr; ; j++, str = NULL) {
+			token = strtok_r(str, ", ", &saveptr);
+			if (token == NULL)
+				break;
+			argv[argc++] = "-p";
+			argv[argc++] = token;
+			if (j >= 4) /* allow 4 entries */
+				break;
+		}
+	} else {
+		p = nvram_safe_get("sshd_port");
 		argv[argc++]= "-p";
-		argv[argc++] = saddr;
-/*		logmessage ("sshd", "Listening on port %s", saddr); */
+		argv[argc++] = p;
 	}
 
 	if (!nvram_get_int("sshd_pass")) argv[argc++] = "-s";
