@@ -275,23 +275,25 @@ function validForm(){
 		return false;
 	
 	if(power_support && !Rawifi_support){
-		// CE@2.4GHz
-		if(document.form.wl0_country_code.value == "EU" && document.form.wl_unit.value == 0){
-			if(document.form.wl_TxPower.value > 100 && errFlag < 2){
-				alert("<#WLANConfig11b_TxPower_alert#>")
+		if(document.form.wl_TxPower_orig.value != document.form.wl_TxPower.value){
+			// CE@2.4GHz
+			if(document.form.wl0_country_code.value == "EU" && document.form.wl_unit.value == 0){
+				if(document.form.wl_TxPower.value > 100 && errFlag < 2){
+					alert("<#WLANConfig11b_TxPower_alert#>")
+					document.form.wl_TxPower.focus();
+					errFlag++;
+					return false;
+				}
+				else if(document.form.wl_TxPower.value > 200 && errFlag > 1)
+					document.form.wl_TxPower.value = 200;
+			}
+
+			if(!validate_range(document.form.wl_TxPower, 1, 200)){
+				document.form.wl_TxPower.value = 200;
 				document.form.wl_TxPower.focus();
-				errFlag++;
+				document.form.wl_TxPower.select();
 				return false;
 			}
-			else if(document.form.wl_TxPower.value > 200 && errFlag > 1)
-				document.form.wl_TxPower.value = 200;
-		}
-
-		if(!validate_range(document.form.wl_TxPower, 1, 200)){
-			document.form.wl_TxPower.value = 200;
-			document.form.wl_TxPower.focus();
-			document.form.wl_TxPower.select();
-			return false;
 		}
 
 		// MODELDEP
