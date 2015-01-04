@@ -1169,7 +1169,12 @@ void start_radvd(void)
 			mtu = (nvram_get_int("ipv6_tun_mtu") > 0) ? nvram_safe_get("ipv6_tun_mtu") : "1480";
 			// fall through
 		default:
-			if (nvram_get_int("ipv6_mtu") > 0) mtu = nvram_safe_get("ipv6_mtu");
+			if (nvram_match("ipv6_ifdev", "ppp"))
+				sprintf(mtu, "%d", (nvram_get_int("wan_pppoe_mtu") - 20)); //20 byte safeguard for ppp
+			else if (nvram_get_int("ipv6_mtu") > 0)
+				mtu = nvram_safe_get("ipv6_mtu");
+			else if (nvram_get_int("ipv6_mtu") < 0)
+				mtu = "0";
 			prefix = do_6to4 ? "0:0:0:1::" : nvram_safe_get("ipv6_prefix");
 			break;
 		}
@@ -1226,7 +1231,7 @@ void start_radvd(void)
 			" };\n",
 			nvram_safe_get("lan_ifname"),
 			nvram_get_int("ipv6_autoconf_type") ? "on" : "off",
-			mtu ? " AdvLinkMTU " : "", mtu ? : "", mtu ? ";\n" : "",
+			mtu ? " AdvLinkMTU " : "", mtu ? mtu : "", mtu ? ";\n" : "", // add missing mtu var
 			prefix,
 			nvram_get_int("ipv6_autoconf_type") ? "off" : "on",
 			valid_lifetime ? "  AdvValidLifetime " : "", valid_lifetime ? : "", valid_lifetime ? ";\n" : "",
