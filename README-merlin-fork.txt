@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-06j9527 (23-November-2014)
+Asuswrt-Merlin fork - build 374.43_2-06Ej9527 (9-January-2015)
 =============================================
 
 About
@@ -17,6 +17,9 @@ Asuswrt-merlin base.
 
 History
 -------
+
+374.43_2-06Ej9527 (9-January-2015)
+- FIXED: Temporary fix for ASUS infosvr LAN security vulnerability
 
 374.43_2-06j9527 (23-November-2014)
 * CHANGED: webui: standardize wireless modes across all radios
