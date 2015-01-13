@@ -392,7 +392,7 @@ void start_vpnclient(int clientNum)
 	// Start the VPN client
 #ifdef RTCONFIG_BCMARM
         if (cpu_num > 1)
-		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", (clientNum == 2 ? 1 : 0), clientNum, clientNum);
+		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", (clientNum % 2 ? 1 : 0), clientNum, clientNum);
 	else
 #endif
 		sprintf(&buffer[0], "/etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", clientNum, clientNum);
@@ -1235,7 +1235,7 @@ void start_vpnserver(int serverNum)
 
 #ifdef RTCONFIG_BCMARM
         if (cpu_num > 1)
-		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", (serverNum == 2 ? 1 : 0), serverNum, serverNum);
+		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", (serverNum % 2 ? 1 : 0), serverNum, serverNum);
 	else
 #endif
 		sprintf(&buffer[0], "/etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", serverNum, serverNum);
