@@ -1043,6 +1043,22 @@ function change_ddns_setting(v){
 				showhide("link", 0);
 				showhide("linkToHome", 0);	
 				showhide("wildcard_field",0);
+				document.form.ddns_regular_check.value = 0;
+				showhide("check_ddns_field", 0);
+				inputCtrl(document.form.ddns_regular_period, 0);
+				showhide("customnote", 0);
+		}else if (v == "CUSTOM"){
+				document.form.ddns_hostname_x.parentNode.style.display = "";
+				document.form.DDNSName.parentNode.style.display = "none";
+				inputCtrl(document.form.ddns_username_x, 0);
+				inputCtrl(document.form.ddns_passwd_x, 0);
+				document.form.ddns_wildcard_x[0].disabled= 1;
+				document.form.ddns_wildcard_x[1].disabled= 1;
+				showhide("customnote", 1);
+				showhide("link", 0);
+				showhide("linkToHome", 0);
+				showhide("wildcard_field",0);
+				showhide("check_ddns_field", 0);
 		}else{
 				document.form.ddns_hostname_x.parentNode.style.display = "";
 				document.form.DDNSName.parentNode.style.display = "none";
@@ -1063,6 +1079,12 @@ function change_ddns_setting(v){
 				}
 				
 				showhide("wildcard_field",!disable_wild);
+				showhide("check_ddns_field", 1);
+				if(document.form.ddns_regular_check.value == 0)
+					inputCtrl(document.form.ddns_regular_period, 0);
+				else
+					inputCtrl(document.form.ddns_regular_period, 1);
+				showhide("customnote", 0);
 		}
 		if(v == "WWW.NAMECHEAP.COM")
 			$("ddns_username_th").innerHTML = Untranslated.namecheap_username_title;
