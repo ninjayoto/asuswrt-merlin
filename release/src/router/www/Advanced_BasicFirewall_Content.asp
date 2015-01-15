@@ -183,6 +183,13 @@ function done_validating(action){
 								<input type="radio" value="0" name="misc_ping_x" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'misc_ping_x', '0')" <% nvram_match("misc_ping_x", "0", "checked"); %>><#checkbox_No#>
 							</td>
           	</tr>   
+		<tr>
+			<th>Enable DSCP override**</th>
+			<td>
+								<input type="radio" value="1" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '1')" <% nvram_match("DSCP_fix_enable", "1", "checked"); %>><#checkbox_Yes#>
+								<input type="radio" value="0" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '0')" <% nvram_match("DSCP_fix_enable", "0", "checked"); %>><#checkbox_No#>
+			</td>
+		</tr>
 
 	        	<tr id="st_webdav_mode_tr" style="display:none;">
 	          	<th width="40%">Cloud Disk Configure</th>

@@ -1034,7 +1034,8 @@ struct nvram_tuple router_defaults[] = {
 	{ "misc_httpsport_x", "8443" },
 #endif
 	{ "misc_ping_x", "0" },
-	{ "misc_lpr_x", "0" },	
+	{ "misc_lpr_x", "0" },
+	{ "DSCP_fix_enable", "0" },
 	
 	// UrlList
 	{ "url_enable_x", "0"},

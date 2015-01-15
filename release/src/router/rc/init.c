@@ -3262,6 +3262,10 @@ int init_nvram(void)
 	if(!nvram_get("ct_max"))
 		nvram_set("ct_max", nvram_get("ct_max_default"));
 
+	// Initialize working variable name for max DSCP fix
+	if(nvram_get("DSCP_fix_enable") == NULL)
+		nvram_set("DSCP_fix_enable", "0");
+
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
 		if(!nvram_match("switch_wan0tagid", "") && !nvram_match("switch_wan0tagid", "0"))
