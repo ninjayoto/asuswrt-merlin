@@ -298,8 +298,9 @@ function validForm(){
 		if(hw_ver.search("RTN12HP") != -1){
 		  FormActions("start_apply.htm", "apply", "set_wltxpower;reboot", "<% get_default_reboot_time(); %>");
 		}
-		else if(based_modelid == "RT-AC66U" || based_modelid == "RT-N66U"){
-			FormActions("start_apply.htm", "apply", "set_wltxpower;restart_wireless", "15");
+		// Include check for TxPower change
+		else if(based_modelid == "RT-AC66U" || based_modelid == "RT-N66U" || (document.form.wl_TxPower_orig.value != document.form.wl_TxPower.value)){
+			FormActions("start_apply.htm", "apply", "set_wltxpower;restart_wireless", "20");
 		}
 		
   }else if(power_support && Rawifi_support){

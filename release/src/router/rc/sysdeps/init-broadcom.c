@@ -1867,6 +1867,8 @@ int set_wltxpower()
 		}
 
 		txpower = nvram_get_int(wl_nvname("TxPower", unit, 0));
+		if (txpower > 0)
+			set_wltxpower_once = 1;
 		dbG("unit: %d, txpower: %d\n", unit, txpower);
 
 		switch(model) {
