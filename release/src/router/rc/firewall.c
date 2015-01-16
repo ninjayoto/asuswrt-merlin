@@ -4105,6 +4105,17 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 	eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
 	     "-d", wan_ip, "-j", "MARK", "--set-mark", "0xd001");
 
+/* Workaround for incorrect DSCP from Comcast */
+	if (nvram_get_int("DSCP_fix_enable")) {
+#ifdef LINUX26
+		modprobe("xt_dscp");
+#else
+		modprobe("ipt_dscp");
+#endif
+		eval("iptables", "-t", "mangle", "-A", "PREROUTING", "-i", wan_if,
+		     "-j", "DSCP", "--set-dscp", "0");
+	}
+
 /* Workaround for neighbour solicitation flood from Comcast */
 #ifdef RTCONFIG_IPV6
 	if (nvram_get_int("ipv6_neighsol_drop")) {
@@ -4201,6 +4212,17 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 		     "-d", wan_ip, "-j", "MARK", "--set-mark", "0xd001");
 	}
 #endif
+
+/* Workaround for incorrect DSCP from Comcast */
+	if (nvram_get_int("DSCP_fix_enable")) {
+#ifdef LINUX26
+		modprobe("xt_dscp");
+#else
+		modprobe("ipt_dscp");
+#endif
+		eval("iptables", "-t", "mangle", "-A", "PREROUTING", "-i", wan_if,
+		     "-j", "DSCP", "--set-dscp", "0");
+	}
 
 /* Workaround for neighbour solicitation flood from Comcast */
 #ifdef RTCONFIG_IPV6
