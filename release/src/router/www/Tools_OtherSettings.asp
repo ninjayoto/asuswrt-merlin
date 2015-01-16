@@ -81,6 +81,7 @@ var _layer_order = "";
 var FromObject = "0";
 var lastClickedObj = 0;
 var disk_flag=0;
+var ct_max_default = '<% nvram_get("ct_max_default"); %>';
 window.onresize = cal_panel_block;
 
 
@@ -109,6 +110,8 @@ function initial() {
 		document.form.usb_idle_exclude_h.checked = true;
 	if (document.form.usb_idle_exclude.value.indexOf("i") != -1)
 		document.form.usb_idle_exclude_i.checked = true;
+
+	$("ct_max_default").innerHTML = "Default: " + ct_max_default;
 
 	if ((productid == "RT-AC56U") || (productid == "RT-AC68U"))
 		$("ct_established_default").innerHTML = "Default: 432000 (5 days)";
@@ -830,11 +833,12 @@ function done_validating(action){
 							<td colspan="2">TCP/IP settings</td>
 						</tr>
 					</thead>
- 					<tr>
-						<th>TCP connections limit</th>
-						<td>
-							<input type="text" maxlength="6" class="input_12_table" name="ct_max" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 256, 300000)" value="<% nvram_get("ct_max"); %>">
-						</td>
+						<tr>
+							<th>TCP connections limit</th>
+							<td>
+								<input type="text" maxlength="6" class="input_6_table" name="ct_max" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 256, 300000)" value="<% nvram_get("ct_max"); %>">
+								<span id="ct_max_default">Default: Set by router</span>
+							</td>
 						</tr>
 
 						<tr>

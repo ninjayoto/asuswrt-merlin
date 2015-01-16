@@ -506,6 +506,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ct_tcp_timeout",		""},
 	{ "ct_udp_timeout",		"30 180"},
 	{ "ct_timeout",			""},
+	{ "ct_max",			""},
 
 #ifndef RTCONFIG_RALINK
 	{ "ctf_disable",		"0"		},

@@ -738,7 +738,7 @@ restore_defaults(void)
 				!strcmp(t->name, "dms_friendly_name") ||
 				!strcmp(t->name, "daapd_friendly_name"))
 				nvram_set(t->name, get_productid());
-			else if(strcmp(t->name, "ct_max")==0) {
+			else if(strcmp(t->name, "ct_max_default")==0) {
 				// handled in init_nvram already
 			}
 			else
@@ -1553,8 +1553,8 @@ int init_nvram(void)
 		nvram_set_int("btn_wps_gpio", 26|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_pwr_gpio", 0|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_wps_gpio", 0|GPIO_ACTIVE_LOW);
-		//if(!nvram_get("ct_max"))
-		//	nvram_set("ct_max", "30000");
+		//if(!nvram_get("ct_max_default"))
+		//	nvram_set("ct_max_default", "30000");
 		if(nvram_get("sw_mode")==NULL||nvram_get_int("sw_mode")==SW_MODE_ROUTER)
 			nvram_set_int("sw_mode", SW_MODE_REPEATER);
 		add_rc_support("mssid 2.4G 5G update");
@@ -1584,8 +1584,8 @@ int init_nvram(void)
 		nvram_set("wl0_HT_RxStream", "2");	// for 300 Mbps RT3352 2T2R 2.4G
 		nvram_set("wl1_HT_TxStream", "3");	// for 450 Mbps RT3353 3T3R 2.4G/5G
 		nvram_set("wl1_HT_RxStream", "3");	// for 450 Mbps RT3883 3T3R 2.4G/5G
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 			add_rc_support("mssid");
 		add_rc_support("2.4G 5G update usbX2");
@@ -1613,8 +1613,8 @@ int init_nvram(void)
 		nvram_set("ohci_ports", "2-1 2-2");
 		nvram_set("wl0_HT_TxStream", "3");	// for 450 Mbps RT3353 3T3R 2.4G
 		nvram_set("wl0_HT_RxStream", "3");	// for 450 Mbps RT3883 3T3R 2.4G
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 			add_rc_support("mssid");
 		add_rc_support("2.4G update usbX2");
@@ -1638,8 +1638,8 @@ int init_nvram(void)
 		nvram_set_int("led_wan_gpio", 27|GPIO_ACTIVE_LOW);
 		nvram_set("ehci_ports", "1-1 1-2");
 		nvram_set("ohci_ports", "2-1 2-2");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 			add_rc_support("mssid");
 		add_rc_support("2.4G update usbX2");
@@ -1690,8 +1690,8 @@ int init_nvram(void)
 #endif
 		nvram_set("ehci_ports", "1-1 1-2");
 		nvram_set("ohci_ports", "2-1 2-2");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 		add_rc_support("mssid");
@@ -1727,8 +1727,8 @@ int init_nvram(void)
 
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
-//		if(!nvram_get("ct_max"))
-		nvram_set("ct_max", "300000"); // force
+//		if(!nvram_get("ct_max_default"))
+		nvram_set("ct_max_default", "300000"); // force
 
 		if (nvram_match("wl_mssid", "1"))
 		add_rc_support("mssid");
@@ -1755,7 +1755,7 @@ int init_nvram(void)
 		nvram_set_int("led_lan_gpio", 39|GPIO_ACTIVE_LOW);
 		nvram_set_int("led_wps_gpio", 72|GPIO_ACTIVE_LOW);
 
-		nvram_set("ct_max", "300000"); // force
+		nvram_set("ct_max_default", "300000"); // force
 
 		add_rc_support("2.4G update");
 		add_rc_support("rawifi");
@@ -1788,7 +1788,7 @@ int init_nvram(void)
 
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
-		nvram_set("ct_max", "300000"); // force
+		nvram_set("ct_max_default", "300000"); // force
 
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 			add_rc_support("mssid");
@@ -1826,7 +1826,7 @@ int init_nvram(void)
 
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
-		nvram_set("ct_max", "300000"); // force
+		nvram_set("ct_max_default", "300000"); // force
 
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 			add_rc_support("mssid");
@@ -1908,8 +1908,8 @@ int init_nvram(void)
 		nvram_set("ehci_ports", "1-1 1-2");
 		nvram_set("ohci_ports", "2-1 2-2");
 
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 
 		if (nvram_get("wl_mssid") && nvram_match("wl_mssid", "1"))
 		add_rc_support("mssid");
@@ -2213,8 +2213,8 @@ int init_nvram(void)
 		nvram_set_int("sb/1/ledbh0", 0x82);
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "15000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "15000");
 		add_rc_support("2.4G update mssid usbX1 nomedia");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2286,8 +2286,8 @@ int init_nvram(void)
 		nvram_set("ohci_ports", "2-2 2-1");
 		nvram_set("boardflags", "0x310");
 		nvram_set("sb/1/boardflags", "0x310");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("2.4G update usbX2 mssid");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2314,8 +2314,8 @@ int init_nvram(void)
 		nvram_unset("vlan2ports");
 		nvram_unset("vlan2hwname");
 		/* end */
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "2048");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "2048");
 
 		add_rc_support("2.4G 5G update mssid no5gmssid");
 #ifdef RTCONFIG_WLAN_LED
@@ -2411,8 +2411,8 @@ int init_nvram(void)
 		}
 #endif
 
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("mssid 2.4G update usbX2");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2500,8 +2500,8 @@ int init_nvram(void)
 		}
 #endif
 
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("mssid 2.4G 5G update usbX1");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2619,8 +2619,8 @@ int init_nvram(void)
 		}
 #endif
 
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("mssid 2.4G 5G update usbX2");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2736,8 +2736,8 @@ int init_nvram(void)
 		}
 #endif
 
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("mssid 2.4G 5G update usbX2");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2858,8 +2858,8 @@ int init_nvram(void)
 		}
 #endif
 
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("mssid 2.4G 5G update usbX2");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -2953,8 +2953,8 @@ int init_nvram(void)
 			nvram_set("ehci_ports", "1-1.2 1-1.1");
 			nvram_set("ohci_ports", "2-1.2 2-1.1");
 		}
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("mssid 2.4G 5G update usbX2");
 		add_rc_support("switchctrl"); // broadcom: for jumbo frame only
 		add_rc_support("manual_stb");
@@ -3041,8 +3041,8 @@ int init_nvram(void)
 #endif
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "2048");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "2048");
 		add_rc_support("2.4G mssid media usbX1 update");
 		break;
 
@@ -3104,8 +3104,8 @@ int init_nvram(void)
 		nvram_set_int("led_usb_gpio", 8);
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "2048");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "2048");
 		add_rc_support("2.4G mssid usbX1 update nomedia");
 		break;
 
@@ -3168,9 +3168,9 @@ int init_nvram(void)
 		nvram_set_int("led_wps_gpio", 7);
 		nvram_set("sb/1/maxp2ga0", "0x52");
 		nvram_set("sb/1/maxp2ga1", "0x52");
-		if(!nvram_get("ct_max")) {
+		if(!nvram_get("ct_max_default")) {
 			if (model == MODEL_RTN10D1)
-				nvram_set_int("ct_max", 1024);
+				nvram_set_int("ct_max_default", 1024);
 		}
 		add_rc_support("2.4G mssid");
 #ifdef RTCONFIG_KYIVSTAR
@@ -3247,8 +3247,8 @@ int init_nvram(void)
 		nvram_set_int("btn_rst_gpio",22|GPIO_ACTIVE_LOW);
 		nvram_set("ehci_ports", "1-1.4");
 		nvram_set("ohci_ports", "2-1.4");
-		if(!nvram_get("ct_max"))
-			nvram_set("ct_max", "300000");
+		if(!nvram_get("ct_max_default"))
+			nvram_set("ct_max_default", "300000");
 		add_rc_support("2.4G 5G mssid usbX1 update");
 		add_rc_support("switchctrl");
 		break;
@@ -3257,6 +3257,10 @@ int init_nvram(void)
 		cprintf("############################ unknown model #################################\n");
 		break;
 	}
+
+	// Initialize working variable name for max tcp connections
+	if(!nvram_get("ct_max"))
+		nvram_set("ct_max", nvram_get("ct_max_default"));
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
