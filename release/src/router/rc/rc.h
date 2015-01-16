@@ -758,6 +758,7 @@ extern int service_main(int argc, char *argv[]);
 void start_cstats(int new);
 void restart_cstats(void);
 void stop_cstats(void);
+int ddns_custom_updated_main(int argc, char *argv[]);
 
 // lan.c
 extern void set_device_hostname(void);

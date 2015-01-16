@@ -169,11 +169,19 @@ that.
 
 ** User scripts **
 These are shell scripts that you can create, and which will be run when 
-certain events occur.  Those scripts must be saved in /jffs/scripts/ 
+certain events occur.  Those scripts must be saved in /jffs/scripts/
 (so, JFFS must be enabled and formatted).  Available scripts:
 
- * dhcpc-event: Called whenever a DHCP event occurs on the WAN 
-                interface.  The type of event (bound, release, etc...) 
+ * ddns-start: Script called at the end of a DDNS update process.
+               This script is also called when setting the DDNS type
+               to "Custom".  The script gets passed the WAN IP as
+               an argument.
+               When handling a "Custom" DDNS, this script is also
+               responsible for reporting the success or failure
+               of the update process.  See the Custom DDNS section
+               below for more information.
+ * dhcpc-event: Called whenever a DHCP event occurs on the WAN
+                interface.  The type of event (bound, release, etc...)
                 is passed as an argument.
  * firewall-start: Firewall is started (filter rules have been applied)
                    The WAN interface will be passed as argument (for 
@@ -559,6 +567,40 @@ the project's website:
 http://l7-filter.clearfoundation.com/
 
 
+
+** Custom DDNS **
+If you set the DDNS (dynamic DNS) service to "Custom", then you will be able
+to fully control the update process through a ddns-start user script.  That
+script could launch a custom DDNS update client, or run a simple "wget" on
+a provider's update URL.  The ddns-start script will be passed the WAN IP
+as an argument.
+
+Note that the script will also be responsible for notifying the firmware on
+the success or failure of the process.  To do this you must simply
+run the following command:
+
+   /sbin/ddns_custom_updated 0|1
+
+0 = failure, 1 = successful update
+
+If you cannot determine the success or failure, then report it as a
+success to ensure that the firmware won't continuously try to
+force an update.
+
+Here is a working example, for afraid.org's free DDNS (you must update
+the URL to use your private API key from afraid.org):
+
+-----
+    #!/bin/sh
+
+    wget -q http://freedns.afraid.org/dynamic/update.php?your-private-key-goes-here -O - >/dev/null
+
+    if [ $? -eq 0 ]; then
+        /sbin/ddns_custom_updated 1
+    else
+        /sbin/ddns_custom_updated 0
+    fi
+-----
 
 
 
