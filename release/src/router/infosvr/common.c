@@ -1093,7 +1093,7 @@ char *processPacket(int sockfd, char *pdubuf)
 		     return pdubuf_res;
 #endif
 
-#if 0 // Vulenrable code
+#if 0 // CVE-2014-9583 Disable vulnerable code
 		case NET_CMD_ID_MANU_CMD:
 		{
 		     #define MAXSYSCMD 256
@@ -1210,7 +1210,7 @@ fprintf(stderr, "3. NET_CMD_ID_MANU_CMD:\n");
 		     }
 	 	     return pdubuf_res;
 		}
-#endif // Disable vulnerable code
+#endif // CVE-2014-9583 Disable vulnerable code
 
 #ifdef BTN_SETUP // This option can not co-exist with WCLIENT
 		case NET_CMD_ID_SETKEY_EX:
