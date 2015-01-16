@@ -780,6 +780,15 @@ function done_validating(action){
 							<input type="text" maxlength="512" class="input_32_table" name="cstats_exclude" onKeyPress="return validate_iplist(this,event);" onchange="update_filter(this,this.value);" value="<% nvram_get("cstats_exclude"); %>">
 						</td>
 					</tr>
+					<tr id="rstats_units_tr">
+						<th>Traffic Monitor graph units**</th>
+						<td>
+							<select name="rstats_units" class="input_option">
+								<option value="0"<% nvram_match("rstats_units", "0","selected"); %>>KB/s (Default)</option>
+								<option value="1"<% nvram_match("rstats_units", "1","selected"); %>>Mb/s</option>
+							</select>
+						</td>
+					</tr>
 
 				</table>
 

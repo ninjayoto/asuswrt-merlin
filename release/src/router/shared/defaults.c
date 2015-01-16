@@ -1365,6 +1365,7 @@ struct nvram_tuple router_defaults[] = {
 	{"rstats_exclude", ""},
 	{"rstats_sshut", "1"},
 	{"rstats_bak", "0"},
+	{"rstats_units", "0"},
 
 	/* IPTraffic traffic monitor */
 	{ "cstats_enable", "0"},
