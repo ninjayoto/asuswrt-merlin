@@ -2168,7 +2168,7 @@ void find_dms_dbdir(char *dbdir)
 
 	/* find the first write-able directory */
 	if(!found && find_dms_dbdir_candidate(dbdir_t)) {
-      		sprintf(dbdir, "%s/minidlna", dbdir_t);
+		sprintf(dbdir, "%s/.minidlna", dbdir_t);
 		found = 1;
 	}
 
@@ -2289,9 +2289,9 @@ void start_dms(void)
 						continue;
 
 					if (dirlist[i][strlen(dirlist[i])-1]=='/')
-						sprintf(dbdir, "%sminidlna", dirlist[i]);
+						sprintf(dbdir, "%s.minidlna", dirlist[i]);
 					else
-						sprintf(dbdir, "%s/minidlna", dirlist[i]);
+						sprintf(dbdir, "%s/.minidlna", dirlist[i]);
 
 					break;
 				}
