@@ -1655,7 +1655,7 @@ start_default_filter(int lanunit)
 	fprintf(fp, "-A INPUT -i lo -m state --state NEW -j ACCEPT\n");
 	fprintf(fp, "-A INPUT -i br0 -m state --state NEW -j ACCEPT\n");
 	fprintf(fp, "-A INPUT -j DROP\n");
-	fprintf(fp, "-A FORWARD -m state --state INVALID -j DROP\n");
+	//fprintf(fp, "-A FORWARD -m state --state INVALID -j DROP\n");
 	fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT\n");
 	fprintf(fp, "-A FORWARD -i br0 -o br0 -j ACCEPT\n");
 	fprintf(fp, "-A FORWARD -i lo -o lo -j ACCEPT\n");
@@ -2388,12 +2388,12 @@ TRACE_PT("writing Parental Control\n");
 // oleg patch ~
 	/* Drop the wrong state, INVALID, packets */
 	fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
-#if 0
+//#if 0
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
 	fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 #endif
-#endif
+//#endif
 	if (strlen(macaccept)>0)
 	{
 		fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
@@ -3370,12 +3370,12 @@ TRACE_PT("writing Parental Control\n");
 // oleg patch ~
 	/* Drop the wrong state, INVALID, packets */
 	fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
-#if 0
+//#if 0
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
 	fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 #endif
-#endif
+//#endif
 	if (strlen(macaccept)>0)
 	{
 		fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
