@@ -67,4 +67,5 @@ crypto/*/*.S
 crypto/*/*.s
 Makefile
 crypto/opensslconf.h
+crypto/objects/obj_xref.h
 
