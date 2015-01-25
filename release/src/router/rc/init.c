@@ -801,6 +801,7 @@ restore_defaults(void)
 		fprintf(stderr, "done\n");
 	}
 #ifdef RTCONFIG_BCMARM
+#if 0  //Disable reset of Beamforming options
 	if (!nvram_match("extendno_org", nvram_safe_get("extendno")))
 	{
 		dbg("Reset TxBF settings...\n");
@@ -811,7 +812,7 @@ restore_defaults(void)
 		nvram_set("wl1_itxbf", "1");
 		nvram_commit();
 	}
-
+#endif
 #ifdef RTCONFIG_BCMFA
 	fa_mode_init();
 #endif
