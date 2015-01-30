@@ -168,48 +168,66 @@ function validForm(){
 	if(document.form.ddns_enable_x[0].checked){		//ddns enable
 		if(document.form.ddns_server_x.selectedIndex == 0){		//WWW.ASUS.COM	
 			if(document.form.DDNSName.value == ""){
-					alert("<#LANHostConfig_x_DDNS_alarm_14#>");
+				alert("<#LANHostConfig_x_DDNS_alarm_14#>");
+				document.form.DDNSName.focus();
+				document.form.DDNSName.select();
+				return false;
+			}else{
+				if(!validate_ddns_hostname(document.form.DDNSName)){
 					document.form.DDNSName.focus();
 					document.form.DDNSName.select();
 					return false;
-			}else{
-					if(!validate_ddns_hostname(document.form.DDNSName)){
-							document.form.DDNSName.focus();
-							document.form.DDNSName.select();				
-							return false;
-					}
-					return true;		
+				}
+				return true;
 			}
 		}else{
 
 			if(!validate_range(document.form.ddns_refresh_x, 0, 365))
 				return false;
-		
+
 			if(document.form.ddns_hostname_x.value == ""){
-					alert("<#LANHostConfig_x_DDNS_alarm_14#>");
-					document.form.ddns_hostname_x.focus();
-					document.form.ddns_hostname_x.select();
-					return false;
+				alert("<#LANHostConfig_x_DDNS_alarm_14#>");
+				document.form.ddns_hostname_x.focus();
+				document.form.ddns_hostname_x.select();
+				return false;
 			}else if(!validate_string(document.form.ddns_hostname_x)){
 					return false;
 			}
-			
-			if(document.form.ddns_username_x.value == ""){
+
+			if(document.form.ddns_server_x.selectedIndex != 9){             // Not CUSTOM
+				if(document.form.ddns_username_x.value == ""){
 					alert("<#QKSet_account_nameblank#>");
 					document.form.ddns_username_x.focus();
 					document.form.ddns_username_x.select();
 					return false;
-			}else if(!validate_string(document.form.ddns_username_x)){
+				}else if(!validator.string(document.form.ddns_username_x)){
 					return false;
-			}
+				}
 			
-			if(document.form.ddns_passwd_x.value == ""){
+				if(document.form.ddns_username_x.value == ""){
+					alert("<#QKSet_account_nameblank#>");
+					document.form.ddns_username_x.focus();
+					document.form.ddns_username_x.select();
+					return false;
+				}else if(!validate_string(document.form.ddns_username_x)){
+					return false;
+				}
+			
+				if(document.form.ddns_passwd_x.value == ""){
 					alert("<#File_Pop_content_alert_desc6#>");
 					document.form.ddns_passwd_x.focus();
 					document.form.ddns_passwd_x.select();
 					return false;
-			}else if(!validate_string(document.form.ddns_passwd_x)){
+				}else if(!validator.string(document.form.ddns_passwd_x)){
 					return false;
+				}
+			}
+
+			if(document.form.ddns_regular_period.value < 30){
+				alert(Untranslated.period_time_validation + " : 30");
+				document.form.ddns_regular_period.focus();
+				document.form.ddns_regular_period.select();
+				return false;
 			}
 		
 			return true;
@@ -361,7 +379,7 @@ function cleandef(){
                     			<option value="WWW.DYNDNS.ORG" <% nvram_match("ddns_server_x", "WWW.DYNDNS.ORG","selected"); %>>WWW.DYNDNS.ORG</option>
                     			<option value="WWW.DYNDNS.ORG(CUSTOM)" <% nvram_match("ddns_server_x", "WWW.DYNDNS.ORG(CUSTOM)","selected"); %>>WWW.DYNDNS.ORG(CUSTOM)</option>
                     			<option value="WWW.DYNDNS.ORG(STATIC)" <% nvram_match("ddns_server_x", "WWW.DYNDNS.ORG(STATIC)","selected"); %>>WWW.DYNDNS.ORG(STATIC)</option>
-                    			<option value="WWW.TZO.COM" <% nvram_match("ddns_server_x", "WWW.TZO.COM","selected"); %>>WWW.TZO.COM</option>
+<!--                    			<option value="WWW.TZO.COM" <% nvram_match("ddns_server_x", "WWW.TZO.COM","selected"); %>>WWW.TZO.COM</option> -->
                     			<option value="WWW.ZONEEDIT.COM" <% nvram_match("ddns_server_x", "WWW.ZONEEDIT.COM","selected"); %>>WWW.ZONEEDIT.COM</option>
                     			<option value="WWW.DNSOMATIC.COM" <% nvram_match("ddns_server_x", "WWW.DNSOMATIC.COM","selected"); %>>WWW.DNSOMATIC.COM</option>
                     			<option value="WWW.TUNNELBROKER.NET" <% nvram_match("ddns_server_x", "WWW.TUNNELBROKER.NET","selected"); %>>WWW.TUNNELBROKER.NET</option>
