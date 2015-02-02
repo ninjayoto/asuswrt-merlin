@@ -642,6 +642,12 @@ static void timestamp_and_log(int pri, char *msg, int len)
 	}
 	timestamp[15] = '\0';
 
+	/* update hostname if not yet assigned */
+	if (strcmp(G.hostname, "(none)") == 0 ) {
+		G.hostname = safe_gethostname();
+		*strchrnul(G.hostname, '.') = '\0';
+	}
+
 	if (option_mask32 & OPT_small)
 		sprintf(G.printbuf, "%s %s\n", timestamp, msg);
 	else {
