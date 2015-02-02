@@ -2576,9 +2576,10 @@ start_syslogd(void)
 	char syslog_path[PATH_MAX];
 	char *syslogd_argv[] = {"syslogd",
 		"-m", "0",				/* disable marks */
-		"-S",					/* small log */
+//		"-S",					/* small log */
 //		"-D",					/* suppress dups */
 		"-O", syslog_path,			/* /tmp/syslog.log or /jffs/syslog.log */
+		NULL,					/* -S small log */
 		NULL, NULL,				/* -s log_size */
 		NULL, NULL,				/* -l log_level */
 		NULL, NULL,				/* -R log_ipaddr[:port] */
@@ -2594,6 +2595,10 @@ start_syslogd(void)
 
 	for (argc = 0; syslogd_argv[argc]; argc++);
 
+	// add small log var
+	if (nvram_invmatch("log_small", "0")) {
+                syslogd_argv[argc++] = "-S";
+        }
 	if (nvram_invmatch("log_size", "")) {
 		syslogd_argv[argc++] = "-s";
 		syslogd_argv[argc++] = nvram_safe_get("log_size");

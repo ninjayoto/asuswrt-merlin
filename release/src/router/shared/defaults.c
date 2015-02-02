@@ -1146,6 +1146,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "log_ipaddr", ""},
 	{ "log_port", "514"},
 	{ "log_size", "256"},
+	{ "log_small", "1"},		/* <  SMALL LOG */
 	{ "log_level", "7" },		/* <  LOG_DEBUG */
 	{ "console_loglevel", "5"},	/* <  KERN_INFO */
 
