@@ -584,7 +584,7 @@ function check_ampdu_rts(){
 							</select>			
 						</td>
 				  </tr>
-					<tr id="wl_rf_enable">
+					<tr id="wl_rf_enable" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 1);"><#WLANConfig11b_x_RadioEnable_itemname#></a></th>
 			  			<td>
 			  				<input type="radio" value="1" name="wl_radio" class="input" onClick="control_TimeField(1);" <% nvram_match("wl_radio", "1", "checked"); %>><#checkbox_Yes#>
@@ -592,7 +592,7 @@ function check_ampdu_rts(){
 			  			</td>
 					</tr>
 
-					<tr id="wl_sched_enable">
+					<tr id="wl_sched_enable" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 23);"><#WLANConfig11b_x_SchedEnable_itemname#></a></th>
 			  			<td>
 			  				<input type="radio" value="1" name="wl_timesched" class="input" onClick="control_TimeField();return change_common_radio(this, 'WLANConfig11b', 'wl_timesched', '1');" <% nvram_match("wl_timesched", "1", "checked"); %>><#checkbox_Yes#>
@@ -600,7 +600,7 @@ function check_ampdu_rts(){
 			  			</td>
 					</tr>
 
-					<tr id="enable_date_week_tr">
+					<tr id="enable_date_week_tr" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 2);"><#WLANConfig11b_x_RadioEnableDate_itemname#> (week days)</a></th>
 			  			<td>
 								
@@ -612,7 +612,7 @@ function check_ampdu_rts(){
 							<span id="blank_warn" style="display:none;"><#JS_Shareblanktest#></span>	
 			  			</td>
 					</tr>
-					<tr id="enable_time_week_tr" >
+					<tr id="enable_time_week_tr" class="rept">
 			  			<th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(3, 3);"><#WLANConfig11b_x_RadioEnableTime_itemname#></a></th>
 			  			<td>
 			  				<input type="text" maxlength="2" class="input_3_table" name="wl_radio_time_x_starthour" onKeyPress="return is_number(this,event)" onblur="validate_timerange(this, 0);" > :
@@ -621,7 +621,7 @@ function check_ampdu_rts(){
 							<input type="text" maxlength="2" class="input_3_table" name="wl_radio_time_x_endmin" onKeyPress="return is_number(this,event)" onblur="validate_timerange(this, 3);">
 						</td>
 					</tr>
-					<tr id="enable_date_weekend_tr">
+					<tr id="enable_date_weekend_tr" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 2);"><#WLANConfig11b_x_RadioEnableDate_itemname#> (weekend)</a></th>
 			  			<td>
 							<input type="checkbox" class="input" name="wl_radio_date_x_Sat" onclick="check_Timefield_checkbox()"><#date_Sat_itemdesc#>
@@ -629,7 +629,7 @@ function check_ampdu_rts(){
 							<span id="blank_warn" style="display:none;"><#JS_Shareblanktest#></span>	
 			  			</td>
 					</tr>
-					<tr id="enable_time_weekend_tr">
+					<tr id="enable_time_weekend_tr" class="rept">
 			  			<th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(3, 3);"><#WLANConfig11b_x_RadioEnableTime_itemname#></a></th>
 			  			<td>
 			  				<input type="text" maxlength="2" class="input_3_table" name="wl_radio_time2_x_starthour" onKeyPress="return is_number(this,event)" onblur="validate_timerange(this, 0);"> :
@@ -647,7 +647,7 @@ function check_ampdu_rts(){
 			  			</td>
 					</tr>
 					
-					<tr id="wl_rate">
+					<tr id="wl_rate" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 6);"><#WLANConfig11b_DataRateAll_itemname#></a></th>
 			  			<td>
 							<select name="wl_rate" class="input_option">
@@ -692,7 +692,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>
-					<tr id="wl_mrate_select">
+					<tr id="wl_mrate_select" class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 7);"><#WLANConfig11b_MultiRateAll_itemname#></a></th>
 						<td>
 							<select name="wl_mrate_x" class="input_option">
@@ -700,7 +700,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>
-					<tr style="display:none;">
+					<tr style="display:none;" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 8);"><#WLANConfig11b_DataRate_itemname#></a></th>
 			  			<td>
 			  				<select name="wl_rateset" class="input_option">
@@ -710,7 +710,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,20);"><#WLANConfig11n_PremblesType_itemname#></a></th>
 						<td>
 						<select name="wl_plcphdr" class="input_option">
@@ -720,13 +720,13 @@ function check_ampdu_rts(){
 						</select>
 						</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 9);"><#WLANConfig11b_x_Frag_itemname#></a></th>
 			  			<td>
 			  				<input type="text" maxlength="4" name="wl_frag" id="wl_frag" class="input_6_table" value="<% nvram_get("wl_frag"); %>" onKeyPress="return is_number(this,event)">
 						</td>
 					</tr>
-					<tr id='ampdu_rts_tr'>
+					<tr id="ampdu_rts_tr" class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,30);">AMPDU RTS</a></th>
 						<td>
 							<select name="wl_ampdu_rts" class="input_option" onchange="check_ampdu_rts();">
@@ -735,25 +735,25 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>
-					<tr id="rts_threshold">
+					<tr id="rts_threshold" class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 10);"><#WLANConfig11b_x_RTS_itemname#></a></th>
 			  			<td>
 			  				<input type="text" maxlength="4" name="wl_rts" class="input_6_table" value="<% nvram_get("wl_rts"); %>" onKeyPress="return is_number(this,event)">
 			  			</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 			  			<th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(3, 11);"><#WLANConfig11b_x_DTIM_itemname#></a></th>
 						<td>
 			  				<input type="text" maxlength="3" name="wl_dtim" class="input_6_table" value="<% nvram_get("wl_dtim"); %>" onKeyPress="return is_number(this,event)">
 						</td>			  
 					</tr>
-					<tr>
+					<tr class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 12);"><#WLANConfig11b_x_Beacon_itemname#></a></th>
 						<td>
 							<input type="text" maxlength="4" name="wl_bcn" class="input_6_table" value="<% nvram_get("wl_bcn"); %>" onKeyPress="return is_number(this,event)">
 						</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 13);"><#WLANConfig11b_x_TxBurst_itemname#></a></th>
 						<td>
 							<select name="wl_frameburst" class="input_option">
@@ -762,7 +762,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>
-					<tr id="PktAggregate"><!-- RaLink Only -->
+					<tr id="PktAggregate" class="rept"><!-- RaLink Only -->
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 16);"><#WLANConfig11b_x_PktAggregate_itemname#></a></th>
 						<td>
 							<select name="wl_PktAggregate" class="input_option">
@@ -773,7 +773,7 @@ function check_ampdu_rts(){
 					</tr>
 
 					<!-- WMM setting start  -->
-					<tr>
+					<tr class="rept">
 			  			<th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(3, 14);"><#WLANConfig11b_x_WMM_itemname#></a></th>
 			  			<td>
 							<select name="wl_wme" id="wl_wme" class="input_option" onChange="enable_wme_check(this);">			  	  				
@@ -783,7 +783,7 @@ function check_ampdu_rts(){
 							</select>
 			  			</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 			  			<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,15);"><#WLANConfig11b_x_NOACK_itemname#></a></th>
 			  			<td>
 							<select name="wl_wme_no_ack" id="wl_wme_no_ack" class="input_option">
@@ -792,7 +792,7 @@ function check_ampdu_rts(){
 							</select>
 			  			</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,17);"><#WLANConfig11b_x_APSD_itemname#></a></th>
 						<td>
                   				<select name="wl_wme_apsd" class="input_option">
@@ -803,7 +803,7 @@ function check_ampdu_rts(){
 					</tr>					
 					<!-- WMM setting end  -->
 
-					<tr id="DLSCapable"> <!-- RaLink Only  -->
+					<tr id="DLSCapable" class="rept"> <!-- RaLink Only  -->
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,18);"><#WLANConfig11b_x_DLS_itemname#></a></th>
 						<td>
 							<select name="wl_DLSCapable" class="input_option">
@@ -813,7 +813,7 @@ function check_ampdu_rts(){
 						</td>
 					</tr>
 
-					<tr> <!-- BRCM SDK 5.x Only  -->
+					<tr class="rept"> <!-- BRCM SDK 5.x Only  -->
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,21);"><#WLANConfig11b_x_EnhanInter_itemname#></a></th>
 						<td>
 							<select name="wl_noisemitigation" class="input_option" onChange="">
@@ -823,7 +823,7 @@ function check_ampdu_rts(){
 						</td>
 					</tr>
 
-					<tr> <!-- MODELDEP: RT-AC68U / RT-AC68U_V2 / RT-AC69U /DSL-AC68U Only  -->
+					<tr class="rept"> <!-- MODELDEP: RT-AC68U / RT-AC68U_V2 / RT-AC69U /DSL-AC68U Only  -->
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,29);"><#WLANConfig11b_x_ReduceUSB3#></a></th>
 						<td>
 							<select name="usb_usb3" class="input_option">
@@ -834,7 +834,7 @@ function check_ampdu_rts(){
 					</tr>
 					
 					<!-- [MODELDEP] for Broadcom SDK 6.x -->
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,26);"><#WLANConfig11b_x_AMPDU#></a></th>
 						<td>
 							<select name="wl_ampdu_mpdu" class="input_option">
@@ -843,7 +843,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>					
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,27);"><#WLANConfig11b_x_ACK#></a></th>
 						<td>
 							<select name="wl_ack_ratio" class="input_option">
@@ -852,7 +852,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,28);"><#WLANConfig11b_x_TurboQAM#></a></th>
 						<td>
 							<select name="wl_turbo_qam" class="input_option">
@@ -863,7 +863,7 @@ function check_ampdu_rts(){
 					</tr>
 					<!-- [MODELDEP] end -->
 
-					<tr>
+					<tr class="rept">
 						<th><a id="wl_txbf_desc" class="hintstyle" href="javascript:void(0);" onClick="openHint(3,24);">Explicit Beamforming</a></th>
 						<td>
 							<select name="wl_txbf" class="input_option">
@@ -872,7 +872,7 @@ function check_ampdu_rts(){
 							</select>
 						</td>
 					</tr>					
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,25);">Universal Beamforming</a></th>
 						<td>
 							<select name="wl_itxbf" class="input_option" disabled>
@@ -882,7 +882,7 @@ function check_ampdu_rts(){
 						</td>
 					</tr>					
 
-					<tr>
+					<tr class="rept">
 						<th>Regulation mode</th>
 						<td>
 							<select name="wl_reg_mode" class="input_option">
@@ -893,7 +893,7 @@ function check_ampdu_rts(){
 					</tr>					
 
 					<!-- BRCM Only : By Viz 2013.05 -->
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(0, 17);"><#WLANConfig11b_TxPower_itemname#></a></th>
 						<td>
 		  				<input type="text" maxlength="3" name="wl_TxPower" class="input_3_table" value="<% nvram_get("wl_TxPower"); %>" onKeyPress="return is_number(this, event);"> mW
@@ -906,7 +906,7 @@ function check_ampdu_rts(){
 					</tr>
 					
 					<!-- RaLink Only : By Viz 2013.05 -->
-					<tr>
+					<tr class="rept">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(0, 16);"><#WLANConfig11b_TxPower_itemname#></a></th>
 						<td>
 		  				<input type="text" maxlength="3" name="wl_TxPower_ra" class="input_3_table" value="<% nvram_get("wl_TxPower"); %>" onKeyPress="return is_number(this, event);"> %
