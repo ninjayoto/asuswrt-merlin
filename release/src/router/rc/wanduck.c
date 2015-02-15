@@ -845,15 +845,7 @@ void handle_wan_line(int wan_unit, int action){
 
 	// Redirect rules.
 	if(action){
-		memset(prefix_wan, 0, 8);
-		sprintf(prefix_wan, "wan%d_", wan_unit);
-
-		memset(wan_proto, 0, 16);
-		strcpy(wan_proto, nvram_safe_get(strcat_r(prefix_wan, "proto", nvram_name)));
-
-		if((strcmp(wan_proto, "pptp")) && (strcmp(wan_proto, "l2tp"))){
-			stop_nat_rules();
-		}
+		stop_nat_rules();
 	}
 	/*
 	 * When C2C and remove the redirect rules,
@@ -2099,7 +2091,7 @@ int wanduck_main(int argc, char *argv[]){
 #ifdef RTCONFIG_DSL /* Paul add 2012/10/18 */
 					led_control(LED_WAN, LED_OFF);
 #endif
-					csprintf("\n# Enable direct rule if not tunnelled (C2D)\n");
+					csprintf("\n# Enable direct rule(C2D)\n");
 				}
 				else
 					csprintf("\n# Enable direct rule(isFirstUse)\n");
@@ -2148,7 +2140,7 @@ int wanduck_main(int argc, char *argv[]){
 #ifdef RTCONFIG_DSL /* Paul add 2013/7/30 */
 				led_control(LED_WAN, LED_ON);
 #endif
-				csprintf("\n# Disable direct rule if not tunnelled (D2C)\n");
+				csprintf("\n# Disable direct rule(D2C)\n");
 				rule_setup = 0;
 				handle_wan_line(current_wan_unit, rule_setup);
 			}
