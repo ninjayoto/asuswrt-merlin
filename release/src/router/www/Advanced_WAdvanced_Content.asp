@@ -156,6 +156,8 @@ function initial(){
 		}	
 	}
 
+	$("TxDomain").innerHTML = "(" + document.form.wl_country_code.value + "/" + document.form.wl_country_rev.value + ")";
+
 	var mcast_rate = '<% nvram_get("wl_mrate_x"); %>';
 	var mcast_unit = '<% nvram_get("wl_unit"); %>';
 	for (var i = 0; i < mcast_rates.length; i++) {
@@ -552,6 +554,8 @@ function check_ampdu_rts(){
 <input type="hidden" name="wl_amsdu" value="<% nvram_get("wl_amsdu"); %>">
 <input type="hidden" name="wl_TxPower_orig" value="<% nvram_get("wl_TxPower"); %>" disabled>
 <input type="hidden" name="wl0_country_code" value="<% nvram_get("wl0_country_code"); %>" disabled>
+<input type="hidden" name="wl_country_code" value="<% nvram_get("wl_country_code"); %>" disabled>
+<input type="hidden" name="wl_country_rev" value="<% nvram_get("wl_country_rev"); %>" disabled>
 <input type="hidden" name="wl_HW_switch" value="<% nvram_get("wl_HW_switch"); %>" disabled>
 <table class="content" align="center" cellpadding="0" cellspacing="0">
 	<tr>
@@ -907,6 +911,7 @@ function check_ampdu_rts(){
 										<#WLANConfig11b_x_maxtxpower1#>
 										<span id="maxTxPower">200</span>mW
 										<#WLANConfig11b_x_maxtxpower2#>
+										<span id="TxDomain"></span>
 									</span>
 						</td>
 					</tr>
