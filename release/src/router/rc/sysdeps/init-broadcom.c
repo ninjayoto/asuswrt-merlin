@@ -4211,17 +4211,17 @@ void generate_wl_para(int unit, int subunit)
 		if (unit) {
 			if (	((get_model() == MODEL_RTAC68U || get_model() == MODEL_DSLAC68U) &&
 				nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-				nvram_match(strcat_r(prefix, "reg_mode", tmp), "off") &&
-				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) /*||
+				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) ||
 				((get_model() == MODEL_RTAC66U) &&
 				nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) ||
+				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) /*||
 				((get_model() == MODEL_RTN66U) &&
 				nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
 				nvram_match(strcat_r(prefix, "country_rev", tmp), "0"))*/
 			)
 			{
-				nvram_set(strcat_r(prefix, "reg_mode", tmp), "h");
+				if (nvram_match(strcat_r(prefix, "reg_mode", tmp), "off") || nvram_match(strcat_r(prefix, "reg_mode", tmp), "d"))
+					nvram_set(strcat_r(prefix, "reg_mode", tmp), "h");
 			}
 		}
 
