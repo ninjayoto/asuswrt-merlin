@@ -1788,6 +1788,8 @@ int start_networkmap(int bootwait)
 	//if (!is_routing_enabled())
 	//	return 0;
 
+	stop_networkmap();  //backport from 378
+
 	if (bootwait)
 		networkmap_argv[1] = "--bootwait";
 
