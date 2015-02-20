@@ -145,6 +145,7 @@ static void refresh_sig(int sig)
         refresh_exist_table = 0;
 	scan_count = 0;
 	nvram_set("networkmap_status", "1");
+	nvram_set("networkmap_fullscan", "1");
 	eval("rm", "/var/client*");
 #if 0
 	//reset exixt ip table
