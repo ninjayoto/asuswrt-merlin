@@ -2460,7 +2460,8 @@ TRACE_PT("writing Parental Control\n");
 		case IPV6_6IN4:
 		case IPV6_NATIVE_DHCP:
 			// allow responses from the dhcpv6 server
-			fprintf(fp_ipv6, "-A INPUT -p udp --dport 546 -j %s\n", logaccept);
+			fprintf(fp_ipv6, "-A INPUT -p udp --sport 547 --dport 546 -j %s\n", logaccept);	// Add sport
+			fprintf(fp_ipv6, "-A FORWARD -p udp --sport 547 --dport 546 -j %s\n", logaccept); // Replicate rule in FORWARD chain
 			break;
 		}
 
@@ -3442,7 +3443,8 @@ TRACE_PT("writing Parental Control\n");
 		case IPV6_6IN4:
 		case IPV6_NATIVE_DHCP:
 			// allow responses from the dhcpv6 server
-			fprintf(fp_ipv6, "-A INPUT -p udp --dport 546 -j %s\n", logaccept);
+			fprintf(fp_ipv6, "-A INPUT -p udp --sport 547 --dport 546 -j %s\n", logaccept); // Add sport
+                        fprintf(fp_ipv6, "-A FORWARD -p udp --sport 547 --dport 546 -j %s\n", logaccept); // Replicate rule in FORWARD chain
 			break;
 		}
 
