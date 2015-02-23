@@ -538,6 +538,8 @@ void start_dnsmasq(int force)
 		return;
 	}
 
+	stop_dnsmasq(force);
+
 	lan_ifname = nvram_safe_get("lan_ifname");
 #ifdef RTCONFIG_WIRELESSREPEATER
 	if(nvram_get_int("sw_mode") == SW_MODE_REPEATER && nvram_get_int("wlc_state") != WLC_STATE_CONNECTED){
