@@ -1017,6 +1017,14 @@ function pass_checked(obj){
                 <th>Manual clientid (for some ISPs)</th>
                 <td><input type="text" name="wan_dhcpc_options" class="input_32_table" maxlength="128" value="<% nvram_get("wan_dhcpc_options"); %>" onkeypress="return is_string(this, event)"></td>
                 </tr>
+		<tr>
+			<!-- <th><a class="hintstyle" href="javascript:void(0);" onClick=""><#Extend_TTL_Value#></a></th> -->
+			<th>Extend TTL Value</th>
+				<td>
+				<input type="radio" name="ttl_inc_enable" class="input" value="1" <% nvram_match("ttl_inc_enable", "1", "checked"); %>><#checkbox_Yes#>
+				<input type="radio" name="ttl_inc_enable" class="input" value="0" <% nvram_match("ttl_inc_enable", "0", "checked"); %>><#checkbox_No#>
+				</td>
+		</tr>
 		</table>
 	  <div class="apply_gen" style="height:auto">
 			<input class="button_gen" onclick="applyRule();" type="button" value="<#CTL_apply#>"/>

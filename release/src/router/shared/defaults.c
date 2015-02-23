@@ -1841,6 +1841,7 @@ struct nvram_tuple router_state_defaults[] = {
 	{ "nat_state", "0"},
 	{ "link_wan", ""},
 	{ "link_wan1", ""},
+	{ "ttl_inc_enable", "0"},	// enable TTL increment
 #ifdef RTCONFIG_IPV6
 	{ "wan_6rd_router", ""	},
 	{ "wan_6rd_ip4size", ""	},

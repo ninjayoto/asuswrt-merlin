@@ -4126,6 +4126,16 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 	}
 #endif
 
+	/* In Bangladesh, ISPs force the packet TTL as 1 at modem side to block ip sharing.
+	 * Increase the TTL once the packet come at WAN with TTL=1 */
+	if (nvram_match("ttl_inc_enable", "1")) {
+		eval("iptables", "-t", "mangle", "-A", "PREROUTING", "-i", wan_if, "-m", "ttl", "--ttl-eq", "1", "-j", "TTL", "--ttl-set", "64");
+#ifdef RTCONFIG_IPV6
+		if (ipv6_enabled())
+			eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-i", wan_if, "-m", "hl", "--hl-eq", "1", "-j", "HL", "--hl-set", "64");
+#endif
+	}
+
 #ifdef CONFIG_BCMWL5
 	/* mark connect to bypass CTF */
 	if(nvram_match("ctf_disable", "0")) {
@@ -4235,6 +4245,19 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 		}
 	}
 #endif
+
+	/* In Bangladesh, ISPs force the packet TTL as 1 at modem side to block ip sharing.
+	 * Increase the TTL once the packet come at WAN with TTL=1 */
+	if (nvram_match("ttl_inc_enable", "1")) {
+		for (unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; unit++) {
+			wan_if = get_wan_ifname(unit);
+			eval("iptables", "-t", "mangle", "-A", "PREROUTING", "-i", wan_if, "-m", "ttl", "--ttl-eq", "1", "-j", "TTL", "--ttl-set", "64");
+#ifdef RTCONFIG_IPV6
+			if (ipv6_enabled())
+				eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-i", wan_if, "-m", "hl", "--hl-eq", "1", "-j", "HL", "--hl-set", "64");
+#endif
+		}
+	}
 
 #ifdef CONFIG_BCMWL5
 	/* mark connect to bypass CTF */
@@ -4452,6 +4475,12 @@ int start_firewall(int wanunit, int lanunit)
 	}
 #endif
 
+	if(nvram_match("ttl_inc_enable", "1"))
+	{
+		modprobe("xt_HL");
+		modprobe("xt_hl");
+	}
+
 	/* nat setting */
 #ifdef RTCONFIG_DUALWAN // RTCONFIG_DUALWAN
 	if(nvram_match("wans_mode", "lb")){
@@ -4664,6 +4693,12 @@ int start_firewall(int wanunit, int lanunit)
 		modprobe_r("nf_conntrack_ipv6");
 	}
 #endif
+
+	if(nvram_match("ttl_inc_enable", "0"))
+	{
+		modprobe_r("xt_HL");
+		modprobe_r("xt_hl");
+	}
 
 #ifdef RTCONFIG_OPENVPN
 	run_vpn_firewall_scripts();

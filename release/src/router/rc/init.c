@@ -3271,6 +3271,10 @@ int init_nvram(void)
 	if(nvram_get("rstats_units") == NULL)
 		nvram_set("rstats_units", "0");
 
+	// Initialize working variable name ttl_inc
+	if(nvram_get("ttl_inc_enable") == NULL)
+		nvram_set("ttl_inc_enable", "0");
+
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
 		if(!nvram_match("switch_wan0tagid", "") && !nvram_match("switch_wan0tagid", "0"))
