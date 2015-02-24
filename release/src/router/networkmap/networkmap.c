@@ -213,7 +213,8 @@ int main(int argc, char *argv[])
 
 	if (argc > 1) {
 		if (strcmp(argv[1], "--bootwait") == 0) {
-			sleep(30);
+			//sleep(30);
+			sleep(nvram_get_int("reboot_time")/2);
 		}
 	}
 	if (strlen(router_mac)!=0) ether_atoe(router_mac, my_hwaddr);
