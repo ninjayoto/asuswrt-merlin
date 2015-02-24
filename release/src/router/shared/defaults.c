@@ -1035,6 +1035,7 @@ struct nvram_tuple router_defaults[] = {
 #endif
 	{ "misc_ping_x", "0" },
 	{ "misc_lpr_x", "0" },
+	{ "ttl_inc_enable", "0"},       // enable TTL increment
 	{ "DSCP_fix_enable", "0" },
 	
 	// UrlList
@@ -1841,7 +1842,6 @@ struct nvram_tuple router_state_defaults[] = {
 	{ "nat_state", "0"},
 	{ "link_wan", ""},
 	{ "link_wan1", ""},
-	{ "ttl_inc_enable", "0"},	// enable TTL increment
 #ifdef RTCONFIG_IPV6
 	{ "wan_6rd_router", ""	},
 	{ "wan_6rd_ip4size", ""	},
