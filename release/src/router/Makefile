@@ -362,6 +362,8 @@ obj-$(RTCONFIG_WEBDAV) += libexif
 obj-$(RTCONFIG_IXIAEP) += ixia_endpoint$(BCMEX)
 
 # Add for ASUS Components
+obj-y += zlib # for libxml2, curl
+obj-y += curl-7.21.7 # include for all builds
 obj-y += miniupnpd
 obj-y += igmpproxy
 obj-y += udpxy
@@ -843,6 +845,11 @@ ifeq ($(RTCONFIG_QTN),y)
 	install -D qtnimage/topaz-linux.lzma.img $(TARGETDIR)/rom/qtn/topaz-linux.lzma.img
 	install -D qtnimage/u-boot.bin $(TARGETDIR)/rom/qtn/u-boot.bin
 endif
+
+# Default curl install
+	install -D curl-7.21.7/src/.libs/curl $(TARGETDIR)/usr/sbin/curl
+	$(STRIP) $(TARGETDIR)/usr/sbin/curl
+
 ifeq ($(RTCONFIG_BWDPI),y)
 	install -d $(TARGETDIR)/usr/bwdpi/
 	cp -f bwdpi_bin/*.so $(TARGETDIR)/usr/bwdpi/
