@@ -19,6 +19,7 @@ PF_EXT_SLIB+=conntrack
 PF_EXT_SLIB+=layer7
 PF_EXT_SLIB+=set
 PF_EXT_SLIB+=policy
+PF_EXT_SLIB+=webmon
 ifeq ($(CONFIG_LINUX26),y)
 PF_EXT_SLIB+=hashlimit NFQUEUE
 endif
