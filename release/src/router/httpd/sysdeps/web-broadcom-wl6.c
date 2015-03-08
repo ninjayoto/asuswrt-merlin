@@ -1264,7 +1264,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 #endif
 	char ipentry[40], macentry[18];
 	int found;
-	char rxrate[12], txrate[12];
+	char rxrate[12], txrate[12], prtrate[25];
 	char ea[ETHER_ADDR_STR_LEN];
 	scb_val_t scb_val;
 	int is_associated;
@@ -1482,11 +1482,12 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				strcpy(rxrate,"??");
 
 			if ((int)sta->tx_rate > 0)
-				sprintf(txrate,"%d Mbps", sta->tx_rate / 1000);
+				sprintf(txrate,"%d", sta->tx_rate / 1000);
 			else
-				sprintf(rxrate,"??");
+				sprintf(txrate,"??");
 
-			ret += websWrite(wp, "%4s/%-10s", rxrate, txrate);
+			sprintf(prtrate, "%s/%s Mbps ", rxrate, txrate);
+			ret += websWrite(wp, "%15s", prtrate);
 
 // Connect time
 			hr = sta->in / 3600;
@@ -1616,11 +1617,12 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 						strcpy(rxrate,"??");
 
 					if ((int)sta->tx_rate > 0)
-						sprintf(txrate,"%d Mbps", sta->tx_rate / 1000);
+						sprintf(txrate,"%d", sta->tx_rate / 1000);
 					else
-						sprintf(rxrate,"??");
+						sprintf(txrate,"??");
 
-					ret += websWrite(wp, "%4s/%-10s", rxrate, txrate);
+					sprintf(prtrate, "%s/%s Mbps ", rxrate, txrate);
+					ret += websWrite(wp, "%15s", prtrate);
 
 // Connect time
 					hr = sta->in / 3600;
