@@ -1075,68 +1075,68 @@ dump_bss_info(int eid, webs_t wp, int argc, char_t **argv, wl_bss_info_t *bi)
 #endif
 	retval += websWrite(wp, "\n");
 
-	retval += websWrite(wp, "Supported Rates: ");
-	retval += dump_rateset(eid, wp, argc, argv, bi->rateset.rates, dtoh32(bi->rateset.count));
-	retval += websWrite(wp, "\n");
-	if (dtoh32(bi->ie_length))
-		retval += wl_dump_wpa_rsn_ies(eid, wp, argc, argv, (uint8 *)(((uint8 *)bi) + dtoh16(bi->ie_offset)),
-				    dtoh32(bi->ie_length));
+//	retval += websWrite(wp, "Supported Rates: ");
+//	retval += dump_rateset(eid, wp, argc, argv, bi->rateset.rates, dtoh32(bi->rateset.count));
+//	retval += websWrite(wp, "\n");
+//	if (dtoh32(bi->ie_length))
+//		retval += wl_dump_wpa_rsn_ies(eid, wp, argc, argv, (uint8 *)(((uint8 *)bi) + dtoh16(bi->ie_offset)),
+//				    dtoh32(bi->ie_length));
 #ifndef RTCONFIG_QTN
 	if (dtoh32(bi->version) != LEGACY_WL_BSS_INFO_VERSION && bi->n_cap) {
 		if (bi->vht_cap)
 			retval += websWrite(wp, "VHT Capable:\n");
 		else
 			retval += websWrite(wp, "HT Capable:\n");
+		retval += websWrite(wp, "\tPrimary channel: %d\n", bi->ctl_ch);
 		retval += websWrite(wp, "\tChanspec: %sGHz channel %d %dMHz (0x%x)\n",
 			CHSPEC_IS2G(bi->chanspec)?"2.4":"5", CHSPEC_CHANNEL(bi->chanspec),
 		       (CHSPEC_IS80(bi->chanspec) ?
 			80 : (CHSPEC_IS40(bi->chanspec) ?
 			      40 : (CHSPEC_IS20(bi->chanspec) ? 20 : 10))),
 			bi->chanspec);
-		retval += websWrite(wp, "\tPrimary channel: %d\n", bi->ctl_ch);
-		retval += websWrite(wp, "\tHT Capabilities: ");
-		if (dtoh32(bi->nbss_cap) & HT_CAP_40MHZ)
-			retval += websWrite(wp, "40Mhz ");
-		if (dtoh32(bi->nbss_cap) & HT_CAP_SHORT_GI_20)
-			retval += websWrite(wp, "SGI20 ");
-		if (dtoh32(bi->nbss_cap) & HT_CAP_SHORT_GI_40)
-			retval += websWrite(wp, "SGI40 ");
-		retval += websWrite(wp, "\n\tSupported MCS : [ ");
-		for (mcs_idx = 0; mcs_idx < (MCSSET_LEN * 8); mcs_idx++)
-			if (isset(bi->basic_mcs, mcs_idx))
-				retval += websWrite(wp, "%d ", mcs_idx);
-		retval += websWrite(wp, "]\n");
-
-		if (bi->vht_cap) {
-			int i;
-			uint mcs;
-			retval += websWrite(wp, "\tVHT Capabilities: \n");
-			retval += websWrite(wp, "\tSupported VHT (tx) Rates:\n");
-			for (i = 1; i <= VHT_CAP_MCS_MAP_NSS_MAX; i++) {
-				mcs = VHT_MCS_MAP_GET_MCS_PER_SS(i, dtoh16(bi->vht_txmcsmap));
-				if (mcs != VHT_CAP_MCS_MAP_NONE)
-					retval += websWrite(wp, "\t\tNSS: %d MCS: %s\n", i,
-						(mcs == VHT_CAP_MCS_MAP_0_9 ? "0-9" :
-						(mcs == VHT_CAP_MCS_MAP_0_8 ? "0-8" : "0-7")));
-			}
-			retval += websWrite(wp, "\tSupported VHT (rx) Rates:\n");
-			for (i = 1; i <= VHT_CAP_MCS_MAP_NSS_MAX; i++) {
-				mcs = VHT_MCS_MAP_GET_MCS_PER_SS(i, dtoh16(bi->vht_rxmcsmap));
-				if (mcs != VHT_CAP_MCS_MAP_NONE)
-					retval += websWrite(wp, "\t\tNSS: %d MCS: %s\n", i,
-						(mcs == VHT_CAP_MCS_MAP_0_9 ? "0-9" :
-						(mcs == VHT_CAP_MCS_MAP_0_8 ? "0-8" : "0-7")));
-			}
-		}
+//		retval += websWrite(wp, "\tHT Capabilities: ");
+//		if (dtoh32(bi->nbss_cap) & HT_CAP_40MHZ)
+//			retval += websWrite(wp, "40Mhz ");
+//		if (dtoh32(bi->nbss_cap) & HT_CAP_SHORT_GI_20)
+//			retval += websWrite(wp, "SGI20 ");
+//		if (dtoh32(bi->nbss_cap) & HT_CAP_SHORT_GI_40)
+//			retval += websWrite(wp, "SGI40 ");
+//		retval += websWrite(wp, "\n\tSupported MCS : [ ");
+//		for (mcs_idx = 0; mcs_idx < (MCSSET_LEN * 8); mcs_idx++)
+//			if (isset(bi->basic_mcs, mcs_idx))
+//				retval += websWrite(wp, "%d ", mcs_idx);
+//		retval += websWrite(wp, "]\n");
+//
+//		if (bi->vht_cap) {
+//			int i;
+//			uint mcs;
+//			retval += websWrite(wp, "\tVHT Capabilities: \n");
+//			retval += websWrite(wp, "\tSupported VHT (tx) Rates:\n");
+//			for (i = 1; i <= VHT_CAP_MCS_MAP_NSS_MAX; i++) {
+//				mcs = VHT_MCS_MAP_GET_MCS_PER_SS(i, dtoh16(bi->vht_txmcsmap));
+//				if (mcs != VHT_CAP_MCS_MAP_NONE)
+//					retval += websWrite(wp, "\t\tNSS: %d MCS: %s\n", i,
+//						(mcs == VHT_CAP_MCS_MAP_0_9 ? "0-9" :
+//						(mcs == VHT_CAP_MCS_MAP_0_8 ? "0-8" : "0-7")));
+//			}
+//			retval += websWrite(wp, "\tSupported VHT (rx) Rates:\n");
+//			for (i = 1; i <= VHT_CAP_MCS_MAP_NSS_MAX; i++) {
+//				mcs = VHT_MCS_MAP_GET_MCS_PER_SS(i, dtoh16(bi->vht_rxmcsmap));
+//				if (mcs != VHT_CAP_MCS_MAP_NONE)
+//					retval += websWrite(wp, "\t\tNSS: %d MCS: %s\n", i,
+//						(mcs == VHT_CAP_MCS_MAP_0_9 ? "0-9" :
+//						(mcs == VHT_CAP_MCS_MAP_0_8 ? "0-8" : "0-7")));
+//			}
+//		}
 	}
 #endif
-	if (dtoh32(bi->ie_length))
-	{
-		retval += wl_dump_wps(wp, (uint8 *)(((uint8 *)bi) + dtoh16(bi->ie_offset)),
-			dtoh32(bi->ie_length));
-	}
-
-	retval += websWrite(wp, "\n");
+//	if (dtoh32(bi->ie_length))
+//	{
+//		retval += wl_dump_wps(wp, (uint8 *)(((uint8 *)bi) + dtoh16(bi->ie_offset)),
+//			dtoh32(bi->ie_length));
+//	}
+//
+//	retval += websWrite(wp, "\n");
 
 	return retval;
 }
@@ -1331,17 +1331,17 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	{
 		if (nvram_match(strcat_r(prefix, "lazywds", tmp), "1") ||
 			nvram_invmatch(strcat_r(prefix, "wds", tmp), ""))
-			ret += websWrite(wp, "Mode	: Hybrid\n");
-		else	ret += websWrite(wp, "Mode	: AP Only\n");
+			ret += websWrite(wp, "Mode:   Hybrid\n");
+		else	ret += websWrite(wp, "Mode:   AP Only\n");
 	}
 	else if (nvram_match(strcat_r(prefix, "mode", tmp), "wds"))
 	{
-		ret += websWrite(wp, "Mode	: WDS Only\n");
+		ret += websWrite(wp, "Mode:   WDS Only\n");
 		return ret;
 	}
 	else if (nvram_match(strcat_r(prefix, "mode", tmp), "sta"))
 	{
-		ret += websWrite(wp, "Mode	: Stations\n");
+		ret += websWrite(wp, "Mode:   Stations\n");
 		ret += ej_wl_sta_status(eid, wp, name);
 		return ret;
 	}
@@ -1353,7 +1353,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 			&& (nvram_get_int("wlc_band") == unit))
 			sprintf(prefix, "wl%d.%d_", unit, 1);
 #endif
-		ret += websWrite(wp, "Mode	: Repeater [ SSID local: \"%s\" ]\n", nvram_safe_get(strcat_r(prefix, "ssid", tmp)));
+		ret += websWrite(wp, "Mode:   Repeater [ SSID local: \"%s\" ]\n", nvram_safe_get(strcat_r(prefix, "ssid", tmp)));
 //		ret += ej_wl_sta_status(eid, wp, name);
 //		return ret;
 	}
@@ -1363,7 +1363,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 		if ((nvram_get_int("sw_mode") == SW_MODE_AP) &&
 			(nvram_get_int("wlc_psta") == 1) &&
 			(nvram_get_int("wlc_band") == unit))
-		ret += websWrite(wp, "Mode	: Media Bridge\n");
+		ret += websWrite(wp, "Mode:   Media Bridge\n");
 	}
 #endif
 
@@ -1412,10 +1412,10 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 #ifdef RTCONFIG_QTN
  	ret += websWrite(wp, "Stations  (flags: S=Short GI, T=STBC, A=Associated, U=Authenticated)\n");
 #else
-	ret += websWrite(wp, "Stations  (flags: P=Powersave Mode, S=Short GI, T=STBC, A=Associated, U=Authenticated)\n");
+	ret += websWrite(wp, "Stations  (flags: P=Powersave Mode, S=Short GI, T=STBC, A=Associated, U=Auth, G=Guest)\n");
 #endif
 
- 	ret += websWrite(wp, "----------------------------------------\n");
+	ret += websWrite(wp, "----------------------------------------------------------------------------------------\n");
 
 	if (leaselist) {
 		ret += websWrite(wp, "%-18s%-16s%-16s%-8s%-15s%-10s%-5s\n",
@@ -1661,9 +1661,9 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 					}
 				}
 
-				ret += websWrite(wp, "%s%s\n",
+				ret += websWrite(wp, "%s%s%s\n",
 					(is_associated ? "A" : " "),
-					(is_authorized ? "U" : " "));
+					(is_authorized ? "U" : " "), "G");  // Add guest flag
 			}
 		}
 	}
