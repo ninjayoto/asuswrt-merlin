@@ -1017,6 +1017,7 @@ dump_bss_info(int eid, webs_t wp, int argc, char_t **argv, wl_bss_info_t *bi)
 	int mcs_idx = 0;
 #endif
 	int retval = 0;
+	char tmp[8];
 
 	/* Convert version 107 to 109 */
 	if (dtoh32(bi->version) == LEGACY_WL_BSS_INFO_VERSION) {
@@ -1084,12 +1085,14 @@ dump_bss_info(int eid, webs_t wp, int argc, char_t **argv, wl_bss_info_t *bi)
 #ifndef RTCONFIG_QTN
 	if (dtoh32(bi->version) != LEGACY_WL_BSS_INFO_VERSION && bi->n_cap) {
 		if (bi->vht_cap)
-			retval += websWrite(wp, "VHT Capable:\n");
+			retval += websWrite(wp, "VHT Capable\n");
 		else
-			retval += websWrite(wp, "HT Capable:\n");
-		retval += websWrite(wp, "\tPrimary channel: %d\n", bi->ctl_ch);
-		retval += websWrite(wp, "\tChanspec: %sGHz channel %d %dMHz (0x%x)\n",
-			CHSPEC_IS2G(bi->chanspec)?"2.4":"5", CHSPEC_CHANNEL(bi->chanspec),
+			retval += websWrite(wp, "HT Capable\n");
+		snprintf(tmp, sizeof(tmp), "%d", CHSPEC_CHANNEL(bi->chanspec));
+		retval += websWrite(wp, "\tExtension channel: %s\n",
+			(bi->ctl_ch != CHSPEC_CHANNEL(bi->chanspec)) ? tmp : "none");
+		retval += websWrite(wp, "\tChanspec: %sGHz Channel Width %dMHz (0x%x)\n",
+			CHSPEC_IS2G(bi->chanspec)?"2.4":"5",
 		       (CHSPEC_IS80(bi->chanspec) ?
 			80 : (CHSPEC_IS40(bi->chanspec) ?
 			      40 : (CHSPEC_IS20(bi->chanspec) ? 20 : 10))),
