@@ -1143,6 +1143,7 @@ void start_radvd(void)
 	char *p = NULL;
 	char *valid_lifetime, *preferred_lifetime;
 	int decrement_lifetime;
+	int size, stateful;
 
 	if (getpid() != 1) {
 		notify_rc("start_radvd");
@@ -1178,6 +1179,13 @@ void start_radvd(void)
 			else if (nvram_get_int("ipv6_mtu") < 0)
 				mtu = "0";
 			prefix = do_6to4 ? "0:0:0:1::" : nvram_safe_get("ipv6_prefix");
+			if (*prefix == '\0')
+				prefix = "::";
+			stateful = (service == IPV6_NATIVE_DHCP) ?
+				nvram_get_int("ipv6_autoconf_type") : 0;
+			size = nvram_get_int("ipv6_prefix_length") ? : 64;
+			if (size < 64 && !stateful)
+				size = 64;
 			break;
 		}
 		if (!(*prefix) || (strlen(prefix) <= 0)) prefix = "::";
@@ -1222,7 +1230,7 @@ void start_radvd(void)
 			" AdvManagedFlag %s;\n"
 			" AdvOtherConfigFlag on;\n"
 			"%s%s%s"
-			" prefix %s/64 \n"
+			" prefix %s/%d \n"
 			" {\n"
 			"  AdvOnLink on;\n"
 			"  AdvAutonomous %s;\n"
@@ -1234,7 +1242,7 @@ void start_radvd(void)
 			nvram_safe_get("lan_ifname"),
 			nvram_get_int("ipv6_autoconf_type") ? "on" : "off",
 			mtu ? " AdvLinkMTU " : "", mtu ? mtu : "", mtu ? ";\n" : "", // add missing mtu var
-			prefix,
+			prefix, size,
 			nvram_get_int("ipv6_autoconf_type") ? "off" : "on",
 			valid_lifetime ? "  AdvValidLifetime " : "", valid_lifetime ? : "", valid_lifetime ? ";\n" : "",
 			preferred_lifetime ? "  AdvPreferredLifetime " : "", preferred_lifetime ? : "", preferred_lifetime ? ";\n" : "",
