@@ -348,26 +348,26 @@ GEN_CONF:
 			if (unit) {
 #ifdef RTAC68U
 				if (	nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-					nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))
+					(nvram_match(strcat_r(prefix, "country_rev", tmp), "13") || nvram_match(strcat_r(prefix, "country_rev", tmp), "15")))
 					eval("wl", "-i", ifname, "radarthrs",
 					"0x6ac", "0x30", "0x6a8", "0x30", "0x6a8", "0x30", "0x6a4", "0x30", "0x6a4", "0x30", "0x6a0", "0x30");
 				else if ((get_model() == MODEL_DSLAC68U) &&
 					nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-					nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))
+					(nvram_match(strcat_r(prefix, "country_rev", tmp), "13") || nvram_match(strcat_r(prefix, "country_rev", tmp), "15")))
 					eval("wl", "-i", ifname, "radarthrs",
 					"0x6ac", "0x30", "0x6a8", "0x30", "0x6a8", "0x30", "0x6a8", "0x30", "0x6a4", "0x30", "0x6a0", "0x30");
 #elif defined(RTAC66U) || defined(RTN66U)
-#if 0
+//#if 0
 				if (((get_model() == MODEL_RTAC66U) &&
 					nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-					nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) ||
+					(nvram_match(strcat_r(prefix, "country_rev", tmp), "13") || nvram_match(strcat_r(prefix, "country_rev", tmp), "15"))) ||
 					((get_model() == MODEL_RTN66U) &&
 					nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-					nvram_match(strcat_r(prefix, "country_rev", tmp), "0"))
+					(nvram_match(strcat_r(prefix, "country_rev", tmp), "0") || nvram_match(strcat_r(prefix, "country_rev", tmp), "3")))
 				)
 					eval("wl", "-i", ifname, "radarthrs",
 					"0x6ac", "0x30", "0x6a8", "0x30", "0x6a8", "0x30", "0x6a8", "0x30", "0x6a4", "0x30", "0x6a0", "0x30");
-#endif
+//#endif
 #endif
 			}
 #endif
