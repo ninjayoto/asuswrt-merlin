@@ -3275,6 +3275,10 @@ int init_nvram(void)
 	if(nvram_get("ttl_inc_enable") == NULL)
 		nvram_set("ttl_inc_enable", "0");
 
+	// Initialize ipv6 dhcp forward working variable name
+	if(nvram_get("ipv6_dhcp_forward_disable") == NULL)
+		nvram_set("ipv6_dhcp_forward_disable", "0");
+
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
 		if(!nvram_match("switch_wan0tagid", "") && !nvram_match("switch_wan0tagid", "0"))
