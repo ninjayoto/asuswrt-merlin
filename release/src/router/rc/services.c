@@ -539,6 +539,7 @@ void start_dnsmasq(int force)
 	}
 
 	stop_dnsmasq(force);
+	sleep(2);
 
 	lan_ifname = nvram_safe_get("lan_ifname");
 #ifdef RTCONFIG_WIRELESSREPEATER
