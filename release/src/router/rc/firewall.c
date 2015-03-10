@@ -1667,7 +1667,7 @@ start_default_filter(int lanunit)
 	fprintf(fp, "-A INPUT -i lo -m state --state NEW -j ACCEPT\n");
 	fprintf(fp, "-A INPUT -i br0 -m state --state NEW -j ACCEPT\n");
 	fprintf(fp, "-A INPUT -j DROP\n");
-	//fprintf(fp, "-A FORWARD -m state --state INVALID -j DROP\n");
+	fprintf(fp, "-A FORWARD -m state --state INVALID -j DROP\n");
 	fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT\n");
 	fprintf(fp, "-A FORWARD -i br0 -o br0 -j ACCEPT\n");
 	fprintf(fp, "-A FORWARD -i lo -o lo -j ACCEPT\n");
@@ -2368,6 +2368,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // ~ oleg patch
+	fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 	fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
 #ifndef RTCONFIG_PARENTALCTRL
 	if (strlen(macaccept)>0)
@@ -2398,6 +2399,7 @@ TRACE_PT("writing Parental Control\n");
 		fprintf(fp, "-A FORWARD -o %s ! -i %s -j %s\n", wanx_if, lan_if, logdrop);
 
 // oleg patch ~
+#if 0 //Now redundant
 	/* Drop the wrong state, INVALID, packets */
 	fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 //#if 0
@@ -2406,6 +2408,7 @@ TRACE_PT("writing Parental Control\n");
 	fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 #endif
 //#endif
+#endif
 	if (strlen(macaccept)>0)
 	{
 		fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
@@ -3351,6 +3354,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // ~ oleg patch
+	fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 	fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
 #ifndef RTCONFIG_PARENTALCTRL
 	if (strlen(macaccept)>0)
@@ -3383,6 +3387,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // oleg patch ~
+#if 0 // Now redundant
 	/* Drop the wrong state, INVALID, packets */
 	fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 //#if 0
@@ -3391,6 +3396,7 @@ TRACE_PT("writing Parental Control\n");
 	fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 #endif
 //#endif
+#endif
 	if (strlen(macaccept)>0)
 	{
 		fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
