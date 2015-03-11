@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-07j9527 (20-January-2015)
+Asuswrt-Merlin fork - build 374.43_2-08j9527 (10-March-2015)
 =============================================
 
 About
@@ -15,15 +15,51 @@ These releases are provided AS IS, and no additional support is committed or
 implied by either the individual author or the author of the original
 Asuswrt-merlin base.
 
-History
--------
 Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
-
-374.43_2-07j9527 (20-January-2015)
 
 Changelog
 ---------
+374.43_2-08j9527 (10-March-2015)
+- CHANGED: Remove built-in DownloadMaster packages (will be downloaded at install time)
+- CHANGED: Update entware-setup.sh (ARM)
+- CHANGED: Update entware-setup.sh (MIPS)
+- CHANGED: Updated OpenSSL to 1.0.0q (maintainance only)
+- CHANGED: Wireless Log fix for Guest clients
+- CHANGED: Wireless Log format
+* CHANGED: busybox: include uniq and dos2unix coreutils
+- CHANGED: init-broadcom: Allow reg_mode=strict_h for EU routers
+- CHANGED: makefile: include curl for all builds
+* CHANGED: radvd Add support for non 64 prefix size
+- CHANGED: rc added custom config postconf support for Avahi afd and mt-daap
+* FIXED: Map busybox-4609f4 CVE-2013-1803 (Security)
+* FIXED: Move Extend_TTL_Value from WAN to Firewall page and save across reboots
+* FIXED: Set delay before starting networkmap at boot based on reboot_time
+- FIXED: Wireless-Log RSSI, Connected, Flags fields
+- FIXED: XSS vulnerability in Main_Analysis_Content.asp (Security)
+- FIXED: busybox: respect syslogd -S option
+- FIXED: dnsmasq add delay after stop when restarting
+- FIXED: dnsmasq: prevent multiple instances
+- FIXED: firewall clean up INVALID state rules again
+* FIXED: fw: do not reset beamforming options to default during firmware upgrade
+* FIXED: kernel: add xt_hl module required for Extend_TTL option
+- FIXED: networkmap: prevent multiple instances
+- FIXED: networkmap: update nvram var for fullscan
+- FIXED: only forward WAN interface to the router's httpd if the associated protocol is enabled
+- FIXED: samba: Apply patch for CVE-2015-0240 to the Samba instance used by AiCloud (Security)
+- FIXED: webui fix corrupted MAC filter list when removing then re-adding entry
+- FIXED: webui: Don't offer the option of disabling regulation mode if in a DFS-enabled region
+* NEW: Add modules required for webmon for MIPS and ARM
+- NEW: Backported Custom DDNS scripting from Merlin master
+- NEW: entware: Added ARM version of setup script, pointing to zyxmon's qnapware repository
+* NEW: firewall: add forward rule for ipv6 dhcp - maybe fix Comcast connect?
+* NEW: syslogd: add nvram var for -S small parameter
+* NEW: syslogd: check/update valid hostname at startup
+- NEW: wan: remap Extend_TTL_Value from Asus
+* NEW: wifi: show country/regrev on wireless/professional page
+* NEW: wifi: unlock Professional parameters in repeater mode
 
+
+374.43_2-07j9527 (20-January-2015)
 * NEW: Allow traffic monitor graphs to be displayed in Mb/s rather then
 	KB/s (user request).  Option added to gui (Tools/Other Settings)
 - NEW: AC68P supported with model specific radio settings for 5G
