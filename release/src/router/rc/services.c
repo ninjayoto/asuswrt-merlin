@@ -4184,7 +4184,9 @@ again:
 			start_vlan();
 			start_lan();
 #ifdef RTCONFIG_DNSMASQ
-			start_dnsmasq(0);
+			/* Only if not already started by start_len() */
+			if (!pids("dnsmasq"))
+				start_dnsmasq(0);
 #else
 			start_dns();
 			start_dhcpd();
@@ -4248,7 +4250,9 @@ again:
 			//start_vlan();
 			start_lan();
 #ifdef RTCONFIG_DNSMASQ
-			start_dnsmasq(0);
+			/* Only if not already started by start_lan() */
+			if (!pids("dnsmasq"))
+				start_dnsmasq(0);
 #else
 			start_dns();
 			start_dhcpd();
@@ -4332,7 +4336,9 @@ again:
 			//start_vlan();
 			start_lan();
 #ifdef RTCONFIG_DNSMASQ
-			start_dnsmasq(0);
+			/* Only if not already started by start_lan() */
+			if (!pids("dnsmasq"))
+				start_dnsmasq(0);
 #else
 			start_dns();
 			start_dhcpd();
