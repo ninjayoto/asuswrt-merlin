@@ -78,7 +78,7 @@ function initial(){
 		}
 
 		// enable_wme_check(document.form.wl_wme);
-		return false;
+		// return false;  // Perform all web initialization for Repeater mode
 	}
 
 	$("wl_rate").style.display = "none";
