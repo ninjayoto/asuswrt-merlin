@@ -1034,20 +1034,25 @@ dump_bss_info(int eid, webs_t wp, int argc, char_t **argv, wl_bss_info_t *bi)
 
 	wl_format_ssid(ssidbuf, bi->SSID, bi->SSID_len);
 
-	retval += websWrite(wp, "SSID: \"%s\"\n", ssidbuf);
+	retval += websWrite(wp, "SSID: %s\n", ssidbuf);
 
 //	retval += websWrite(wp, "Mode: %s\t", capmode2str(dtoh16(bi->capability)));
-	retval += websWrite(wp, "RSSI: %d dBm\t", (int16)(dtoh16(bi->RSSI)));
+//	retval += websWrite(wp, "RSSI: %d dBm\t", (int16)(dtoh16(bi->RSSI)));
+	snprintf(tmp, sizeof(tmp), "%d dBm", (int16)(dtoh16(bi->RSSI)));
+	retval += websWrite(wp, "RSSI: %s\t", (int16)(dtoh16(bi->RSSI)) ? tmp : "NA    ");
 
 	/*
 	 * SNR has valid value in only 109 version.
 	 * So print SNR for 109 version only.
 	 */
 	if (dtoh32(bi->version) == WL_BSS_INFO_VERSION) {
-		retval += websWrite(wp, "SNR: %d dB\t", (int16)(dtoh16(bi->SNR)));
+//		retval += websWrite(wp, "SNR: %d dB\t", (int16)(dtoh16(bi->SNR)));
+		snprintf(tmp, sizeof(tmp), "%d dB", (int16)(dtoh16(bi->SNR)));
+		retval += websWrite(wp, "  SNR: %s\t", (int16)(dtoh16(bi->SNR)) ? tmp : "NA    ");
+
 	}
 
-	retval += websWrite(wp, "noise: %d dBm\t", bi->phy_noise);
+	retval += websWrite(wp, "Noise: %d dBm\t", bi->phy_noise);
 	if (bi->flags) {
 		bi->flags = dtoh16(bi->flags);
 		retval += websWrite(wp, "Flags: ");
