@@ -768,11 +768,11 @@ void start_dnsmasq(int force)
 	write_vpn_dnsmasq_config(fp);
 #endif
 
-#ifdef WEB_REDIRECT
-	/* Web redirection - all unresolvable will return the router's IP */
-	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
-		fprintf(fp, "address=/#/10.0.0.1\n");
-#endif
+//#ifdef WEB_REDIRECT
+//	/* Web redirection - all unresolvable will return the router's IP */
+//	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
+//		fprintf(fp, "address=/#/10.0.0.1\n");
+//#endif
 
 	append_custom_config("dnsmasq.conf",fp);
 
@@ -5551,10 +5551,10 @@ void start_nat_rules(void)
 
 	eval("iptables-restore", NAT_RULES);
 
-#ifdef WEB_REDIRECT
-	// Remove wildcard resolution
-	restart_dnsmasq(1);
-#endif
+//#ifdef WEB_REDIRECT
+//	// Remove wildcard resolution
+//	restart_dnsmasq(1);
+//#endif
 
 	run_custom_script("nat-start", NULL);
 }
@@ -5573,10 +5573,10 @@ void stop_nat_rules(void)
 
 	eval("iptables-restore", "/tmp/redirect_rules");
 
-#ifdef WEB_REDIRECT
-	// dnsmasq will handle wildcard resolution
-	if (nvram_get_int("web_redirect") > 0) restart_dnsmasq(1);
-#endif
+//#ifdef WEB_REDIRECT
+//	// dnsmasq will handle wildcard resolution
+//	if (nvram_get_int("web_redirect") > 0) restart_dnsmasq(1);
+//#endif
 }
 
 #ifdef RTCONFIG_BCMWL6
