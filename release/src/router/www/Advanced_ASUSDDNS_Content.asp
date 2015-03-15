@@ -31,6 +31,32 @@ function init(){
 		ddns_load_body();	
 }
 
+function check_update(){
+    var ddns_ipaddr_t = '<% nvram_get("ddns_ipaddr"); %>';
+		ddns_ipaddr_t = ddns_ipaddr_t.replace(/&#10/g,"");
+
+	var ddns_server_x_t = '<% nvram_get("ddns_server_x"); %>';
+    var ddns_updated_t = '<% nvram_get("ddns_updated"); %>';
+    if ((wanlink_ipaddr() == ddns_ipaddr_t) &&
+        (ddns_server_x_t == document.form.ddns_server_x.value) &&
+        (ddns_hostname_x_t == document.form.ddns_hostname_x.value) &&
+			ddns_updated_t == '1'){
+			force_update();
+    }else{
+			document.form.submit();
+			showLoading();
+    }
+}
+
+function force_update() {
+    var r = confirm("IP address, server and hostname have not changed since the last update. If you want to update, please click 'yes'");
+	if(r == false)
+		return false
+
+	document.form.submit();
+	showLoading();
+}
+
 function valid_wan_ip() {
         // test if WAN IP is a private IP.
         var A_class_start = inet_network("10.0.0.0");
@@ -200,7 +226,7 @@ function validForm(){
 					document.form.ddns_username_x.focus();
 					document.form.ddns_username_x.select();
 					return false;
-				}else if(!validator.string(document.form.ddns_username_x)){
+				}else if(!validate_string(document.form.ddns_username_x)){
 					return false;
 				}
 			
@@ -218,18 +244,19 @@ function validForm(){
 					document.form.ddns_passwd_x.focus();
 					document.form.ddns_passwd_x.select();
 					return false;
-				}else if(!validator.string(document.form.ddns_passwd_x)){
+				}else if(!validate_string(document.form.ddns_passwd_x)){
 					return false;
 				}
 			}
 
-			if(document.form.ddns_regular_period.value < 30){
-				alert(Untranslated.period_time_validation + " : 30");
-				document.form.ddns_regular_period.focus();
-				document.form.ddns_regular_period.select();
-				return false;
+			if(document.form.ddns_regular_check[0].checked){   // DDNS verification
+				if(document.form.ddns_regular_period.value < 30){
+					alert("Verify interval must be at least 30 minutes");
+					document.form.ddns_regular_period.focus();
+					document.form.ddns_regular_period.select();
+					return false;
+				}
 			}
-		
 			return true;
 		}
 	}
@@ -309,6 +336,20 @@ function show_alert_block(alert_str){
 function cleandef(){
 		if(document.form.DDNSName.value == "<#asusddns_inputhint#>")
 				document.form.DDNSName.value = "";	
+}
+
+function onSubmitApply(s){
+	if(s == "hostname_check"){
+		showLoading();
+		if(!validate_ddns_hostname(document.form.ddns_hostname_x)){
+			hideLoading();
+			return false;
+		}
+	}
+
+	document.form.action_mode.value = "Update";
+	document.form.action_script.value = s;
+	return true;
 }
 </script>
 </head>
@@ -426,6 +467,19 @@ function cleandef(){
 				<th>Forced refresh interval (in days)</th>
 				<td>
 					<input type="text" maxlength="3" name="ddns_refresh_x" class="input_3_table" value="<% nvram_get("ddns_refresh_x"); %>" onKeyPress="return is_number(this,event)">
+				</td>
+			</tr>
+			<tr id="check_ddns_field" style="display:none;">
+				<th>WAN IP and hostname verification</th>
+				<td>
+					<input type="radio" value="1" name="ddns_regular_check" onClick="change_ddns_setting(document.form.ddns_server_x.value);" <% nvram_match("ddns_regular_check", "1", "checked"); %>><#checkbox_Yes#>
+					<input type="radio" value="0" name="ddns_regular_check" onClick="change_ddns_setting(document.form.ddns_server_x.value);" <% nvram_match("ddns_regular_check", "0", "checked"); %>><#checkbox_No#>
+				</td>
+			</tr>
+			<tr style="display:none;">
+				<th>Verify every</th>
+				<td>
+					<input type="text" maxlength="5" class="input_6_table" name="ddns_regular_period" value="<% nvram_get("ddns_regular_period"); %>"> <#Minute#>
 				</td>
 			</tr>
 			<tr style="display:none;">

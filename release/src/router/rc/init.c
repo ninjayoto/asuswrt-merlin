@@ -3279,6 +3279,12 @@ int init_nvram(void)
 	if(nvram_get("ipv6_dhcp_forward_disable") == NULL)
 		nvram_set("ipv6_dhcp_forward_disable", "0");
 
+	// Initialize working variables for DDNS check
+	if(nvram_get("ddns_regular_check") == NULL){
+		nvram_set("ddns_regular_check", "0");
+		nvram_set("ddns_regular_period", "60");
+	}
+
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
 		if(!nvram_match("switch_wan0tagid", "") && !nvram_match("switch_wan0tagid", "0"))

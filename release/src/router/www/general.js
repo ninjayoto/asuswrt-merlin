@@ -1151,6 +1151,9 @@ function change_common_radio(o, s, v, r){
 			document.form.ddns_wildcard_x[0].disabled= 1;
 			document.form.ddns_wildcard_x[1].disabled= 1;
 			showhide("wildcard_field",0);
+			document.form.ddns_regular_check.value = 0;
+			showhide("check_ddns_field", 0);
+			inputCtrl(document.form.ddns_regular_period, 0);
 		}	
 	}
 	else if(v == "wan_dnsenable_x"){
