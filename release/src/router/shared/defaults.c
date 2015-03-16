@@ -989,9 +989,9 @@ struct nvram_tuple router_defaults[] = {
 	{ "ddns_passwd_x", ""},
 	{ "ddns_hostname_x", ""},
 	{ "ddns_wildcard_x", "0"},
-	{ "ddns_regular_check", "0"},
-	{ "ddns_regular_period", "60"},
-	{ "ddns_transfer", ""},
+//	{ "ddns_regular_check", "0"},
+//	{ "ddns_regular_period", "60"},
+//	{ "ddns_transfer", ""},
 	{ "ddns_refresh_x", "21"},	// Forced refresh period (in days)
 
 	// NVRAM for start_firewall
