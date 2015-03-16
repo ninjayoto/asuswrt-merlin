@@ -584,6 +584,11 @@ void start_vpnserver(int serverNum)
 	{
 		vpnlog(VPN_LOG_NOTE, "VPN Server %d already running...", serverNum);
 		vpnlog(VPN_LOG_INFO,"PID: %d", pid);
+
+		sprintf(&buffer[0], "vpn_server%d_state", serverNum); // re-write state
+		nvram_set(&buffer[0], "2");     //running 
+		sprintf(&buffer[0], "vpn_server%d_errno", serverNum);
+		nvram_set(&buffer[0], "0");
 		return;
 	}
 
@@ -1308,6 +1313,12 @@ void start_vpnserver(int serverNum)
 		vpnlog(VPN_LOG_EXTRA,"Done adding cron job");
 	}
 
+	sprintf(&buffer[0], "vpn_server%d_state", serverNum); 
+	nvram_set(&buffer[0], "2");	//running 
+	sprintf(&buffer[0], "vpn_server%d_errno", serverNum); 
+	nvram_set(&buffer[0], "0"); 
+
+
 #ifdef LINUX26
 //	sprintf(&buffer[0], "vpn_server%d", serverNum);
 //	allow_fastnat(buffer, 0);
@@ -1395,6 +1406,11 @@ void stop_vpnserver(int serverNum)
 //	allow_fastnat(buffer, 1);
 //	try_enabling_fastnat();
 #endif
+
+	sprintf(&buffer[0], "vpn_server%d_state", serverNum); 
+	nvram_set(&buffer[0], "0"); 
+	sprintf(&buffer[0], "vpn_server%d_errno", serverNum); 
+	nvram_set(&buffer[0], "0"); 
 
 	vpnlog(VPN_LOG_INFO,"VPN GUI server backend stopped.");
 }
