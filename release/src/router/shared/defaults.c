@@ -1770,7 +1770,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_pd_vlifetime",	""		},	// The valid lifetime for the prefix obtained via DHCPv6-PD
 	{ "ipv6_pd_plifetime",	""		},	// The preferred lifetime for the prefix obtained via DHCPv6-PD
 
-	{ "web_redirect", 	"3"		},	// Redirect on NOLINK or NOINTERNET
+	{ "web_redirect", 	"0"		},	// Redirect disabled by default for both NOLINK or NOINTERNET
 	{ "disiosdet",		"1"		},
 
 #ifdef RTCONFIG_FANCTRL
