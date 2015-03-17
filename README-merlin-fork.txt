@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-08j9527 (10-March-2015)
+Asuswrt-Merlin fork - build 374.43_2-09j9527 (16-March-2015)
 =============================================
 
 About
@@ -19,6 +19,17 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-09j9527 (16-March-2015)
+- CHANGED: Revert to original ASUS web-redirect rules
+* CHANGED: Check for dnsmasq status after start_lan
+* CHANGED: Make Never the default setting for Web_Redirect
+* CHANGED: Show NA instead of 0 if RSSI/SNR not available in Wireless Log
+* FIXED: Options correctly initialized on Wireless/Professional in Repeater mode
+* FIXED: DDNS selections could not be applied
+* FIXED: Retry iptables-restore commands
+- FIXED: Correctly update vpn_server state
+
+
 374.43_2-08j9527 (10-March-2015)
 - CHANGED: Remove built-in DownloadMaster packages (will be downloaded at install time)
 - CHANGED: Update entware-setup.sh (ARM)
