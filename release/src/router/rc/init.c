@@ -1503,6 +1503,8 @@ int init_nvram(void)
 #ifdef RTCONFIG_LED_BTN
 	nvram_set_int("btn_led_gpio", 0xff);
 #endif
+
+if (!nvram_get_int("wlrestart")){  // restart_wireless exclude
 	/* In the order of physical placement */
 	nvram_set("ehci_ports", "");
 	nvram_set("ohci_ports", "");
@@ -1540,7 +1542,7 @@ int init_nvram(void)
 	nvram_set("dsllog_crcdown", "0");
 	nvram_set("dsllog_crcup", "0");
 #endif
-
+} // end wlrestart exclude
 	switch (model) {
 #ifdef RTCONFIG_RALINK
 	case MODEL_EAN66:
