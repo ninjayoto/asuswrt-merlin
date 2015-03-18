@@ -204,6 +204,9 @@ function initial(){
 	// Set these based on a compound field
 	setRadioValue(document.openvpn_form.vpn_server_x_dns, ((document.openvpn_form.vpn_serverx_dns.value.indexOf(''+(openvpn_unit)) >= 0) ? "1" : "0"));
 
+	// Remove CR characters in custom config
+	document.form.vpn_server_custom.value = document.form.vpn_server_custom.value.replace(/[\r]/g, '');
+
 	// Display appropriate page
 	change_mode(initial_vpn_mode);
 
@@ -1223,7 +1226,7 @@ function cal_panel_block(){
 									</thead>
 
 									<tr>
-										<th>Poll Interval<br><i>(0 to disable)</th>
+										<th>Poll Interval<br><i>(0 to disable)</i></th>
 										<td>
 											<input type="text" maxlength="4" class="input_6_table" name="vpn_server_poll" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 0, 1440)" value="<% nvram_get("vpn_server_poll"); %>"> <#Minute#>
 										</td>
@@ -1284,7 +1287,7 @@ function cal_panel_block(){
 									</tr>
 
 									<tr>
-										<th>TLS Renegotiation Time<br><i>( -1 for default )</th>
+										<th>TLS Renegotiation Time<br><i>( -1 for default )</i></th>
 										<td>
 											<input type="text" maxlength="5" class="input_6_table" name="vpn_server_reneg" onblur="validate_range(this, -1, 2147483647)" value="<% nvram_get("vpn_server_reneg"); %>"> <#Second#>
 										</td>

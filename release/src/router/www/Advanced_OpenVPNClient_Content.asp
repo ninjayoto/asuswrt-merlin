@@ -171,6 +171,9 @@ function initial()
 	// Set these based on a compound field
 	setRadioValue(document.form.vpn_client_x_eas, ((document.form.vpn_clientx_eas.value.indexOf(''+(openvpn_unit)) >= 0) ? "1" : "0"));
 
+	// Remove CR characters in custom config
+	document.form.vpn_client_custom.value = document.form.vpn_client_custom.value.replace(/[\r]/g, '');
+
 	// Decode into editable format
 	openvpn_decodeKeys(0);
 	update_visibility();
