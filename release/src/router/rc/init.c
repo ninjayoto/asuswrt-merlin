@@ -3287,6 +3287,11 @@ if (!nvram_get_int("wlrestart")){  // restart_wireless exclude
 		nvram_set("ddns_regular_period", "60");
 	}
 
+	// Initialize working variable ipv6 service tracking
+        if(nvram_get("ipv6_service_last") == NULL){
+                nvram_set("ipv6_service_last", "disabled");
+        }
+
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
 		if(!nvram_match("switch_wan0tagid", "") && !nvram_match("switch_wan0tagid", "0"))

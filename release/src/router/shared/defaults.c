@@ -1723,6 +1723,7 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_IPV6
 	// IPv6 parameters
 	{ "ipv6_service",	"disabled"	},	// disabled/staic6/dhcp6/6to4/6in4/6rd/other
+	{ "ipv6_service_last",	"disabled"      },	// track last active service
 	{ "ipv6_ifdev",		"ppp"		},	
 	{ "ipv6_prefix",	""		},	// The global-scope IPv6 prefix to route/advertise
 	{ "ipv6_prefix_length",	"64"		},	// The bit length of the prefix. Used by dhcp6c. For radvd, /64 is always assumed.
