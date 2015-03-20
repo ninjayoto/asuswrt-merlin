@@ -1404,8 +1404,9 @@ void start_ipv6(void)
 	case IPV6_6TO4:
 	case IPV6_6RD:
 	default:
-		nvram_set("ipv6_prefix", "");
-		nvram_set("ipv6_rtr_addr", "");
+//		nvram_set("ipv6_prefix", "");
+//		nvram_set("ipv6_rtr_addr", "");
+		break;
 	}
 }
 
