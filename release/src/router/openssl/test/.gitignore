@@ -1,4 +1,5 @@
 asn1test
+sn1test
 bftest
 bntest
 casttest
@@ -32,4 +33,5 @@ sha512t
 shatest
 ssltest
 wp_test
+constant_time_test
 
