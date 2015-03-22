@@ -44,7 +44,8 @@ static int notify_rc_internal(const char *event_name, bool do_wait, int wait);
 
 int notify_rc(const char *event_name)
 {
-	return notify_rc_internal(event_name, FALSE, 15);
+	// Increase default wait time from 15 to 20 sec
+	return notify_rc_internal(event_name, FALSE, 20);
 }
 
 int notify_rc_after_wait(const char *event_name)
