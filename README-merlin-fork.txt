@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-09j9527 (16-March-2015)
+Asuswrt-Merlin fork - build 374.43_2-10j9527 (21-March-2015)
 =============================================
 
 About
@@ -19,6 +19,15 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-10j9527 (21-March-2015)
+- CHANGED: Update OpenSSL to 1.0.0r
+- CHANGED: Use a SHA256 signature for the https certificate
+- CHANGED: Increase default service wait time
+* CHANGED: Remember IPv6 settings when disable/enable the same connection type
+- FIXED: Correct formatting under IE when changing zoom level
+* FIXED: Do not reset OpenVPN status when applying settings under Wireless/Professional
+
+
 374.43_2-09j9527 (16-March-2015)
 - CHANGED: Revert to original ASUS web-redirect rules
 * CHANGED: Check for dnsmasq status after start_lan
