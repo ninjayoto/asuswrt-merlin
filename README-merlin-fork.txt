@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-10j9527 (21-March-2015)
+Asuswrt-Merlin fork - build 374.43_2-10E1j9527 (23-March-2015)
 =============================================
 
 About
@@ -19,6 +19,9 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-10E1j9527 (23-March-2015)
+* FIXED: OpenVPN gui pages may display incorrectly
+
 374.43_2-10j9527 (21-March-2015)
 - CHANGED: Update OpenSSL to 1.0.0r
 - CHANGED: Use a SHA256 signature for the https certificate
