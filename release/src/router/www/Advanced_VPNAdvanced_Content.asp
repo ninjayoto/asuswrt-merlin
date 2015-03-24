@@ -170,6 +170,9 @@ function initial(){
 
 	add_VPN_mode_Option(document.form.pptpd_mode);
 	add_VPN_mode_Option(document.openvpn_form.openvpn_mode);
+	// Set both forms to none to prevent flash on open
+	document.form.style.display = "none";
+	document.openvpn_form.style.display = "none";
 
 	if (pptpd_clients != "") {
 		document.form._pptpd_clients_start.value = pptpd_clients.split("-")[0];
@@ -204,6 +207,9 @@ function initial(){
 	// Set these based on a compound field
 	setRadioValue(document.openvpn_form.vpn_server_x_dns, ((document.openvpn_form.vpn_serverx_dns.value.indexOf(''+(openvpn_unit)) >= 0) ? "1" : "0"));
 
+	// Remove CR characters in custom config
+	document.openvpn_form.vpn_server_custom.value = document.openvpn_form.vpn_server_custom.value.replace(/[\r]/g, '');
+
 	// Display appropriate page
 	change_mode(initial_vpn_mode);
 
@@ -222,8 +228,8 @@ function add_VPN_mode_Option(obj){
 
 function change_mode(mode){
 	if (mode == "pptpd"){
-		document.form.style.display = "";
 		document.openvpn_form.style.display = "none";
+		document.form.style.display = "";
 		document.form.pptpd_mode.value = "pptpd";
 		document.form.VPNServer_mode.value = "pptpd";
 	}else{
@@ -1223,7 +1229,7 @@ function cal_panel_block(){
 									</thead>
 
 									<tr>
-										<th>Poll Interval<br><i>(0 to disable)</th>
+										<th>Poll Interval<br><i>(0 to disable)</i></th>
 										<td>
 											<input type="text" maxlength="4" class="input_6_table" name="vpn_server_poll" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 0, 1440)" value="<% nvram_get("vpn_server_poll"); %>"> <#Minute#>
 										</td>
@@ -1284,7 +1290,7 @@ function cal_panel_block(){
 									</tr>
 
 									<tr>
-										<th>TLS Renegotiation Time<br><i>( -1 for default )</th>
+										<th>TLS Renegotiation Time<br><i>( -1 for default )</i></th>
 										<td>
 											<input type="text" maxlength="5" class="input_6_table" name="vpn_server_reneg" onblur="validate_range(this, -1, 2147483647)" value="<% nvram_get("vpn_server_reneg"); %>"> <#Second#>
 										</td>

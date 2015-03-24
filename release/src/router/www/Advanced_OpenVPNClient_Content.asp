@@ -171,6 +171,9 @@ function initial()
 	// Set these based on a compound field
 	setRadioValue(document.form.vpn_client_x_eas, ((document.form.vpn_clientx_eas.value.indexOf(''+(openvpn_unit)) >= 0) ? "1" : "0"));
 
+	// Remove CR characters in custom config
+	document.form.vpn_client_custom.value = document.form.vpn_client_custom.value.replace(/[\r]/g, '');
+
 	// Decode into editable format
 	openvpn_decodeKeys(0);
 	update_visibility();
@@ -747,7 +750,7 @@ function update_local_ip(object){
 					</thead>
 
 					<tr>
-						<th>Poll Interval<br><i>(in minutes, 0 to disable)</th>
+						<th>Poll Interval<br><i>(in minutes, 0 to disable)</i></th>
 						<td>
 							<input type="text" maxlength="4" class="input_6_table" name="vpn_client_poll" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 0, 1440)" value="<% nvram_get("vpn_client_poll"); %>">
 						</td>
@@ -796,14 +799,14 @@ function update_local_ip(object){
 					</tr>
 
 					<tr id="client_reneg">
-						<th>TLS Renegotiation Time<br><i>(in seconds, -1 for default)</th>
+						<th>TLS Renegotiation Time<br><i>(in seconds, -1 for default)</i></th>
 						<td>
 							<input type="text" maxlength="5" class="input_6_table" name="vpn_client_reneg" onblur="validate_range(this, -1, 2147483647)" value="<% nvram_get("vpn_client_reneg"); %>">
 						</td>
 					</tr>
 
 					<tr>
-						<th>Connection Retry<br><i>(in seconds, -1 for infinite)</th>
+						<th>Connection Retry<br><i>(in seconds, -1 for infinite)</i></th>
 						<td>
 							<input type="text" maxlength="5" class="input_6_table" name="vpn_client_retry" onblur="validate_range(this, -1, 32767)" value="<% nvram_get("vpn_client_retry"); %>">
 						</td>
