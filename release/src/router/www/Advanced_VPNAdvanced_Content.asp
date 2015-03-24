@@ -1183,7 +1183,7 @@ function cal_panel_block(){
 												<option value="-1" <% nvram_match("vpn_server_hmac","-1","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
 												<option value="2" <% nvram_match("vpn_server_hmac","2","selected"); %> >Bi-directional</option>
 												<option value="0" <% nvram_match("vpn_server_hmac","0","selected"); %> >Incoming (0)</option>
-												<option value="1" <% nvram_match("vpn_server_hmac","1","selected"); %> >Incoming (1)</option>
+												<option value="1" <% nvram_match("vpn_server_hmac","1","selected"); %> >Outgoing (1)</option>
 											</select>
 			   							</td>
 									</tr>
