@@ -198,6 +198,13 @@ function done_validating(action){
 								<input type="radio" value="0" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '0')" <% nvram_match("DSCP_fix_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
+		<tr>
+			<th>Enable local subnet forwarding**</th>
+			<td>
+								<input type="radio" value="1" name="lan_fwd_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'lan_fwd_enable', '1')" <% nvram_match("lan_fwd_enable", "1", "checked"); %>><#checkbox_Yes#>
+								<input type="radio" value="0" name="lan_fwd_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'lan_fwd_enable', '0')" <% nvram_match("lan_fwd_enable", "0", "checked"); %>><#checkbox_No#>
+			</td>
+		</tr>
 
 	        	<tr id="st_webdav_mode_tr" style="display:none;">
 	          	<th width="40%">Cloud Disk Configure</th>

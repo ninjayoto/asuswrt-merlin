@@ -3269,6 +3269,10 @@ if (!nvram_get_int("wlrestart")){  // restart_wireless exclude
 	if(nvram_get("DSCP_fix_enable") == NULL)
 		nvram_set("DSCP_fix_enable", "0");
 
+	// Initialize working variable name for lan subnet fwd
+	if(nvram_get("lan_fwd_enable") == NULL)
+		nvram_set("lan_fwd_enable", "0");
+
 	// Initialize working variable name for rstats_units
 	if(nvram_get("rstats_units") == NULL)
 		nvram_set("rstats_units", "0");
