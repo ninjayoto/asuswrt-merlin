@@ -3830,8 +3830,32 @@ stop_usbled(void)
 #ifdef RTCONFIG_CROND
 void start_cron(void)
 {
+	int argc;
+//	char cron_path[PATH_MAX];
+	char *crond_argv[] = {"crond",
+//		NULL, NULL,				/* -L LOGFILE */
+		NULL, NULL,				/* -l log_level */
+		NULL};
+	char tmp[64];
+
 	stop_cron();
-	eval("crond");
+
+//	strcpy(cron_path, "/tmp/crond.log");
+
+	for (argc = 0; crond_argv[argc]; argc++);
+
+//	if (nvram_match("cron_logfile", "1")) {
+//		crond_argv[argc++] = "-L";
+//		crond_argv[argc++] = cron_path;
+//	}
+
+	if (nvram_invmatch("cron_loglevel", "")) {
+		crond_argv[argc++] = "-l";
+		crond_argv[argc++] = nvram_safe_get("cron_loglevel");
+	}
+
+
+	_eval(crond_argv, NULL, 0, NULL);
 }
 
 

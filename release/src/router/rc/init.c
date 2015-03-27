@@ -3291,6 +3291,12 @@ if (!nvram_get_int("wlrestart")){  // restart_wireless exclude
 		nvram_set("ddns_regular_period", "60");
 	}
 
+	// Initialize working variables for cron logging
+	if(nvram_get("cron_loglevel") == NULL){
+//		nvram_set("cron_logfile", "0");
+		nvram_set("cron_loglevel", "8");
+	}
+
 	// Initialize working variable ipv6 service tracking
         if(nvram_get("ipv6_service_last") == NULL){
                 nvram_set("ipv6_service_last", "disabled");
