@@ -3290,7 +3290,6 @@ void restart_wireless(void)
 	int lock = file_lock("wireless");
 
 	nvram_set_int("wlready", 0);
-	nvram_set_int("wlrestart", 1); // Set restart flag for init-nvram
 
 	stop_wps();
 #ifdef CONFIG_BCMWL5
@@ -3420,7 +3419,6 @@ void restart_wireless_wps(void)
 	}
 #endif
 
-	nvram_set_int("wlrestart",0); // Clear restart flag
 	nvram_set_int("wlready", 1);
 
 	file_unlock(lock);
