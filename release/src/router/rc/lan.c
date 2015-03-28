@@ -1705,6 +1705,7 @@ void stop_lan(void)
 	wl_defaults();	// init nvram wlx_ifnames & lan_ifnames
 
 	update_lan_state(LAN_STATE_STOPPED, 0);
+	update_vpn_state();
 
 	killall("udhcpc", SIGUSR2);
 	killall("udhcpc", SIGTERM);
@@ -3282,6 +3283,37 @@ void lanaccess_wl(void)
 	setup_leds();   // Refresh LED state if in Stealth Mode
 }
 
+void update_vpn_state(void)
+{
+	char buffer[256];
+	int i;
+	int pid;
+
+	for( i = 1; i <= 2; i++ )
+        {
+		// Check vpn clients
+		sprintf(&buffer[0], "vpnclient%d", i);
+		if ( (pid = pidof(&buffer[0])) >= 0 )
+		{
+			sprintf(&buffer[0], "vpn_client%d_state", i);
+			nvram_set(&buffer[0], "2");
+			sprintf(&buffer[0], "vpn_client%d_errno", i);
+			nvram_set(&buffer[0], "0");
+		}
+
+		// Check vpn servers
+		sprintf(&buffer[0], "vpnserver%d", i);
+		if ( (pid = pidof(&buffer[0])) >= 0 )
+		{
+			sprintf(&buffer[0], "vpn_server%d_state", i);
+			nvram_set(&buffer[0], "2");
+			sprintf(&buffer[0], "vpn_server%d_errno", i);
+			nvram_set(&buffer[0], "0");
+		}
+	}
+	return;
+}
+
 void restart_wireless(void)
 {
 #ifdef RTCONFIG_WIRELESSREPEATER
@@ -3362,6 +3394,7 @@ void restart_wireless(void)
 		start_nat_rules();
 	}
 #endif
+	update_vpn_state();	// refresh status of running vpn servers/clients
 
 	nvram_set_int("wlready", 1);
 
