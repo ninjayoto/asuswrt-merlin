@@ -547,6 +547,11 @@ void stop_vpnclient(int clientNum)
 //	try_enabling_fastnat();
 #endif
 
+	sprintf(&buffer[0], "vpn_client%d_state", clientNum);
+	nvram_set(&buffer[0], "0");
+	sprintf(&buffer[0], "vpn_client%d_errno", clientNum);
+	nvram_set(&buffer[0], "0");
+
 	vpnlog(VPN_LOG_INFO,"VPN GUI client backend stopped.");
 }
 
