@@ -2043,7 +2043,7 @@ dropbear-clean:
 	@rm -f dropbear/config.h
 
 dropbear/config.h:
-	cd dropbear && CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
+	cd dropbear && CFLAGS="-O2 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 		LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections" \
 		ac_cv_func_logout=no ac_cv_func_logwtmp=no \
 		$(CONFIGURE) --disable-zlib --enable-syslog --disable-lastlog --disable-utmp \
@@ -2055,7 +2055,7 @@ dropbear/config.h:
 
 sqlite/stamp-h1:
 	cd sqlite && \
-	CC=$(CC) CFLAGS="-Os $(EXTRACFLAGS) -ffunction-sections -fdata-sections -fPIC" \
+	CC=$(CC) CFLAGS="-O2 $(EXTRACFLAGS) -ffunction-sections -fdata-sections -fPIC" \
 		LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections" \
 		$(CONFIGURE) --prefix=/usr --enable-shared --enable-static \
 		--disable-readline --disable-dynamic-extensions --enable-threadsafe \
