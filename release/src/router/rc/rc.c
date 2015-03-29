@@ -663,6 +663,8 @@ int main(int argc, char **argv)
 				(!strcmp(argv[1], "linux2")) ||
 				(!strcmp(argv[1], "rootfs")) ||
 				(!strcmp(argv[1], "rootfs2")) ||
+				(!strcmp(argv[1], "brcmnand")) ||
+				(!strcmp(argv[1], "jffs2")) ||
 				(!strcmp(argv[1], "nvram")))) {
 			return mtd_erase(argv[1]);
 		} else {
