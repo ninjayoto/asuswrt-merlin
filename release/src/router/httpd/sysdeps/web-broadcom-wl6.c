@@ -1267,6 +1267,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	int ii, jj;
 	char *arplist = NULL, *arplistptr;
 	char *leaselist = NULL, *leaselistptr;
+	sta_info_t *sta = NULL;
 #ifdef RTCONFIG_DNSMASQ
 	char hostnameentry[16];
 #endif
@@ -1494,7 +1495,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 		else
 			ret += websWrite(wp, " %3ddBm ", scb_val.val);
 
-		sta_info_t *sta = wl_sta_info(name, &auth->ea[i]);
+		sta = wl_sta_info(name, &auth->ea[i]);
 		if (sta && (sta->flags & WL_STA_SCBSTATS))
 		{
 // Rate
@@ -1643,7 +1644,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				else
 					ret += websWrite(wp, " %3ddBm ", scb_val.val);
 
-				sta_info_t *sta = wl_sta_info(name_vif, &auth->ea[ii]);
+				sta = wl_sta_info(name_vif, &auth->ea[ii]);
 				if (sta && (sta->flags & WL_STA_SCBSTATS))
 				{
 // Rate
