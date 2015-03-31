@@ -22,13 +22,14 @@ wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
 <% wanlink(); %>
+//<% login_state_hook(); %>
 
-<% login_state_hook(); %>
-var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var $j = jQuery.noConflict();
+var ddns_hostname_x_t = '<% nvram_get("ddns_hostname_x"); %>';
 
 function init(){
-		ddns_load_body();	
+	valid_wan_ip();
+	ddns_load_body();
 }
 
 function check_update(){
@@ -40,21 +41,21 @@ function check_update(){
     if ((wanlink_ipaddr() == ddns_ipaddr_t) &&
         (ddns_server_x_t == document.form.ddns_server_x.value) &&
         (ddns_hostname_x_t == document.form.ddns_hostname_x.value) &&
-			ddns_updated_t == '1'){
+	(ddns_updated_t == '1') && (document.form.ddns_enable_x[0].checked == true)){
 			force_update();
     }else{
-			document.form.submit();
 			showLoading();
+			document.form.submit();
     }
 }
 
 function force_update() {
-    var r = confirm("IP address, server and hostname have not changed since the last update. If you want to update, please click 'yes'");
+    var r = confirm("IP address, server and hostname have not changed since the last update. If you want to update, please click 'OK'");
 	if(r == false)
-		return false
+		return false;
 
-	document.form.submit();
 	showLoading();
+	document.form.submit();
 }
 
 function valid_wan_ip() {
@@ -88,7 +89,6 @@ function valid_wan_ip() {
 
 function ddns_load_body(){
 	show_menu();
-	valid_wan_ip();
 
 	var hostname_x = '<% nvram_get("ddns_hostname_x"); %>';
 	var ddns_return_code = '<% nvram_get_ddns("LANHostConfig","ddns_return_code"); %>';
@@ -158,11 +158,17 @@ function ddns_load_body(){
 		alert("<#LANHostConfig_x_DDNS_alarm_8#>");
 	else if(ddns_return_code.indexOf('299')!=-1)
 		alert("<#LANHostConfig_x_DDNS_alarm_9#>");
-	else if(ddns_return_code.indexOf('401')!=-1)
+	else if(ddns_return_code.indexOf('401')!=-1){
 		alert("<#LANHostConfig_x_DDNS_alarm_10#>");
-	else if(ddns_return_code.indexOf('407')!=-1)
+		showhide("wan_ip_hide2", 0);
+		if(ddns_server_x == "WWW.ASUS.COM")
+			showhide("wan_ip_hide3", 0);
+	}else if(ddns_return_code.indexOf('407')!=-1){
 		alert("<#LANHostConfig_x_DDNS_alarm_11#>");
-	else if(ddns_return_code == 'Time-out')
+		showhide("wan_ip_hide2", 0);
+		if(ddns_server_x == "WWW.ASUS.COM")
+			showhide("wan_ip_hide3", 0);
+	}else if(ddns_return_code == 'Time-out')
 		alert("<#LANHostConfig_x_DDNS_alarm_1#>");
 	else if(ddns_return_code =='unknown_error')
 		alert("<#LANHostConfig_x_DDNS_alarm_2#>");
@@ -184,8 +190,9 @@ function applyRule(){
 				//document.form.action_script.value = "adm_asusddns_register";				
 				document.form.ddns_hostname_x.value = document.form.DDNSName.value+".asuscomm.com";	
 		}
-		showLoading();
-		document.form.submit();	
+//		showLoading();
+//		document.form.submit();
+		check_update();
 	}
 }
 
@@ -401,10 +408,10 @@ function onSubmitApply(s){
 		  		<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 		 		  <div class="formfontdesc"><#LANHostConfig_x_DDNSEnable_sectiondesc#></div>
 				  <div class="formfontdesc" id="wan_ip_hide2" style="color:#FFCC00;"><#LANHostConfig_x_DDNSEnable_sectiondesc2#></div>
-					<div class="formfontdesc" id="wan_ip_hide3" style="color:#FFCC00;"><#LANHostConfig_x_DDNSEnable_sectiondesc3#></div>
+				  <div class="formfontdesc" id="wan_ip_hide3" style="color:#FFCC00;"><#LANHostConfig_x_DDNSEnable_sectiondesc3#></div>
 
 			<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
-				<input type="hidden" name="wl_gmode_protection_x" value="<% nvram_get("wl_gmode_protection_x"); %>">
+<!--				<input type="hidden" name="wl_gmode_protection_x" value="<% nvram_get("wl_gmode_protection_x"); %>"> Why is this here -->
 			<tr>
 				<th><#LANHostConfig_x_DDNSEnable_itemname#></th>
 				<td>
