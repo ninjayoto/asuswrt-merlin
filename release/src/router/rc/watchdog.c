@@ -34,6 +34,8 @@
 #include <sys/types.h>
 #include <shutils.h>
 #include <stdarg.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 #ifdef RTCONFIG_RALINK
 #include <ralink.h>
 #endif
@@ -125,6 +127,9 @@ static int LED_status_on = -1;
 
 extern int g_wsc_configured;
 extern int g_isEnrollee[MAX_NR_WL_IF];
+
+#define REGULAR_DDNS_CHECK	10 //10x30 sec
+static int ddns_check_count = 0;
 
 void 
 sys_exit()
@@ -1279,6 +1284,30 @@ void swmode_check()
 }
 #endif
 
+void regular_ddns_check(void)
+{
+	struct in_addr ip_addr;
+	struct hostent *hostinfo;
+
+	//_dprintf("regular_ddns_check...\n");
+
+	hostinfo = gethostbyname(nvram_get("ddns_hostname_x"));
+	ddns_check_count = 0;
+
+	if(hostinfo) {
+		ip_addr.s_addr = *(unsigned long *)hostinfo -> h_addr_list[0];
+		//_dprintf("  %s ?= %s\n", nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr));
+		if(strcmp(nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr))) {
+			//_dprintf("WAN IP change!\n");
+			nvram_set("ddns_update_by_wdog", "1");
+			//unlink("/tmp/ddns.cache");
+			logmessage("watchdog", "Hostname/IP mapping error! Restart ddns.");
+
+		}
+	}
+	return;
+}
+
 void ddns_check(void)
 {
 	if(nvram_match("ddns_enable_x", "1") &&
@@ -1286,6 +1315,17 @@ void ddns_check(void)
 	{
 		if (pids("ez-ipupdate")) //ez-ipupdate is running!
 			return;
+
+		if (nvram_match("ddns_regular_check", "1")&& !nvram_match("ddns_server_x", "WWW.ASUS.COM")) {
+			int period = nvram_get_int("ddns_regular_period");
+			if (period < 30) period = 60;
+			if (ddns_check_count >= (period*2)) {
+				regular_ddns_check();
+				ddns_check_count = 0;
+			return;
+			}
+			ddns_check_count++;
+		}
 
 		if( nvram_match("ddns_updated", "1") ) //already updated success
 			return;
@@ -1301,7 +1341,7 @@ void ddns_check(void)
 				return;
 		}
 		nvram_set("ddns_update_by_wdog", "1");
-		unlink("/tmp/ddns.cache");
+		//unlink("/tmp/ddns.cache");
 		logmessage("watchdog", "start ddns.");
 		notify_rc("start_ddns");
 		ddns_update_timer = 0;

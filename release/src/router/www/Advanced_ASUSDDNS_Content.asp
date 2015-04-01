@@ -256,14 +256,14 @@ function validForm(){
 				}
 			}
 
-			//if(document.form.ddns_regular_check[0].checked){   // DDNS verification
-			//	if(document.form.ddns_regular_period.value < 30){
-			//		alert("Verify interval must be at least 30 minutes");
-			//		document.form.ddns_regular_period.focus();
-			//		document.form.ddns_regular_period.select();
-			//		return false;
-			//	}
-			//}
+			if(document.form.ddns_regular_check[0].checked){   // DDNS verification
+				if(document.form.ddns_regular_period.value < 30){
+					alert("Verify interval must be at least 30 minutes");
+					document.form.ddns_regular_period.focus();
+					document.form.ddns_regular_period.select();
+					return false;
+				}
+			}
 			return true;
 		}
 	}
@@ -476,7 +476,7 @@ function onSubmitApply(s){
 					<input type="text" maxlength="3" name="ddns_refresh_x" class="input_3_table" value="<% nvram_get("ddns_refresh_x"); %>" onKeyPress="return is_number(this,event)">
 				</td>
 			</tr>
-<!-- 			<tr id="check_ddns_field" style="display:none;">
+			<tr id="check_ddns_field" style="display:none;">
 				<th>WAN IP and hostname verification</th>
 				<td>
 					<input type="radio" value="1" name="ddns_regular_check" onClick="change_ddns_setting(document.form.ddns_server_x.value);" <% nvram_match("ddns_regular_check", "1", "checked"); %>><#checkbox_Yes#>
@@ -489,7 +489,6 @@ function onSubmitApply(s){
 					<input type="text" maxlength="5" class="input_6_table" name="ddns_regular_period" value="<% nvram_get("ddns_regular_period"); %>"> <#Minute#>
 				</td>
 			</tr>
--->
 			<tr style="display:none;">
 				<th><#LANHostConfig_x_DDNSStatus_itemname#></th>
 				<td>

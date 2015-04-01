@@ -1043,9 +1043,9 @@ function change_ddns_setting(v){
 				showhide("link", 0);
 				showhide("linkToHome", 0);	
 				showhide("wildcard_field",0);
-				//document.form.ddns_regular_check.value = 0;
-				//showhide("check_ddns_field", 0);
-				//inputCtrl(document.form.ddns_regular_period, 0);
+				document.form.ddns_regular_check.value = 0;
+				showhide("check_ddns_field", 0);
+				inputCtrl(document.form.ddns_regular_period, 0);
 				showhide("customnote", 0);
 		}else if (v == "CUSTOM"){
 				document.form.ddns_hostname_x.parentNode.style.display = "";
@@ -1079,11 +1079,11 @@ function change_ddns_setting(v){
 				}
 				
 				showhide("wildcard_field",!disable_wild);
-				//showhide("check_ddns_field", 1);
-				//if(document.form.ddns_regular_check.value == 0)
-				//	inputCtrl(document.form.ddns_regular_period, 0);
-				//else
-				//	inputCtrl(document.form.ddns_regular_period, 1);
+				showhide("check_ddns_field", 1);
+				if(document.form.ddns_regular_check.value == 0)
+					inputCtrl(document.form.ddns_regular_period, 0);
+				else
+					inputCtrl(document.form.ddns_regular_period, 1);
 				showhide("customnote", 0);
 		}
 		if(v == "WWW.NAMECHEAP.COM")
@@ -1151,9 +1151,9 @@ function change_common_radio(o, s, v, r){
 			document.form.ddns_wildcard_x[0].disabled= 1;
 			document.form.ddns_wildcard_x[1].disabled= 1;
 			showhide("wildcard_field",0);
-			//document.form.ddns_regular_check.value = 0;
-			//showhide("check_ddns_field", 0);
-			//inputCtrl(document.form.ddns_regular_period, 0);
+			document.form.ddns_regular_check.value = 0;
+			showhide("check_ddns_field", 0);
+			inputCtrl(document.form.ddns_regular_period, 0);
 		}	
 	}
 	else if(v == "wan_dnsenable_x"){

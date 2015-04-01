@@ -3287,6 +3287,7 @@ int init_nvram(void)
 	if(nvram_get("ddns_regular_check") == NULL){
 		nvram_set("ddns_regular_check", "0");
 		nvram_set("ddns_regular_period", "60");
+		nvram_set("ddns_transfer", "");
 	}
 
 	// Initialize working variables for cron logging
