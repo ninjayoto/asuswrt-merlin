@@ -547,7 +547,7 @@ function cancel_SSID_Block(){
 						<tr bgcolor="#4D595D" valign="top">
 							<td>
 								<div style="width:95%; margin:0 auto; padding-bottom:3px;">
-									<span style="font-size:16px; font-weight:bold;color:white;text-shadow:1px 1px 0px black">
+									<span style="font-size:15px; font-weight:bold;color:white;text-shadow:1px 1px 0px black">
 										<input type="radio" name="sw_mode_radio" class="input" value="1" onclick="setScenerion(1);" <% nvram_match("sw_mode", "1", "checked"); %>><#OP_GW_item#>
 										&nbsp;&nbsp;
 										<span id="repeaterMode"><input type="radio" name="sw_mode_radio" class="input" value="2" onclick="setScenerion(2);" <% nvram_match("sw_mode", "2", "checked"); %>><#OP_RE_item#></span>
