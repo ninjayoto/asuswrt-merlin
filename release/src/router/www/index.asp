@@ -22,6 +22,7 @@
 <script type="text/javascript" src="/help.js"></script>
 <script type="text/javascript" src="/detect.js"></script>
 <script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
+<script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
 <script>
 var $j = jQuery.noConflict();	
 
@@ -941,7 +942,7 @@ function change_wan_state(primary_status, secondary_status){
 							<div id="helpname" style="padding-top:10px;font-size:16px;"></div>
 						</div>							
 						<div>
-							<iframe id="statusframe" class="NM_radius_bottom" style="margin-left:45px;margin-top:-2px;" name="statusframe" width="320" height="680" frameborder="0" allowtransparency="true" style="background-color:transparent; margin-left:10px;" src="device-map/router.asp"></iframe>
+							<iframe id="statusframe" class="NM_radius_bottom" style="margin-left:45px;margin-top:-2px;" name="statusframe" width="320" height="680" frameborder="0" allowtransparency="true" style="background-color:transparent; margin-left:10px;" src="/device-map/router.asp"></iframe>
 						</div>
 					</td>	
 				</tr>			
@@ -960,7 +961,7 @@ function change_wan_state(primary_status, secondary_status){
 				</tr>			
 				<tr>
 					<td height="115" align="right" bgcolor="#444f53" class="NM_radius_left" onclick="showstausframe('Router');">
-						<a href="device-map/router.asp" target="statusframe"><div id="iconRouter" onclick="clickEvent(this);"></div></a>
+						<a href="/device-map/router.asp" target="statusframe"><div id="iconRouter" onclick="clickEvent(this);"></div></a>
 					</td>
 					<td colspan="2" valign="middle" bgcolor="#444f53" class="NM_radius_right" onclick="showstausframe('Router');">
 						<span style="font-size:14px;font-family: Verdana, Arial, Helvetica, sans-serif;"><#Security_Level#>: </span>
@@ -978,9 +979,7 @@ function change_wan_state(primary_status, secondary_status){
 				</tr>
 				<tr>
 					<td id="clients_tr" width="150" height="170" bgcolor="#444f53" align="center" valign="top" class="NM_radius_top" onclick="showstausframe('Client');">
-						<a id="clientStatusLink" href="device-map/clients.asp" target="statusframe"><!--lock 1226-->
-							<div id="iconClient" style="margin-top:20px;" onclick="clickEvent(this);"></div>
-						</a>
+						<a id="clientStatusLink" href="/device-map/clients.asp" target="statusframe"><div id="iconClient" style="margin-top:20px;" onclick="clickEvent(this);"></div></a>
 						<div class="clients" id="clientNumber" style="cursor:pointer;"></div>
 					</td>
 
