@@ -140,6 +140,11 @@ function initial(){
 
 	document.form.http_username.value= accounts[0];
 	document.form.sshd_authkeys.value = document.form.sshd_authkeys.value.replace(/>/gm,"\r\n");
+
+	if(based_modelid == "RT-AC66U" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC68U") {
+		$("jffs2log").style.display = "";
+	}
+
 }
 
 var time_zone_tmp="";
@@ -232,8 +237,9 @@ function applyRule(){
 			}   
 		}
 
-		// Reboot if clearing https certificate
-                if(document.form.https_crt_save.value = "0" && (document.form.https_crt_save.value != '<% nvram_get("https_crt_save"); %>')){
+		// Reboot if clearing https certificate or change JFFS log state
+                if((document.form.https_crt_save.value = "0" && (document.form.https_crt_save.value != '<% nvram_get("https_crt_save"); %>')) ||
+			(document.form.jffs2_log.value != '<% nvram_get("jffs2_log"); %>')){
                         FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
                 }
 
@@ -979,6 +985,14 @@ function clean_scorebar(obj){
                   <input type="radio" name="jffs2_format" class="input" value="0" <% nvram_match_x("LANHostConfig", "jffs2_format", "0", "checked"); %>><#checkbox_No#>
               </td>
           </tr>
+          <tr style="display:none;" id="jffs2log">
+              <th>Save syslog to JFFS**</i></th>
+              <td>
+                  <input type="radio" name="jffs2_log" class="input" value="1" <% nvram_match_x("LANHostConfig", "jffs2_log", "1", "checked"); %>><#checkbox_Yes#>
+                  <input type="radio" name="jffs2_log" class="input" value="0" <% nvram_match_x("LANHostConfig", "jffs2_log", "0", "checked"); %>><#checkbox_No#>
+              </td>
+          </tr>
+
       </table>
 
       <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
