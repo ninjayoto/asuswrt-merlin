@@ -132,6 +132,9 @@ function initial(){
 		{
 			inputCtrl(document.form.wl_itxbf, 1);
 		}		
+
+		var wl_ant_gain = '<% nvram_get("wl1_ant_gain"); %>';
+		wl_ant_gain = (wl_ant_gain ? string_to_num(wl_ant_gain) : 5);
 	}
 	else{ // 2.4GHz
 		if( based_modelid == "RT-N18U" || 
@@ -154,7 +157,17 @@ function initial(){
 			inputCtrl(document.form.wl_txbf, 1);
 			inputCtrl(document.form.wl_itxbf, 1);
 		}	
+
+		var wl_ant_gain = '<% nvram_get("wl0_ant_gain"); %>';
+		wl_ant_gain = (wl_ant_gain ? string_to_num(wl_ant_gain) : 4);
+
 	}
+
+	var showEIRP = '<% nvram_get("wl_show_eirp"); %>';
+	var EIRP = round_to_int(dbm_to_mw(mw_to_dbm(document.form.wl_TxPower.value) + wl_ant_gain), 5);
+	$("TxEIRP").innerHTML = "( Target EIRP " + EIRP + " mW )";
+	if(!showEIRP)
+		$("TxEIRP").style.display = "none";
 
 	$("TxDomain").innerHTML = "(" + document.form.wl_country_code.value + "/" + document.form.wl_country_rev.value + ")";
 
@@ -907,6 +920,7 @@ function check_ampdu_rts(){
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(0, 17);"><#WLANConfig11b_TxPower_itemname#></a></th>
 						<td>
 		  				<input type="text" maxlength="3" name="wl_TxPower" class="input_3_table" value="<% nvram_get("wl_TxPower"); %>" onKeyPress="return is_number(this, event);"> mW
+							<span id="TxEIRP" style="color:#FFFFFF;padding-left:20px"></span>
 							<br><span>
 										<#WLANConfig11b_x_maxtxpower1#>
 										<span id="maxTxPower">200</span>mW

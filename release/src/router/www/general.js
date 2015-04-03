@@ -2489,3 +2489,25 @@ function limit_auth_method(){
 	authentication_method_change(document.form.wl_auth_mode_x);
 }
 
+function log10(val){
+	return (Math.log(val) / Math.LN10);
+}
+
+function mw_to_dbm(val){
+	return (10 * log10(val));
+}
+
+function dbm_to_mw(val){
+	return (Math.pow(10, val/10));
+}
+
+function round_to_int(val, offset){
+	return (Math.round(val + offset));
+}
+
+function round_to_int(val, rnd){
+	if(rnd <= 0)
+		rnd = 1;
+	val=val/rnd;
+	return (Math.round(val) * rnd);
+}
