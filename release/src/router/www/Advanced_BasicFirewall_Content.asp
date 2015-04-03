@@ -183,9 +183,16 @@ function done_validating(action){
 								<input type="radio" value="0" name="misc_ping_x" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'misc_ping_x', '0')" <% nvram_match("misc_ping_x", "0", "checked"); %>><#checkbox_No#>
 							</td>
 		</tr>
+                <tr>
+                        <th>Filter IPv6 Neighbor Solicitation**</th>
+                        <td>
+                                                                <input type="radio" value="1" name="ipv6_neighsol_drop" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ipv6_neighsol_drop', '1')" <% nvram_match("ipv6_neighsol_drop", "1", "checked"); %>><#checkbox_Yes#>
+                                                                <input type="radio" value="0" name="ipv6_neighsol_drop" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ipv6_neighsol_drop', '0')" <% nvram_match("ipv6_neighsol_drop", "0", "checked"); %>><#checkbox_No#>
+                        </td>
+                </tr>
 		<tr>
 			<!-- <th><a class="hintstyle" href="javascript:void(0);" onClick=""><#Extend_TTL_Value#></a></th> -->
-			<th>Extend TTL Value</th>
+			<th>Extend TTL Value**</th>
 			<td>
 								<input type="radio" value="1" name="ttl_inc_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ttl_inc_enable', '1')" <% nvram_match("ttl_inc_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="ttl_inc_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ttl_inc_enable', '0')" <% nvram_match("ttl_inc_enable", "0", "checked"); %>><#checkbox_No#>
