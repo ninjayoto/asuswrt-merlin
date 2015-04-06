@@ -2651,7 +2651,7 @@ void start_webdav(void)	// added by Vanic
 	write_webdav_permissions();
 
 	/* WebDav SSL support */
-	//write_webdav_server_pem();
+	write_webdav_server_pem();
 
 	/* write WebDav configure file*/
 	system("/sbin/write_webdav_conf");
