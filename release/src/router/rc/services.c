@@ -543,8 +543,7 @@ void start_dnsmasq(int force)
 	FILE *fp;
 	char *lan_ifname;
 	char *lan_ipaddr;
-	char *nv;
-	char *value;
+	char *nv, *nv2;
 	int n;
 
 	TRACE_PT("begin\n");
@@ -728,19 +727,6 @@ void start_dnsmasq(int force)
 		/* Shut up WPAD info requests */
 		fprintf(fp,"dhcp-option=252,\"\\n\"\n");
 
-		/* DNS server and additional router address */
-		value = nvram_safe_get("dhcp_dns1_x");
-		if (*value && inet_addr(value)) {
-			char *value2;
-
-			value2 = nvram_safe_get("dhcp_dns2_x");
-			fprintf(fp, "dhcp-option=lan,6,%s%s%s%s\n",
-				     value,
-				     (*value2 && inet_addr(value2) ? "," : ""),
-				     (*value2 && inet_addr(value2) ? value2 : ""),
-				     (nvram_match("dhcpd_dns_router","1") ? ",0.0.0.0" : ""));
-		}
-
 		/* LAN Domain */
 		nv = nvram_safe_get("lan_domain");
 		if (*nv)
@@ -753,8 +739,14 @@ void start_dnsmasq(int force)
 
 		/* DNS server and additional router address */
 		nv = nvram_safe_get("dhcp_dns1_x");
-		if (*nv && inet_addr(nv))
-			fprintf(fp, "dhcp-option=lan,6,%s,0.0.0.0\n", nv);
+		if (*nv && inet_addr(nv)) {
+			nv2 = nvram_safe_get("dhcp_dns2_x");
+			fprintf(fp, "dhcp-option=lan,6,%s%s%s%s\n",
+				nv,
+				(*nv2 && inet_addr(nv2) ? "," : ""),
+				(*nv2 && inet_addr(nv2) ? nv2 : ""),
+				(nvram_match("dhcpd_dns_router","1") ? ",0.0.0.0" : ""));
+		}
 
 		/* WINS server */
 		nv = nvram_safe_get("dhcp_wins_x");
