@@ -74,13 +74,14 @@ static const struct itimerval zombie_tv = { {0,0}, {307, 0} };
 static const char dmhosts[] = "/etc/hosts.dnsmasq";
 static const char dmresolv[] = "/tmp/resolv.conf";
 
+static const int MAX_RETRY = 5;
+
 #ifdef RTCONFIG_CROND
 void stop_cron(void);
 void start_cron(void);
 #endif
 void start_wlcscan(void);
 void stop_wlcscan(void);
-
 
 #ifndef MS_MOVE
 #define MS_MOVE		8192
@@ -521,6 +522,20 @@ void create_passwd(void)
 #endif
 	fappend_file("/etc/group", "/jffs/configs/group.add");
 	run_postconf("group.postconf","/etc/group");
+}
+
+static volatile int s_iptlock;
+
+int set_iptlock(int force)
+{
+	s_iptlock = nvram_get_int("nat_iptlock");
+	if (force >= 0) {
+		s_iptlock = (force ? 1 : 0);
+		nvram_set_int("nat_iptlock", s_iptlock);
+	}
+	//*(volatile int*)&s_iptlock = s_iptlock; // force memory write
+
+	return s_iptlock;
 }
 
 void start_dnsmasq(int force)
@@ -3917,7 +3932,7 @@ void handle_notifications(void)
 	char *nvp, *b, *nvptr;
 	int action = 0;
 	int count;
-	int i;
+	int i, j;
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 	int j2l = 0;
 	if (nvram_match("jffs2_log", "1")) j2l = 1;
@@ -4942,14 +4957,33 @@ check_ddr_done:
 		_dprintf("%s: restart_iptrestore: %s.\n", __FUNCTION__, cmd[1]);
 		if(cmd[1]) {
 			if(action&RC_SERVICE_START){
-				for ( i = 1; i <= 5; i++ ) {
-					if (eval("iptables-restore", cmd[1])) {
-						_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+				// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+				// Retry a few times to resolve collision.
+				// Invoke a lock during the restore operation to avoid iptables-restore collisions.
+				j = MAX_RETRY;
+				while (j-- > 0){
+					if (set_iptlock(-1)){ // Check lock
+						logmessage("iptables-restore", "(%s) waiting...", cmd[1]);
 						sleep(1);
 					} else {
-						i = 6;
+						set_iptlock(1); // Set lock
+						for ( i = 1; i <= MAX_RETRY; i++ ) {
+							if (eval("iptables-restore", cmd[1])) {
+								_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+								//logmessage("iptables-restore", "attempt: %d of %d ...\n", i, MAX_RETRY);
+								if (i == MAX_RETRY)
+									logmessage("iptables-restore", "(%s) failed!", cmd[1]);
+								sleep(1);
+							} else {
+								logmessage("iptables-restore", "(%s) success!", cmd[1]);
+								i = MAX_RETRY + 1;
+							}
+						}
+						//set_iptlock(0); // Clear lock
+						j = 0;
 					}
 				}
+				set_iptlock(0); // Safety Clear lock
 			}
 		}
 	}
@@ -5560,7 +5594,7 @@ void start_nat_rules(void)
 	int len;
 	char *fn = NAT_RULES, ln[PATH_MAX];
 	struct stat s;
-	int i;
+	int i, j;
 
 	// all rules applied directly according to currently status, wanduck help to triger those not cover by normal flow
  	if(nvram_match("x_Setting", "0")){
@@ -5579,21 +5613,38 @@ void start_nat_rules(void)
 	}
 
 	_dprintf("%s: apply the nat_rules(%s)!\n", __FUNCTION__, fn);
-	logmessage("start_nat_rules", "apply the nat_rules(%s)!", fn);
+	logmessage("start_nat_rules", "apply the nat_rules (%s)!", fn);
 
 	setup_ct_timeout(TRUE);
 	setup_udp_timeout(TRUE);
 
 	// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
-	// Retry a few times with increasing wait time to resolve collision. 
-	for ( i = 1; i <= 5; i++ ) {
-		if (eval("iptables-restore", NAT_RULES)) {
-			_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+	// Retry a few times to resolve collision.
+	// Invoke a lock during the restore operation to avoid iptables-restore collisions.
+	j = MAX_RETRY;
+	while (j-- > 0){
+		if (set_iptlock(-1)){ // Check lock
+			logmessage("start_nat_rules", "(%s) waiting...", fn);
 			sleep(1);
 		} else {
-			i = 6;
+			set_iptlock(1); // Set lock
+			for ( i = 1; i <= MAX_RETRY; i++ ) {
+				if (eval("iptables-restore", NAT_RULES)) {
+					_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+					//logmessage("start_nat_rules", "attempt: %d of %d ...\n", i, MAX_RETRY);
+					if (i == MAX_RETRY)
+						logmessage("start_nat_rules", "(%s) failed!", fn);
+					sleep(1);
+				} else {
+					logmessage("start_nat_rules", "(%s) success!", fn);
+					i = MAX_RETRY + 1;
+				}
+			}
+			//set_iptlock(0); // Clear lock
+			j = 0;
 		}
 	}
+	set_iptlock(0); // Safety Clear lock
 
 //#ifdef WEB_REDIRECT
 //	// Remove wildcard resolution
@@ -5605,7 +5656,8 @@ void start_nat_rules(void)
 
 void stop_nat_rules(void)
 {
-	int i;
+	char fn[] = "/tmp/redirect_rules";
+	int i, j;
 
 	if (nvram_get_int("nat_state")==NAT_STATE_REDIRECT) return ;
 
@@ -5617,14 +5669,33 @@ void stop_nat_rules(void)
 	setup_ct_timeout(FALSE);
 	setup_udp_timeout(FALSE);
 
-	for ( i = 1; i <= 5; i++ ) {
-		if (eval("iptables-restore", "/tmp/redirect_rules")) {
-			_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+	// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+	// Retry a few times to resolve collision.
+	// Invoke a lock during the restore operation to avoid iptables-restore collisions.
+	j = MAX_RETRY;
+	while (j-- > 0){
+		if (set_iptlock(-1)){ //Check lock
+			logmessage("stop_nat_rules", "(%s) waiting...", fn);
 			sleep(1);
 		} else {
-			i = 6;
+			set_iptlock(1); // Set lock
+			for ( i = 1; i <= MAX_RETRY; i++ ) {
+				if (eval("iptables-restore", fn)) {
+					_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+					//logmessage("stop_nat_rules", "attempt: %d of %d ...\n", i, MAX_RETRY);
+					if (i == MAX_RETRY)
+						logmessage("stop_nat_rules", "(%s) failed!", fn);
+					sleep(1);
+				} else {
+					logmessage("stop_nat_rules", "(%s) success!", fn);
+					i = MAX_RETRY + 1;
+				}
+			}
+			//set_iptlock(0); // Clear lock
+			j = 0;
 		}
 	}
+	set_iptlock(0); // Safety Clear lock
 
 //#ifdef WEB_REDIRECT
 //	// dnsmasq will handle wildcard resolution

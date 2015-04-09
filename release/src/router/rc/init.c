@@ -3259,6 +3259,8 @@ int init_nvram(void)
 		break;
 	}
 
+// Init Custom fork variables to avoid factory reset required
+
 	// Initialize working variable name for max tcp connections
 	if(!nvram_get("ct_max"))
 		nvram_set("ct_max", nvram_get("ct_max_default"));
@@ -3300,6 +3302,12 @@ int init_nvram(void)
         if(nvram_get("ipv6_service_last") == NULL){
                 nvram_set("ipv6_service_last", "disabled");
         }
+
+	// Initialize working variable for ipt lock
+	if(nvram_get("nat_iptlock") == NULL)
+                nvram_set("nat_iptlock", "0");
+
+// End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
