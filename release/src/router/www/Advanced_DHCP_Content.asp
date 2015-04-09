@@ -644,17 +644,17 @@ function check_vpn(){		//true: (DHCP ip pool & static ip ) conflict with VPN cli
 				</td>
 			  </tr>
                           <tr>
-                                <th>Advertise router's IP in addition to user-specified DNS</th>
+                                <th>Advertise router's IP in addition to<br>user-specified DNS</th>
                                 <td>
                                   <input type="radio" value="1" name="dhcpd_dns_router" class="content_input_fd" onClick="return change_common_radio(this, 'LANHostConfig', 'dhcpd_dns_router', '1')" <% nvram_match("dhcpd_dns_router", "1", "checked"); %>><#checkbox_Yes#>
                                   <input type="radio" value="0" name="dhcpd_dns_router" class="content_input_fd" onClick="return change_common_radio(this, 'LANHostConfig', 'dhcpd_dns_router', '0')" <% nvram_match("dhcpd_dns_router", "0", "checked"); %>><#checkbox_No#>
                                 </td>
                           </tr>
 			  <tr>
-				<th>Forward local domain queries to upstream DNS</a></th>
+				<th>Forward local domain queries to<br>upstream DNS</a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="lan_dns_fwd_local"  onclick="return change_common_radio(this, 'LANHostConfig', 'lan_dns_fwd_local', '1')" <% nvram_match("lan_dns_fwd_local", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="lan_dns_fwd_local"  onclick="return change_common_radio(this, 'LANHostConfig', 'lan_dns_fwd_local', '0')" <% nvram_match("lan_dns_fwd_local", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="lan_dns_fwd_local" class="content_input_fd" onclick="return change_common_radio(this, 'LANHostConfig', 'lan_dns_fwd_local', '1')" <% nvram_match("lan_dns_fwd_local", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="lan_dns_fwd_local" class="content_input_fd" onclick="return change_common_radio(this, 'LANHostConfig', 'lan_dns_fwd_local', '0')" <% nvram_match("lan_dns_fwd_local", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			  </tr>
 			  <tr>
