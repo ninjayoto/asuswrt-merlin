@@ -661,6 +661,16 @@ function load_dst_h_Options(){
 	}	
 }
 
+function check_jffs2_state(_value){
+	if (!document.form.jffs2_on[0].checked)
+		$("jffs_log_msg").style.display = (_value == "0") ? "none" : "";
+}
+
+function update_jlog_msg(_value){
+	if (document.form.jffs2_log[0].checked)
+		$("jffs_log_msg").style.display = (_value == "0") ? "" : "none";
+}
+
 function hide_https_lanport(_value){
 	if(sw_mode == '1' || sw_mode == '2'){
 		var https_lanport_num = "<% nvram_get("https_lanport"); %>";
@@ -974,8 +984,8 @@ function clean_scorebar(obj){
            <tr>
               <th>Enable JFFS partition</th>
               <td>
-                  <input type="radio" name="jffs2_on" class="input" value="1" <% nvram_match_x("LANHostConfig", "jffs2_on", "1", "checked"); %>><#checkbox_Yes#>
-                  <input type="radio" name="jffs2_on" class="input" value="0" <% nvram_match_x("LANHostConfig", "jffs2_on", "0", "checked"); %>><#checkbox_No#>
+                  <input type="radio" name="jffs2_on" class="input" value="1" <% nvram_match_x("LANHostConfig", "jffs2_on", "1", "checked"); %> onchange="update_jlog_msg(this.value);"><#checkbox_Yes#>
+                  <input type="radio" name="jffs2_on" class="input" value="0" <% nvram_match_x("LANHostConfig", "jffs2_on", "0", "checked"); %> onchange="update_jlog_msg(this.value);"><#checkbox_No#>
               </td>
           </tr>
           <tr>
@@ -988,8 +998,9 @@ function clean_scorebar(obj){
           <tr style="display:none;" id="jffs2log">
               <th>Save syslog to JFFS**</i></th>
               <td>
-                  <input type="radio" name="jffs2_log" class="input" value="1" <% nvram_match_x("LANHostConfig", "jffs2_log", "1", "checked"); %>><#checkbox_Yes#>
-                  <input type="radio" name="jffs2_log" class="input" value="0" <% nvram_match_x("LANHostConfig", "jffs2_log", "0", "checked"); %>><#checkbox_No#>
+                  <input type="radio" name="jffs2_log" class="input" value="1" <% nvram_match_x("LANHostConfig", "jffs2_log", "1", "checked"); %> onchange="check_jffs2_state(this.value);"><#checkbox_Yes#>
+                  <input type="radio" name="jffs2_log" class="input" value="0" <% nvram_match_x("LANHostConfig", "jffs2_log", "0", "checked"); %> onchange="check_jffs2_state(this.value);"><#checkbox_No#>
+		  <span id="jffs_log_msg" style="display:none;padding-left:20px;">JFFS partition must be enabled</span>
               </td>
           </tr>
 
