@@ -131,8 +131,10 @@ function initial(){
 	else
 		hideport(document.form.misc_http_x[0].checked);
 	
-	if(!HTTPS_support || '<% nvram_get("http_enable"); %>' == 0)
+	if(!HTTPS_support || '<% nvram_get("http_enable"); %>' == 0){
 		$("https_port").style.display = "none";
+		$("https_cert").style.display = "none";
+	}
 	else if('<% nvram_get("http_enable"); %>' == 1)
 		$("http_port").style.display = "none";
 
@@ -229,6 +231,11 @@ function applyRule(){
 				}
 			}   
 		}
+
+		// Reboot if clearing https certificate
+                if(document.form.https_crt_save.value = "0" && (document.form.https_crt_save.value != '<% nvram_get("https_crt_save"); %>')){
+                        FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+                }
 
 		showLoading();
 		document.form.submit();
@@ -661,8 +668,9 @@ function hide_https_lanport(_value){
 }
 
 function hide_https_wanport(_value){
-	$("http_port").style.display = (_value == "1") ? "none" : "";	
-	$("https_port").style.display = (_value == "0") ? "none" : "";	
+	$("http_port").style.display = (_value == "1") ? "none" : "";
+	$("https_port").style.display = (_value == "0") ? "none" : "";
+	$("https_cert").style.display = (_value == "0") ? "none" : "";
 }
 
 // show clientlist
@@ -885,6 +893,7 @@ function clean_scorebar(obj){
 <input type="hidden" name="time_zone_dstoff" value="<% nvram_get("time_zone_dstoff"); %>">
 <input type="hidden" name="http_passwd" value="" disabled>
 <input type="hidden" name="http_clientlist" value="<% nvram_get("http_clientlist"); %>">
+<input type="hidden" name="https_crt_gen" value="<% nvram_get("https_crt_gen"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -1106,7 +1115,15 @@ function clean_scorebar(obj){
 						<span id="https_access_page"></span>
 					</td>
 		  	</tr>
-		  	
+
+			<tr id="https_cert">
+					<th>Save HTTPS certificate**<br><i>Requires approx 1KB NVRAM space</i></th>
+					<td>
+						<input type="radio" name="https_crt_save" class="input" value="1" <% nvram_match_x("", "https_crt_save", "1", "checked"); %>><#checkbox_Yes#>
+						<input type="radio" name="https_crt_save" class="input" value="0" <% nvram_match_x("", "https_crt_save", "0", "checked"); %>><#checkbox_No#>
+					</td>
+			</tr>
+
         <tr id="misc_http_x_tr">
           	<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,2);"><#FirewallConfig_x_WanWebEnable_itemname#></a></th>
            	<td>
