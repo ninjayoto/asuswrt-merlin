@@ -3259,7 +3259,7 @@ int init_nvram(void)
 		break;
 	}
 
-// Init Custom fork variables to avoid factory reset required
+// Init added fork variables to avoid factory reset required
 
 	// Initialize working variable name for max tcp connections
 	if(!nvram_get("ct_max"))
@@ -3306,6 +3306,16 @@ int init_nvram(void)
 	// Initialize working variable for ipt lock
 	if(nvram_get("nat_iptlock") == NULL)
                 nvram_set("nat_iptlock", "0");
+
+	// Initialize working variables for OpenVPN selective routing
+        if(nvram_get("vpn_client_enforce") == NULL){
+		nvram_set("vpn_client_clientlist", "");
+		nvram_set("vpn_client_enforce", "0");
+		nvram_set("vpn_client1_clientlist", "");
+		nvram_set("vpn_client1_enforce", "0");
+		nvram_set("vpn_client2_clientlist", "");
+		nvram_set("vpn_client2_enforce", "0");
+        }
 
 // End Custom variables
 
