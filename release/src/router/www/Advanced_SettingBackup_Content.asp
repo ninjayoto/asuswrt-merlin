@@ -18,7 +18,7 @@
 <script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
-<script language="JavaScript" type="text/javascript" src="/ajax.js"></script>
+<script language="JavaScript" 50da76eba15ae6e75613ea8c8e4896400f79dtype="text/javascript" src="/ajax.js"></script>
 <script>
 var $j = jQuery.noConflict();
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
@@ -27,6 +27,8 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 
 var varload = 0;
 var lan_ipaddr = '<% nvram_get("lan_ipaddr"); %>';
+var buildno = '<% nvram_get("buildno"); %>';
+var extendno = '<% nvram_get("extendno"); %>';
 
 
 function initial(){
@@ -50,7 +52,9 @@ function restoreRule(){
 }
 
 function saveSetting(){
-	location.href='Settings_'+productid+'.CFG';
+	var i = extendno.indexOf('-');
+	extendno = (extendno ? "_"+extendno.substring(0, i) : "");
+	location.href='Settings_'+productid+'_'+buildno+extendno+'.CFG';
 }
 
 function uploadSetting(){
