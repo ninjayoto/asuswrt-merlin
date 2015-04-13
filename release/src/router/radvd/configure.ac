@@ -31,7 +31,7 @@ case "$target" in
                 arch=bsd44
         ;;
         *darwin*)
-		AC_DEFINE([__APPLE_USE_RFC_2292], [1], [OS X 10.9 won't build radvd without this])
+		AC_DEFINE([__APPLE_USE_RFC_2292], [1], [OS X 10.9 wont build radvd without this])
 		AC_MSG_RESULT([bsd44 (darwin)])
                 arch=bsd44
         ;;
@@ -75,6 +75,9 @@ AC_MSG_RESULT(yes)
 ],[
 AC_MSG_RESULT(no)
 ])
+
+dnl clock_gettime is in librt for glibc <2.17
+AC_SEARCH_LIBS(clock_gettime, rt)
 
 dnl Needed for normal compile
 AC_PROG_INSTALL

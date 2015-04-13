@@ -17,3 +17,5 @@ radvdump
 radvdump.8
 scanner.c
 stamp-h1
+CHANGES*
+contrib

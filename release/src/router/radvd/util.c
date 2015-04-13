@@ -15,9 +15,6 @@
 #include "config.h"
 #include "includes.h"
 #include "radvd.h"
-#ifdef BCMARM
-#include "ifaddrs.c"
-#endif
 
 double rand_between(double lower, double upper)
 {
