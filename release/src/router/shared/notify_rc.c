@@ -97,7 +97,7 @@ int wait_rc_service(int wait)
 		if(--i < 0)
 			return 0;
 		if(first_try){
-			logmessage_normal("rc_service", "waitting \"%s\" via %s ...", nvram_safe_get("rc_service"), p1);
+			logmessage_normal("rc_service", "waiting \"%s\" via %s ...", nvram_safe_get("rc_service"), p1);
 			first_try = 0;
 		}
 
