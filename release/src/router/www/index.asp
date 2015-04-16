@@ -164,8 +164,13 @@ function show_ddns_status(){
 	var ddns_server_x = '<% nvram_get("ddns_server_x");%>';
 	var ddnsName = decodeURIComponent('<% nvram_char_to_ascii("", "ddns_hostname_x"); %>');
 	var i = ddnsName.indexOf('.');
-	var ddnsName_n = ddnsName.substring(0, i);
-	var ddnsName_d = ddnsName.substring(i);
+	if (i == -1) {
+		var ddnsName_n = ddnsName;
+		var ddnsName_d = ddns_server_x;
+	} else {
+		var ddnsName_n = ddnsName.substring(0, i);
+		var ddnsName_d = ddnsName.substring(i);
+	}
 	if(ddnsName_n.length > 15)
 		ddnsName_n = ddnsName_n.substring(0,15).concat("...");
 
@@ -178,7 +183,7 @@ function show_ddns_status(){
                 $("ddnsHostName").innerHTML = '<a style="color:#FFF;text-decoration:underline;" href="/Advanced_ASUSDDNS_Content.asp?af=DDNSName">Sign up</a>';
         else{
 		//$("ddnsHostName").innerHTML = '<span>'+ ddnsName_n + '<br />\n' + ddnsName_d + '</span>';
-		$("ddnsHostName").innerHTML = '<span><a style="color:#FFF;text-decoration:underline;" href="/Advanced_ASUSDDNS_Content.asp?af=DDNSName">' + ddnsName_n + '</a><br />\n' + ddnsName_d + '</span>';
+		$("ddnsHostName").innerHTML = '<span><a style="color:#FFF;text-decoration:underline;" href="/Advanced_ASUSDDNS_Content.asp?af=DDNSName">' + ddnsName_n + '</a><br />\n' + '<a style="font-size:11px;">' + ddnsName_d + '</a></span>';
                 if( ddns_enable == '1' ) {
 			if(!((link_status == "2" && link_auxstatus == "0") || (link_status == "2" && link_auxstatus == "2")) ) //link down
 				$("ddns_fail_hint").className = "notificationon";
