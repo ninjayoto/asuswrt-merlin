@@ -49,6 +49,7 @@
 #include <sys/un.h>
 #endif
 
+#include <sys/stat.h> //from tomato
 #include "macros.h"
 #include "upnpglobalvars.h"
 #include "upnphttp.h"
