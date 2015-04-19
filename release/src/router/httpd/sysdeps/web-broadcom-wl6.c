@@ -1437,7 +1437,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	/* build authenticated/associated/authorized sta list */
 	for (i = 0; i < auth->count; i ++) {
 
-		ret += websWrite(wp, "%-18s", ether_etoa((void *)&auth->ea[i], ea));
+		ret += websWrite(wp, "%s%-18s", "<client>", ether_etoa((void *)&auth->ea[i], ea));
 
 		found = 0;
 		if (arplist) {
@@ -1553,9 +1553,9 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 			}
 		}
 
-		ret += websWrite(wp, "%s%s\n",
+		ret += websWrite(wp, "%s%s%s\n",
 			(is_associated ? "A" : " "),
-			(is_authorized ? "U" : " "));
+			(is_authorized ? "U" : " "), "<eclient>");
 	}
 
 	for (i = 1; i < 4; i++) {
@@ -1586,7 +1586,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 			for (ii = 0; ii < auth->count; ii++) {
 
-				ret += websWrite(wp, "%-18s", ether_etoa((void *)&auth->ea[ii], ea));
+				ret += websWrite(wp, "%s%-18s", "<guest>", ether_etoa((void *)&auth->ea[ii], ea));
 
 				found = 0;
 				if (arplist) {
@@ -1698,9 +1698,9 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 					}
 				}
 
-				ret += websWrite(wp, "%s%s%s\n",
+				ret += websWrite(wp, "%s%s%s%s\n",
 					(is_associated ? "A" : " "),
-					(is_authorized ? "U" : " "), "G");  // Add guest flag
+					(is_authorized ? "U" : " "), "G", "<eguest>");  // Add guest flag
 			}
 		}
 	}
