@@ -320,15 +320,10 @@ function del_Row(rowdata, flag){
   
 		var pptpd_clientlist_value = "";
 		for(k=0; k<$('pptpd_clientlist_table').rows.length; k++){
-			for(j=1; j<$('pptpd_clientlist_table').rows[k].cells.length-1; j++){
-				if(j == 1)
-					pptpd_clientlist_value += "<";
-				else{
-					pptpd_clientlist_value += $('pptpd_clientlist_table').rows[k].cells[1].innerHTML;
-					pptpd_clientlist_value += ">";
-					pptpd_clientlist_value += $('pptpd_clientlist_table').rows[k].cells[2].innerHTML;
-				}
-			}
+			pptpd_clientlist_value += "<";
+			pptpd_clientlist_value += $('pptpd_clientlist_table').rows[k].cells[1].innerHTML;
+			pptpd_clientlist_value += ">";
+			pptpd_clientlist_value += $('pptpd_clientlist_table').rows[k].cells[2].innerHTML;
 		}
 
 		pptpd_clientlist_array = pptpd_clientlist_value;
@@ -340,15 +335,10 @@ function del_Row(rowdata, flag){
   
 		var vpn_server_clientlist_value = "";
 		for(k=1; k<$('openvpnd_clientlist_table').rows.length; k++){
-			for(j=1; j<$('openvpnd_clientlist_table').rows[k].cells.length-1; j++){
-				if(j==1)
-					vpn_server_clientlist_value += "<";
-				else{
-					vpn_server_clientlist_value += $('openvpnd_clientlist_table').rows[k].cells[1].innerHTML;
- 					vpn_server_clientlist_value += ">";
-					vpn_server_clientlist_value += $('openvpnd_clientlist_table').rows[k].cells[2].innerHTML;
-				}
-			}
+			vpn_server_clientlist_value += "<";
+			vpn_server_clientlist_value += $('openvpnd_clientlist_table').rows[k].cells[1].innerHTML;
+			vpn_server_clientlist_value += ">";
+			vpn_server_clientlist_value += $('openvpnd_clientlist_table').rows[k].cells[2].innerHTML;
 		}
 
 		vpn_server_clientlist_array = vpn_server_clientlist_value;
