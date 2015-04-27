@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-10E1j9527 (23-March-2015)
+Asuswrt-Merlin fork - build 374.43_2-11j9527 (27-April-2015)
 =============================================
 
 About
@@ -19,8 +19,41 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-11j9527 (27-April-2015)
+* CHANGED: ASUS save configuration now includes code level in the file name
+* CHANGED: Added ability to disable Comcast IPv6 Neighbor Solicitation fix
+* CHANGED: Added existing JFFS2 syslog copy option to gui
+* CHANGED: Color coding of connections in the Wireless Log
+* CHANGED: Improved stability during boot when processing NAT rules
+* CHANGED: Update RADVD to version 1.15
+* CHANGED: Updated DDNS info formatting on index page
+* CHANGED: Updated banner formatting
+* CHANGED: Updated timezone info for Chile and Moscow
+- CHANGED: Allow use of client chain CA certificates
+- CHANGED: Optimizations for supporting components such as the webui server, dropbear and SQLite
+- CHANGED: Remove non-functional external firewall option from VPN Client page
+- CHANGED: Removed obsolete 'Turbo' button dialogue for AC68
+- CHANGED: Updated ciphers: remove RC4, include ECDHE
+- CHANGED: mtd-erase options for additional partitions
+* FIXED: Finally fix nvram status of OpenVPN server/client (multiple commits)
+- FIXED: Avoid truncated printouts on USB printers
+- FIXED: Fix corrupted username/password lists in VPN Server page
+- FIXED: Fixed MSS clamping rules
+- FIXED: Fixed segfault in Wireless Log
+- FIXED: CTF patch for MIPS routers
+- FIXED: Only generate httpd SSL keys when required
+- FIXED: Resolved ARM routers requiring a second boot to format jffs
+* NEW: Ability to specify cron logging level ( nvram set cron_loglevel=<number> )
+* NEW: Added ability to save https generated certification (persistent across reboots)
+* NEW: New option to allow local subnet forwarding (special case)
+- NEW: Dual DNS servers, and ability to disable the router as a DNS server
+- NEW: Periodic verify for DDNS WAN IP and hostname
+- NEW: Policy based routing for VPN connections
+
+
 374.43_2-10E1j9527 (23-March-2015)
-* FIXED: OpenVPN gui pages may display incorrectly
+* FIXED: VPN Details page corruption
+
 
 374.43_2-10j9527 (21-March-2015)
 - CHANGED: Update OpenSSL to 1.0.0r

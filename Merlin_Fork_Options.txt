@@ -3,18 +3,19 @@ Merlin Fork Custom Options
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
 
-	How to enable:		nvram set jffs2_log=1
+	Can be set in gui:	Yes (as of Update-11, Administration/System/Save syslog to JFFS)
+	Enable via NVRAM:	nvram set jffs2_log=1
 				nvram commit && reboot
 
 	Routers Supported:	AC66,AC56,AC68
 	Released:		Update-02
 	Reboot Required:	Yes
 	Notes:			Existing logs must be manually deleted from /jffs (syslog.log and syslog.log-1)
-	Can be set in gui:	No
 ----------------------------------------------------------------------------------------------------------------
 Enable Comcast DSCP fix
 
-	How to enable:		nvram set DSCP_fix_enable=1
+	Can be set in gui:	Yes (Firewall/General/Enable DSCP override)
+	Enable via NVRAM:	nvram set DSCP_fix_enable=1
 				nvram commit && reboot
 
 	Routers Supported:	All
@@ -24,24 +25,24 @@ Enable Comcast DSCP fix
 				Differentiated Services Code Point (DSCP) value is incorrectly set to a low
 				priority, resulting in decreased internet throughput for wireless IPv4 transfers.
 				This fix overrides that incorrect value.
-	Can be set in gui:	Yes (Firewall/General/Enable DSCP override)
 ----------------------------------------------------------------------------------------------------------------
 Display Traffic Monitor graphs in
 Mb/s (default is KB/s)
-	
-	How to enable:		nvram set rstats_units=1
+
+	Can be set in gui:	Yes (Tools/Other Settings/Traffic Monitor graph units)	
+	Enable via NVRAM:	nvram set rstats_units=1
 				nvram commit
 
 	Routers Supported:	All
 	Released:		Update-07
 	Reboot Required:	No
 	Notes:			Refresh or open the TM page in the browser
-	Can be set in gui:	Yes (Tools/Other Settings/Traffic Monitor graph units)
 ----------------------------------------------------------------------------------------------------------------
 Multiple listening addresses and
 ports for SSH access
 
-	How to enable:		nvram set sshd_addr=[address:]port,[address:]port,[address:]port,[address:]port
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set sshd_addr=[address:]port,[address:]port,[address:]port,[address:]port
 				nvram commit && reboot
 
 	Routers Supported:	All
@@ -51,12 +52,12 @@ ports for SSH access
 				This will override the port setting specified in the gui
 				This modifies a previous commit in Update-05 (was a single address only and now
 					need to specify a port when specifying an address)
-	Can be set in gui:	No
 ----------------------------------------------------------------------------------------------------------------
 Enable full syslog records for
 remote monitoring
 
-	How to enable:		nvram set log_small=0;
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set log_small=0
 				nvram commit && reboot
 
 	Routers Supported:	All
@@ -64,9 +65,57 @@ remote monitoring
 	Reboot Required:	Yes
 	Notes:			This will include the full header (including hostname) in syslogd output to enable 
 				remote monitoring
-	Can be set in gui:	No
 ----------------------------------------------------------------------------------------------------------------
+Save HTTPS certificate
 
+	Can be set in gui:	Yes (Administration/System/Save HTTPS certificate)
+	Enable via NVRAM:	nvram set https_crt_save=1
+				nvram commit && reboot
+
+	Routers Supported:	All
+	Released:		Update-11
+	Reboot Required:	Yes
+	Notes:			If you are using HTTPS validation, the security certificate is regenerated at every
+					boot, requiring you to install a new certificate in your browser.  This 
+					option saves the certificate across reboots negating the need to reinstall 
+					in your browser. 
+----------------------------------------------------------------------------------------------------------------
+Filter IPv6 Neighbor Solicitation
+	
+	Can be set in gui:	Yes (Firewall/General/Filter IPv6 Neighbor Solicitation)
+	Enable via NVRAM:	ipv6_neighsol_drop=1 (1=Yes, 0=No)
+				nvram commit
+				service restart_firewall
+
+	Routers Supported:	All
+	Released:		Update-11
+	Reboot Required:	No
+	Notes:			Control iptables rule dropping IPv6 neighbor solicitation requests 
+----------------------------------------------------------------------------------------------------------------
+Enable local subnet forwarding
+	
+	Can be set in gui:	Yes (Firewall/General/Enable local subnet forwarding)
+	Enable via NVRAM:	nvram set lan_fw_enable=1
+				nvram commit
+				service restart_firewall
+
+	Routers Supported:	All
+	Released:		Update-11
+	Reboot Required:	No
+	Notes:			This allows forwarding between local subnets, such as in the case of a 
+					VPN connection and local lan 
+----------------------------------------------------------------------------------------------------------------
+CROND logging options
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set cron_loglevel=N (default is 8)
+				nvram commit && reboot
+
+	Routers Supported:	All
+	Released:		Update-11
+	Reboot Required:	Yes
+	Notes:			Setting cron_loglevel=N sets the logging level to N
+----------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
