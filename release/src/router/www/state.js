@@ -425,13 +425,13 @@ function show_banner(L3){// L3 = The third Level of Menu
 
 	// dsl does not support operation mode
 	if (!dsl_support) {
-		banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;"><#menu5_6_1_title#>:</span><span class="title_link" style="text-decoration: none;" id="op_link"><a href="/Advanced_OperationMode_Content.asp" style="color:white"><span id="sw_mode_span" class="title_link"></span></a></span>\n';
+		banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;"><#menu5_6_1_title#>:</span><span class="title_link" style="text-decoration: none;" id="op_link"><a href="/Advanced_OperationMode_Content.asp" style="color:white"><span id="sw_mode_span" class="title_link"></span></a></span>\n';
 	}
-	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;">Firmware:</span><a href="/Advanced_FirmwareUpgrade_Content.asp" style="color:white;"><span id="firmver" class="title_link"></span></a> <small>(Merlin fork)</small><br />\n';
-	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;" id="ssidTitle">SSID:&nbsp;&nbsp;(2.4GHz)</span>';
+	banner_code +='<div style="display:inline;float:right;font-size:11px;"<span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;">Firmware:</span><a href="/Advanced_FirmwareUpgrade_Content.asp" style="color:white;"><span id="firmver" class="title_link"></span></a></div><br />\n';
+	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;" id="ssidTitle">SSID:&nbsp;&nbsp;(2.4GHz)</span>';
 	banner_code +='<span onclick="change_wl_unit_status(0)" id="elliptic_ssid_2g" class="title_link"></span>';
-	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;" id="ssidTitle">(5GHz)</span>';
-	banner_code +='<span onclick="change_wl_unit_status(1)" id="elliptic_ssid_5g" class="title_link"></span>\n';
+	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;" id="ssidTitle">(5GHz)</span>';
+	banner_code +='<span onclick="change_wl_unit_status(1)" id="elliptic_ssid_5g" class="title_link"></span><div style="display:inline;float:right;font-size:10px;">(Merlin fork)</div>\n';
 	banner_code +='</td>\n';
 
 	banner_code +='<td width="30"><div id="notification_desc" class=""></div></td>\n';
@@ -1457,10 +1457,26 @@ function show_top_status(){
 		$('elliptic_ssid_5g').style.textDecoration="none";
 		$('elliptic_ssid_5g').style.cursor="auto";
 	}
-	
-	$("elliptic_ssid_2g").innerHTML = handle_show_str(ssid_status_2g);
-	$("elliptic_ssid_5g").innerHTML = handle_show_str(ssid_status_5g);
 
+	/* smart ellipses for ssids */
+	var ssid_status_2g_e = ssid_status_2g;
+	var ssid_status_5g_e = ssid_status_5g;
+	var ssid_len_2g = ssid_status_2g.length;
+	var ssid_len_5g = ssid_status_5g.length;
+	var min_ssid_len = Math.min(ssid_len_2g,ssid_len_5g);
+	if (min_ssid_len > 20){
+		ssid_status_2g_e = ssid_status_2g.substring(0,17) + "...";;
+		ssid_status_5g_e = ssid_status_5g.substring(0,17) + "....";
+	}
+	else if((ssid_len_2g+ssid_len_5g) > 40){
+		if(ssid_len_2g <= ssid_len_5g)
+			ssid_status_5g_e = ssid_status_5g.substring(0,37-ssid_len_2g) + "...";
+		if(ssid_len_5g <= ssid_len_2g)
+			ssid_status_2g_e = ssid_status_2g.substring(0,37-ssid_len_5g) + "...";
+	}
+	$("elliptic_ssid_2g").innerHTML = handle_ssid_str(ssid_status_2g_e);
+	$("elliptic_ssid_5g").innerHTML = handle_ssid_str(ssid_status_5g_e);
+	
 	var swpjverno = '<% nvram_get("swpjverno"); %>';
 	var buildno = '<% nvram_get("buildno"); %>';
 	var firmver = '<% nvram_get("firmver"); %>'
@@ -2939,6 +2955,16 @@ String.prototype.howMany = function(val){
 	var count = (result)?result.length:0;
 
 	return count;
+}
+
+/* convert some special character for ssid */
+function handle_ssid_str(show_str)
+{
+	show_str = show_str.replace(/\&/g, "&amp;");
+	show_str = show_str.replace(/\</g, "&lt;");
+	show_str = show_str.replace(/\>/g, "&gt;");
+	show_str = show_str.replace(/\ /g, "&nbsp;");
+	return show_str;
 }
 
 /* convert some special character for shown string */
