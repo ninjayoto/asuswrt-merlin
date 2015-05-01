@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-11j9527 (27-April-2015)
+Asuswrt-Merlin fork - build 374.43_2-11E1j9527 (1-May-2015)
 =============================================
 
 About
@@ -19,6 +19,10 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-11E1j9527 (1-May-2015)
+* FIXED: Fix banner formatting for NL support, add ellipses to SSIDs
+
+
 374.43_2-11j9527 (27-April-2015)
 * CHANGED: ASUS save configuration now includes code level in the file name
 * CHANGED: Added ability to disable Comcast IPv6 Neighbor Solicitation fix
