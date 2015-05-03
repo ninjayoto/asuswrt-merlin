@@ -369,8 +369,20 @@ unsigned int get_wifi_clients(int radio, int querytype)
 
 	if (radio == 2) {
 		name = "eth1";
+	} else if (radio == 21) {
+		name = "wl0.1";
+	} else if (radio == 22) {
+		name = "wl0.2";
+	} else if (radio == 23) {
+		name = "wl0.3";
 	} else if (radio == 5) {
 		name = "eth2";
+	} else if (radio == 51) {
+		name = "wl1.1";
+	} else if (radio == 52) {
+		name = "wl1.2";
+	} else if (radio == 53) {
+		name = "wl1.3";
 	} else {
 		return 0;
 	}

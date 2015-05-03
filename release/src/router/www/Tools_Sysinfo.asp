@@ -55,9 +55,19 @@ function initial(){
 		$("model_id").innerHTML = productid;
 
 	var buildno = '<% nvram_get("buildno"); %>';
-	var firmver = '<% nvram_get("firmver"); %>'
+	var firmver = '<% nvram_get("firmver"); %>';
 	var extendno = '<% nvram_get("extendno"); %>';
-	if ((extendno == "") || (extendno == "0"))
+
+	var conn_wifi_2g_assoc = parseInt('<% sysinfo("conn.wifi.2.assoc"); %>') + parseInt('<% sysinfo("conn.wifi.21.assoc"); %>') + parseInt('<% sysinfo("conn.wifi.22.assoc"); %>') + parseInt('<% sysinfo("conn.wifi.23.assoc"); %>');
+	var conn_wifi_2g_autho = parseInt('<% sysinfo("conn.wifi.2.autho"); %>') + parseInt('<% sysinfo("conn.wifi.21.autho"); %>') + parseInt('<% sysinfo("conn.wifi.22.autho"); %>') + parseInt('<% sysinfo("conn.wifi.23.autho"); %>');
+	var conn_wifi_2g_authe = parseInt('<% sysinfo("conn.wifi.2.authe"); %>') + parseInt('<% sysinfo("conn.wifi.21.authe"); %>') + parseInt('<% sysinfo("conn.wifi.22.authe"); %>') + parseInt('<% sysinfo("conn.wifi.23.authe"); %>');
+	var conn_wifi_5g_assoc = parseInt('<% sysinfo("conn.wifi.5.assoc"); %>') + parseInt('<% sysinfo("conn.wifi.51.assoc"); %>') + parseInt('<% sysinfo("conn.wifi.52.assoc"); %>') + parseInt('<% sysinfo("conn.wifi.53.assoc"); %>');
+	var conn_wifi_5g_autho = parseInt('<% sysinfo("conn.wifi.5.autho"); %>') + parseInt('<% sysinfo("conn.wifi.51.autho"); %>') + parseInt('<% sysinfo("conn.wifi.52.autho"); %>') + parseInt('<% sysinfo("conn.wifi.53.autho"); %>');
+	var conn_wifi_5g_authe = parseInt('<% sysinfo("conn.wifi.5.authe"); %>') + parseInt('<% sysinfo("conn.wifi.51.authe"); %>') + parseInt('<% sysinfo("conn.wifi.52.authe"); %>') + parseInt('<% sysinfo("conn.wifi.53.authe"); %>');
+	$("wifi2_clients_dt").innerHTML = "Associated:&nbsp;" + conn_wifi_2g_assoc + "&nbsp;&nbsp;-&nbsp;&nbsp;Authorized:&nbsp;" + conn_wifi_2g_autho + "&nbsp;&nbsp;-&nbsp;&nbsp;Authenticated:&nbsp;" + conn_wifi_2g_authe;
+	$("wifi5_clients_dt").innerHTML = "Associated:&nbsp;" + conn_wifi_5g_assoc + "&nbsp;&nbsp;-&nbsp;&nbsp;Authorized:&nbsp;" + conn_wifi_5g_autho + "&nbsp;&nbsp;-&nbsp;&nbsp;Authenticated:&nbsp;" + conn_wifi_5g_authe;
+
+if ((extendno == "") || (extendno == "0"))
 		$("fwver").innerHTML = firmver + "." + buildno;
 	else
 		$("fwver").innerHTML =  firmver + "." + buildno + '_' + extendno.split("-g")[0];
@@ -385,21 +395,13 @@ function show_etherstate(){
 						<th>Ethernet Ports</th>
 						<td id="etherstate_td"><i><span>Querying switch...</span></i></td>
 					</tr>
-					<tr>
+					<tr id="wifi2_clients_tr">
 						<th>Wireless clients (2.4 GHz)</th>
-						<td>
-							Associated: <span><% sysinfo("conn.wifi.2.assoc"); %></span>&nbsp;&nbsp;-&nbsp;&nbsp;
-							Authorized: <span><% sysinfo("conn.wifi.2.autho"); %></span>&nbsp;&nbsp;-&nbsp;&nbsp;
-							Authenticated: <span><% sysinfo("conn.wifi.2.authe"); %></span>
-						</td>
+						<td id="wifi2_clients_dt"></td>
 					</tr>
 					<tr id="wifi5_clients_tr">
 						<th>Wireless clients (5 GHz)</th>
-						<td>
-							Associated: <span><% sysinfo("conn.wifi.5.assoc"); %></span>&nbsp;&nbsp;-&nbsp;&nbsp;
-							Authorized: <span><% sysinfo("conn.wifi.5.autho"); %></span>&nbsp;&nbsp;-&nbsp;&nbsp;
-							Authenticated: <span><% sysinfo("conn.wifi.5.authe"); %></span>
-						</td>
+						<td id="wifi5_clients_dt"></td>
 					</tr>
 				</table>
 				</td>
