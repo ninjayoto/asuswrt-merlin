@@ -1067,7 +1067,7 @@ function validate_ipcidr(obj){
 				<table id="selectiveTable" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table" style="margin-top:8px;">
 					<thead>
 						<tr>
-							<td colspan="5">Rules for routing client traffic through the tunnel (<#List_limit#>&nbsp;64)</td>
+							<td colspan="5">Rules for routing client traffic through the tunnel (<#List_limit#>&nbsp;128)</td>
 						</tr>
 					</thead>
 					<tr>
@@ -1097,7 +1097,7 @@ function validate_ipcidr(obj){
 						</td>
 						<td width="12%">
 							<div>
-								<input type="button" class="add_btn" onClick="addRow_Group(64);" value="">
+								<input type="button" class="add_btn" onClick="addRow_Group(128);" value="">
 							</div>
 						</td>
 					</tr>
