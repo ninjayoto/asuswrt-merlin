@@ -36,7 +36,7 @@ export PLATFORM := mipsel-uclibc
 export CROSS_COMPILE := mipsel-uclibc-
 export CROSS_COMPILER := $(CROSS_COMPILE)
 export CONFIGURE := ./configure --host=mipsel-linux --build=$(BUILD)
-export HOSTCONFIG := linux-mipsel
+export HOSTCONFIG := linux-mips32
 export ARCH := mips
 export HOST := mipsel-linux
 export TOOLS := $(SRCBASE)/../../tools/brcm/hndtools-mipsel-linux
