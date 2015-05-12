@@ -35,3 +35,8 @@ ssltest
 wp_test
 constant_time_test
 
+srptest
+v3nametest
+heartbeat_test
+evp_extra_test
+constant_time_test
