@@ -138,7 +138,7 @@ function checkCmdRet(){
 									</div>
 
 									<div style="margin-top:8px" id="logArea">
-										<textarea cols="63" rows="35" wrap="off" readonly="readonly" id="textarea" style="width:99%;font-family:Courier New, Courier, mono; font-size:11px;background:#475A5F;color:#FFFFFF; overflow-x:auto;">
+										<textarea cols="63" rows="35" wrap="off" readonly="readonly" id="textarea" style="width:99%;font-family:Courier New, Courier, mono; font-size:11px;background:#475A5F;color:#FFFFFF; overflow-x:auto; overflow-y:auto;">
 											<% nvram_dump("syscmd.log","syscmd.sh"); %>
 										</textarea>
 									</div>
