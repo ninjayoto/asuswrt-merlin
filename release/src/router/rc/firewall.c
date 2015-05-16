@@ -2339,7 +2339,7 @@ TRACE_PT("writing Parental Control\n");
 	{
 		if (nvram_match("ipv6_fw_enable", "1"))
 		{
-			if (!nvram_match("lan_fwd_enable", "1"))
+			if (nvram_match("lan_invalid_enable", "1"))
 				fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 			else
 				fprintf(fp_ipv6, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
@@ -2361,7 +2361,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // ~ oleg patch
-	if (!nvram_match("lan_fwd_enable", "1"))
+	if (nvram_match("lan_invalid_enable", "1"))
 		fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 	else
 		fprintf(fp, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
@@ -2407,7 +2407,7 @@ TRACE_PT("writing Parental Control\n");
 #endif
 	if (strlen(macaccept)>0)
 	{
-		if (!nvram_match("lan_fwd_enable", "1"))
+		if (nvram_match("lan_invalid_enable", "1"))
 			fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
 		else
 			fprintf(fp, "-A %s -i %s -m state --state INVALID -j %s\n", macaccept, wan_if, logdrop);
@@ -3287,7 +3287,7 @@ TRACE_PT("writing Parental Control\n");
 	{
 		if (nvram_match("ipv6_fw_enable", "1"))
 		{
-			if (!nvram_match("lan_fwd_enable", "1"))
+			if (nvram_match("lan_invalid_enable", "1"))
 				fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 			else
 				fprintf(fp_ipv6, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
@@ -3338,7 +3338,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // ~ oleg patch
-	if (!nvram_match("lan_fwd_enable", "1"))
+	if (nvram_match("lan_invalid_enable", "1"))
 		fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
 	else
 		fprintf(fp, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
@@ -3386,7 +3386,7 @@ TRACE_PT("writing Parental Control\n");
 #endif
 	if (strlen(macaccept)>0)
 	{
-		if (!nvram_match("lan_fwd_enable", "1"))
+		if (nvram_match("lan_invalid_enable", "1"))
 			fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
 		else
 			fprintf(fp, "-A %s -i %s -m state --state INVALID -j %s\n", macaccept, wan_if, logdrop);

@@ -559,7 +559,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "lan_dns_fwd_local", "0"},		/* Forward queries for local domain to upstream DNS server */
 	{ "lan_port", "80"},
 	{ "jumbo_frame_enable", "0"},
-	{ "lan_fwd_enable", "0"},		/* allow forward between lan subnets */
+	{ "lan_invalid_enable", "0"},		/* allow forward between lan subnets */
 
 	/* Guest TCP/IP parameters */
 
