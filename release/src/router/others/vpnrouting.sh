@@ -126,10 +126,13 @@ then
 	exit 0
 fi
 
-if [ $script_type == "route-up" -a $VPN_REDIR != "2" ]
+# Standard updown.sh handles non-policy case
+#if [ $script_type == "route-up" -a $VPN_REDIR != "2" ]
+if [ $VPN_REDIR != "2" ]
 then
 	logger -t "openvpn-routing" "Skipping, not in routing policy mode"
-	run_custom_script
+# Remove call here for backward compatibility
+#	run_custom_script
 	exit 0
 fi
 
