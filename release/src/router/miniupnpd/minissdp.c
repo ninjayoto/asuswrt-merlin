@@ -1,7 +1,7 @@
-/* $Id: minissdp.c,v 1.72 2014/10/22 11:54:45 nanard Exp $ */
+/* $Id: minissdp.c,v 1.73 2015/01/17 11:26:05 nanard Exp $ */
 /* MiniUPnP project
  * http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
- * (c) 2006-2014 Thomas Bernard
+ * (c) 2006-2015 Thomas Bernard
  * This software is subject to the conditions detailed
  * in the LICENCE file provided within the distribution */
 
@@ -796,8 +796,8 @@ ProcessSSDPData(int s, const char *bufr, int n,
 	lan_addr = get_lan_for_peer(sender);
 	if(lan_addr == NULL)
 	{
-		syslog(LOG_WARNING, "SSDP packet sender %s not from a LAN, ignoring",
-		       sender_str);
+//		syslog(LOG_WARNING, "SSDP packet sender %s not from a LAN, ignoring",
+//		       sender_str);
 		return;
 	}
 
@@ -883,8 +883,9 @@ ProcessSSDPData(int s, const char *bufr, int n,
 			{
 				if (lan_addr == NULL)
 				{
-					syslog(LOG_ERR, "Can't find in which sub network the client %s is",
-						sender_str);
+					syslog(LOG_ERR,
+					       "Can't find in which sub network the client %s is",
+					       sender_str);
 					return;
 				}
 				announced_host = lan_addr->str;
@@ -1168,6 +1169,8 @@ SendSSDPGoodbye(int * sockets, int n_sockets)
 
 	for(j=0; j<n_sockets; j++)
 	{
+		if(sockets[j] < 0)
+			continue;
 #ifdef ENABLE_IPV6
 		ipv6 = j & 1;
 		if(ipv6) {
