@@ -60,6 +60,7 @@ void start_vpnclient(int clientNum)
 	long int nvl;
 	int pid;
 	int userauth, useronly;
+	int i;
 #ifdef RTCONFIG_BCMARM
         int cpu_num = sysconf(_SC_NPROCESSORS_CONF);
 #endif
@@ -68,6 +69,14 @@ void start_vpnclient(int clientNum)
 	if (getpid() != 1) {
 		notify_rc(&buffer[0]);
 		return;
+	}
+
+	for ( i = 1; i < 4; i++ ) {
+		if (!nvram_get_int("ntp_ready")) {
+			sleep(i*i);
+		} else {
+			i = 4;
+		}
 	}
 
 	vpnlog(VPN_LOG_INFO,"VPN GUI client backend starting...");
@@ -589,11 +598,20 @@ void start_vpnserver(int serverNum)
 	char nv1[32], nv2[32], nv3[32], fpath[128];
 	int valid = 0;
 	int userauth = 0, useronly = 0;
+	int i;
 
 	sprintf(&buffer[0], "start_vpnserver%d", serverNum);
 	if (getpid() != 1) {
 		notify_rc(&buffer[0]);
 		return;
+	}
+
+	for ( i = 1; i < 4; i++ ) {
+		if (!nvram_get_int("ntp_ready")) {
+			sleep(i*i);
+		} else {
+			i = 4;
+		}
 	}
 
 	vpnlog(VPN_LOG_INFO,"VPN GUI server backend starting...");
