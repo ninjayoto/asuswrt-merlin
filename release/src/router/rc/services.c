@@ -3014,7 +3014,7 @@ void start_upnp(void)
 					"notify_interval=%d\n"
 					"system_uptime=yes\n"
 					"friendly_name=%s\n"
-					"model_number=%s.%s\n"
+					"model_number=%s\n"
 					"serial=%s\n"
 					"\n"
 					,
@@ -3026,7 +3026,7 @@ void start_upnp(void)
 					nvram_get_int("upnp_secure") ? "yes" : "no",	// secure_mode (only forward to self)
 					nvram_get_int("upnp_ssdp_interval"),
 					get_productid(),
-					rt_version, rt_serialno,
+					nvram_get("productid"),
 					nvram_get("serial_no") ? : et0macaddr
 				);
 
