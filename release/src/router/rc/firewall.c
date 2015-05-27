@@ -4524,7 +4524,8 @@ int start_firewall(int wanunit, int lanunit)
 #ifdef RTCONFIG_IPV6
 	if (get_ipv6_service() != IPV6_DISABLED)
 	{
-		modprobe("nf_conntrack_ipv6");
+		if (!f_exists("/proc/sys/net/netfilter/nf_conntrack_frag6_timeout"))
+			modprobe("nf_conntrack_ipv6");
 		modprobe("ip6t_REJECT");
 		modprobe("ip6t_ROUTE");
 		modprobe("ip6t_LOG");
