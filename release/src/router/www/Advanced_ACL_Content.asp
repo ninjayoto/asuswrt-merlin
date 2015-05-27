@@ -413,7 +413,7 @@ function enable_macMode(){
 							</tr>
 						</thead>
 							<tr>
-								<th width="40%"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,10);"><#FirewallConfig_MFList_groupitemname#></th> 
+								<th width="40%"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,10);"><#FirewallConfig_MFList_groupitemname#></a></th>
 								<th width="40%">Name</th>
 								<th width="20%"><#list_add_delete#></th>
 							</tr>
@@ -424,7 +424,7 @@ function enable_macMode(){
 									<div id="WL_MAC_List_Block" class="WL_MAC_Block"></div>
 					              		</td>
 								<td width="40%">
-									<input type="text" class="input_15_table" maxlenght="15" onKeypress="return is_alphanum(this,event);" name="wl_macname_x_0">
+									<input type="text" class="input_15_table" maxlenght="15" onKeypress="return is_alphanum(this,event);" onblur="is_safename(this);" name="wl_macname_x_0">
 								</td>
 								<td width="20%">	
 									<input type="button" class="add_btn" onClick="addRow(document.form.wl_maclist_x_0, document.form.wl_macname_x_0, 128);" value="">
