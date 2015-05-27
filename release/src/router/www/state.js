@@ -1887,6 +1887,20 @@ function is_alphanum(o, event){
 	return false;
 }
 
+function is_safename(obj){
+	if (obj.value.length == 0) return true;
+
+	var re = new RegExp("^[a-zA-Z0-9a-zA-Z0-9\-\_ ]+$","gi");
+	if(re.test(obj.value)){
+		return true;
+	}else{
+		alert("Only letters, numbers, spaces, underscores and dashes are accepted.");
+		obj.focus();
+		obj.select();
+		return false;
+	}
+}
+
 function validate_string(string_obj, flag){
 	if(string_obj.value.charAt(0) == '"'){
 		if(flag != "noalert")
