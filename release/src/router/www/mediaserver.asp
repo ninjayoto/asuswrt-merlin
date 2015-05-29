@@ -961,7 +961,14 @@ else if(v == "dms"){
 						<div><input name="dms_friendly_name" type="text" style="margin-left:15px;" class="input_15_table" value=""><br/><div id="alert_msg2" style="color:#FC0;margin-left:10px;"></div></div>
 					</td>
       	</tr>
-   			<tr>
+	<tr>
+		<th>Scan media at every boot**</th>
+			<td>
+				<input type="radio" value="1" name="dms_rescan" class="input" <% nvram_match("dms_rescan", "1", "checked"); %>><#checkbox_Yes#>
+				<input type="radio" value="0" name="dms_rescan" class="input" <% nvram_match("dms_rescan", "0", "checked"); %>><#checkbox_No#>
+			</td>
+	</tr>
+	<tr>
         	<th>Media Server Status</th>
         	<td><span id="dmsStatus" style="margin-left:15px">Idle</span>
         	</td>
