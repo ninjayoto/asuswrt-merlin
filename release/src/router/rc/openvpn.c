@@ -1485,10 +1485,6 @@ void start_vpn_eas()
 		start_vpnserver(nums[i]);
 	}
 
-	// Setup client routing in case some are set to be blocked when tunnel is down
-	update_vpnrouting(1);
-	update_vpnrouting(2);
-
 	// Parse and start clients
 	strlcpy(&buffer[0], nvram_safe_get("vpn_clientx_eas"), sizeof(buffer));
 	if ( strlen(&buffer[0]) != 0 ) vpnlog(VPN_LOG_INFO, "Starting clients (eas): %s", &buffer[0]);
@@ -1504,6 +1500,10 @@ void start_vpn_eas()
 			stop_vpnclient(nums[i]);
 		}
 
+		// Setup client routing in case some are set to be blocked when tunnel is down
+		update_vpnrouting(nums[i]);
+
+		// Start client
 		vpnlog(VPN_LOG_INFO, "Starting OpenVPN client %d (eas)", nums[i]);
 		start_vpnclient(nums[i]);
 	}
