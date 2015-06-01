@@ -18,7 +18,7 @@
 <script type="text/javascript" src="/general.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
-<script language="JavaScript" 50da76eba15ae6e75613ea8c8e4896400f79dtype="text/javascript" src="/ajax.js"></script>
+<script language="JavaScript" type="text/javascript" src="/ajax.js"></script>
 <script>
 var $j = jQuery.noConflict();
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
