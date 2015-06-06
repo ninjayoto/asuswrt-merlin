@@ -1303,8 +1303,10 @@ void init_wl(void)
 #endif
 	modprobe("wl");
 
+#ifndef RTCONFIG_BCMARM
 #if defined(NAS_GTK_PER_STA) && defined(PROXYARP)
 	modprobe("proxyarp");
+#endif
 #endif
 
 #ifdef RTCONFIG_BRCM_USBAP
@@ -1381,8 +1383,10 @@ void init_wl(void)
 
 void fini_wl(void)
 {
+#ifndef RTCONFIG_BCMARM
 #if defined(NAS_GTK_PER_STA) && defined(PROXYARP)
 	modprobe_r("proxyarp");
+#endif
 #endif
 
 #ifndef RTCONFIG_BRCM_USBAP

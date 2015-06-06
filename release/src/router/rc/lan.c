@@ -1185,8 +1185,10 @@ void start_lan(void)
 		(get_model() == MODEL_RTAC53U) ||
 		(get_model() == MODEL_RTN66U)) {
 		modprobe("wl");
+#ifndef RTCONFIG_BCMARM
 #if defined(NAS_GTK_PER_STA) && defined(PROXYARP)
 		modprobe("proxyarp");
+#endif
 #endif
 	}
 #endif
@@ -2914,8 +2916,10 @@ void start_lan_wl(void)
 		(get_model() == MODEL_RTAC66U) ||
 		(get_model() == MODEL_RTN66U)) {
 		modprobe("wl");
+#ifndef RTCONFIG_BCMARM
 #if defined(NAS_GTK_PER_STA) && defined(PROXYARP)
 		modprobe("proxyarp");
+#endif
 #endif
 	}
 #endif
