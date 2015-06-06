@@ -2320,7 +2320,7 @@ void start_dms(void)
 				"presentation_url=http://%s:80/\n"
 				"inotify=yes\n"
 				"notify_interval=600\n"
-				"album_art_names=Cover.jpg/cover.jpg/Thumb.jpg/thumb.jpg\n",
+				"album_art_names=Folder.jpg/folder.jpg/Cover.jpg/cover.jpg/AlbumArtSmall.jpg/albumartsmall.jpg/AlbumArt.jpg/albumart.jpg/Album.jpg/album.jpg/Thumb.jpg/thumb.jpg\n",
 				nvram_safe_get("lan_ifname"),
 				(port < 0) || (port >= 0xffff) ? 0 : port,
 				is_valid_hostname(nvram_get("dms_friendly_name")) ? nvram_get("dms_friendly_name") : get_productid(),
