@@ -3318,6 +3318,10 @@ int init_nvram(void)
 		nvram_set("vpn_client2_enforce", "0");
         }
 
+	// Initialize working variable for ipv6 default route option
+	if(nvram_get("ipv6_isp_opt") == NULL)
+		nvram_set("ipv6_isp_opt", "0");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
