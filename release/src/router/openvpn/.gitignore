@@ -1,4 +1,3 @@
-]
 *.l[oa]
 *.dll
 *.exe
@@ -6,6 +5,7 @@
 *.obj
 *.pyc
 *.so
+*.o
 *~
 *.idb
 *.suo
