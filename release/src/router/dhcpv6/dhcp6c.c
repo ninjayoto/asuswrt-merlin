@@ -98,7 +98,7 @@ char *ctladdr = DEFAULT_CLIENT_CONTROL_ADDR;
 char *ctlport = DEFAULT_CLIENT_CONTROL_PORT;
 
 #define DEFAULT_KEYFILE SYSCONFDIR "/dhcp6cctlkey"
-#endif	// USE_DHCP6CTL
+#endif
 
 #define CTLSKEW 300
 
@@ -829,7 +829,7 @@ client6_ifctl(ifname, command)
 
 	return (0);
 }
-#endif	// USE_DHCP6CTL
+#endif
 
 static struct dhcp6_timer *
 client6_expire_refreshtime(arg)
@@ -1281,13 +1281,13 @@ client6_send(ev)
 
 	/* elapsed time */
 	if (ev->timeouts == 0) {
-		gettimeofday(&ev->tv_start, NULL);
+		gettimeofdaymonotonic(&ev->tv_start);
 		optinfo.elapsed_time = 0;
 	} else {
 		struct timeval now, tv_diff;
 		long et;
 
-		gettimeofday(&now, NULL);
+		gettimeofdaymonotonic(&now);
 		tv_sub(&now, &ev->tv_start, &tv_diff);
 
 		/*
@@ -1573,8 +1573,12 @@ client6_recvadvert(ifp, dh6, len, optinfo)
 	 * We only apply this when we are going to request an address or
 	 * a prefix.
 	 */
+	int have_ia = -1;
 	for (evd = TAILQ_FIRST(&ev->data_list); evd;
 	    evd = TAILQ_NEXT(evd, link)) {
+		struct dhcp6_list *ial;
+		struct dhcp6_listval *lv, *slv;
+		dhcp6_listval_type_t iatype;
 		u_int16_t stcode;
 		char *stcodestr;
 
@@ -1582,10 +1586,14 @@ client6_recvadvert(ifp, dh6, len, optinfo)
 		case DHCP6_EVDATA_IAPD:
 			stcode = DH6OPT_STCODE_NOPREFIXAVAIL;
 			stcodestr = "NoPrefixAvail";
+			ial = &optinfo->iapd_list;
+			iatype = DHCP6_LISTVAL_PREFIX6;
 			break;
 		case DHCP6_EVDATA_IANA:
 			stcode = DH6OPT_STCODE_NOADDRSAVAIL;
 			stcodestr = "NoAddrsAvail";
+			ial = &optinfo->iana_list;
+			iatype = DHCP6_LISTVAL_STATEFULADDR6;
 			break;
 		default:
 			continue;
@@ -1596,6 +1604,32 @@ client6_recvadvert(ifp, dh6, len, optinfo)
 			    "advertise contains %s status", stcodestr);
 			return (-1);
 		}
+
+		for (lv = TAILQ_FIRST((struct dhcp6_list *)&evd->data);
+		    lv && have_ia <= 0; lv = TAILQ_NEXT(lv, link)) {
+			if (have_ia < 0)
+				have_ia = 0;
+			if ((slv = dhcp6_find_listval(ial,
+			    lv->type, &lv->val_ia, 0)) == NULL)
+				continue;
+			for (slv = TAILQ_FIRST(&slv->sublist); slv;
+			    slv = TAILQ_NEXT(slv, link)) {
+				if (slv->type == iatype) {
+					have_ia = 1;
+					break;
+				}
+			}
+		}
+	}
+
+	/* Ignore message with none of requested addresses and/or
+	 * a prefixes as if NoAddrsAvail/NoPrefixAvail Status Code
+	 * was included.
+	 */
+	if (have_ia == 0) {
+		dprintf(LOG_INFO, FNAME,
+		    "advertise contains no address/prefix");
+		return (-1);
 	}
 
 	if (ev->state != DHCP6S_SOLICIT ||
