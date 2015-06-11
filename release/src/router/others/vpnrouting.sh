@@ -1,5 +1,7 @@
 #!/bin/sh
 
+PARAM=$*
+
 create_client_list(){
 	WAN_PRIO=1000
 	VPN_PRIO=1200
@@ -7,7 +9,7 @@ create_client_list(){
 
 	for ENTRY in $VPN_IP_LIST
 	do
-		if [[ "$ENTRY" = "" ]]
+		if [ "$ENTRY" = "" ]
 		then
 			continue
 		fi
@@ -25,7 +27,7 @@ create_client_list(){
 			TARGET_NAME="VPN"
 		fi
 		VPN_IP=$(echo $ENTRY | cut -d ">" -f 2)
-		if [[ "$VPN_IP" != "0.0.0.0" ]]
+		if [ "$VPN_IP" != "0.0.0.0" ]
 		then
 			SRCC="from"
 			SRCA="$VPN_IP"
@@ -34,7 +36,7 @@ create_client_list(){
 			SRCA=""
 		fi
 		DST_IP=$(echo $ENTRY | cut -d ">" -f 3)
-		if [[ "$DST_IP" != "0.0.0.0" ]]
+		if [ "$DST_IP" != "0.0.0.0" ]
 		then
 			DSTC="to"
 			DSTA="$DST_IP"
@@ -42,7 +44,7 @@ create_client_list(){
 			DSTC=""
 			DSTA=""
 		fi
-		if [[ "$SRCC" != "" -o "$DSTC" != "" ]]
+		if [ "$SRCC" != "" -o "$DSTC" != "" ]
 		then
 			ip rule add $SRCC $SRCA $DSTC $DSTA table $TARGET_LOOKUP priority $RULE_PRIO
 			logger -t "openvpn-routing" "Added $VPN_IP to $DST_IP through $TARGET_NAME to routing policy"
@@ -55,7 +57,7 @@ purge_client_list(){
 	IP_LIST=$(ip rule show | cut -d ":" -f 1)
 	for PRIO in $IP_LIST
 	do
-		if [[ $PRIO -ge 1000 -a $PRIO -le 1399 ]]
+		if [ $PRIO -ge 1000 -a $PRIO -le 1399 ]
 		then
 			ip rule del prio $PRIO
 			logger -t "openvpn-routing" "Removing rule $PRIO from routing policy"
@@ -64,23 +66,32 @@ purge_client_list(){
 }
 
 run_custom_script(){
-	if [[ -f /jffs/scripts/openvpn-event ]]
+	if [ -f /jffs/scripts/openvpn-event ]
 	then
 		logger -t "custom script" "Running /jffs/scripts/openvpn-event (args: $PARAM)"
 		sh /jffs/scripts/openvpn-event $PARAM
-
 	fi
 }
 
+init_table(){
+	logger -t "openvpn-routing" "Creating VPN routing table"
+	ip route flush table $VPN_TBL
 
+# Fill it with copy of existing main table
+	ip route show table main | while read ROUTE
+	do
+		ip route add table $VPN_TBL $ROUTE
+	done
+}
 
-if [[ "$dev" == "tun11" ]]
+# Begin
+if [ "$dev" == "tun11" ]
 then
 	VPN_IP_LIST=$(nvram get vpn_client1_clientlist)
 	VPN_TBL=111
 	VPN_REDIR=$(nvram get vpn_client1_rgw)
 	VPN_FORCE=$(nvram get vpn_client1_enforce)
-elif [[ "$dev" == "tun12" ]]
+elif [ "$dev" == "tun12" ]
 then
 	VPN_IP_LIST=$(nvram get vpn_client2_clientlist)
 	VPN_TBL=112
@@ -93,75 +104,82 @@ fi
 
 export VPN_GW VPN_IP VPN_TBL VPN_FORCE
 
-if [[ $script_type = "rmupdate" ]]
+
+# webui reports that vpn_force changed while vpn client was down
+if [ $script_type = "rmupdate" ]
 then
 	logger -t "openvpn-routing" "Refreshing policy rules"
 	purge_client_list
-	if [[ $VPN_FORCE == "1" -a $VPN_REDIR == "2" ]]
+
+	if [ $VPN_FORCE == "1" -a $VPN_REDIR == "2" ]
 	then
-		ip route add unreachable default table $VPN_TBL
+		init_table
+		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
+		ip route del default table $VPN_TBL
+		ip route add prohibit default table $VPN_TBL
 		create_client_list
 	else
-		ip route del unreachable default table $VPN_TBL
+		logger -t "openvpn-routing" "Allow WAN access to all VPN clients"
+		ip route flush table $VPN_TBL
 	fi
 	ip route flush cache
 	exit 0
 fi
 
-#if [[ $script_type == "route-up" -a $VPN_REDIR != "2" ]]
-if [[ $VPN_REDIR != "2" ]]
+if [ $script_type == "route-up" -a $VPN_REDIR != "2" ]
 then
 	logger -t "openvpn-routing" "Skipping, not in routing policy mode"
-#	run_custom_script
+	run_custom_script
 	exit 0
 fi
 
 logger -t "openvpn-routing" "Configuring policy rules for $dev"
 
-if [[ $script_type == "route-pre-down" ]]
+if [ $script_type == "route-pre-down" ]
 then
-
-# Delete tunnel's default route
-	ip route del default table $VPN_TBL
-# Delete rules
 	purge_client_list
 
-	if [[ $VPN_FORCE == "1" ]]
+	if [ $VPN_FORCE == "1" ]
 	then
-# Prevent WAN access
-			logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
-			ip route add unreachable default table $VPN_TBL
-			create_client_list
+		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
+		ip route change prohibit default table $VPN_TBL
+		create_client_list
+	else
+		ip route flush table $VPN_TBL
+		logger -t "openvpn-routing" "Flushing client routing table"
 	fi
 fi	# End route down
 
 
-# Delete existing VPN routes (both up and down events)
-NET_LIST=$(ip route show|awk '$2=="via" && $3==ENVIRON["route_vpn_gateway"] && $4=="dev" && $5==ENVIRON["dev"] {print $1}')
-for NET in $NET_LIST
-do
-        ip route del $NET dev $dev
-        logger -t "openvpn-routing" "Removing route for $NET to $dev"
-done
 
-
-if [[ $script_type == "route-up" ]]
+if [ $script_type == "route-up" ]
 then
-	purge_client_list
-	create_client_list
+	init_table
+
+# Delete existing VPN routes that were pushed by server on table main
+	NET_LIST=$(ip route show|awk '$2=="via" && $3==ENVIRON["route_vpn_gateway"] && $4=="dev" && $5==ENVIRON["dev"] {print $1}')
+	for NET in $NET_LIST
+	do
+		ip route del $NET dev $dev
+		logger -t "openvpn-routing" "Removing route for $NET to $dev from routing tables"
+	done
+
+# Update policy rules
+        purge_client_list
+        create_client_list
 
 # Setup table default route
-	if [[ "$VPN_IP_LIST" != "" ]]
+	if [ "$VPN_IP_LIST" != "" ]
 	then
-		if [[ "$VPN_FORCE" == "1" ]]
+		if [ "$VPN_FORCE" == "1" ]
 		then
 			logger -t "openvpn-routing" "Tunnel re-established, restoring WAN access to clients"
-			ip route del unreachable default table $VPN_TBL
 		fi
+		ip route del default table $VPN_TBL
 		ip route add default via $route_vpn_gateway table $VPN_TBL
 	fi
 
-	if [[ "$route_net_gateway" != "" ]]
+	if [ "$route_net_gateway" != "" ]
 	then
 		ip route del default
 		ip route add default via $route_net_gateway
