@@ -1110,7 +1110,7 @@ void start_dhcp6s(void)
 				ipv6_dhcp_start=strcat_r("::", p2, tmp);
 			else
 				ipv6_dhcp_start=strcat_r(nvram_safe_get("ipv6_prefix"), p2, tmp);
-			nvram_set("ipv6_dhcp_start",ipv6_dhcp_start);
+			nvram_set("ipv6_dhcp_start", ipv6_dhcp_start);
 
 			p1 = strrchr(nvram_safe_get("ipv6_dhcp_end"), ':');
 			memset(ipv6_pool_addr, 0, 64);
@@ -1120,9 +1120,7 @@ void start_dhcp6s(void)
 				ipv6_dhcp_end=strcat_r("::", p2, tmp);
 			else
 				ipv6_dhcp_end=strcat_r(nvram_safe_get("ipv6_prefix"), p2, tmp);
-			nvram_set("ipv6_dhcp_end",ipv6_dhcp_end);
-
-			nvram_commit();
+			nvram_set("ipv6_dhcp_end", ipv6_dhcp_end);
 		}
 		/* end stateful dhcp_pd */
 
@@ -1131,7 +1129,7 @@ void start_dhcp6s(void)
 				"};\n", nvram_safe_get("ipv6_rtr_addr"), nvram_get_int("ipv6_prefix_length"));
 		fprintf(fp,	"interface %s {\n"
 					"\taddress-pool pool1 %d;\n"
-				"};\n", nvram_safe_get("lan_ifname"), nvram_get_int("ipv6_dhcp_lifetime"));
+				"};\n", nvram_safe_get("lan_ifname"), (nvram_get_int("ipv6_dhcp_lifetime") > 0) ? nvram_get_int("ipv6_dhcp_lifetime") : 86400);
 		fprintf(fp,	"pool pool1 {\n"
 					"\trange %s to %s;\n"
 				"};\n", nvram_safe_get("ipv6_dhcp_start"), nvram_safe_get("ipv6_dhcp_end"));
