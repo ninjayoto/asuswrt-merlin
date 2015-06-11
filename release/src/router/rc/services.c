@@ -1192,7 +1192,7 @@ void start_radvd(void)
 			// fall through
 		default:
 			if (nvram_match("ipv6_ifdev", "ppp"))
-				sprintf(mtu, "%d", (nvram_get_int("wan_pppoe_mtu") - 20)); //20 byte safeguard for ppp
+				sprintf(mtu, "%d", nvram_get_int("wan_pppoe_mtu") ? (nvram_get_int("wan_pppoe_mtu") - 20) : 1492);
 			else if (nvram_get_int("ipv6_mtu") > 0)
 				mtu = nvram_safe_get("ipv6_mtu");
 			else if (nvram_get_int("ipv6_mtu") < 0)
