@@ -1608,7 +1608,7 @@ TRACE_PT("3g end.\n");
 					sleep(1);
 				}
 
-				if (!*wan_ifname) {
+				if (!wan_ifname || *wan_ifname == '\0') {
 					_dprintf("%s: no interface of wan_unit %d.\n", __FUNCTION__, unit);
 					return;
 				}

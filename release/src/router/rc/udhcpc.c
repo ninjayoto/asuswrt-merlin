@@ -769,7 +769,7 @@ start_dhcp6c(void)
 	/* Check if enabled */
 	if (get_ipv6_service() != IPV6_NATIVE_DHCP)
 		return 0;
-	if (!wan_ifname || !*wan_ifname)
+	if (!wan_ifname || *wan_ifname == '\0')
 		return -1;
 	if (!nvram_match("ipv6_ra_conf", "mset") &&
 		!nvram_get_int("ipv6_dhcp_pd") &&
