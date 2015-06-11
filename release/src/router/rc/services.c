@@ -1231,7 +1231,7 @@ void start_radvd(void)
 		} else if (service == IPV6_NATIVE_DHCP) {
 			valid_lifetime = nvram_get_int("ipv6_pd_vlifetime") ? nvram_safe_get("ipv6_pd_vlifetime") : NULL;
 			preferred_lifetime = nvram_get_int("ipv6_pd_plifetime") ? nvram_safe_get("ipv6_pd_plifetime") : NULL;
-			decrement_lifetime = (valid_lifetime || preferred_lifetime);
+//			decrement_lifetime = (valid_lifetime || preferred_lifetime);
 		}
 
 		fprintf(f,
@@ -1257,6 +1257,7 @@ void start_radvd(void)
 			"%s%s%s"
 			"%s"
 			"%s%s%s"
+			"  DeprecatePrefix on;\n"
 			" };\n",
 			nvram_safe_get("lan_ifname"),
 			nvram_get_int("ipv6_autoconf_type") ? "on" : "off",
