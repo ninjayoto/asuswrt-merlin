@@ -3322,6 +3322,12 @@ int init_nvram(void)
 	if(nvram_get("ipv6_isp_opt") == NULL)
 		nvram_set("ipv6_isp_opt", "0");
 
+	// Initialize radvd options
+	if(nvram_get("ipv6_radvd_dp") == NULL)
+		nvram_set("ipv6_radvd_dp", "1");
+	if(nvram_get("ipv6_radvd_dl") == NULL)
+		nvram_set("ipv6_radvd_dl", "1");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

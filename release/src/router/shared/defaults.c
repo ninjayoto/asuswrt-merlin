@@ -1781,6 +1781,8 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_isp_opt",	"0"		},	// Option to set default IPv6 route for PPP connections
 	{ "ipv6_pd_vlifetime",	""		},	// The valid lifetime for the prefix obtained via DHCPv6-PD
 	{ "ipv6_pd_plifetime",	""		},	// The preferred lifetime for the prefix obtained via DHCPv6-PD
+	{ "ipv6_radvd_dp",	"1"		},	// Fast release of IPv6 prefix
+	{ "ipv6_radvd_dl",	"1"		},	// Decrement lifetimes
 
 	{ "web_redirect", 	"0"		},	// Redirect disabled by default for both NOLINK or NOINTERNET
 	{ "disiosdet",		"1"		},
