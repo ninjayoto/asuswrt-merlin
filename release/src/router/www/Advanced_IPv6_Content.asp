@@ -882,7 +882,7 @@ function showInfo(){
 <input type="hidden" name="ipv6_accept_ra" value="<% nvram_get("ipv6_accept_ra"); %>">
 <input type="hidden" name="ipv6_ifdev" value="">
 <input type="hidden" name="ipv6_service_orig" value="<% nvram_get("ipv6_service"); %>" disabled>
-<input type="hidden" name="ipv6_service_last" value="<% nvram_get("ipv6_service_last"); %>" disabled>
+<input type="hidden" name="ipv6_service_last" value="<% nvram_get("ipv6_service_last"); %>">
 <input type="hidden" name="ipv6_dhcp_start" value="<% nvram_get("ipv6_dhcp_start"); %>" disabled>
 <input type="hidden" name="ipv6_dhcp_end" value="<% nvram_get("ipv6_dhcp_start"); %>" disabled>
 <table class="content" align="center" cellpadding="0" cellspacing="0">
