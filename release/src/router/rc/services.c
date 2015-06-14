@@ -1169,7 +1169,7 @@ void start_radvd(void)
 		return;
 	}
 
-//	stop_radvd();
+	stop_radvd();
 
 	stop_dhcp6s();
 
@@ -1437,8 +1437,9 @@ void stop_ipv6(void)
 	char *wan_ifname = (char *) get_wan6face();
 
 	stop_radvd();
-	stop_ipv6_tunnel();
+	stop_dhcp6s();
 	stop_dhcp6c();
+	stop_ipv6_tunnel();
 	eval("ip", "-6", "addr", "flush", "scope", "global", "dev", lan_ifname);
 	eval("ip", "-6", "addr", "flush", "scope", "global", "dev", wan_ifname);
 	eval("ip", "-6", "route", "flush", "scope", "all");
