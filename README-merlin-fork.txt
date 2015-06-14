@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-11E1j9527 (1-May-2015)
+Asuswrt-Merlin fork - build 374.43_2-12a1j9527 (16-June-2015)
 =============================================
 
 About
@@ -19,7 +19,42 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
-374.43_2-11E1j9527 (1-May-2015)
+374.43_2-12a1j9527 (16-June-2015)
+- CHANGED: Update OpenSSL to 1.0.2a
+- CHANGED: OpenVPN server generated DH key length to 1024bits
+- CHANGED: OpenVPN updated to 2.3.7
+- CHANGED: Updated Entware install scripts
+- CHANGED: dnsmasq update to version 2.73rc1.patch
+- CHANGED: miniupnpd update to version 1.9.20150430
+- CHANGED: pppd backport update to version 2.4.7
+- CHANGED: rp_pppoe backport sync with 378 codebase
+* CHANGED: Upstream fixes for radvd
+* CHANGED: Add DeprecatePrefix option to radvd.conf to force faster release of IPv6 addresses
+* CHANGED: Changed INVALID packet rule to external interface only and make it the default
+* CHANGED: Expand list of recognized files for album art in Media Server
+* CHANGED: IPv6 tomato backport to add option to set default ipv6 routing for PPPoE/IPv6 connections
+* CHANGED: Show correct model no in minidlna and miniupnpd
+- CHANGED: Add support for new ciphers available in OpenSSL 1.0.2
+- CHANGED: Check for only valid characters in client name fields
+- CHANGED: Completely remove the run command page for security
+- CHANGED: OpenVPN - Allow specifying the destination on policy routing rules to define routing exceptions
+- CHANGED: OpenVPN - Apply rules at boot time to ensure blocking is respected
+- CHANGED: OpenVPN - Only apply routing blocking on tunnel going down if policy based routing active
+- CHANGED: OpenVPN - Separate policy rules for client 1 and 2
+- CHANGED: Revert our old fix for Beeline as some people report better results with default code
+- CHANGED: Turn off exclamation point warning for guest access modes
+* FIXED: Filter client RSSI values if bad value returned
+* FIXED: Include guest clients in wireless stats on tools page
+* FIXED: Removed unneccessary scroll bars from log pages
+* FIXED: radvd - add default value for ppp mtu
+- FIXED: OpenVPN - Ensure that we restore previous DNS-settings
+- FIXED: OpenVPN - Update routing tables if user switches modes when tunnel is down
+- FIXED: OpenVPN - wait until NTP sync was complete before starting
+- FIXED: Remove false syslog errors on loading nf_conntrack_ipv6 and proxyarp
+* NEW: Add option to disable Media Server scan at every boot
+
+
+374.43_2-11E1j9527 (01-May-2015)
 * FIXED: Fix banner formatting for NL support, add ellipses to SSIDs
 
 

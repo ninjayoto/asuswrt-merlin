@@ -1,4 +1,5 @@
 Merlin Fork Custom Options
+Update-12
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
@@ -92,19 +93,7 @@ Filter IPv6 Neighbor Solicitation
 	Reboot Required:	No
 	Notes:			Control iptables rule dropping IPv6 neighbor solicitation requests 
 ----------------------------------------------------------------------------------------------------------------
-Enable local subnet forwarding
-	
-	Can be set in gui:	Yes (Firewall/General/Enable local subnet forwarding)
-	Enable via NVRAM:	nvram set lan_fw_enable=1
-				nvram commit
-				service restart_firewall
 
-	Routers Supported:	All
-	Released:		Update-11
-	Reboot Required:	No
-	Notes:			This allows forwarding between local subnets, such as in the case of a 
-					VPN connection and local lan 
-----------------------------------------------------------------------------------------------------------------
 CROND logging options
 
 	Can be set in gui:	No
@@ -115,6 +104,17 @@ CROND logging options
 	Released:		Update-11
 	Reboot Required:	Yes
 	Notes:			Setting cron_loglevel=N sets the logging level to N
+----------------------------------------------------------------------------------------------------------------
+Scan media files at every boot
+
+	Can be set in gui:	Yes (USB Applications/Servers Center/Media Server/Scan media files at every boot)
+	Enable via NVRAM:	nvram set dms_scan=1
+				nvram commit
+
+	Routers Supported:	All
+	Released:		Update-12
+	Reboot Required:	No
+	Notes:			Setting to No will only scan media files when a change is detected
 ----------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
