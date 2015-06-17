@@ -3590,6 +3590,12 @@ void force_free_caches()
 		free_caches(FREE_MEM_PAGE, 2, 0);
 	}
 #endif
+#ifdef RTCONFIG_BCMARM
+	/* free pagecache */
+	if(!nvram_match("bcmarm_dc_default", "1")) {
+		system("echo 1 > /proc/sys/vm/drop_caches");
+	}
+#endif
 }
 
 #ifdef RTN65U
@@ -4005,7 +4011,9 @@ static void sysinit(void)
 	f_write_string("/proc/sys/vm/min_free_kbytes", "512", 0, 0);
 #endif
 #ifdef RTCONFIG_BCMARM
-	f_write_string("/proc/sys/vm/min_free_kbytes", "14336", 0, 0);
+	// f_write_string("/proc/sys/vm/min_free_kbytes", "14336", 0, 0);
+	// fix _dma_rxfill error under stress test 
+	f_write_string("/proc/sys/vm/min_free_kbytes", "20480", 0, 0); 
 #endif
 	force_free_caches();
 
@@ -4492,19 +4500,19 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 
 			force_free_caches();
 
-if(nvram_match("commit_test", "1")) {
-	int x=0;
-	while(1) {
-		x++;
-		dbG("Nvram commit: %d\n", x);
-		nvram_set_int("commit_cut", x);
-		nvram_commit();
-		if(nvram_get_int("commit_cut")!=x) {
-			TRACE_PT("\n\n======== NVRAM Commit Failed at: %d =========\n\n", x);
-			break;
-		}
-	}
-}
+			if(nvram_match("commit_test", "1")) {
+				int x=0;
+				while(1) {
+					x++;
+					dbG("Nvram commit: %d\n", x);
+					nvram_set_int("commit_cut", x);
+					nvram_commit();
+					if(nvram_get_int("commit_cut")!=x) {
+						TRACE_PT("\n\n======== NVRAM Commit Failed at: %d =========\n\n", x);
+						break;
+					}
+				}
+			}
 			break;
 		}
 
@@ -4512,7 +4520,9 @@ if(nvram_match("commit_test", "1")) {
 		check_services();
 #ifdef RTCONFIG_BCMARM
 		/* free pagecache */
-		system("echo 1 > /proc/sys/vm/drop_caches");
+		if(nvram_match("bcmarm_dc_default", "1")) {
+			system("echo 1 > /proc/sys/vm/drop_caches");
+		}
 #endif
 		do {
 		ret = sigwait(&sigset, &state);
