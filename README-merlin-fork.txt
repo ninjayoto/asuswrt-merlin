@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-12a1j9527 (16-June-2015)
+Asuswrt-Merlin fork - build 374.43_2-12c1j9527 (17-June-2015)
 =============================================
 
 About
@@ -19,6 +19,10 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-12c1j9527 (17-June-2015)
+- CHANGED: Update OpenSSL to 1.0.2c
+
+
 374.43_2-12a1j9527 (16-June-2015)
 - CHANGED: Update OpenSSL to 1.0.2a
 - CHANGED: OpenVPN server generated DH key length to 1024bits
