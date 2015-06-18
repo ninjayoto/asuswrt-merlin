@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-12c1j9527 (17-June-2015)
+Asuswrt-Merlin fork - build 374.43_2-12c2j9527 (17-June-2015)
 =============================================
 
 About
@@ -19,6 +19,11 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-12c2j9527 (17-June-2015)
+* CHANGED: Only flush pagecache (drop_caches) when required for ARM
+* CHANGED: Fix memory leak in fscache (tomato backport)
+
+
 374.43_2-12c1j9527 (17-June-2015)
 - CHANGED: Update OpenSSL to 1.0.2c
 
