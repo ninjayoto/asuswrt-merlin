@@ -3816,8 +3816,9 @@ static void INET6_displayroutes(webs_t wp)
 
 	FILE *fp = fopen("/proc/net/ipv6_route", "r");
 
-	ret += websWrite(wp, "\nIPv6 routing table\n%-44s%-40s"
-			  "Flags Metric Ref    Use Iface\n",
+	ret += websWrite(wp, "\nIPv6 routing table");
+	ret += websWrite(wp, "\n------------------\n%-43s %-39s "
+			  "Flags Metric Iface   Ref    Use\n",
 			  "Destination", "Next Hop");
 
 	while (1) {
@@ -3878,8 +3879,8 @@ static void INET6_displayroutes(webs_t wp)
 				free(naddr6);
 			} else {			/* 2nd pass */
 				/* Print the info. */
-				ret += websWrite(wp, "%-43s %-39s %-5s %-6d %-2d %7d %-8s\n",
-						addr6, naddr6, flags, metric, refcnt, use, iface);
+				ret += websWrite(wp, "%-43s %-39s %-5s %-6d %-7s %-6d %-3d\n",
+						addr6, naddr6, flags, metric, iface, refcnt, use);
 				free(naddr6);
 				break;
 			}
@@ -3900,9 +3901,10 @@ static int ipv4_route_table(webs_t wp)
 	int flags, ref, use, metric;
 	int unit, ret = 0;
 
-	ret += websWrite(wp, "%-16s%-16s%-16s%s\n",
-			 "Destination", "Gateway", "Genmask",
-			 "Flags Metric Ref    Use Iface");
+	ret += websWrite(wp, "IPv4 routing table\n");
+	ret += websWrite(wp, "------------------\n%-16s %-26s %-39s %s\n",
+			 "Destination", "Genmask", "Gateway",
+			 "Flags Metric Iface   Ref    Use");
 
 	fp = fopen("/proc/net/route", "r");
 	if (fp == NULL)
@@ -3950,10 +3952,11 @@ static int ipv4_route_table(webs_t wp)
 			}
 		}
 
-		ret += websWrite(wp, "%-16s", dest.s_addr == INADDR_ANY ? "default" : inet_ntoa(dest));
-		ret += websWrite(wp, "%-16s", gateway.s_addr == INADDR_ANY ? "*" : inet_ntoa(gateway));
-		ret += websWrite(wp, "%-16s%-6s%-6d %-2d %7d %s\n",
-				 inet_ntoa(mask), sflags, metric, ref, use, dev);
+		ret += websWrite(wp, "%-16s ", dest.s_addr == INADDR_ANY ? "default" : inet_ntoa(dest));
+		ret += websWrite(wp, "%-26s ", inet_ntoa(mask));
+		ret += websWrite(wp, "%-39s ", gateway.s_addr == INADDR_ANY ? "*" : inet_ntoa(gateway));
+		ret += websWrite(wp, "%-5s %-6d %-7s %-6d %-3d\n",
+				 sflags, metric, dev, ref, use);
 	}
 	fclose(fp);
 
