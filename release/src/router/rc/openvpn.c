@@ -1212,25 +1212,32 @@ void start_vpnserver(int serverNum)
 			sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
 			fprintf(fp, "%s", get_parsed_crt(&buffer[0], buffer2));
 			fclose(fp);
-			valid = 1;	// Tentative state
 
 			// Validate DH strength
+			valid = 1;      // Tentative state
 			sprintf(&buffer[0], "openssl dhparam -in /etc/openvpn/server%d/dh.pem -text | grep \"DH Parameters:\" > /tmp/output.txt", serverNum);
 			system(&buffer[0]);
 			f_read_string("/tmp/output.txt", &buffer[0], 64);
 			if (sscanf(strstr(&buffer[0],"DH Parameters"),"DH Parameters: (%d bit)", &i)) {
 				if (i < 1024) {
-					logmessage("openvpn","WARNING: DH for server %d is too weak (%d bit, must be at least 1024 bit), you should re-generate it.", serverNum, i);
+					logmessage("openvpn","WARNING: DH for server %d is too weak (%d bit, must be at least 1024 bit). Using a pre-generated 2048-bit PEM.", serverNum, i);
+					valid = 0;      // Not valid after all, must regenerate
 				}
 			}
 		}
-//		else
 		if (valid == 0)
-		{	//generate dh param file
+		{
 			sprintf(fpath, "/etc/openvpn/server%d/dh.pem", serverNum);
-			eval("openssl", "dhparam", "-out", fpath, "1024");
+
+			//generate dh param file
+			//eval("openssl", "dhparam", "-out", fpath, "1024");
+
+			// Provide a 2048-bit PEM, from RFC 3526.
+			eval("cp", "/rom/dh2048.pem", fpath);
+
 			fp = fopen(fpath, "r");
 			if(fp) {
+				sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
 				set_crt_parsed(&buffer[0], fpath);
 				fclose(fp);
 			}
