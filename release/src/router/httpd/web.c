@@ -3755,7 +3755,7 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 
 	ret += websWrite(wp, "\n\nIPv6 LAN Devices List\n");
 	ret += websWrite(wp, "-------------------------------------------------------------------\n");
-	ret += websWrite(wp, "%-32s %-17s %-39s\n",
+	ret += websWrite(wp, "%-32s %-18s %s\n",
 			 "Hostname", "MAC Address", "IPv6 Address");
 
 	/* Refresh lease file to get actual expire time */
@@ -3784,13 +3784,13 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 			if (first)
 				first = 0;
 			else
-				sprintf(ipaddrs, "%s, ", ipaddrs);
+				sprintf(ipaddrs, "%s,\n%-52s", ipaddrs, " ");
 
 			sprintf(ipaddrs, "%s%s", ipaddrs, (char *)p);
 			p = strtok(NULL, ",");
 		}
 
-		ret += websWrite(wp, "%-32s %-17s %-39s\n",
+		ret += websWrite(wp, "%-32s %-18s %s\n",
 				 hostname, macaddr, ipaddrs);
 	}
 	fclose(fp);
