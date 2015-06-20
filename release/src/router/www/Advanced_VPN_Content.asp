@@ -713,7 +713,7 @@ function enable_openvpn(state){
 			<input type="hidden" name="next_page" value="Advanced_VPN_Content.asp">
 			<input type="hidden" name="modified" value="0">
 			<input type="hidden" name="action_mode" value="apply">
-			<input type="hidden" name="action_wait" value="12">
+			<input type="hidden" name="action_wait" value="15">
 			<input type="hidden" name="action_script" value="">
 			<input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 			<input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
