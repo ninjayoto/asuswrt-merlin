@@ -3262,8 +3262,8 @@ int init_nvram(void)
 // Init added fork variables to avoid factory reset required
 
 	// Initialize working variable name for max tcp connections
-	if(!nvram_get("ct_max"))
-		nvram_set("ct_max", nvram_get("ct_max_default"));
+	if(!nvram_get_int("ct_max"))
+		nvram_set_int("ct_max", nvram_get_int("ct_max_default"));
 
 	// Initialize working variable name for max DSCP fix
 	if(nvram_get("DSCP_fix_enable") == NULL)
