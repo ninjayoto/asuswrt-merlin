@@ -570,6 +570,9 @@ int add_iQosRules(char *pcWANIF)
 	/* lan_addr for iptables use (LAN download) */
 	char *a, *b, *c, *d;
 	char lan_addr[20];
+	char ipv6_lan_addr[44];
+
+	/* ipv4 lan_addr for iptables use (LAN download) */
 	g = buf = strdup(nvram_safe_get("lan_ipaddr"));
 	if((vstrsep(g, ".", &a, &b, &c, &d)) != 4){
 		fprintf(stderr,"[qos] lan_ipaddr doesn't exist!!\n");
@@ -578,6 +581,11 @@ int add_iQosRules(char *pcWANIF)
 		sprintf(lan_addr, "%s.%s.%s.0/24", a, b, c);
 		fprintf(stderr,"[qos] lan_addr=%s\n", lan_addr);
 	}
+	free(buf);
+
+	/* ipv6_lan_addr for ip6tables use (LAN download) */
+	buf = strdup(nvram_safe_get("ipv6_prefix"));
+	sprintf(ipv6_lan_addr, "%s/%d", buf, nvram_get_int("ipv6_prefix_length") ? : 64);
 	free(buf);
 
 	//fprintf(stderr, "[qos] down_class_num=%x\n", down_class_num);
@@ -634,13 +642,13 @@ int add_iQosRules(char *pcWANIF)
 			add_EbtablesRules();
 
 			// for multicast
-			fprintf(fn_ipv6, "-A QOSO -d 224.0.0.0/4 -j CONNMARK --set-return 0x%x/0xFF\n",  down_class_num);
+			fprintf(fn_ipv6, "-A QOSO -d ff00::/8 -j CONNMARK --set-return 0x%x/0xFF\n",  down_class_num);
                         if(manual_return)
-                                fprintf(fn_ipv6, "-A QOSO -d 224.0.0.0/4 -j RETURN\n");
+                                fprintf(fn_ipv6, "-A QOSO -d ff00::/8 -j RETURN\n");
 			// for download (LAN or wireless)
-        		fprintf(fn_ipv6, "-A QOSO -d %s -j CONNMARK --set-return 0x%x/0xFF\n", lan_addr, down_class_num);
+			fprintf(fn_ipv6, "-A QOSO -d %s -j CONNMARK --set-return 0x%x/0xFF\n", ipv6_lan_addr, down_class_num);
                         if(manual_return)
-                                fprintf(fn_ipv6, "-A QOSO -d %s -j RETURN\n", lan_addr);
+                                fprintf(fn_ipv6, "-A QOSO -d %s -j RETURN\n", ipv6_lan_addr);
 /* Requires bridge netfilter, but slows down and breaks EMF/IGS IGMP IPTV Snooping
 			// for WLAN to LAN bridge issue
 			fprintf(fn_ipv6, "-A POSTROUTING -d %s -m physdev --physdev-is-in -j CONNMARK --set-return 0x6/0xFF\n", lan_addr);
