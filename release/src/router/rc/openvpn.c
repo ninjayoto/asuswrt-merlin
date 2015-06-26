@@ -592,6 +592,7 @@ void start_vpnserver(int serverNum)
 	int nvi, ip[4], nm[4];
 	long int nvl;
 	int pid;
+	int ret;
 #ifdef RTCONFIG_BCMARM
 	int cpu_num = sysconf(_SC_NPROCESSORS_CONF);
 #endif
@@ -1173,13 +1174,19 @@ void start_vpnserver(int serverNum)
 			fprintf(fp, "%s", get_parsed_crt(&buffer[0], buffer2));
 			fclose(fp);
 
-			sprintf(&buffer[0], "openssl verify -CAfile /etc/openvpn/server%d/ca.crt /tmp/test.crt > /tmp/output.txt", serverNum);
+			sprintf(&buffer[0], "/usr/sbin/openssl verify -CAfile /etc/openvpn/server%d/ca.crt /tmp/test.crt > /tmp/output.txt", serverNum);
 			system(&buffer[0]);
-			f_read_string("/tmp/output.txt", &buffer[0], 64);
+			ret = f_read_string("/tmp/output.txt", &buffer[0], 64);
 	                unlink("/tmp/test.crt");
 
-			if (!strncmp(&buffer[0],"/tmp/test.crt: OK",17))
-				valid = 1;
+			if(ret) {
+				if (!strncmp(&buffer[0],"/tmp/test.crt: OK",17)) {
+					valid = 1;
+				} else {
+					vpnlog(VPN_LOG_EXTRA,"Cannot verify client cert");
+					valid = 0;
+				}
+			}
 
 			fprintf(fp_client, "<cert>\n");
 			sprintf(&buffer[0], "vpn_crt_server%d_client_crt", serverNum);
@@ -1202,44 +1209,65 @@ void start_vpnserver(int serverNum)
 			fprintf(fp_client, "</key>\n");
 		}
 
-		valid = 0;
+		/*
+		   Process Diffie-Hellman pem
+		   Update to a pre-generated dh if the current dh is below 1024 bits
+		*/
+		valid = 0;  //initial state invalid for dh not present
 		sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
 		if ( !nvram_is_empty(&buffer[0]) )
 		{
+			//write out dh.pem from nvram
 			sprintf(&buffer[0], "/etc/openvpn/server%d/dh.pem", serverNum);
 			fp = fopen(&buffer[0], "w");
 			chmod(&buffer[0], S_IRUSR|S_IWUSR);
 			sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
 			fprintf(fp, "%s", get_parsed_crt(&buffer[0], buffer2));
-			fclose(fp);
+			if (fclose(fp) == EOF) {
+				vpnlog(VPN_LOG_EXTRA,"Error writing dh.pem from nvram!");
+			} else {
+				vpnlog(VPN_LOG_EXTRA,"Done writing dh.pem from nvram");
+			}
 
-			// Validate DH strength
+			// Validate dh strength
 			valid = 1;      // Tentative state
-			sprintf(&buffer[0], "openssl dhparam -in /etc/openvpn/server%d/dh.pem -text | grep \"DH Parameters:\" > /tmp/output.txt", serverNum);
+			vpnlog(VPN_LOG_EXTRA,"Start dh length check");
+			sprintf(&buffer[0], "/usr/sbin/openssl dhparam -in /etc/openvpn/server%d/dh.pem -text | grep \"DH Parameters:\" > /tmp/dhtest.txt", serverNum);
 			system(&buffer[0]);
-			f_read_string("/tmp/output.txt", &buffer[0], 64);
-			if (sscanf(strstr(&buffer[0],"DH Parameters"),"DH Parameters: (%d bit)", &i)) {
-				if (i < 1024) {
-					logmessage("openvpn","WARNING: DH for server %d is too weak (%d bit, must be at least 1024 bit). Using a pre-generated 2048-bit PEM.", serverNum, i);
-					valid = 0;      // Not valid after all, must regenerate
+			ret = f_read_string("/tmp/dhtest.txt", &buffer[0], 64);
+
+			if(ret) {
+				if (sscanf(strstr(&buffer[0],"DH Parameters"),"DH Parameters: (%d bit)", &i)) {
+					if (i < 1024) {
+						valid = 0;      // Not valid after all, must regenerate
+						logmessage("openvpn", "WARNING: DH for server %d is too weak (%d bit, must be at least 1024 bit)", serverNum, i);
+						logmessage("openvpn", "INFO: Server %d using a pre-generated 2048-bit DH PEM", serverNum);
+					} else {
+						vpnlog(VPN_LOG_EXTRA,"Valid dh >= 1024 bits found");
+					}
 				}
+			} else {
+				valid = 0;
+				vpnlog(VPN_LOG_EXTRA,"Error testing dh length!");
 			}
 		}
+
 		if (valid == 0)
 		{
 			sprintf(fpath, "/etc/openvpn/server%d/dh.pem", serverNum);
-
 			//generate dh param file
 			//eval("openssl", "dhparam", "-out", fpath, "1024");
 
 			// Provide a 2048-bit PEM, from RFC 3526.
 			eval("cp", "/rom/dh2048.pem", fpath);
 
+			//update nvram with new dh
 			fp = fopen(fpath, "r");
 			if(fp) {
 				sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
 				set_crt_parsed(&buffer[0], fpath);
 				fclose(fp);
+				vpnlog(VPN_LOG_EXTRA,"Done updating nvram with new dh");
 			}
 		}
 	}
