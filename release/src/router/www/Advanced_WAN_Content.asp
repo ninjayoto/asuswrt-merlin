@@ -293,6 +293,14 @@ function validForm(){
 		if(!validate_number_range(document.form.wan_pppoe_mtu, 576, 1500)
 				|| !validate_number_range(document.form.wan_pppoe_mru, 576, 1500))
 			return false;
+
+		if(document.form.wan_pppoe_mru.value > document.form.wan_pppoe_mtu.value){
+//			alert("MRU must be less than or equal to MTU");
+			document.form.wan_pppoe_mru.value = document.form.wan_pppoe_mtu.value;
+//			document.form.wan_pppoe_mru.focus();
+//			document.form.wan_pppoe_mru.select();
+//			return false;
+		}
 		
 		if(!validate_string(document.form.wan_pppoe_service)
 				|| !validate_string(document.form.wan_pppoe_ac))
