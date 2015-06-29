@@ -735,7 +735,7 @@ function validate_ipcidr(obj){
 <input type="hidden" name="modified" value="0">
 <input type="hidden" name="action_mode" value="apply">
 <input type="hidden" name="action_script" value="">
-<input type="hidden" name="action_wait" value="15">
+<input type="hidden" name="action_wait" value="5">
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="SystemCmd" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
@@ -805,12 +805,14 @@ function validate_ipcidr(obj){
 
 								$j('#radio_service_enable').iphoneSwitch(service_state,
 									 function() {
+										document.form.action_wait.value = 15;
 										document.form.action_script.value = "start_vpnclient" + openvpn_unit;
 										parent.showLoading();
 										document.form.submit();
 										return true;
 									 },
 									 function() {
+										document.form.action_wait.value = 15;
 										document.form.action_script.value = "stop_vpnclient" + openvpn_unit;
 										parent.showLoading();
 										document.form.submit();
