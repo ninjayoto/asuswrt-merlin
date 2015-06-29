@@ -1185,7 +1185,7 @@ void start_radvd(void)
 		service = get_ipv6_service();
 		do_6to4 = (service == IPV6_6TO4);
 		do_6rd = (service == IPV6_6RD);
-		mtu = NULL;
+//		mtu = NULL;
 
 		switch (service) {
 //              case IPV6_NATIVE_DHCP:
@@ -1193,25 +1193,33 @@ void start_radvd(void)
 		case IPV6_6IN4:
 		case IPV6_6RD:
 			mtu = (nvram_get_int("ipv6_tun_mtu") > 0) ? nvram_safe_get("ipv6_tun_mtu") : "1480";
-			// fall through
+			break;
 		default:
-			if (nvram_match("ipv6_ifdev", "ppp"))
-				sprintf(mtu, "%d", nvram_get_int("wan_pppoe_mtu") ? (nvram_get_int("wan_pppoe_mtu") - 20) : 1492);
-			else if (nvram_get_int("ipv6_mtu") > 0)
-				mtu = nvram_safe_get("ipv6_mtu");
-			else if (nvram_get_int("ipv6_mtu") < 0)
-				mtu = "0";
-			prefix = do_6to4 ? "0:0:0:1::" : nvram_safe_get("ipv6_prefix");
-			if (*prefix == '\0')
-				prefix = "::";
-			stateful = (service == IPV6_NATIVE_DHCP) ?
-				nvram_get_int("ipv6_autoconf_type") : 0;
-			size = nvram_get_int("ipv6_prefix_length") ? : 64;
-			if (size < 64 && !stateful)
-				size = 64;
+			if (nvram_match("ipv6_ifdev", "ppp")) {
+				if (nvram_match("wan_pppoe_mtu_noadv", "1"))
+					mtu = "0";
+				else
+					mtu = (nvram_get_int("wan_pppoe_mtu") > 0) ? nvram_safe_get("wan_pppoe_mtu") : "1492";
+			} else {
+				if (nvram_get_int("ipv6_mtu") > 0)
+					mtu = nvram_safe_get("ipv6_mtu");
+				else if (nvram_get_int("ipv6_mtu") < 0)
+					mtu = "0";
+			}
 			break;
 		}
+
+		prefix = do_6to4 ? "0:0:0:1::" : nvram_safe_get("ipv6_prefix");
+		if (*prefix == '\0')
+			prefix = "::";
 		if (!(*prefix) || (strlen(prefix) <= 0)) prefix = "::";
+
+		stateful = (service == IPV6_NATIVE_DHCP) ?
+			nvram_get_int("ipv6_autoconf_type") : 0;
+
+		size = nvram_get_int("ipv6_prefix_length") ? : 64;
+		if (size < 64 && !stateful)
+			size = 64;
 
 //	    	// Create radvd.conf
 //	    	if ((f = fopen("/etc/radvd.conf", "w")) == NULL) return;
@@ -1265,7 +1273,7 @@ void start_radvd(void)
 			" };\n",
 			nvram_safe_get("lan_ifname"),
 			nvram_get_int("ipv6_autoconf_type") ? "on" : "off",
-			mtu ? " AdvLinkMTU " : "", mtu ? mtu : "", mtu ? ";\n" : "", // add missing mtu var
+			mtu ? " AdvLinkMTU " : "", mtu ? : "", mtu ? ";\n" : "",
 			prefix, size,
 			nvram_get_int("ipv6_autoconf_type") ? "off" : "on",
 			valid_lifetime ? "  AdvValidLifetime " : "", valid_lifetime ? : "", valid_lifetime ? ";\n" : "",
