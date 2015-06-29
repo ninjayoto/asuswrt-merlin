@@ -785,10 +785,10 @@ function applyRule(){
 		if(document.form.ipv6_service.value != "disabled")
 				document.form.ipv6_service_last.value = document.form.ipv6_service.value;
 
-		//clean up ipv6_rtr_addr if 6rd, 6to4, dhcp_pd=0
-                if((document.form.ipv6_service.value=="6rd" || document.form.ipv6_service.value=="6to4")
-                        || (document.form.ipv6_service.value=="dhcp6" && document.form.ipv6_dhcp_pd.value=="0"))
-                                document.form.ipv6_rtr_addr.value = "";
+		//clean up ipv6_rtr_addr if not other or dhcp_pd=1
+		if(document.form.ipv6_service.value!="other"
+				&& (document.form.ipv6_service.value!="dhcp6" && document.form.ipv6_dhcp_pd.value!="0"))
+				document.form.ipv6_rtr_addr.value = "";
 
 		/*if(machine_arm)	//Viz 2013.06 Don't need to reboot anymore
 		{ // MODELDEP: Machine ARM structure
