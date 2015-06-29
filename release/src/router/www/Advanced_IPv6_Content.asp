@@ -751,28 +751,15 @@ function applyRule(){
 					document.form.ipv6_prefix_length.value = "64";
 					document.form.ipv6_prefix.disabled = false;
 					//document.form.ipv6_prefix.value = GetIPv6_split(document.form.ipv6_rtr_addr.value)+"::";	  //rc calculate it.
-															
+
 				}
-		}
 				
-		if(document.form.ipv6_autoconf_type[1].checked && document.form.ipv6_service.value=="dhcp6"){
-			if(document.form.ipv6_dhcp_pd[1].checked){
-				document.form.ipv6_dhcp_start.disabled = false;
-				document.form.ipv6_dhcp_start.value = document.form.ipv6_prefix_span_for_start.value +"::"+document.form.ipv6_dhcp_start_start.value;
-				document.form.ipv6_dhcp_end.disabled = false;
-				document.form.ipv6_dhcp_end.value = document.form.ipv6_prefix_span_for_end.value +"::"+document.form.ipv6_dhcp_end_end.value;
-			}else{
-				document.form.ipv6_dhcp_start.disabled = false;
-				document.form.ipv6_dhcp_start.value = "::"+document.form.ipv6_dhcp_start_start.value;
-				document.form.ipv6_dhcp_end.disabled = false;
-				document.form.ipv6_dhcp_end.value = "::"+document.form.ipv6_dhcp_end_end.value;
-			}
-		}else{
-				//clear dhcp pool address range
-				document.form.ipv6_dhcp_start.disabled = false;
-				document.form.ipv6_dhcp_start.value = "";
-				document.form.ipv6_dhcp_end.disabled = false;
-				document.form.ipv6_dhcp_end.value = "";
+				if(document.form.ipv6_autoconf_type[1].checked){
+						document.form.ipv6_dhcp_start.disabled = false;
+						document.form.ipv6_dhcp_start.value = document.form.ipv6_prefix_span_for_start.value +"::"+document.form.ipv6_dhcp_start_start.value;
+						document.form.ipv6_dhcp_end.disabled = false;
+						document.form.ipv6_dhcp_end.value = document.form.ipv6_prefix_span_for_end.value +"::"+document.form.ipv6_dhcp_end_end.value;
+				}
 		}
 				
 		if(document.form.ipv6_ifdev_select.disabled){		// set ipv6_ifdev="eth" while interface is disabled.
