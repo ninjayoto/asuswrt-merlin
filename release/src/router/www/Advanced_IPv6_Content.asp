@@ -237,8 +237,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dhcp_lifetime, 0);
 		$("ipv6_ipaddr_r").style.display="";
 		if(v != ipv6_proto_orig){
-				document.form.ipv6_prefix.value = "";
-				document.form.ipv6_prefix_length.value = "";			
+				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix_s"); %>";
+				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "";
 		}else{
 				$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";	
@@ -338,8 +338,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dhcp_lifetime, 0);
 		if(v != ipv6_proto_orig){
 				$("ipv6_prefix_span").innerHTML = "";
-				document.form.ipv6_prefix_length.value = "";
-				document.form.ipv6_rtr_addr.value = "";
+				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
+				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr_s"); %>";
 		}else{
 				$("ipv6_prefix_span").innerHTML = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
@@ -876,6 +876,9 @@ function showInfo(){
 <input type="hidden" name="ipv6_service_orig" value="<% nvram_get("ipv6_service"); %>" disabled>
 <input type="hidden" name="ipv6_dhcp_start" value="<% nvram_get("ipv6_dhcp_start"); %>" disabled>
 <input type="hidden" name="ipv6_dhcp_end" value="<% nvram_get("ipv6_dhcp_start"); %>" disabled>
+<input type="hidden" name="ipv6_prefix_length_s" value="<% nvram_get("ipv6_prefix_length_s"); %>">
+<input type="hidden" name="ipv6_rtr_addr_s" value="<% nvram_get("ipv6_rtr_addr_s"); %>">
+<input type="hidden" name="ipv6_prefix_s" value="<% nvram_get("ipv6_prefix_s"); %>">
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
 	<td width="17">&nbsp;</td>
