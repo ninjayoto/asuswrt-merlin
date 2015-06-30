@@ -3299,11 +3299,6 @@ int init_nvram(void)
 		nvram_set("cron_loglevel", "8");
 	}
 
-	// Initialize working variable ipv6 service tracking
-        if(nvram_get("ipv6_service_last") == NULL){
-                nvram_set("ipv6_service_last", "disabled");
-        }
-
 	// Initialize working variable for ipt lock
 	if(nvram_get("nat_iptlock") == NULL)
                 nvram_set("nat_iptlock", "0");
