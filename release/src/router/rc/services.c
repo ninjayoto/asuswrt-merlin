@@ -1043,6 +1043,7 @@ void start_dhcp6s(void)
 		NULL,		/* -D */
 		NULL };
 	int index = 4;		/* first NULL */
+	int service, stateful;
 
 	if (getpid() != 1) {
 		notify_rc("start_dhcp6s");
@@ -1052,13 +1053,16 @@ void start_dhcp6s(void)
 	if (!ipv6_enabled())
 		return;
 
-	if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_match("ipv6_dnsenable", "1")
-		&& nvram_match("ipv6_get_dns", "") && !nvram_get_int("ipv6_autoconf_type")) {
-                // clear dhcp pool addr
-		nvram_set("ipv6_dhcp_start","");
-		nvram_set("ipv6_dhcp_end","");
+	if (!nvram_get_int("ipv6_dhcp6s_enable"))
 		return;
-	}
+
+	service = get_ipv6_service();
+	stateful = (service == IPV6_NATIVE_DHCP) ?
+		nvram_get_int("ipv6_autoconf_type") : 0;
+
+	/* skip if not announcing and not stateful */
+	if (!nvram_get_int("ipv6_radvd") && !stateful)
+		return;
 
 	/* create dhcp6s.conf */
 	if ((fp = fopen("/etc/dhcp6s.conf", "w")) == NULL)
