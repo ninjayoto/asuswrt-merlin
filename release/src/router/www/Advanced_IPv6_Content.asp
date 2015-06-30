@@ -771,6 +771,17 @@ function applyRule(){
 				&& (document.form.ipv6_service.value!="dhcp6" && document.form.ipv6_dhcp_pd.value!="0"))
 				document.form.ipv6_rtr_addr.value = "";
 
+		//Start:  Viz add to store ipv6_prefix_length & ipv6_rtr_addr for 'other' 2014.12.08
+		if(document.form.ipv6_service.value == "other"){
+				document.form.ipv6_prefix_length_s.value = document.form.ipv6_prefix_length.value;
+				document.form.ipv6_rtr_addr_s.value = document.form.ipv6_rtr_addr.value;
+		}
+		if(document.form.ipv6_service.value == "6in4"){
+				document.form.ipv6_prefix_length_s.value = document.form.ipv6_prefix_length.value;
+				document.form.ipv6_prefix_s.value = document.form.ipv6_prefix.value;
+		}
+		//End
+
 		/*if(machine_arm)	//Viz 2013.06 Don't need to reboot anymore
 		{ // MODELDEP: Machine ARM structure
 			if((document.form.ipv6_service.value == "disabled" && document.form.ipv6_service_orig.value != "disabled") ||

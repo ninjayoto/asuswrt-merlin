@@ -1413,25 +1413,36 @@ void start_ipv6(void)
 
 	// Check if turned on
 	switch (service) {
+	case IPV6_NATIVE_DHCP:
+		nvram_set("ipv6_prefix", "");
+		if (nvram_get_int("ipv6_dhcp_pd")) {
+			nvram_set("ipv6_prefix_length", "");
+			nvram_set("ipv6_rtr_addr", "");
+		} else {
+			nvram_set_int("ipv6_prefix_length", 64);
+			add_ip6_lanaddr();
+		}
+		nvram_set("ipv6_get_dns", "");
+		nvram_set("ipv6_get_domain", "");
+		break;
 	case IPV6_6IN4:
 		nvram_set("ipv6_rtr_addr", "");
-	case IPV6_NATIVE:
+		nvram_set("ipv6_prefix_length", nvram_safe_get("ipv6_prefix_length_s"));
+		nvram_set("ipv6_prefix", nvram_safe_get("ipv6_prefix_s"));
+		/* fall through */
 	case IPV6_MANUAL:
-	case IPV6_NATIVE_DHCP:
-		if (service == IPV6_NATIVE_DHCP)
-		{
-			nvram_set("ipv6_prefix", "");
-			if (nvram_get_int("ipv6_dhcp_pd"))
-				nvram_set("ipv6_rtr_addr", "");
-		}
+		nvram_set("ipv6_rtr_addr", nvram_safe_get("ipv6_rtr_addr_s"));
+		nvram_set("ipv6_prefix_length", nvram_safe_get("ipv6_prefix_length_s"));
 		add_ip6_lanaddr();
 		break;
 	case IPV6_6TO4:
 	case IPV6_6RD:
-	default:
 		nvram_set("ipv6_prefix", "");
+		nvram_set("ipv6_prefix_length", "");
 		nvram_set("ipv6_rtr_addr", "");
+		break;
 	}
+
 }
 
 void stop_ipv6(void)

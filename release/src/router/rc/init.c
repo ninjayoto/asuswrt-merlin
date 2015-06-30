@@ -3323,6 +3323,13 @@ int init_nvram(void)
 	if(nvram_get("ipv6_radvd_dl") == NULL)
 		nvram_set("ipv6_radvd_dl", "1");
 
+	// Initialize save variables for ipv6
+	if(nvram_get("ipv6_rtr_addr_s") == NULL){
+		nvram_set("ipv6_prefix_s", "");
+		nvram_set("ipv6_prefix_length_s","64");
+		nvram_set("ipv6_rtr_addr_s","");
+	}
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

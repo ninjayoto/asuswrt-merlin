@@ -1775,6 +1775,9 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_fw_enable",	"1"		},	// Default FORWARD table to DROP packets
 	{ "ipv6_fw_rulelist",	""		},	// IPv6 allowed forward rules
 	{ "ipv6_ra_conf",	"noneset"	},	// address configuration from WAN router advertisement
+	{ "ipv6_prefix_s",	""		},	// for ipv6 6in4
+	{ "ipv6_prefix_length_s", "64"		},	// for ipv6 6in4/other
+	{ "ipv6_rtr_addr_s",	""		},	// for ipv6 other
 	{ "ipv6_dhcp6s_enable",	"1"		},	// DHCP6 Server for LAN
 	{ "ipv6_neighsol_drop", "1"		},	// Filter out neighbour solicitation flood on Comcast network
 	{ "ipv6_isp_opt",	"0"		},	// Option to set default IPv6 route for PPP connections
