@@ -290,8 +290,8 @@ function validForm(){
 	}
 	
 	if(document.form.wan_proto.value == "pppoe"){
-		if(!validate_number_range(document.form.wan_pppoe_mtu, 576, 1500)
-				|| !validate_number_range(document.form.wan_pppoe_mru, 576, 1500))
+		if(!validate_number_range(document.form.wan_pppoe_mtu, 1280, 1500)
+				|| !validate_number_range(document.form.wan_pppoe_mru, 1280, 1500))
 			return false;
 
 		if(document.form.wan_pppoe_mru.value > document.form.wan_pppoe_mtu.value){
@@ -309,7 +309,7 @@ function validForm(){
 
         if((document.form.wan_proto.value == "dhcp")
 		|| (document.form.wan_proto.value == "static")){
-			if(!validate_number_range(document.form.wan_mtu, 576, 9000))
+			if(!validate_number_range(document.form.wan_mtu, 1280, 9000))
 				return false;
 	}
 	
