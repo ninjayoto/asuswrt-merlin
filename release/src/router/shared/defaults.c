@@ -1785,6 +1785,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_pd_plifetime",	""		},	// The preferred lifetime for the prefix obtained via DHCPv6-PD
 	{ "ipv6_radvd_dp",	"1"		},	// Fast release of IPv6 prefix
 	{ "ipv6_radvd_dl",	"1"		},	// Decrement lifetimes
+	{ "ipv6_radvd_mtu",     "1"		},      // Advertise IPv6 MTU thru radvd */
 
 	{ "web_redirect", 	"0"		},	// Redirect disabled by default for both NOLINK or NOINTERNET
 	{ "disiosdet",		"1"		},

@@ -1185,28 +1185,25 @@ void start_radvd(void)
 		service = get_ipv6_service();
 		do_6to4 = (service == IPV6_6TO4);
 		do_6rd = (service == IPV6_6RD);
-//		mtu = NULL;
+		mtu = NULL;
 
-		switch (service) {
-//              case IPV6_NATIVE_DHCP:
-		case IPV6_6TO4:
-		case IPV6_6IN4:
-		case IPV6_6RD:
-			mtu = (nvram_get_int("ipv6_tun_mtu") > 0) ? nvram_safe_get("ipv6_tun_mtu") : "1480";
-			break;
-		default:
-			if (nvram_match("ipv6_ifdev", "ppp")) {
-				if (nvram_match("wan_pppoe_mtu_noadv", "1"))
-					mtu = "0";
-				else
+		if (nvram_match("ipv6_radvd_mtu", "1")) {
+			switch (service) {
+//      	        case IPV6_NATIVE_DHCP:
+			case IPV6_6TO4:
+			case IPV6_6IN4:
+			case IPV6_6RD:
+				mtu = (nvram_get_int("ipv6_tun_mtu") > 0) ? nvram_safe_get("ipv6_tun_mtu") : "1480";
+				break;
+			default:
+				if (nvram_match("ipv6_ifdev", "ppp"))
 					mtu = (nvram_get_int("wan_pppoe_mtu") > 0) ? nvram_safe_get("wan_pppoe_mtu") : "1492";
-			} else {
-				if (nvram_get_int("ipv6_mtu") > 0)
+				else if (nvram_get_int("ipv6_mtu") > 0)
 					mtu = nvram_safe_get("ipv6_mtu");
 				else if (nvram_get_int("ipv6_mtu") < 0)
 					mtu = "0";
+				break;
 			}
-			break;
 		}
 
 		prefix = do_6to4 ? "0:0:0:1::" : nvram_safe_get("ipv6_prefix");

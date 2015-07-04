@@ -26,6 +26,7 @@
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var wan_proto_orig = '<% nvram_get("wan_proto"); %>';
 var ipv6_proto_orig = '<% nvram_get("ipv6_service"); %>';
+var ipv6_ifdev_orig = '<% nvram_get("ipv6_ifdev"); %>';
 var ipv6_tun6rd_dhcp = '<% nvram_get("ipv6_6rd_dhcp"); %>';
 var wan0_ipaddr = '<% nvram_get("wan0_ipaddr"); %>'; 
 var machine_name = '<% get_machine_name(); %>';
@@ -83,10 +84,15 @@ function showInputfield(v){
 				document.form.ipv6_prefix.value = "";
 				document.form.ipv6_prefix_length.value = "";
 				document.form.ipv6_rtr_addr.value = "";
+				if(ipv6_ifdev_orig == "ppp")
+					document.form.enable_mtu_ckb.checked = false;
+				else
+					document.form.enable_mtu_ckb.checked = true;
 		}else{
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr"); %>";
+				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
 		}
 		$("ipv6_ipaddr_r").style.display="none";
 		$("ipv6_dns_setting").style.display="";
@@ -95,7 +101,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
-		
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
 	}
 	else if(v == "dhcp6"){
 		if(wan_proto_orig == "l2tp" || wan_proto_orig == "pptp" || wan_proto_orig == "pppoe")
@@ -138,6 +145,10 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "";
 				$("ipv6_prefix_length_span").innerHTML = "";
 				$("ipv6_ipaddr_span").innerHTML = "";
+				if(ipv6_ifdev_orig == "ppp")
+					document.form.enable_mtu_ckb.checked = false;
+				else
+					document.form.enable_mtu_ckb.checked = true;
 		}else{
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
@@ -145,6 +156,7 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "<% nvram_get("ipv6_prefix"); %>";
 				$("ipv6_prefix_length_span").innerHTML = "<% nvram_get("ipv6_prefix_length"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";
+				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
 		}
 		$("ipv6_dns_setting").style.display="";
 		inputCtrl(document.form.ipv6_dnsenable[0], 1);
@@ -153,6 +165,8 @@ function showInputfield(v){
 		showInputfield2('ipv6_dhcp_pd', enable_pd);
 		var enable_dns = (document.form.ipv6_dnsenable[1].checked) ? '0' : '1';
 		showInputfield2('ipv6_dnsenable', enable_dns);
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
 	}
 	else if(v == "6to4"){
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -192,8 +206,10 @@ function showInputfield(v){
 		$("ipv6_ipaddr_r").style.display="";
 		if(v != ipv6_proto_orig){
 			$("ipv6_ipaddr_span").innerHTML = "";
+			document.form.enable_mtu_ckb.checked = true;
 		}else{
 			$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";
+			document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
 		}
 
 		$("ipv6_dns_setting").style.display="";
@@ -202,6 +218,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
 	}
 	else if(v == "6in4"){
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -240,8 +258,10 @@ function showInputfield(v){
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix_s"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "";
+				document.form.enable_mtu_ckb.checked = true;
 		}else{
-				$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";	
+				$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";
+				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
 		}
 		$("ipv6_dns_setting").style.display="";
 		inputCtrl(document.form.ipv6_dnsenable[0], 0);
@@ -249,7 +269,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
-		
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
 	}
 	else if(v == "6rd"){
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -293,7 +314,9 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
-		
+		document.form.enable_mtu_ckb.checked = true;
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
 	}
 	else if(v == "other"){
 		if(wan_proto_orig == "l2tp" || wan_proto_orig == "pptp" || wan_proto_orig == "pppoe")
@@ -340,10 +363,15 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr_s"); %>";
+				if(ipv6_ifdev_orig  == "ppp")
+					document.form.enable_mtu_ckb.checked = false;
+				else
+					document.form.enable_mtu_ckb.checked = true;
 		}else{
 				$("ipv6_prefix_span").innerHTML = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr"); %>";
+				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
 		}
 		$("ipv6_ipaddr_r").style.display="none";
 		$("ipv6_dns_setting").style.display="";
@@ -352,7 +380,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);		
-		
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
 	}	
 	else{		// disabled
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -393,8 +422,12 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 0);
 		inputCtrl(document.form.ipv6_dns2, 0);
 		inputCtrl(document.form.ipv6_dns3, 0);
-		
+		document.form.enable_mtu_ckb.checked = true;
+		$("enable_mtu_span").style.display="none";
+		$("enable_mtu_defaults").style.display="none";
 	}		
+
+	hide_enable_mtu(document.form.ipv6_radvd.value, 0);
 	
 	if(v != ipv6_proto_orig){
 			update_info(0);
@@ -504,6 +537,26 @@ function showInputfield2(s, v){
 	}
 }
 // } Viz 2013.08 modify for dhcp-pd 
+
+
+function set_enable_mtu(obj_val){
+	if(obj_val == "ppp")
+		document.form.enable_mtu_ckb.checked = false;
+			else
+		document.form.enable_mtu_ckb.checked = true;
+}
+
+function hide_enable_mtu(obj_val, r){
+	if((obj_val == "1") && (document.form.ipv6_service.value != "disabled")){
+		$("enable_mtu_span").style.display="";
+		$("enable_mtu_defaults").style.display="";
+	} else {
+		$("enable_mtu_span").style.display="none";
+		$("enable_mtu_defaults").style.display="none";
+	}
+	if(r == 1)
+		set_enable_mtu(document.form.ipv6_ifdev_select.value);
+}
 
 
 // test if WAN IP & Gateway & DNS IP is a valid IP
@@ -796,6 +849,7 @@ function applyRule(){
     		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 		}
 	
+		document.form.ipv6_radvd_mtu.value = (document.form.enable_mtu_ckb.checked) ? 1 : 0;
 		document.form.ipv6_accept_ra.value=1;			// 0/1/2 default:1	
 		showLoading();		
 		document.form.submit();
@@ -879,6 +933,7 @@ function showInfo(){
 <input type="hidden" name="ipv6_prefix_length_s" value="<% nvram_get("ipv6_prefix_length_s"); %>">
 <input type="hidden" name="ipv6_rtr_addr_s" value="<% nvram_get("ipv6_rtr_addr_s"); %>">
 <input type="hidden" name="ipv6_prefix_s" value="<% nvram_get("ipv6_prefix_s"); %>">
+<input type="hidden" name="ipv6_radvd_mtu" value='<% nvram_get("ipv6_radvd_mtu"); %>'>
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
 	<td width="17">&nbsp;</td>
@@ -936,8 +991,8 @@ function showInfo(){
 						<th><#wan_interface#></th>
 		     		<td>
 							<select name="ipv6_ifdev_select" class="input_option">
-								<option class="content_input_fd" value="ppp" <% nvram_match("ipv6_ifdev", "ppp","selected"); %>>PPP</option>
-								<option class="content_input_fd" value="eth" <% nvram_match("ipv6_ifdev", "eth","selected"); %>><#wan_ethernet#></option>
+								<option class="content_input_fd" value="ppp" onclick="set_enable_mtu(this.value);" <% nvram_match("ipv6_ifdev", "ppp","selected"); %>>PPP</option>
+								<option class="content_input_fd" value="eth" onclick="set_enable_mtu(this.value);" <% nvram_match("ipv6_ifdev", "eth","selected"); %>><#wan_ethernet#></option>
 							</select>
 		     		</td>
 		     	</tr>
@@ -1187,9 +1242,11 @@ function showInfo(){
 						<th><#Enable_Router_AD#></th>
 		     		<td>
 							<select name="ipv6_radvd" class="input_option">
-								<option class="content_input_fd" value="1" <% nvram_match("ipv6_radvd", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
-								<option class="content_input_fd" value="0" <% nvram_match("ipv6_radvd", "0","selected"); %>><#btn_disable#></option>
+								<option class="content_input_fd" value="1" onclick="hide_enable_mtu(this.value, 1);" <% nvram_match("ipv6_radvd", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
+								<option class="content_input_fd" value="0" onclick="hide_enable_mtu(this.value, 1);" <% nvram_match("ipv6_radvd", "0","selected"); %>><#btn_disable#></option>
 							</select>
+							<span id="enable_mtu_span" style="color:white;"><input type="checkbox" name="enable_mtu_ckb" id="enable_mtu_ckb" value="" style="margin-left:20px;" onclick="document.form.ipv6_radvd_mtu.value=(this.checked==true)?1:0;"> Enable IPv6 MTU Advertisement**</input></span><br/>
+							<span id="enable_mtu_defaults" style="margin-left:128px;">Default:&nbsp;&nbsp;Disabled for PPP interface</span>
 		     		</td>
 		     	</tr>
 					<!--tr>
