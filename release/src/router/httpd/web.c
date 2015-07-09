@@ -3747,7 +3747,7 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 			snprintf(nvname, sizeof(nvname), "ipv6_dns%d", i);
 			wan_dns = nvram_safe_get(nvname);
 			if (*wan_dns)
-				next += sprintf(next, *ipv6_dns_str ? " %s" : "%s", wan_dns);
+				next += sprintf(next, *ipv6_dns_str ? "\n%-32s%s" : "%s%s", *ipv6_dns_str ? " " : "", wan_dns);
 		}
 		wan_dns = ipv6_dns_str;
 	}
