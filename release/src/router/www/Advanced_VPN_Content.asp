@@ -713,7 +713,7 @@ function enable_openvpn(state){
 			<input type="hidden" name="next_page" value="Advanced_VPN_Content.asp">
 			<input type="hidden" name="modified" value="0">
 			<input type="hidden" name="action_mode" value="apply">
-			<input type="hidden" name="action_wait" value="5">
+			<input type="hidden" name="action_wait" value="15">
 			<input type="hidden" name="action_script" value="">
 			<input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 			<input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
@@ -782,7 +782,6 @@ function enable_openvpn(state){
 													$j('#openvpn_service_enable').iphoneSwitch(openvpn_enabled,
 														function() {
 															enable_openvpn(1);
-															document.form.action_wait.value = 15;
 															document.form.action_script.value = "start_vpnserver"+openvpn_unit;
 															parent.showLoading();
 															document.form.submit();
@@ -790,7 +789,6 @@ function enable_openvpn(state){
 														},
 														function() {
 															enable_openvpn(0);
-															document.form.action_wait.value = 15;
 															document.form.action_script.value = "stop_vpnserver"+openvpn_unit;
 															parent.showLoading();
 															document.form.submit();

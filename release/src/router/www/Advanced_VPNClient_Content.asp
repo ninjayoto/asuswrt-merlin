@@ -558,6 +558,7 @@ function del_Row(rowdata, flag){
 			document.form.enctype = "application/x-www-form-urlencoded";
 			document.form.encoding = "application/x-www-form-urlencoded";
 
+			document.form.action_wait.value = "10";
 			document.form.action_script.value = "restart_vpncall";
 		}
 	}

@@ -376,6 +376,7 @@ function applyRule(){
 	showLoading();
 
 	if (service_state) {
+		document.form.action_wait.value = 15;
 		document.form.action_script.value = "restart_vpnclient"+openvpn_unit;
 	}
 
