@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-12j9527 (19-June-2015)
+Asuswrt-Merlin fork - build 374.43_2-13j9527 (11-July-2015)
 =============================================
 
 About
@@ -19,6 +19,21 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-13j9527 (11-July-2015)
+* CHANGED: Additional error checking for PPPoE MTU/MRU values
+* CHANGED: IPv6 log reformatted to put DNS servers on separate lines
+- CHANGED: Cleanup of IPv6 start/stop/nvram management
+- CHANGED: Delay refresh of gui when starting/stopping OpenVPN
+- CHANGED: Support Init and Rules calls for qos-start script
+- CHANGED: Updated OpenSSL to 1.0.2d
+- CHANGED: Updated dnsmasq to 2.73rc9
+* FIXED: IPv6 downloads throttled with QoS enabled
+* FIXED: TCP max connections incorrect after factory reset
+* FIXED: Unable to obtain IPV6 address in PPP connections
+- FIXED: DH key length check would hang on MIPS routers
+* NEW: New option to disable IPv6 MTU advertisement
+
+
 374.43_2-12j9527 (19-June-2015)
 - CHANGED: OpenSSL replace DH key gen with pre-gen 2048 bit key
 - CHANGED: OpenSSL automatically update DH key if < 1024 bits
