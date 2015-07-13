@@ -84,10 +84,7 @@ function showInputfield(v){
 				document.form.ipv6_prefix.value = "";
 				document.form.ipv6_prefix_length.value = "";
 				document.form.ipv6_rtr_addr.value = "";
-				if(ipv6_ifdev_orig == "ppp")
-					document.form.enable_mtu_ckb.checked = false;
-				else
-					document.form.enable_mtu_ckb.checked = true;
+				document.form.enable_mtu_ckb.checked = true;
 		}else{
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
@@ -145,10 +142,7 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "";
 				$("ipv6_prefix_length_span").innerHTML = "";
 				$("ipv6_ipaddr_span").innerHTML = "";
-				if(ipv6_ifdev_orig == "ppp")
-					document.form.enable_mtu_ckb.checked = false;
-				else
-					document.form.enable_mtu_ckb.checked = true;
+				document.form.enable_mtu_ckb.checked = true;
 		}else{
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
@@ -363,10 +357,7 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr_s"); %>";
-				if(ipv6_ifdev_orig  == "ppp")
-					document.form.enable_mtu_ckb.checked = false;
-				else
-					document.form.enable_mtu_ckb.checked = true;
+				document.form.enable_mtu_ckb.checked = true;
 		}else{
 				$("ipv6_prefix_span").innerHTML = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
@@ -427,7 +418,7 @@ function showInputfield(v){
 		$("enable_mtu_defaults").style.display="none";
 	}		
 
-	hide_enable_mtu(document.form.ipv6_radvd.value, 0);
+	hide_enable_mtu(document.form.ipv6_radvd.value);
 	
 	if(v != ipv6_proto_orig){
 			update_info(0);
@@ -539,14 +530,7 @@ function showInputfield2(s, v){
 // } Viz 2013.08 modify for dhcp-pd 
 
 
-function set_enable_mtu(obj_val){
-	if(obj_val == "ppp")
-		document.form.enable_mtu_ckb.checked = false;
-			else
-		document.form.enable_mtu_ckb.checked = true;
-}
-
-function hide_enable_mtu(obj_val, r){
+function hide_enable_mtu(obj_val){
 	if((obj_val == "1") && (document.form.ipv6_service.value != "disabled")){
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
@@ -554,8 +538,6 @@ function hide_enable_mtu(obj_val, r){
 		$("enable_mtu_span").style.display="none";
 		$("enable_mtu_defaults").style.display="none";
 	}
-	if(r == 1)
-		set_enable_mtu(document.form.ipv6_ifdev_select.value);
 }
 
 
@@ -991,8 +973,8 @@ function showInfo(){
 						<th><#wan_interface#></th>
 		     		<td>
 							<select name="ipv6_ifdev_select" class="input_option">
-								<option class="content_input_fd" value="ppp" onclick="set_enable_mtu(this.value);" <% nvram_match("ipv6_ifdev", "ppp","selected"); %>>PPP</option>
-								<option class="content_input_fd" value="eth" onclick="set_enable_mtu(this.value);" <% nvram_match("ipv6_ifdev", "eth","selected"); %>><#wan_ethernet#></option>
+								<option class="content_input_fd" value="ppp" <% nvram_match("ipv6_ifdev", "ppp","selected"); %>>PPP</option>
+								<option class="content_input_fd" value="eth" <% nvram_match("ipv6_ifdev", "eth","selected"); %>><#wan_ethernet#></option>
 							</select>
 		     		</td>
 		     	</tr>
@@ -1242,11 +1224,11 @@ function showInfo(){
 						<th><#Enable_Router_AD#></th>
 		     		<td>
 							<select name="ipv6_radvd" class="input_option">
-								<option class="content_input_fd" value="1" onclick="hide_enable_mtu(this.value, 1);" <% nvram_match("ipv6_radvd", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
-								<option class="content_input_fd" value="0" onclick="hide_enable_mtu(this.value, 1);" <% nvram_match("ipv6_radvd", "0","selected"); %>><#btn_disable#></option>
+								<option class="content_input_fd" value="1" onclick="hide_enable_mtu(this.value);" <% nvram_match("ipv6_radvd", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
+								<option class="content_input_fd" value="0" onclick="hide_enable_mtu(this.value);" <% nvram_match("ipv6_radvd", "0","selected"); %>><#btn_disable#></option>
 							</select>
-							<span id="enable_mtu_span" style="color:white;"><input type="checkbox" name="enable_mtu_ckb" id="enable_mtu_ckb" value="" style="margin-left:20px;" onclick="document.form.ipv6_radvd_mtu.value=(this.checked==true)?1:0;"> Enable IPv6 MTU Advertisement**</input></span><br/>
-							<span id="enable_mtu_defaults" style="margin-left:128px;">Default:&nbsp;&nbsp;Disabled for PPP interface</span>
+							<span id="enable_mtu_span"><input type="checkbox" name="enable_mtu_ckb" id="enable_mtu_ckb" value="" style="margin-left:20px;" onclick="document.form.ipv6_radvd_mtu.value=(this.checked==true)?1:0;"> Enable IPv6 MTU Advertisement**</input></span>
+							<span id="enable_mtu_defaults">&nbsp;&nbsp;&nbsp;Default: Enabled</span>
 		     		</td>
 		     	</tr>
 					<!--tr>
