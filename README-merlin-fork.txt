@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-13j9527 (11-July-2015)
+Asuswrt-Merlin fork - build 374.43_2-13E1j9527 (14-July-2015)
 =============================================
 
 About
@@ -19,7 +19,12 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
-374.43_2-13j9527 (11-July-2015)
+374.43_2-13E1j9527 (14-July-2015)
+* CHANGED: MTU Advertisement defaults to enabled for all interfaces
+- FIXED: DDNS periodic update checks runs continuously
+
+
+374.43_2-13j9527 (11-July-2015) limited release
 * CHANGED: Additional error checking for PPPoE MTU/MRU values
 * CHANGED: IPv6 log reformatted to put DNS servers on separate lines
 - CHANGED: Cleanup of IPv6 start/stop/nvram management
