@@ -1301,8 +1301,11 @@ void regular_ddns_check(void)
 			//_dprintf("WAN IP change!\n");
 			nvram_set("ddns_update_by_wdog", "1");
 			//unlink("/tmp/ddns.cache");
-			logmessage("watchdog", "Hostname/IP mapping error! Restart ddns.");
-
+			logmessage("watchdog", "Hostname/IP mapping error! WAN: %s HOST: %s (ddns-check)", nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr) ? : "NA");
+		}
+		else
+		{
+			logmessage("watchdog", "IP address, server and hostname have not changed since the last update. (ddns-check)");
 		}
 	}
 	return;
@@ -1318,16 +1321,17 @@ void ddns_check(void)
 
 		if (nvram_match("ddns_regular_check", "1")&& !nvram_match("ddns_server_x", "WWW.ASUS.COM")) {
 			int period = nvram_get_int("ddns_regular_period");
-			if (period < 30) period = 60;
+//			if (period < 30) period = 60;
 			if (ddns_check_count >= (period*2)) {
 				regular_ddns_check();
 				ddns_check_count = 0;
-			return;
+			} else {
+				ddns_check_count++;
+				return;
 			}
-			ddns_check_count++;
 		}
 
-		if( nvram_match("ddns_updated", "1") ) //already updated success
+		if( nvram_match("ddns_updated", "1") && !nvram_match("ddns_update_by_wdog", "1") ) //already updated success
 			return;
 
 		if( nvram_match("ddns_server_x", "WWW.ASUS.COM") ){
@@ -1341,7 +1345,8 @@ void ddns_check(void)
 				return;
 		}
 		nvram_set("ddns_update_by_wdog", "1");
-		//unlink("/tmp/ddns.cache");
+		if (!strcmp(nvram_safe_get("wan0_ipaddr"), nvram_safe_get("ddns_ipaddr")))
+			unlink("/tmp/ddns.cache");  //host must be wrong, force update
 		logmessage("watchdog", "start ddns.");
 		notify_rc("start_ddns");
 		ddns_update_timer = 0;

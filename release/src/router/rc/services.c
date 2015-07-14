@@ -40,6 +40,9 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/utsname.h>
+#include <sys/param.h>
+#include <net/ethernet.h>
+
 #ifdef RTCONFIG_RALINK
 #include <ralink.h>
 #endif
@@ -53,6 +56,15 @@
 
 #ifdef RTCONFIG_QTN
 #include "web-qtn.h"
+#endif
+
+#ifdef RTCONFIG_HTTPS
+#include <errno.h>
+#include <getopt.h>
+#include <openssl/sha.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/rsa.h>
 #endif
 
 extern char *crypt __P((const char *, const char *)); //should be defined in unistd.h with _XOPEN_SOURCE defined
@@ -2514,6 +2526,13 @@ start_ddns(void)
 		// Block until it completes and updates the DDNS update results in nvram
 		run_custom_script_blocking("ddns-start", wan_ip);
 		return 0;
+	}
+
+	// force update for no change if ez-ipupdate does not
+	if (nvram_match("ddns_return_code", "ddns_query")) {
+		nvram_set("ddns_return_code", "no_change");
+		nvram_set("ddns_return_code_chk", "200");
+		eval("/sbin/ddns_updated");
 	}
 
 	run_custom_script("ddns-start", wan_ip);
