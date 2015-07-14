@@ -50,9 +50,9 @@ function check_update(){
 }
 
 function force_update() {
-    var r = confirm("IP address, server and hostname have not changed since the last update. If you want to update, please click 'OK'");
+    var r = confirm("IP address, server and hostname\n\thave not changed since the last update.\nIf you want to update, please click 'OK'\nIf you want to change options without updating, please click 'Cancel'");
 	if(r == false)
-		return false;
+		document.form.action_script.value = "";
 
 	showLoading();
 	document.form.submit();
