@@ -290,7 +290,7 @@ function showqos_rulelist(){
 										<tr>
 											<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(20, 2);"><#upload_bandwidth#></a></th>
 											<td>
-													<input type="text" maxlength="10" id="qos_obw" name="qos_obw" onKeyPress="return is_number(this,event);" class="input_15_table" value="<% nvram_get("qos_obw"); %>">
+													<input type="text" maxlength="10" id="qos_obw" name="qos_obw" onKeyPress="return is_decimal(this,event);" class="input_15_table" value="<% nvram_get("qos_obw"); %>">
 														<select id="qos_obw_scale" class="input_option" style="width:87px;" onChange="changeScale('qos_obw');">
 															<option value="Kb/s">Kb/s</option>
 															<option value="Mb/s">Mb/s</option>
@@ -301,7 +301,7 @@ function showqos_rulelist(){
 										<tr>
 											<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(20, 2);"><#download_bandwidth#></a></th>
 											<td>
-													<input type="text" maxlength="10" id="qos_ibw" name="qos_ibw" onKeyPress="return is_number(this,event);" class="input_15_table" value="<% nvram_get("qos_ibw"); %>">
+													<input type="text" maxlength="10" id="qos_ibw" name="qos_ibw" onKeyPress="return is_decimal(this,event);" class="input_15_table" value="<% nvram_get("qos_ibw"); %>">
 														<select id="qos_ibw_scale" class="input_option" style="width:87px;" onChange="changeScale('qos_ibw');">
 															<option value="Kb/s">Kb/s</option>
 															<option value="Mb/s">Mb/s</option>
