@@ -295,6 +295,24 @@ function is_number(o,event){
 	}
 }
 
+function is_decimal(o,event){
+	keyPressed = event.keyCode ? event.keyCode : event.which;
+
+	if (is_functionButton(event)){
+		return true;
+	}
+
+	if ((keyPressed>47 && keyPressed<58) || (keyPressed=46)){
+		if (keyPressed==46 && (o.value.match(/\./g)||[]).length>0){     //single decimal point
+			return false;
+		}
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
 function validate_range(o, _min, _max) {
 	if(isNaN(o.value)){
 		alert('<#JS_validrange#> ' + _min + ' <#JS_validrange_to#> ' + _max);
