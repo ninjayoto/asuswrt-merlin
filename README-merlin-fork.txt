@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-13E1j9527 (14-July-2015)
+Asuswrt-Merlin fork - build 374.43_2-13E2j9527 (17-July-2015)
 =============================================
 
 About
@@ -19,6 +19,10 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-13E2j9527 (17-July-2015)
+- FIXED: Additional fix for TCP max conn/TCP established timeout after reset
+
+
 374.43_2-13E1j9527 (14-July-2015)
 * CHANGED: MTU Advertisement defaults to enabled for all interfaces
 - FIXED: DDNS periodic update checks runs continuously
