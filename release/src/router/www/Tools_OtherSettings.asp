@@ -82,6 +82,7 @@ var FromObject = "0";
 var lastClickedObj = 0;
 var disk_flag=0;
 var ct_max_default = '<% nvram_get("ct_max_default"); %>';
+var productid = '<% nvram_get("productid"); %>';
 window.onresize = cal_panel_block;
 
 
