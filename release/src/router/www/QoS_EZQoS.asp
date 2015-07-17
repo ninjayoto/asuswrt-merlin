@@ -56,9 +56,11 @@ function initial(){
 	if(document.form.qos_enable.value==1){
 		document.form.qos_obw.parentNode.parentNode.style.display = "";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "";		
+		document.form.qos_default.parentNode.parentNode.style.display = "";
 	}else{
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "none";		
+		document.form.qos_default.parentNode.parentNode.style.display = "none";
 	}
 	init_changeScale("qos_obw");
 	init_changeScale("qos_ibw");	
@@ -273,11 +275,13 @@ function showqos_rulelist(){
 															document.form.qos_enable.value = "1";
 															document.form.qos_obw.parentNode.parentNode.style.display = "";
 															document.form.qos_ibw.parentNode.parentNode.style.display = "";
+															document.form.qos_default.parentNode.parentNode.style.display = "";
 														 },
 														 function() {
 															document.form.qos_enable.value = "0";
 															document.form.qos_obw.parentNode.parentNode.style.display = "none";
 															document.form.qos_ibw.parentNode.parentNode.style.display = "none";
+															document.form.qos_default.parentNode.parentNode.style.display = "none";
 														 },
 														 {
 															switch_on_container_path: '/switcherplugin/iphone_switch_container_off.png'
@@ -288,7 +292,7 @@ function showqos_rulelist(){
 											</td>
 										</tr>										
 										<tr>
-											<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(20, 2);"><#upload_bandwidth#></a></th>
+											<th><#upload_bandwidth#></a></th>
 											<td>
 													<input type="text" maxlength="10" id="qos_obw" name="qos_obw" onKeyPress="return is_decimal(this,event);" class="input_15_table" value="<% nvram_get("qos_obw"); %>">
 														<select id="qos_obw_scale" class="input_option" style="width:87px;" onChange="changeScale('qos_obw');">
@@ -299,13 +303,26 @@ function showqos_rulelist(){
 										</tr>
 										
 										<tr>
-											<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(20, 2);"><#download_bandwidth#></a></th>
+											<th><#download_bandwidth#></a></th>
 											<td>
 													<input type="text" maxlength="10" id="qos_ibw" name="qos_ibw" onKeyPress="return is_decimal(this,event);" class="input_15_table" value="<% nvram_get("qos_ibw"); %>">
 														<select id="qos_ibw_scale" class="input_option" style="width:87px;" onChange="changeScale('qos_ibw');">
 															<option value="Kb/s">Kb/s</option>
 															<option value="Mb/s">Mb/s</option>
 														</select>
+											</td>
+										</tr>
+
+										<tr id="qos_default">
+											<th>Default Priority Level**</th>
+											<td>
+												<select name="qos_default" class="input_option">
+													<option value="0"<% nvram_match("qos_default", "0","selected"); %>>Highest</option>
+													<option value="1"<% nvram_match("qos_default", "1","selected"); %>>High</option>
+													<option value="2"<% nvram_match("qos_default", "2","selected"); %>>Medium</option>
+													<option value="3"<% nvram_match("qos_default", "3","selected"); %>>Low (Default)</option>
+													<option value="4"<% nvram_match("qos_default", "4","selected"); %>>Lowest</option>
+												</select>
 											</td>
 										</tr>
 
