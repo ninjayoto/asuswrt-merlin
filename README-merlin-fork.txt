@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-13E2j9527 (17-July-2015)
+Asuswrt-Merlin fork - build 374.43_2-13E3j9527 (20-July-2015)
 =============================================
 
 About
@@ -19,6 +19,12 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-13E3j9527 (20-July-2015)
+* FIXED: fix ASUS typo in VPN Client gui (missing statement termination)
+* CHANGED: add underscore as valid alphanum character
+* CHANGED: restrict SSID entry to alphanum characters
+
+
 374.43_2-13E2j9527 (17-July-2015)
 - FIXED: Additional fix for TCP max conn/TCP established timeout after reset
 
