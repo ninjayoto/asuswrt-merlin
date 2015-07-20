@@ -388,7 +388,7 @@ function applyRule(){
 				tmp_value += ""+i+",";
 		} else {
 			if (document.form.vpn_clientx_eas.value.indexOf(''+(i)) >= 0)
-				tmp_value += ""+i+","
+				tmp_value += ""+i+",";
 		}
 	}
 	document.form.vpn_clientx_eas.value = tmp_value;
