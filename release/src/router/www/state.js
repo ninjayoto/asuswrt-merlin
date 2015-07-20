@@ -1868,6 +1868,25 @@ function is_string(o, event){
 	}	
 }
 
+function is_ssidstring(o, event){
+	keyPressed = event.keyCode ? event.keyCode : event.which;
+
+	if (is_functionButton(event)){
+		return true;
+	}
+
+        if ((keyPressed>=32&&keyPressed<=126) &&
+	   (keyPressed!=34) &&                  //"
+	   (keyPressed!=36) &&                  //$
+	   (keyPressed!=39) &&                  //'
+	   (keyPressed!=58) &&                  //:
+	   (keyPressed!=59) &&                  //;
+	   (keyPressed!=60) &&                  //<
+	   (keyPressed!=62)) return true;       //>
+
+	return false;
+}
+
 function is_alphanum(o, event){
 	keyPressed = event.keyCode ? event.keyCode : event.which;
 
@@ -2034,9 +2053,16 @@ function validate_wlkey(key_obj){
 }
 
 function validate_ssidchar(ch){
-	if(ch >= 32 && ch <= 126)
-		return false;
-	
+//restrict to avoid javascript errors - spec is 32-126
+	if ((ch >= 32 && ch <= 126) &&
+           (ch != 34) &&               //"
+           (ch != 36) &&               //$
+           (ch != 39) &&               //'
+           (ch != 58) &&               //:
+           (ch != 59) &&               //;
+	   (ch != 60) &&               //<
+           (ch != 62)) return false;   //>
+
 	return true;
 }
 
