@@ -1869,19 +1869,18 @@ function is_string(o, event){
 }
 
 function is_alphanum(o, event){
+	keyPressed = event.keyCode ? event.keyCode : event.which;
 
-	if (event.which == null)
-		keyPressed = event.keyCode;	// IE
-	 else if (event.which != 0 && event.charCode != 0)
-		keyPressed = event.which	// All others
-	else
-		return true;			// Special key
+        if (is_functionButton(event)){
+                return true;
+        }
 
 	if ((keyPressed>=48&&keyPressed<=57) ||	//0-9
 	   (keyPressed>=97&&keyPressed<=122) ||	//little EN
 	   (keyPressed>=65&&keyPressed<=90) ||	//Large EN
 	   (keyPressed==45) ||			//-
 	   (keyPressed==46) ||			//.
+	   (keyPressed==95) ||                  //_
 	   (keyPressed==32)) return true;	//space
 
 	return false;
