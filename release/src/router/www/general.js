@@ -237,7 +237,7 @@ function validate_string_ssid(o){
 		
 		if(validate_ssidchar(c)){
 			alert('<#JS_validSSID1#> '+o.value.charAt(i)+' <#JS_validSSID2#>');
-			o.value = "";
+//			o.value = "";
 			o.focus();
 			o.select();
 			return false;
