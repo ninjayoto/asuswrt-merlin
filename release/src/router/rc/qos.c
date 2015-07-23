@@ -195,7 +195,7 @@ int add_iQosRules(char *pcWANIF)
 		":OUTPUT ACCEPT [0:0]\n"
 		":QOSO - [0:0]\n"
 		"-A QOSO -m mark --mark 0xb400 -j RETURN\n"
-		"-A QOSO -j CONNMARK --restore-mark --mask 0xff\n"
+		"-A QOSO -j CONNMARK --restore-mark --mask 0x7\n"
 		"-A QOSO -m connmark ! --mark 0/0xff00 -j RETURN\n"
 		);
 #ifdef RTCONFIG_IPV6
@@ -205,7 +205,7 @@ int add_iQosRules(char *pcWANIF)
 		":PREROUTING ACCEPT [0:0]\n"
 		":OUTPUT ACCEPT [0:0]\n"
 		":QOSO - [0:0]\n"
-		"-A QOSO -j CONNMARK --restore-mark --mask 0xff\n"
+		"-A QOSO -j CONNMARK --restore-mark --mask 0x7\n"
 		"-A QOSO -m connmark ! --mark 0/0xff00 -j RETURN\n"
 		);
 #endif
@@ -263,7 +263,7 @@ int add_iQosRules(char *pcWANIF)
 		down_class_num |= gum; // for download
 
 		chain = "QOSO";                     // chain name
-                sprintf(end , " -j CONNMARK --set-return 0x%x/0xFF\n", class_num);	// CONNMARK string
+                sprintf(end , " -j CONNMARK --set-return 0x%x/0x7\n", class_num);	// CONNMARK string
 		sprintf(end2, " -j RETURN\n");
 
 		/*************************************************/
@@ -336,6 +336,7 @@ int add_iQosRules(char *pcWANIF)
 						else{
 							sprintf(saddr_1, "-m iprange --src-range %s-%s", rule, inet_ntoa(range_C)); 		// IP-range
 						}
+						free(rule);
 					}
 					else{ // step4
 						sprintf(saddr_1, "-s %s", addr_t);	// IP
@@ -606,16 +607,16 @@ int add_iQosRules(char *pcWANIF)
 		add_EbtablesRules();
 
 		// for multicast
-		fprintf(fn, "-A QOSO -d 224.0.0.0/4 -j CONNMARK --set-return 0x%x/0xFF\n",  down_class_num);
+		fprintf(fn, "-A QOSO -d 224.0.0.0/4 -j CONNMARK --set-return 0x%x/0x7\n",  down_class_num);
                 if(manual_return)
                         fprintf(fn , "-A QOSO -d 224.0.0.0/4 -j RETURN\n");
 		// for download (LAN or wireless)
-		fprintf(fn, "-A QOSO -d %s -j CONNMARK --set-return 0x%x/0xFF\n", lan_addr, down_class_num);
+		fprintf(fn, "-A QOSO -d %s -j CONNMARK --set-return 0x%x/0x7\n", lan_addr, down_class_num);
                 if(manual_return)
                         fprintf(fn , "-A QOSO -d %s -j RETURN\n", lan_addr);
 /* Requires bridge netfilter, but slows down and breaks EMF/IGS IGMP IPTV Snooping
 		// for WLAN to LAN bridge issue
-		fprintf(fn, "-A POSTROUTING -d %s -m physdev --physdev-is-in -j CONNMARK --set-return 0x6/0xFF\n", lan_addr);
+		fprintf(fn, "-A POSTROUTING -d %s -m physdev --physdev-is-in -j CONNMARK --set-return 0x6/0x7\n", lan_addr);
 */
 		// for download, interface br0
 		fprintf(fn, "-A POSTROUTING -o br0 -j QOSO\n");
@@ -642,16 +643,16 @@ int add_iQosRules(char *pcWANIF)
 			add_EbtablesRules();
 
 			// for multicast
-			fprintf(fn_ipv6, "-A QOSO -d ff00::/8 -j CONNMARK --set-return 0x%x/0xFF\n",  down_class_num);
+			fprintf(fn_ipv6, "-A QOSO -d ff00::/8 -j CONNMARK --set-return 0x%x/0x7\n",  down_class_num);
                         if(manual_return)
                                 fprintf(fn_ipv6, "-A QOSO -d ff00::/8 -j RETURN\n");
 			// for download (LAN or wireless)
-			fprintf(fn_ipv6, "-A QOSO -d %s -j CONNMARK --set-return 0x%x/0xFF\n", ipv6_lan_addr, down_class_num);
+			fprintf(fn_ipv6, "-A QOSO -d %s -j CONNMARK --set-return 0x%x/0x7\n", ipv6_lan_addr, down_class_num);
                         if(manual_return)
                                 fprintf(fn_ipv6, "-A QOSO -d %s -j RETURN\n", ipv6_lan_addr);
 /* Requires bridge netfilter, but slows down and breaks EMF/IGS IGMP IPTV Snooping
 			// for WLAN to LAN bridge issue
-			fprintf(fn_ipv6, "-A POSTROUTING -d %s -m physdev --physdev-is-in -j CONNMARK --set-return 0x6/0xFF\n", lan_addr);
+			fprintf(fn_ipv6, "-A POSTROUTING -d %s -m physdev --physdev-is-in -j CONNMARK --set-return 0x6/0x7\n", lan_addr);
 */
 			// for download, interface br0
 			fprintf(fn_ipv6, "-A POSTROUTING -o br0 -j QOSO\n");
@@ -678,13 +679,13 @@ int add_iQosRules(char *pcWANIF)
                 if ((!g) || ((p = strsep(&g, ",")) == NULL)) continue;
                 if ((inuse & (1 << i)) == 0) continue;
                 if (atoi(p) > 0) {
-                        fprintf(fn, "-A PREROUTING -i %s -j CONNMARK --restore-mark --mask 0xff\n", pcWANIF);
+                        fprintf(fn, "-A PREROUTING -i %s -j CONNMARK --restore-mark --mask 0x7\n", pcWANIF);
 #ifdef CLS_ACT
 			fprintf(fn, "-A PREROUTING -i %s -j IMQ --todev 0\n", pcWANIF);
 #endif
 #ifdef RTCONFIG_IPV6
 			if (ipv6_enabled() && *wan6face) {
-				fprintf(fn_ipv6, "-A PREROUTING -i %s -j CONNMARK --restore-mark --mask 0xff\n", wan6face);
+				fprintf(fn_ipv6, "-A PREROUTING -i %s -j CONNMARK --restore-mark --mask 0x7\n", wan6face);
 #ifdef CLS_ACT
 				fprintf(fn_ipv6, "-A PREROUTING -i %s -j IMQ --todev 0\n", wan6face);
 #endif
