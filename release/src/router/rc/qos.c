@@ -161,7 +161,7 @@ int add_iQosRules(char *pcWANIF)
 	int down_class_num=6; 	// for download class_num = 0x6 / 0x106
 	int i, inuse;
 	char q_inuse[32]; 	// for inuse 
-	char dport[192], saddr_1[192], saddr_2[192], proto_1[8], proto_2[8],conn[256], end[256], end2[256];
+	char dport[192], saddr_1[256], saddr_2[256], proto_1[8], proto_2[8],conn[256], end[256], end2[256];
 	int method;
 	int gum;
 	int sticky_enable;
