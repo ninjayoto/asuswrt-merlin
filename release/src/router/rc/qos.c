@@ -102,8 +102,8 @@ void add_EbtablesRules(void)
 	if(nv){
 		while ((p = strsep(&g, " ")) != NULL){
 			//fprintf(stderr, "%s: g=%s, p=%s\n", __FUNCTION__, g, p); //tmp test
-			eval("ebtables", "-t", "nat", "-A", "PREROUTING", "-i", p, "-j", "mark", "--set-mark", "6", "--mark-target", "ACCEPT");
-			eval("ebtables", "-t", "nat", "-A", "POSTROUTING", "-o", p, "-j", "mark", "--set-mark", "6", "--mark-target", "ACCEPT");
+			eval("ebtables", "-t", "nat", "-A", "PREROUTING", "-i", p, "-j", "mark", "--mark-or", "6", "--mark-target", "ACCEPT");
+			eval("ebtables", "-t", "nat", "-A", "POSTROUTING", "-o", p, "-j", "mark", "--mark-or", "6", "--mark-target", "ACCEPT");
 		}
 		free(nv);
 	}
@@ -120,8 +120,8 @@ void add_EbtablesRules(void)
 			snprintf(mssid_enable, sizeof(mssid_enable), "%s_bss_enabled", mssid_if);
 			//fprintf(stderr, "%s: mssid_enable=%s\n", __FUNCTION__, mssid_enable); //tmp test
 			if(!strcmp(nvram_safe_get(mssid_enable), "1")){
-				eval("ebtables", "-t", "nat", "-A", "PREROUTING", "-i", mssid_if, "-j", "mark", "--set-mark", "6", "--mark-target", "ACCEPT");
-				eval("ebtables", "-t", "nat", "-A", "POSTROUTING", "-o", mssid_if, "-j", "mark", "--set-mark", "6", "--mark-target", "ACCEPT");
+				eval("ebtables", "-t", "nat", "-A", "PREROUTING", "-i", mssid_if, "-j", "mark", "--mark-or", "6", "--mark-target", "ACCEPT");
+				eval("ebtables", "-t", "nat", "-A", "POSTROUTING", "-o", mssid_if, "-j", "mark", "--mark-or", "6", "--mark-target", "ACCEPT");
 			}
 		}
 	}
