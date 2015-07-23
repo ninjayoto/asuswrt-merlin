@@ -749,6 +749,7 @@ int start_iQos(void)
 #ifdef CONFIG_BCMWL5
 	char *protocol="802.1q";
 #endif
+	int down_class_num=6;   // for download class_num = 0x6 / 0x106
 
 	// judge interface by get_wan_ifname
 	// add Qos iptable rules in mangle table,
@@ -957,6 +958,15 @@ int start_iQos(void)
 				"\t$TFA parent ffff: prio %d protocol ip handle %d"
 					" fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
 					i, rate, x, x, u, v, x);
+
+			if (i == nvram_get_int("qos_default")) { // police filter for downloads
+			x = down_class_num;
+			fprintf(f,
+                                "# ingress %d: %u%% (download default)\n"
+                                "\t$TFA parent ffff: prio %d protocol ip handle %d"
+                                        " fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
+                                        (x - 1), rate, x, x, u, v, x);
+			}
 #endif
 		}
 		free(buf);
