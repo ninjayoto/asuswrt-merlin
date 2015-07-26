@@ -5574,6 +5574,7 @@ do_upgrade_post(char *url, FILE *stream, int len, char *boundary)
 	int offset;
 	struct sysinfo si;
 
+	nvram_set_int("upgrade_fw_status", 1);
 	upgrade_err=1;
 	eval("/sbin/ejusb", "-1", "0");
 #if defined(RTCONFIG_SMALL_FW_UPDATE)

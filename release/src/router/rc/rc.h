@@ -507,6 +507,7 @@ extern void erase_nvram(void);
 extern int init_toggle(void);
 extern void btn_check(void);
 extern int watchdog_main(int argc, char *argv[]);
+extern int watchdog02_main(int argc, char *argv[]);
 
 // usbled.c
 extern int usbled_main(int argc, char *argv[]);

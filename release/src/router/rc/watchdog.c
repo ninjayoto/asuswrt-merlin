@@ -97,6 +97,8 @@ static int mem_timer = -1;
 static int u2ec_timer = 0;
 #endif
 static struct itimerval itv;
+/* to check watchdog alive */
+static struct itimerval itv02;
 static int watchdog_period = 0;
 #ifdef RTCONFIG_BCMARM
 static int chkusb3_period = 0;
@@ -146,6 +148,16 @@ alarmtimer(unsigned long sec, unsigned long usec)
 	itv.it_value.tv_usec = usec;
 	itv.it_interval = itv.it_value;
 	setitimer(ITIMER_REAL, &itv, NULL);
+}
+
+/* to check watchdog alive */
+static void
+alarmtimer02(unsigned long sec, unsigned long usec)
+{
+	itv02.it_value.tv_sec = sec;
+	itv02.it_value.tv_usec = usec;
+	itv02.it_interval = itv02.it_value;
+	setitimer(ITIMER_REAL, &itv02, NULL);
 }
 
 extern int no_need_to_start_wps();
@@ -1354,6 +1366,25 @@ void ddns_check(void)
 	return;
 }
 
+void httpd_check()
+{
+	if (!pids("httpd")){
+		logmessage("watchdog", "restart httpd");
+		start_httpd();
+	}
+}
+
+void watchdog_check()
+{
+	if (!pids("watchdog")){
+		if(nvram_match("upgrade_fw_status", "0")){
+			logmessage("watchdog02", "no watchdog, restarting");
+			kill(1, SIGTERM);
+		}
+	}
+	return;
+}
+
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 void syslog_commit_check(void)
@@ -1907,6 +1938,7 @@ void watchdog(int sig)
 	}
 
 	ddns_check();
+	httpd_check();
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
@@ -1919,6 +1951,12 @@ void watchdog(int sig)
 	dsl_sync_check();
 #endif
 
+	return;
+}
+
+void watchdog02(int sig)
+{
+	watchdog_check();
 	return;
 }
 
@@ -1989,5 +2027,26 @@ watchdog_main(int argc, char *argv[])
 		pause();
 	}
 
+	return 0;
+}
+
+/* to check watchdog alive */
+int watchdog02_main(int argc, char *argv[])
+{
+	FILE *fp;
+	/* write pid */
+	if((fp = fopen("/var/run/watchdog02.pid", "w")) != NULL){
+		fprintf(fp, "%d", getpid());
+		fclose(fp);
+	}
+	/* set the signal handler */
+	signal(SIGALRM, watchdog02);
+
+	/* set timer */
+	alarmtimer02(10, 0);
+	/* Most of time it goes to sleep */
+	while(1){
+		pause();
+	}
 	return 0;
 }

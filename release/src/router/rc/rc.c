@@ -90,6 +90,10 @@ static int rctest_main(int argc, char *argv[])
 			if(on) start_watchdog();
 			else stop_watchdog();
 		}
+		else if (strcmp(argv[1], "watchdog02") == 0) {
+			if(on) start_watchdog02();
+			else stop_watchdog02();
+		}
 #ifdef RTCONFIG_FANCTRL
 		else if (strcmp(argv[1], "phy_tempsense") == 0) {
 			if(on) start_phy_tempsense();
@@ -253,6 +257,7 @@ static const applets_t applets[] = {
 	{ "mtd-unlock",			mtd_unlock_erase_main		},
 #endif
 	{ "watchdog",			watchdog_main			},
+	{ "watchdog02",			watchdog02_main			},
 #ifdef RTCONFIG_FANCTRL
 	{ "phy_tempsense",		phy_tempsense_main		},
 #endif

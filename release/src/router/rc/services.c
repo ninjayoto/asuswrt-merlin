@@ -3579,6 +3579,7 @@ start_services(void)
 	start_spectrum(); //Ren
 #endif
 	start_watchdog();
+	start_watchdog02();
 #ifdef RTCONFIG_FANCTRL
 	start_phy_tempsense();
 #endif
@@ -3756,11 +3757,29 @@ stop_watchdog(void)
 	return 0;
 }
 
+void
+stop_watchdog02(void)
+{
+	/* do nothing */
+	return;
+}
+
 int 
 start_watchdog(void)
 {
 	char *watchdog_argv[] = {"watchdog", NULL};
 	pid_t whpid;
+
+	return _eval(watchdog_argv, NULL, 0, &whpid);
+}
+
+int
+start_watchdog02(void)
+{
+	char *watchdog_argv[] = {"watchdog02", NULL};
+	pid_t whpid;
+
+	if (pidof("watchdog02") > 0) return -1;
 
 	return _eval(watchdog_argv, NULL, 0, &whpid);
 }

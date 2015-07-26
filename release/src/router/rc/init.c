@@ -1541,6 +1541,9 @@ int init_nvram(void)
 	nvram_set("dsllog_crcup", "0");
 #endif
 
+	/* initialize this value to clear fw upgrade status */
+	nvram_set_int("upgrade_fw_status", 0);
+
 	switch (model) {
 #ifdef RTCONFIG_RALINK
 	case MODEL_EAN66:

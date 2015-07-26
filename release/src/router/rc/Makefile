@@ -266,6 +266,7 @@ endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc mtd-unlock
 	@cd $(INSTALLDIR)/sbin && ln -sf rc ots
 	@cd $(INSTALLDIR)/sbin && ln -sf rc watchdog
+	@cd $(INSTALLDIR)/sbin && ln -sf rc watchdog02
 ifeq ($(RTCONFIG_FANCTRL),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc phy_tempsense
 endif
