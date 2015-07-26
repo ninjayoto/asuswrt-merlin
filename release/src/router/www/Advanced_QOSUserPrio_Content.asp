@@ -158,7 +158,7 @@ function gen_options(){
 			//Viz 2011.06 var download_bw_min = eval("document.form.download_bw_min_"+j);
 			var qos_orates_col = qos_orates_row[j].split('-');
 			var qos_irates_col = qos_irates_row[j].split('-');
-			for(var i=0; i<101; i++){
+			for(var i=5; i<101; i=i+5){
 				add_options_value(upload_bw_min, i, qos_orates_col[0]);
 				add_options_value(upload_bw_max, i, qos_orates_col[1]);
 				add_options_value(download_bw_max, i, qos_irates_col[0]);
