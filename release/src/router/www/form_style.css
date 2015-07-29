@@ -1843,10 +1843,10 @@ padding-top:1px;
 	line-height:23px;    /*IE*/
 	font-size:12px;
 	font-family: Lucida Console;
-	background: #576D73;
+	background: #172226;
 	border: 2px ridge #777;
 	border-style:bevel;
-	color:#FFFFFF;
+	color:#DFDFDF;
 }
 .notification_on{
 	background-image:url(/images/New_ui/notification.png);
