@@ -319,6 +319,14 @@ function validForm(){
 		return false;
 	}
 
+	if(document.form.http_passwd2.value.length > 16){
+		showtext($("alert_msg2"),"Password exceeds maximum length of 16 characters");
+		document.form.http_passwd2.focus();
+		document.form.http_passwd2.select();
+		return false;
+	}
+
+
 	if(!validate_ipaddr_final(document.form.log_ipaddr, 'log_ipaddr')
 			|| !validate_string(document.form.ntp_server0)
 			)
