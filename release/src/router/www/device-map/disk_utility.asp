@@ -40,7 +40,7 @@ a:active {
 </style>
 <script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
 <script>
-var diskOrder = parent.getSelectedDiskOrder();
+var diskOrder = parent.getSelectedDiskOrder() - 1;
 var diskmon_status = '<% nvram_get("diskmon_status"); %>';
 var usb_path1_diskmon_freq = '<% nvram_get("usb_path1_diskmon_freq"); %>';
 var usb_path1_diskmon_freq_time = '<% nvram_get("usb_path1_diskmon_freq_time"); %>';
@@ -62,7 +62,7 @@ function initial(){
 
 	load_schedule_value();
 	freq_change();
-	check_status(parent.usbPorts[diskOrder-1]);
+	check_status(parent.usbPorts[diskOrder]);
 }
 
 function load_schedule_value(){
