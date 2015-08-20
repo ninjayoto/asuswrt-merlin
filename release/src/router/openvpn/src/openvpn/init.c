@@ -43,7 +43,6 @@
 #include "lladdr.h"
 #include "ping.h"
 #include "mstats.h"
-#include "status.h"
 
 #include "memdbg.h"
 
@@ -390,8 +389,8 @@ next_connection_entry (struct context *c)
 /*
  * Query for private key and auth-user-pass username/passwords
  */
-static void
-init_query_passwords (struct context *c)
+void
+init_query_passwords (const struct context *c)
 {
 #if defined(ENABLE_CRYPTO) && defined(ENABLE_SSL)
   /* Certificate password input */
@@ -520,8 +519,6 @@ context_init_1 (struct context *c)
   packet_id_persist_init (&c->c1.pid_persist);
 
   init_connection_list (c);
-
-  init_query_passwords (c);
 
 #if defined(ENABLE_PKCS11)
   if (c->first_time) {
@@ -1264,8 +1261,6 @@ initialization_sequence_completed (struct context *c, const unsigned int flags)
     }
   else
     msg (M_INFO, "%s", message);
-
-  update_nvram_status(RUNNING);	//Sam, 2013/10/31
 
   /* Flag connection_list that we initialized */
   if ((flags & (ISC_ERRORS|ISC_SERVER)) == 0 && connection_list_defined (&c->options))
@@ -2778,15 +2773,9 @@ do_init_first_time (struct context *c)
 	platform_group_get (c->options.groupname, &c0->platform_state_group) |
 	platform_user_get (c->options.username, &c0->platform_state_user);
 
-      /* get --writepid file descriptor */
-      get_pid_file (c->options.writepid, &c0->pid_state);
-
       /* perform postponed chdir if --daemon */
       if (c->did_we_daemonize && c->options.cd_dir == NULL)
 	platform_chdir("/");
-
-      /* save process ID in a file */
-      write_pid (&c0->pid_state);
 
       /* should we change scheduling priority? */
       platform_nice (c->options.nice);

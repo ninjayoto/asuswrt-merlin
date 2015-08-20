@@ -682,13 +682,6 @@ do_ifconfig (struct tuntap *tt,
       ifconfig_local = print_in_addr_t (tt->local, 0, &gc);
       ifconfig_remote_netmask = print_in_addr_t (tt->remote_netmask, 0, &gc);
 
-      //Sam.B	2013/10/31
-      if(current_addr(htonl(tt->local))) {
-          msg (M_WARN, "ifconfig addr '%s' conflicted", ifconfig_local);
-          update_nvram_status(ADDR_CONFLICTED);
-      }
-      //Sam.E	2013/10/31
-
       if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
         {
 	  ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
@@ -1720,6 +1713,32 @@ close_tun (struct tuntap *tt)
 
 	    argv_msg (M_INFO, &argv);
 	    openvpn_execve_check (&argv, NULL, 0, "Linux ip addr del failed");
+
+            if (tt->ipv6 && tt->did_ifconfig_ipv6_setup)
+              {
+                const char * ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
+
+#ifdef ENABLE_IPROUTE
+                argv_printf (&argv, "%s -6 addr del %s/%d dev %s",
+                                    iproute_path,
+                                    ifconfig_ipv6_local,
+                                    tt->netbits_ipv6,
+                                    tt->actual_name
+                                    );
+                argv_msg (M_INFO, &argv);
+                openvpn_execve_check (&argv, NULL, 0, "Linux ip -6 addr del failed");
+#else
+                argv_printf (&argv,
+                            "%s %s del %s/%d",
+                            IFCONFIG_PATH,
+                            tt->actual_name,
+                            ifconfig_ipv6_local,
+                            tt->netbits_ipv6
+                            );
+                argv_msg (M_INFO, &argv);
+                openvpn_execve_check (&argv, NULL, 0, "Linux ifconfig inet6 del failed");
+#endif
+              }
 
 	    argv_reset (&argv);
 	    gc_free (&gc);
