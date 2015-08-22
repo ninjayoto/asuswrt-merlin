@@ -115,7 +115,7 @@ function initial() {
 	$("ct_max_default").innerHTML = "Default: " + ct_max_default;
 
 	if ((productid == "RT-AC56U") || (productid == "RT-AC68U"))
-		$("ct_established_default").innerHTML = "Default: 432000 (5 days)";
+		$("ct_established_default").innerHTML = "Default: 2400";
 
 	document.aidiskForm.protocol.value = PROTOCOL;
 	initial_dir();
