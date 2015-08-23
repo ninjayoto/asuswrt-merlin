@@ -80,6 +80,14 @@ init_table(){
 	do
 		ip route add table $VPN_TBL $ROUTE
 	done
+
+# Delete pseudo default VPN routes that were pushed by server on table main
+        NET_LIST=$(ip route show|awk '($1 == "0.0.0.0/1" || $1 == "128.0.0.0/1") && $2=="via" && $3==ENVIRON["route_vpn_gateway"] && $4=="dev" && $5==ENVIRON["dev"] {print $1}')
+        for NET in $NET_LIST
+        do
+                ip route del $NET dev $dev table $VPN_TBL
+                logger -t "openvpn-routing" "Removing route for $NET to $dev from VPN table"
+        done
 }
 
 # Begin
@@ -170,7 +178,7 @@ then
 	for NET in $NET_LIST
 	do
 		ip route del $NET dev $dev
-		logger -t "openvpn-routing" "Removing route for $NET to $dev from routing tables"
+		logger -t "openvpn-routing" "Removing route for $NET to $dev from table main"
 	done
 
 # Update policy rules
@@ -186,6 +194,7 @@ then
 		fi
 		ip route del default table $VPN_TBL
 		ip route add default via $route_vpn_gateway table $VPN_TBL
+		logger -t "openvpn-routing" "Setting default VPN route via $route_vpn_gateway"
 	fi
 
 	if [ "$route_net_gateway" != "" ]
@@ -196,7 +205,7 @@ then
 fi	# End route-up
 
 ip route flush cache
-logger -t "openvpn-routing" "Completed routing policy configuration"
+logger -t "openvpn-routing" "Completed routing policy configuration for client $VPN_INSTANCE"
 run_custom_script
 
 exit 0
