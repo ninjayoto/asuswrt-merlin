@@ -832,6 +832,7 @@ function done_validating(action){
 						<th>Stealth Mode (disable all LEDs)</th>
 						<td>
 							<input type="radio" name="led_disable" class="input" value="1" <% nvram_match_x("", "led_disable", "1", "checked"); %>><#checkbox_Yes#>
+							<input type="radio" name="led_disable" class="input" value="2" <% nvram_match_x("", "led_disable", "2", "checked"); %>>Show power status only**
 							<input type="radio" name="led_disable" class="input" value="0" <% nvram_match_x("", "led_disable", "0", "checked"); %>><#checkbox_No#>
 						</td>
 					</tr>

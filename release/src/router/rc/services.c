@@ -6023,7 +6023,7 @@ void setup_leds()
 
 	model = get_model();
 
-	if (nvram_get_int("led_disable") == 1) {
+	if (nvram_get_int("led_disable") > 0) {
 		if ((model == MODEL_RTAC56U) || (model == MODEL_RTAC68U)) {
 			setAllLedOff();
 		} else {        // TODO: Can other routers also use the same code?
@@ -6039,6 +6039,8 @@ void setup_leds()
 		stop_usbled();
 		led_control(LED_USB, LED_OFF);
 #endif
+		if (nvram_get_int("led_disable") == 2)
+			led_control(LED_POWER, LED_ON);
 
 	} else {
 #ifdef RTCONFIG_USB
