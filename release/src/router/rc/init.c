@@ -3331,6 +3331,14 @@ int init_nvram(void)
 		nvram_set("ipv6_rtr_addr_s","");
 	}
 
+	// Initialize ipv6 dns option
+	if(nvram_get("ipv6_dns_router") == NULL)
+		nvram_set("ipv6_dns_router", "1");
+
+	// Set default lan_hostname
+	if(nvram_get("lan_hostname") == NULL)
+		nvram_set("lan_hostname", "asusrouter");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

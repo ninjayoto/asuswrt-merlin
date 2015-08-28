@@ -98,6 +98,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
+		inputCtrl(document.form.ipv6_dns_router[0], 1);
+		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -155,6 +157,8 @@ function showInputfield(v){
 		$("ipv6_dns_setting").style.display="";
 		inputCtrl(document.form.ipv6_dnsenable[0], 1);
 		inputCtrl(document.form.ipv6_dnsenable[1], 1);
+		inputCtrl(document.form.ipv6_dns_router[0], 1);
+		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		var enable_pd = (document.form.ipv6_dhcp_pd[1].checked) ? '0' : '1';
 		showInputfield2('ipv6_dhcp_pd', enable_pd);
 		var enable_dns = (document.form.ipv6_dnsenable[1].checked) ? '0' : '1';
@@ -212,6 +216,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
+		inputCtrl(document.form.ipv6_dns_router[0], 1);
+		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -263,6 +269,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
+		inputCtrl(document.form.ipv6_dns_router[0], 1);
+		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -308,6 +316,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
 		inputCtrl(document.form.ipv6_dns3, 1);
+		inputCtrl(document.form.ipv6_dns_router[0], 1);
+		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		document.form.enable_mtu_ckb.checked = true;
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
@@ -370,7 +380,9 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dnsenable[1], 0);
 		inputCtrl(document.form.ipv6_dns1, 1);
 		inputCtrl(document.form.ipv6_dns2, 1);
-		inputCtrl(document.form.ipv6_dns3, 1);		
+		inputCtrl(document.form.ipv6_dns3, 1);
+		inputCtrl(document.form.ipv6_dns_router[0], 1);
+		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}	
@@ -413,6 +425,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns1, 0);
 		inputCtrl(document.form.ipv6_dns2, 0);
 		inputCtrl(document.form.ipv6_dns3, 0);
+		inputCtrl(document.form.ipv6_dns_router[0], 0);
+		inputCtrl(document.form.ipv6_dns_router[1], 0);
 		document.form.enable_mtu_ckb.checked = true;
 		$("enable_mtu_span").style.display="none";
 		$("enable_mtu_defaults").style.display="none";
@@ -454,6 +468,8 @@ function showInputfield2(s, v){
 		inputCtrl(document.form.ipv6_dns1, enable);
 		inputCtrl(document.form.ipv6_dns2, enable);
 		inputCtrl(document.form.ipv6_dns3, enable);
+		inputCtrl(document.form.ipv6_dns_router[0], enable);
+		inputCtrl(document.form.ipv6_dns_router[1], enable);
 		
 	}else if(s=='ipv6_dhcp_pd'){
 		inputCtrl(document.form.ipv6_rtr_addr, enable);
@@ -1209,7 +1225,15 @@ function showInfo(){
 		     		<td>
 						  <input type="text" maxlength="39" class="input_32_table" name="ipv6_dns3" value="<% nvram_get("ipv6_dns3"); %>">
 		     		</td>
-		     	</tr>		     	
+			</tr>
+					<tr style="display:none;">
+                                                <th>Advertise router as IPv6 DNS server**</th>
+                                <td>
+                                                                <input type="radio" name="ipv6_dns_router" class="input" value="1" <% nvram_match("ipv6_dns_router", "1","checked"); %>><#checkbox_Yes#>
+                                                                <input type="radio" name="ipv6_dns_router" class="input" value="0" <% nvram_match("ipv6_dns_router", "0","checked"); %>><#checkbox_No#>
+                                </td>
+                        </tr>
+
 			</table>
 			<!--=================================== IPv6 DNS setting end ===================================-->
 			

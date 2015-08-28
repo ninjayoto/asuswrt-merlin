@@ -1902,24 +1902,6 @@ int update_resolvconf(void)
 		return errno;
 	}
 
-#if 0
-#ifdef RTCONFIG_IPV6
-	/* Handle IPv6 DNS before IPv4 ones */
-	if (ipv6_enabled()) {
-		if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_get_int("ipv6_dnsenable")) {
-			foreach(word, nvram_safe_get("ipv6_get_dns"), next)
-				fprintf(fp, "nameserver %s\n", word);
-		} else
-		for (unit = 1; unit <= 3; unit++) {
-			sprintf(tmp, "ipv6_dns%d", unit);
-			next = nvram_safe_get(tmp);
-			if (*next && strcmp(next, "0.0.0.0") != 0)
-				fprintf(fp, "nameserver %s\n", next);
-		}
-	}
-#endif
-#endif
-
 	/* Add DNS from VPN clients, others if non-exclusive */
 #ifdef RTCONFIG_OPENVPN
 	dnsstrict = write_vpn_resolv(fp);
@@ -1946,6 +1928,23 @@ int update_resolvconf(void)
 #ifdef RTCONFIG_OPENVPN
 	}
 #endif
+
+#ifdef RTCONFIG_IPV6
+	/* Handle IPv6 DNS after VPN client DNS */
+	if (ipv6_enabled() && nvram_match("ipv6_dns_router", "1")) {
+		if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_get_int("ipv6_dnsenable")) {
+			foreach(word, nvram_safe_get("ipv6_get_dns"), next)
+				fprintf(fp, "nameserver %s\n", word);
+		} else
+		for (unit = 1; unit <= 3; unit++) {
+			sprintf(tmp, "ipv6_dns%d", unit);
+			next = nvram_safe_get(tmp);
+			if (*next && strcmp(next, "0.0.0.0") != 0)
+				fprintf(fp, "nameserver %s\n", next);
+		}
+	}
+#endif
+
 	fclose(fp);
 
 	file_unlock(lock);

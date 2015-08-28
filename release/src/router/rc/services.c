@@ -602,7 +602,10 @@ void start_dnsmasq(int force)
 			/* localhost ipv6 */
 			fprintf(fp, "::1 localhost6.localdomain6 localhost6\n");
 			/* lan6 hostname.domain hostname */
-			nv = (char*) ipv6_router_address(NULL);
+//			nv = (char*) ipv6_router_address(NULL);
+//			if (*nv && nvram_invmatch("lan_hostname", "")) {
+			nv = getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
+			fprintf(fp, "%s %s\n", nv, DUT_DOMAIN_NAME);
 			if (*nv && nvram_invmatch("lan_hostname", "")) {
 				fprintf(fp, "%s %s.%s %s\n", nv,
 					    nvram_safe_get("lan_hostname"),
@@ -741,8 +744,11 @@ void start_dnsmasq(int force)
 
 		/* LAN Domain */
 		nv = nvram_safe_get("lan_domain");
-		if (*nv)
+		if (*nv) {
 			fprintf(fp, "dhcp-option=lan,15,%s\n", nv);
+			if (ipv6_enabled() && nvram_match("ipv6_dns_router", "1"))
+				fprintf(fp, "dhcp-option=lan,option6:24,%s\n", nv);
+		}
 
 		/* Gateway, if not set, force use lan ipaddr to avoid repeater issue */
 		nv = nvram_safe_get("dhcp_gateway_x");
@@ -759,6 +765,9 @@ void start_dnsmasq(int force)
 				(*nv2 && inet_addr(nv2) ? nv2 : ""),
 				(nvram_match("dhcpd_dns_router","1") ? ",0.0.0.0" : ""));
 		}
+		/* IPv6 DNS server */
+		if (ipv6_enabled() && nvram_match("ipv6_dns_router", "1"))
+			fprintf(fp, "dhcp-option=lan,option6:23,[::]\n");
 
 		/* WINS server */
 		nv = nvram_safe_get("dhcp_wins_x");
@@ -1083,14 +1092,11 @@ void start_dhcp6s(void)
 	/* avoid infinite/or stop working IPv6 DNS on clients */
 	fprintf(fp,	"option refreshtime %d;\n", 900); /* 15 minutes for now */
 
-	if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_match("ipv6_dnsenable", "1")) {
-#if 0
+	/* set DNS server & domain */
+	if (((get_ipv6_service() == IPV6_NATIVE_DHCP) || nvram_match("ipv6_dns_router", "1")) && nvram_match("ipv6_dnsenable", "1")) {
 		p = nvram_invmatch("ipv6_get_dns", "") ?
 			nvram_safe_get("ipv6_get_dns") :
 			getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
-#else
-		p = nvram_safe_get("ipv6_get_dns");
-#endif
 	} else {
 		char nvname[sizeof("ipv6_dnsXXX")];
 		char *next = ipv6_dns_str;
@@ -1113,6 +1119,7 @@ void start_dhcp6s(void)
 	if (strlen(p))
 		fprintf(fp,	"option domain-name \"%s\";\n", p);
 
+	/* set DHCP range */
 	if (nvram_get_int("ipv6_autoconf_type")) {
 		/* support stateful with dhcp_pd, update dhcp addr range now that prefix is available */
 		if (nvram_match("ipv6_dhcp_pd", "1")) {
@@ -1232,16 +1239,16 @@ void start_radvd(void)
 
 //	    	// Create radvd.conf
 //	    	if ((f = fopen("/etc/radvd.conf", "w")) == NULL) return;
-#if 0
-		ip = (char *)ipv6_router_address(NULL);
-#else
+//#if 0
+//		ip = (char *)ipv6_router_address(NULL);
+//#else
 		ip = getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
-#endif
-#if 0
+//#endif
+//#if 0
 		do_dns = (*ip);
-#else
-		do_dns = 0;
-#endif
+//#else
+//		do_dns = 0;
+//#endif
 
 		valid_lifetime = NULL;
 		preferred_lifetime = NULL;
@@ -1293,7 +1300,7 @@ void start_radvd(void)
 			do_6to4 ? ";\n" : "",
 			nvram_get_int("ipv6_radvd_dp") ? "on" : "off");
 
-		if (do_dns) {
+		if (do_dns && nvram_match("ipv6_dns_router", "1")) {
 			fprintf(f, " RDNSS %s {};\n", ip);
 		}
 		else {
@@ -2319,8 +2326,16 @@ start_dns(void)
 	const char *s;
 	if (ipv6_enabled()) {
 		fprintf(fp, "::1 localhost6.localdomain6 localhost6\n");
-		s = ipv6_router_address(NULL);
-		if (*s) fprintf(fp, "%s %s\n", s, nvram_safe_get("lan_hostname"));
+		/* lan6 hostname.domain hostname */
+//		s = ipv6_router_address(NULL);
+//		if (*s) fprintf(fp, "%s %s\n", s, nvram_safe_get("lan_hostname"));
+		s = getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
+		if (*s && nvram_invmatch("lan_hostname", "")) {
+			fprintf(fp, "%s %s.%s %s\n", s,
+				    nvram_safe_get("lan_hostname"),
+				    nvram_safe_get("lan_domain"),
+				    nvram_safe_get("lan_hostname"));
+		}
 	}
 #endif
 

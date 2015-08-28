@@ -549,6 +549,7 @@ struct nvram_tuple router_defaults[] = {
 
 	{ "lan_wins",			""		},	// x.x.x.x x.x.x.x ...
 	{ "lan_domain",			""		},	// LAN domain name
+	{ "lan_hostname",		"asusrouter"	},	// LAN host name
 	{ "lan_lease",			"86400"		},	// LAN lease time in seconds
 	{ "lan_stp",			"1"		},	// LAN spanning tree protocol
 	{ "lan_route",			""		},	// Static routes (ipaddr:netmask:gateway:metric:ifname ...)
@@ -1759,6 +1760,7 @@ struct nvram_tuple router_defaults[] = {
 #if 0
 	{ "ipv6_dns",		""		},	// DNS server(s) IPs
 #else
+	{ "ipv6_dns_router",	"1"		},	// Use dnsmasq for IPv6 DNS
 	{ "ipv6_dns1",		""		},
 	{ "ipv6_dns2",		""		},
 	{ "ipv6_dns3",		""		},
