@@ -944,7 +944,7 @@ function showInfo(){
 					<a id="faq" href="" target="_blank" style="font-family:Lucida Console;text-decoration:underline;">IPv6 FAQ</a>
 				</div>
 				  
-			<!---------------------------------------basic_config start------------------------------------>  
+			<!--=================================== basic_config start ===================================-->
 			<table id="basic_config" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 				  <thead>
 				  <tr>
@@ -1066,10 +1066,10 @@ function showInfo(){
 							<input type="text" maxlength="3" class="input_6_table" name="ipv6_tun_ttl" value="<% nvram_get("ipv6_tun_ttl"); %>">
 		     		</td>
 		     	</tr>		     			     	
-			</table>	
-			<!---------------------------------------basic_config end------------------------------------>  
-			
-			<!---------------------------------------IPv6 WAN setting start------------------------------->  
+			</table>
+			<!--=================================== basic_config end ===================================-->
+
+			<!--=================================== IPv6 WAN setting start ===================================-->
 			<table id="ipv6_wan_setting" style="margin-top:8px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 				  <thead>
 				  <tr>
@@ -1095,9 +1095,9 @@ function showInfo(){
 						</td>
 					</tr>										
 			</table>
-			<!---------------------------------------IPv6 WAN setting  end ------------------------------->  
+			<!--=================================== IPv6 WAN setting end ===================================-->
 			
-			<!---------------------------------------IPv6 LAN setting start------------------------------->  
+			<!--=================================== IPv6 LAN setting start ===================================-->
 			<table id="ipv6_lan_setting" style="margin-top:8px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 				  <thead>
 				  <tr>
@@ -1176,9 +1176,9 @@ function showInfo(){
 		     		</td>
 		    	</tr>		    	
 			</table>
-			<!---------------------------------------IPv6 LAN setting end------------------------------->  	
+			<!--=================================== IPv6 LAN setting end ===================================-->
 			
-			<!---------------------------------------IPv6 DNS setting start------------------------------->  	
+			<!--=================================== IPv6 DNS setting start ===================================-->
 			<table id="ipv6_dns_setting" style="margin-top:8px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 				  <thead>
 				  <tr>
@@ -1211,9 +1211,9 @@ function showInfo(){
 		     		</td>
 		     	</tr>		     	
 			</table>
-			<!---------------------------------------IPv6 DNS setting end------------------------------->  
+			<!--=================================== IPv6 DNS setting end ===================================-->
 			
-			<!---------------------------------------Auto Config start------------------------------->  
+			<!--=================================== Auto Config start ===================================-->
 			<table id="auto_config" style="margin-top:8px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 				  <thead>
 				  <tr>
@@ -1251,7 +1251,7 @@ function showInfo(){
 		     		</td>
 		     	</tr>
 			</table>
-			<!---------------------------------------Auto Config end ------------------------------->  	
+			<!--=================================== Auto Config end ===================================-->
 				
 				<div class="apply_gen">
 					<input class="button_gen" onclick="applyRule()" type="button" value="<#CTL_apply#>"/>
