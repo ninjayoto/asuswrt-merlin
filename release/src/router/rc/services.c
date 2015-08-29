@@ -2898,7 +2898,8 @@ run_telnetd(void)
 void
 start_httpd(void)
 {
-	char *httpd_argv[] = {"httpd", NULL};
+//	char *httpd_argv[] = {"httpd", NULL};
+	char *httpd_argv[] = {"httpd", "-p", nvram_safe_get("http_lanport"), NULL};
 	pid_t pid;
 #ifdef RTCONFIG_HTTPS
 	char *https_argv[] = {"httpd", "-s", "-p", nvram_safe_get("https_lanport"), NULL};

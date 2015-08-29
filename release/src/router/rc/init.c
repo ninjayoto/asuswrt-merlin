@@ -3339,6 +3339,10 @@ int init_nvram(void)
 	if(nvram_get("lan_hostname") == NULL)
 		nvram_set("lan_hostname", "asusrouter");
 
+	// Set default http port
+        if(nvram_get("http_lanport") == NULL)
+                nvram_set("http_lanport", "80");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

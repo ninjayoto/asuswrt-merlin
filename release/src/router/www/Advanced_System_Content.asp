@@ -109,6 +109,7 @@ function initial(){
 	}
 	else{
 		showLANIPList();
+		hide_http_lanport(document.form.http_enable.value);
 		hide_https_lanport(document.form.http_enable.value);
 		hide_https_wanport(document.form.http_enable.value);
 	}	
@@ -214,7 +215,7 @@ function applyRule(){
 				if(isFromWAN)
 					document.form.flag.value = "http://" + location.hostname + ":" + document.form.misc_httpport_x.value;
 				else
-					document.form.flag.value = "http://" + location.hostname;
+					document.form.flag.value = "http://" + location.hostname + ":" + document.form.http_lanport.value;
 			}
 			else if(document.form.http_enable.value == "1"){	//HTTPS
 				if(isFromWAN)
@@ -232,7 +233,7 @@ function applyRule(){
 					if(isFromWAN)
 						document.form.flag.value = "http://" + location.hostname + ":" + document.form.misc_httpport_x.value;
 					else
-						document.form.flag.value = "http://" + location.hostname;
+						document.form.flag.value = "http://" + location.hostname + ":" + document.form.http_lanport.value;
 				}
 			}   
 		}
@@ -344,14 +345,20 @@ function validForm(){
 		alert("<#File_Pop_content_alert_desc10#>");
 		
 	if (document.form.misc_http_x[0].checked) {
-		if (!validate_range(document.form.misc_httpport_x, 1024, 65535))
+		if (!validate_range(document.form.misc_httpport_x, 1024, 65535)){
+			document.form.misc_httpport_x.focus();
 			return false;
+		}
 	
-	if (HTTPS_support && !validate_range(document.form.https_lanport, 1024, 65535))
+		if (HTTPS_support && !validate_range(document.form.https_lanport, 1024, 65535)){
+			document.form.https_lanport.focus();
 			return false;
+		}
 
-		if (HTTPS_support && !validate_range(document.form.misc_httpsport_x, 1024, 65535))
+		if (HTTPS_support && !validate_range(document.form.misc_httpsport_x, 1024, 65535)){
+			document.form.misc_httpsport_x.focus();
 			return false;
+		}
 	}
 	else{
 		document.form.misc_httpport_x.value = '<% nvram_get("misc_httpport_x"); %>';
@@ -363,6 +370,11 @@ function validForm(){
 		document.form.misc_httpport_x.focus();
 		return false;
 	}
+	else if(document.form.https_lanport.value == document.form.http_lanport.value){
+		alert("Duplicate port number with HTTP and HTTPS LAN port setting.");
+		document.form.https_lanport.focus();
+		return false;
+        }
 	else if(isPortConflict(document.form.misc_httpsport_x.value) && HTTPS_support){
 		alert(isPortConflict(document.form.misc_httpsport_x.value));
 		document.form.misc_httpsport_x.focus();
@@ -679,13 +691,31 @@ function update_jlog_msg(_value){
 		$("jffs_log_msg").style.display = (_value == "0") ? "" : "none";
 }
 
+function hide_http_lanport(_value){
+	if(sw_mode == '1' || sw_mode == '2'){
+		var http_lanport_num = "<% nvram_get("http_lanport"); %>";
+		var http_lanport_num_new = (http_lanport_num == "80") ? "" : http_lanport_num;
+		var port_sep = (http_lanport_num == "80") ? "" : ":";
+		$("http_lanport").style.display = (_value == "1") ? "none" : "";
+		document.form.http_lanport.value = "<% nvram_get("http_lanport"); %>";
+		$("http_access_page").innerHTML = "<#https_access_url#> ";
+		$("http_access_page").innerHTML += "<a href=\"http://"+theUrl+port_sep+http_lanport_num_new+"\" target=\"_blank\" style=\"color:#FC0;text-decoration: underline; font-family:Lucida Console;\">http://"+theUrl+"<span>"+port_sep+http_lanport_num_new+"</span></a>";
+		$("http_access_page").style.display = (_value == "1") ? "none" : "";
+	}
+	else{
+		$("http_access_page").style.display = 'none';
+	}
+}
+
 function hide_https_lanport(_value){
 	if(sw_mode == '1' || sw_mode == '2'){
 		var https_lanport_num = "<% nvram_get("https_lanport"); %>";
+		var https_lanport_num_new = https_lanport_num;
+		var port_sep = ":";
 		$("https_lanport").style.display = (_value == "0") ? "none" : "";
 		document.form.https_lanport.value = "<% nvram_get("https_lanport"); %>";
 		$("https_access_page").innerHTML = "<#https_access_url#> ";
-		$("https_access_page").innerHTML += "<a href=\"https://"+theUrl+":"+https_lanport_num+"\" target=\"_blank\" style=\"color:#FC0;text-decoration: underline; font-family:Lucida Console;\">http<span>s</span>://"+theUrl+"<span>:"+https_lanport_num+"</span></a>";
+		$("https_access_page").innerHTML += "<a href=\"https://"+theUrl+port_sep+https_lanport_num_new+"\" target=\"_blank\" style=\"color:#FC0;text-decoration: underline; font-family:Lucida Console;\">http<span>s</span>://"+theUrl+"<span>"+port_sep+https_lanport_num_new+"</span></a>";
 		$("https_access_page").style.display = (_value == "0") ? "none" : "";
 	}
 	else{
@@ -838,13 +868,21 @@ function hideport(flag){
 
 //Viz add 2012.12 show url for https [start]
 function change_url(num, flag){
+	var port_sep = ":";
+	if(flag == 'http_lan'){
+                var http_lanport_num_new = num;
+		if (num == '80'){
+			port_sep = "";
+			http_lanport_num_new = "";
+		}
+                $("http_access_page").innerHTML = "<#https_access_url#> ";
+                $("http_access_page").innerHTML += "<a href=\"http://"+theUrl+port_sep+http_lanport_num_new+"\" target=\"_blank\" style=\"color:#FC0;text-decoration: underline; font-family:Lucida Console;\">http://"+theUrl+"<span>"+port_sep+http_lanport_num_new+"</span></a>";
+        }
 	if(flag == 'https_lan'){
 		var https_lanport_num_new = num;
 		$("https_access_page").innerHTML = "<#https_access_url#> ";
-		$("https_access_page").innerHTML += "<a href=\"https://"+theUrl+":"+https_lanport_num_new+"\" target=\"_blank\" style=\"color:#FC0;text-decoration: underline; font-family:Lucida Console;\">http<span>s</span>://"+theUrl+"<span>:"+https_lanport_num_new+"</span></a>";
-	}else{
-		
-	}		
+		$("https_access_page").innerHTML += "<a href=\"https://"+theUrl+port_sep+https_lanport_num_new+"\" target=\"_blank\" style=\"color:#FC0;text-decoration: underline; font-family:Lucida Console;\">http<span>s</span>://"+theUrl+"<span>"+port_sep+https_lanport_num_new+"</span></a>";
+	}
 }
 //Viz add 2012.12 show url for https [end]
 
@@ -1135,13 +1173,21 @@ function clean_scorebar(obj){
 		  	<tr id="https_tr">
 					<th><#WLANConfig11b_AuthenticationMethod_itemname#></th>
 					<td>
-				  	<select name="http_enable" class="input_option" onchange="hide_https_lanport(this.value);hide_https_wanport(this.value);">
+					<select name="http_enable" class="input_option" onchange="hide_http_lanport(this.value);hide_https_lanport(this.value);hide_https_wanport(this.value);">
 							<option value="0" <% nvram_match("http_enable", "0", "selected"); %>>HTTP</option>
 							<option value="1" <% nvram_match("http_enable", "1", "selected"); %>>HTTPS</option>
 							<option value="2" <% nvram_match("http_enable", "2", "selected"); %>>BOTH</option>
 				  	</select>				  	
 					</td>
 		  	</tr>
+
+			<tr id="http_lanport">
+                                        <th>HTTP Lan port**</th>
+          <td>
+                                                <input type="text" maxlength="5" class="input_6_table" name="http_lanport" value="<% nvram_get("http_lanport"); %>" onKeyPress="return is_number(this,event);" onBlur="change_url(this.value, 'http_lan');">
+                                                <span id="http_access_page"></span>
+                                        </td>
+                        </tr>
 
 		  	<tr id="https_lanport">
 					<th>HTTPS Lan port</th>
