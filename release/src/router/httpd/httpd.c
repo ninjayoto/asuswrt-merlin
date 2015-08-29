@@ -300,7 +300,8 @@ initialize_listen_socket( usockaddr* usaP )
 
     memset( usaP, 0, sizeof(usockaddr) );
     usaP->sa.sa_family = AF_INET;
-    usaP->sa_in.sin_addr.s_addr = htonl( INADDR_ANY );
+//    usaP->sa_in.sin_addr.s_addr = htonl( INADDR_ANY );
+    usaP->sa_in.sin_addr.s_addr =  (inet_addr(nvram_safe_get("lan_ipaddr")) != INADDR_NONE) ? inet_addr(nvram_safe_get("lan_ipaddr")) : htonl( INADDR_ANY );
     usaP->sa_in.sin_port = htons( http_port );
 
     listen_fd = socket( usaP->sa.sa_family, SOCK_STREAM, 0 );
