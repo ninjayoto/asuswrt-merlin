@@ -2931,9 +2931,10 @@ function set_variable(_variable, _val){
 }
 
 function isPortConflict(_val){
-	if(_val == '80')
-		return "<#portConflictHint#> HTTP LAN port.";
-	else if(_val == '<% nvram_get("dm_http_port"); %>')
+//	if(_val == '<% nvram_get("lan_port"); %>')
+//		return "<#portConflictHint#> HTTP LAN port.";
+//	else
+	if(_val == '<% nvram_get("dm_http_port"); %>')
 		return "<#portConflictHint#> Download Master.";
 	else if(_val == '<% nvram_get("webdav_http_port"); %>')
 		return "<#portConflictHint#> Cloud Disk.";
