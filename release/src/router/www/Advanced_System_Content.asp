@@ -238,6 +238,9 @@ function applyRule(){
 			}   
 		}
 
+		// Set lan_port for firewall rules
+		document.form.lan_port.value = document.form.http_lanport.value;
+
 		// Reboot if clearing https certificate or change JFFS log state
                 if((document.form.https_crt_save.value = "0" && (document.form.https_crt_save.value != '<% nvram_get("https_crt_save"); %>')) ||
 			(document.form.jffs2_log.value != '<% nvram_get("jffs2_log"); %>')){
@@ -958,6 +961,7 @@ function clean_scorebar(obj){
 <input type="hidden" name="http_passwd" value="" disabled>
 <input type="hidden" name="http_clientlist" value="<% nvram_get("http_clientlist"); %>">
 <input type="hidden" name="https_crt_gen" value="<% nvram_get("https_crt_gen"); %>">
+<input type="hidden" name="lan_port" value="<% nvram_get("lan_port"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
