@@ -1160,7 +1160,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "cron_loglevel", "8"},        /* <  CROND_INFO */
 
 #if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2)
-	{ "jffs2_on", "0" },
+	{ "jffs2_on", "1" },
 	{ "jffs2_scripts", "0" },
 	{ "jffs2_exec", "" },
 	{ "jffs2_format", "0" },
