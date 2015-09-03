@@ -1499,7 +1499,7 @@ void run_postconf(char *name, char *config)
 {
 	char filename[64];
 
-	snprintf(filename, sizeof (filename), "%s.postconf", name);
+	snprintf(filename, sizeof (filename), "%s", name);
 	run_custom_script_blocking(filename, config);
 }
 
