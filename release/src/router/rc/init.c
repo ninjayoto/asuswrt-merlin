@@ -3343,6 +3343,10 @@ int init_nvram(void)
         if(nvram_get("http_lanport") == NULL)
                 nvram_set("http_lanport", "80");
 
+	// Turn on user scripts after fw load w/o factory reset
+	if(nvram_get("jffs2_scripts") == NULL)
+		nvram_set("jffs2_scripts", "1");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
