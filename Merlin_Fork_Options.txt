@@ -125,7 +125,42 @@ Enable IPv6 MTU Advertisement
 	Routers Supported:	All
 	Released:		Update-13
 	Reboot Required:	No
-	Notes:			Default is to enable advertisement for IPv6 on all connections
+	Notes:			Default is to enable advertisement for IPv6 on all connection types
+----------------------------------------------------------------------------------------------------------------
+Advertise Router as IPv6 DNS Server
+	
+	Can be set in gui:	Yes (IPv6/Advertise router as DNS server)
+	Enable via NVRAM:	nvram set ipv6_dns_router=1
+				nvram commit
+
+	Routers Supported:	All
+	Released:		Update-14
+	Reboot Required:	Yes
+	Notes:			Enable IPv6 DNS lookups to be cached by dnsmasq
+----------------------------------------------------------------------------------------------------------------
+Stealth Mode - Show power status only
+	
+	Can be set in gui:	Yes (Tools/Other Settings/Stealth Mode/Show power status only)
+	Enable via NVRAM:	nvram set led_disable=2
+				nvram commit
+				service restart_leds
+
+	Routers Supported:	All
+	Released:		Update-14
+	Reboot Required:	No
+	Notes:			Show only the power status led
+----------------------------------------------------------------------------------------------------------------
+HTTP Lan Port
+	
+	Can be set in gui:	Yes (Administration/System/HTTP Lan Port)
+	Enable via NVRAM:	No, nvram variable http_lanport must be set thru gui
+
+	Routers Supported:	All
+	Released:		Update-14
+	Reboot Required:	Yes
+	Notes:			Changes HTTP port for gui access from default port 80
+				Reset to default of 80 before loading firmware which does not support 
+					changing of the port
 ----------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:

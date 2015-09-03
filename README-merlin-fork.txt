@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-13E3j9527 (20-July-2015)
+Asuswrt-Merlin fork - build 374.43_2-14j9527 (3-September-2015)
 =============================================
 
 About
@@ -19,14 +19,46 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-14j9527 (3-September-2015)
+* CHANGED: Allow decimal entries in QOS Mb/s
+* CHANGED: Allow paste into system password field
+* CHANGED: Enable reflector for Avahi interfaces
+* CHANGED: Improve readability of text input blocks
+* CHANGED: QOS priorty selections to 5 percent steps
+* CHANGED: Router HTTP port only bound to router IP address
+* CHANGED: Update police filters for ARM QOS
+* CHANGED: Validate password length during save
+* CHANGED: dnsmasq (router) now default for IPv6 DNS server
+- CHANGED: Added a watchdog for the watchdog
+- CHANGED: Added watchdog for HTTPD
+- CHANGED: Change NAT loopback mark value to avoid collision with QOS
+- CHANGED: Change default for TCP_CONNTRACK_ESTABLISED to 40min (was 5 days)
+- CHANGED: Preserve existing marks when updating ebtables rules
+- CHANGED: Update OpenVPN to 2.3.8
+- CHANGED: Update QOS rules mask value
+- CHANGED: Update dnsmasq to 2.75 final
+- CHANGED: Update dropbear to 2015.68
+- CHANGED: Update miniupnpd to 1.9.20150723
+* FIXED: Add broadcast flag to GUI generated WOL command
+* FIXED: Display of special characters in SSID in Site Survey
+* FIXED: Fixed setting of schedules for disk utility
+* FIXED: GUI icon shift when access disk utility page
+- FIXED: Memory leak in QOS rules setting
+* FIXED: Remove redundant routes from policy based VPN routing table
+* NEW: Ability to change router GUI HTTP port
+* NEW: Add IPSET support in dnsmasq for IPv4 addresses
+* NEW: Add user selection for setting QOS default priority
+* NEW: LED Stealth option to only show power status/LED
+* NEW: Add option to disable running of user scripts/configs
+
+
 374.43_2-13E3j9527 (20-July-2015)
-* FIXED: fix ASUS typo in VPN Client gui (missing statement termination)
-* CHANGED: add underscore as valid alphanum character
-* CHANGED: restrict SSID entry to alphanum characters
+* CHANGED: Prevent troublesome characters from being used in SSIDs
+* FIXED: Fixed typo in setting OpenVPN client autostart
 
 
 374.43_2-13E2j9527 (17-July-2015)
-- FIXED: Additional fix for TCP max conn/TCP established timeout after reset
+* FIXED: Really fix setting TCP_MAX_CONNECTIONS after a factory reset
 
 
 374.43_2-13E1j9527 (14-July-2015)
