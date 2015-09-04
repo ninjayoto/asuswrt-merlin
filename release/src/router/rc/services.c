@@ -3322,6 +3322,7 @@ int generate_mdns_config()
 	fprintf(fp, "host-name=%s-%c%c%c%c\n", get_productid(),et0macaddr[12],et0macaddr[13],et0macaddr[15],et0macaddr[16]);
 	fprintf(fp, "use-ipv4=yes\n");
 	fprintf(fp, "use-ipv6=no\n");
+	fprintf(fp, "allow-interfaces=\n"); //workaround for avahi bug
 	fprintf(fp, "deny-interfaces=%s\n", nvram_safe_get("wan0_ifname"));
 	fprintf(fp, "ratelimit-interval-usec=1000000\n");
 	fprintf(fp, "ratelimit-burst=1000\n");
