@@ -747,6 +747,7 @@ int start_iQos(void)
 	char burst_root[32];
 	char burst_leaf[32];
 	char r2q[32];
+	char sfq_limit[32];
 #ifdef CONFIG_BCMWL5
 	char *protocol="802.1q";
 #endif
@@ -781,6 +782,17 @@ int start_iQos(void)
 	if (i > 0) sprintf(r2q, "r2q %d", i);
 		else r2q[0] = 0;
 
+	/* sfq limit */
+        i = nvram_get_int("qos_sfql");
+        if (i > 1)
+		sprintf(sfq_limit, "limit %d", i);
+	else if (i == 1) {
+		x = (obw/1024) + 10;
+		x = (x > 127) ? 127 : x;
+		sprintf(sfq_limit, "limit %d", x);
+	}
+	else sfq_limit[0] = 0;
+
 	/* Egress OBW  -- set the HTB shaper (Classful Qdisc)  
 	* the BW is set here for each class 
 	*/
@@ -793,7 +805,7 @@ int start_iQos(void)
 		"#!/bin/sh\n"
 		"#LAN/WAN\n"
 		"I=%s\n"
-		"SFQ=\"sfq perturb 10\"\n"
+		"SFQ=\"sfq perturb 10 %s\"\n"
 		"TQA=\"tc qdisc add dev $I\"\n"
 		"TCA=\"tc class add dev $I\"\n"
 		"TFA=\"tc filter add dev $I\"\n"
@@ -815,6 +827,7 @@ int start_iQos(void)
 		"# upload 1:1\n"
 		"\t$TCA parent 1: classid 1:1 htb rate %ukbit ceil %ukbit %s\n" ,
 			get_wan_ifname(0), // judge WAN interface 
+			sfq_limit,
 			(nvram_get_int("qos_default") + 1) * 10, r2q,
 #ifdef CLS_ACT
 			(nvram_get_int("qos_default") + 1) * 10,
