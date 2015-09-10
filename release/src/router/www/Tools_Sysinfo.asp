@@ -105,17 +105,17 @@ function hwaccel_state(){
 		if (hwacc_force == "1")
 			code += " <i>(by user)</i>";
 		else {
-			code += " <i> - incompatible with:<span>  ";	// Two trailing spaces
+			code += " <i> - incompatible with:<span>&nbsp;&nbsp;";	// Two trailing spaces
 			if ('<% nvram_get("cstats_enable"); %>' == '1') code += 'IPTraffic, ';
 			if ('<% nvram_get("qos_enable"); %>' == '1') code += 'QoS, ';
 			if ('<% nvram_get("sw_mode"); %>' == '2') code += 'Repeater mode, ';
 			if ('<% nvram_get("ctf_disable_modem"); %>' == '1') code += 'USB modem, ';
 
 			// We're disabled but we don't know why
-			if (code.slice(-2) == "  ") code += "&lt;unknown&gt;, ";
+			if (code.slice(-6) == "&nbsp;") code += "&lt;unknown&gt;, ";
 
-			// Trim two trailing chars, either "  " or ", "
-			code = code.slice(0,-2) + "</span></>";
+			// Trim two trailing chars ", "
+			code = code.slice(0,-2) + "</span></i>";
 		}
 	} else if (hwacc == "0") {
 		code = "<span>Enabled</span>";
