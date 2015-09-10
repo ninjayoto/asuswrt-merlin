@@ -7,7 +7,7 @@ if ! head -n1 CHANGES | grep -q $VERSION ; then
 fi
 
 if ! head -n1 debian/changelog | grep -q $VERSION ; then
-	echo "debian/changelog needs updating"
+	echo "CHANGES needs updating"
 	exit 1
 fi
 
@@ -33,10 +33,8 @@ hg archive "$RELDIR"  || exit 2
 
 rm -r "$RELDIR/autom4te.cache" || exit 2
 
-rm "$RELDIR/.hgtags"
-
-(cd "$RELDIR/.." && tar cjf $ARCHIVE `basename "$RELDIR"`) || exit 2
+(cd $RELDIR/.. && tar cjf $ARCHIVE `basename "$RELDIR"`) || exit 2
 
 ls -l $ARCHIVE
-openssl sha -sha256 $ARCHIVE
+openssl sha1 $ARCHIVE
 echo "Done to $ARCHIVE"

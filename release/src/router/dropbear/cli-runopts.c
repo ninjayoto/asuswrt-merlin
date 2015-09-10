@@ -38,7 +38,7 @@ static void parse_hostname(const char* orighostarg);
 static void parse_multihop_hostname(const char* orighostarg, const char* argv0);
 static void fill_own_user();
 #ifdef ENABLE_CLI_PUBKEY_AUTH
-static void loadidentityfile(const char* filename, int warnfail);
+static void loadidentityfile(const char* filename);
 #endif
 #ifdef ENABLE_CLI_ANYTCPFWD
 static void addforward(const char* str, m_list *fwdlist);
@@ -65,7 +65,7 @@ static void printhelp() {
 					"-y -y Don't perform any remote host key checking (caution)\n"
 					"-s    Request a subsystem (use by external sftp)\n"
 #ifdef ENABLE_CLI_PUBKEY_AUTH
-					"-i <identityfile>   (multiple allowed, default %s)\n"
+					"-i <identityfile>   (multiple allowed)\n"
 #endif
 #ifdef ENABLE_CLI_AGENTFWD
 					"-A    Enable agent auth forwarding\n"
@@ -95,9 +95,6 @@ static void printhelp() {
 					"-v    verbose (compiled with DEBUG_TRACE)\n"
 #endif
 					,DROPBEAR_VERSION, cli_opts.progname,
-#ifdef ENABLE_CLI_PUBKEY_AUTH
-					DROPBEAR_DEFAULT_CLI_AUTHKEY,
-#endif
 					DEFAULT_RECV_WINDOW, DEFAULT_KEEPALIVE, DEFAULT_IDLE_TIMEOUT);
 					
 }
@@ -156,7 +153,7 @@ void cli_getopts(int argc, char ** argv) {
 	cli_opts.proxycmd = NULL;
 #endif
 #ifndef DISABLE_ZLIB
-	opts.compress_mode = DROPBEAR_COMPRESS_ON;
+	opts.enable_compress = 1;
 #endif
 #ifdef ENABLE_USER_ALGO_LIST
 	opts.cipher_list = NULL;
@@ -177,7 +174,7 @@ void cli_getopts(int argc, char ** argv) {
 #ifdef ENABLE_CLI_PUBKEY_AUTH
 		if (nextiskey) {
 			/* Load a hostkey since the previous argument was "-i" */
-			loadidentityfile(argv[i], 1);
+			loadidentityfile(argv[i]);
 			nextiskey = 0;
 			continue;
 		}
@@ -234,7 +231,7 @@ void cli_getopts(int argc, char ** argv) {
 				case 'i': /* an identityfile */
 					/* Keep scp happy when it changes "-i file" to "-ifile" */
 					if (strlen(argv[i]) > 2) {
-						loadidentityfile(&argv[i][2], 1);
+						loadidentityfile(&argv[i][2]);
 					} else  {
 						nextiskey = 1;
 					}
@@ -447,14 +444,6 @@ void cli_getopts(int argc, char ** argv) {
 	}
 #endif
 
-#if defined(DROPBEAR_DEFAULT_CLI_AUTHKEY) && defined(ENABLE_CLI_PUBKEY_AUTH)
-	{
-		char *expand_path = expand_homedir_path(DROPBEAR_DEFAULT_CLI_AUTHKEY);
-		loadidentityfile(expand_path, 0);
-		m_free(expand_path);
-	}
-#endif
-
 	/* The hostname gets set up last, since
 	 * in multi-hop mode it will require knowledge
 	 * of other flags such as -i */
@@ -466,18 +455,14 @@ void cli_getopts(int argc, char ** argv) {
 }
 
 #ifdef ENABLE_CLI_PUBKEY_AUTH
-static void loadidentityfile(const char* filename, int warnfail) {
+static void loadidentityfile(const char* filename) {
 	sign_key *key;
 	enum signkey_type keytype;
-
-	TRACE(("loadidentityfile %s", filename))
 
 	key = new_sign_key();
 	keytype = DROPBEAR_SIGNKEY_ANY;
 	if ( readhostkey(filename, key, &keytype) != DROPBEAR_SUCCESS ) {
-		if (warnfail) {
-			fprintf(stderr, "Failed loading keyfile '%s'\n", filename);
-		}
+		fprintf(stderr, "Failed loading keyfile '%s'\n", filename);
 		sign_key_free(key);
 	} else {
 		key->type = keytype;
@@ -498,14 +483,11 @@ multihop_passthrough_args() {
 	m_list_elem *iter;
 	/* Fill out -i, -y, -W options that make sense for all
 	 * the intermediate processes */
-#ifdef ENABLE_CLI_PUBKEY_AUTH
 	for (iter = cli_opts.privkeys->first; iter; iter = iter->next)
 	{
 		sign_key * key = (sign_key*)iter->item;
 		len += 3 + strlen(key->filename);
 	}
-#endif /* ENABLE_CLI_PUBKEY_AUTH */
-
 	len += 30; /* space for -W <size>, terminator. */
 	ret = m_malloc(len);
 	total = 0;
@@ -527,7 +509,6 @@ multihop_passthrough_args() {
 		total += written;
 	}
 
-#ifdef ENABLE_CLI_PUBKEY_AUTH
 	for (iter = cli_opts.privkeys->first; iter; iter = iter->next)
 	{
 		sign_key * key = (sign_key*)iter->item;
@@ -536,7 +517,6 @@ multihop_passthrough_args() {
 		dropbear_assert((unsigned int)written < size);
 		total += written;
 	}
-#endif /* ENABLE_CLI_PUBKEY_AUTH */
 
 	/* if args were passed, total will be not zero, and it will have a space at the end, so remove that */
 	if (total > 0) 
@@ -614,7 +594,7 @@ static void parse_multihop_hostname(const char* orighostarg, const char* argv0) 
 				passthrough_args, remainder);
 #ifndef DISABLE_ZLIB
 		/* The stream will be incompressible since it's encrypted. */
-		opts.compress_mode = DROPBEAR_COMPRESS_OFF;
+		opts.enable_compress = 0;
 #endif
 		m_free(passthrough_args);
 	}
