@@ -1050,10 +1050,14 @@ void http_login(unsigned int ip, char *url) {
 	char login_ipstr[32], login_timestampstr[32];
 	char login_port_str[] = "65535XXX";
 
-	if ((http_port != SERVER_PORT
+	unsigned int http_lanport = nvram_get_int("http_lanport");
+	unsigned int https_lanport = nvram_get_int("https_lanport");
+
+	if ((http_port != http_lanport
+//	  && http_port != SERVER_PORT
 #ifdef RTCONFIG_HTTPS
-	  && http_port != SERVER_PORT_SSL
-	  && http_port != nvram_get_int("https_lanport")
+	  && http_port != https_lanport
+//	  && http_port != SERVER_PORT_SSL
 #endif
 	    ) || ip == 0x100007f)
 		return;
@@ -1100,11 +1104,14 @@ int http_client_ip_check(void) {
 int http_login_check(void)
 {
 	unsigned int login_port = nvram_get_int("login_port");
+	unsigned int http_lanport = nvram_get_int("http_lanport");
+	unsigned int https_lanport = nvram_get_int("https_lanport");
 
-	if ((http_port != SERVER_PORT
+	if ((http_port != http_lanport
+//	  && http_port != SERVER_PORT
 #ifdef RTCONFIG_HTTPS
-	  && http_port != SERVER_PORT_SSL
-	  && http_port != nvram_get_int("https_lanport")
+	  && http_port != https_lanport
+//	  && http_port != SERVER_PORT_SSL
 #endif
 	    ) || login_ip_tmp == 0x100007f)
 		//return 1;
@@ -1162,10 +1169,14 @@ void http_logout(unsigned int ip)
 
 int is_auth(void)
 {
-	if (http_port==SERVER_PORT ||
+	unsigned int http_lanport = nvram_get_int("http_lanport");
+	unsigned int https_lanport = nvram_get_int("https_lanport");
+
+	if (http_port==http_lanport ||
+//	    http_port==SERVER_PORT ||
 #ifdef RTCONFIG_HTTPS
-	    http_port==SERVER_PORT_SSL ||
-	    http_port==nvram_get_int("https_lanport") ||
+	    http_port==https_lanport ||
+//	    http_port==SERVER_PORT_SSL ||
 #endif
 		strcmp(nvram_get_x("PrinterStatus", "usb_webhttpcheck_x"), "1")==0) return 1;
 	else return 0;
@@ -1702,7 +1713,8 @@ QTN_RESET:
 	}
 
 	FILE *pid_fp;
-	if (http_port==SERVER_PORT)
+//	if (http_port==SERVER_PORT)
+	if (http_port==nvram_get_int("http_lanport"))
 		strcpy(pidfile, "/var/run/httpd.pid");
 	else sprintf(pidfile, "/var/run/httpd-%d.pid", http_port);
 
