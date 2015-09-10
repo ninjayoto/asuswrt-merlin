@@ -623,7 +623,7 @@ int add_iQosRules(char *pcWANIF)
 	}
 #endif
 		fprintf(fn,
-			"-A QOSO -j CONNMARK --set-return 0x%x\n"
+			"-A QOSO -j CONNMARK --set-return 0x%x/0x7\n"
 	                "-A FORWARD -o %s -j QOSO\n"
         	        "-A OUTPUT -o %s -j QOSO\n",
                 	        class_num, pcWANIF, pcWANIF);
@@ -659,7 +659,7 @@ int add_iQosRules(char *pcWANIF)
 		}
 #endif
         	fprintf(fn_ipv6,
-                	"-A QOSO -j CONNMARK --set-return 0x%x\n"
+			"-A QOSO -j CONNMARK --set-return 0x%x/0x7\n"
                 	"-A FORWARD -o %s -j QOSO\n"
                 	"-A OUTPUT -o %s -j QOSO\n",
                         	class_num, wan6face, wan6face);
