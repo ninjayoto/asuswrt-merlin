@@ -1235,7 +1235,6 @@ struct nvram_tuple router_defaults[] = {
 #endif
 #endif
 
-	{ "http_lanport", "80"},	// default http port
 #ifdef RTCONFIG_HTTPS
 	{ "https_lanport", "8443"},
 	{ "https_crt_file", ""},
@@ -1302,6 +1301,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "http_client", "0"},
 	{ "http_clientlist", "0"},
 	{ "http_autologout", "30"},
+	{ "http_lanport", "80"},	// default http port
 
 	{ "temp_lang", ""},
 	{ "wollist", ""},
