@@ -746,6 +746,7 @@ int start_iQos(void)
 	int first;
 	char burst_root[32];
 	char burst_leaf[32];
+	char r2q[32];
 #ifdef CONFIG_BCMWL5
 	char *protocol="802.1q";
 #endif
@@ -775,6 +776,11 @@ int start_iQos(void)
 	if (i > 0) sprintf(burst_leaf, "burst %dk", i);
 		else burst_leaf[0] = 0;
 
+	/* r2q */
+	i = nvram_get_int("qos_r2q");
+	if (i > 0) sprintf(r2q, "r2q %d", i);
+		else r2q[0] = 0;
+
 	/* Egress OBW  -- set the HTB shaper (Classful Qdisc)  
 	* the BW is set here for each class 
 	*/
@@ -801,7 +807,7 @@ int start_iQos(void)
 		"start)\n"
 		"#LAN/WAN\n"
 		"\ttc qdisc del dev $I root 2>/dev/null\n"
-		"\t$TQA root handle 1: htb default %u\n"
+		"\t$TQA root handle 1: htb default %u %s\n"
 #ifdef CLS_ACT
 		"\ttc qdisc del dev $DLIF root 2>/dev/null\n"
 		"\t$TQADL root handle 2: htb default %u\n"
@@ -809,7 +815,7 @@ int start_iQos(void)
 		"# upload 1:1\n"
 		"\t$TCA parent 1: classid 1:1 htb rate %ukbit ceil %ukbit %s\n" ,
 			get_wan_ifname(0), // judge WAN interface 
-			(nvram_get_int("qos_default") + 1) * 10,
+			(nvram_get_int("qos_default") + 1) * 10, r2q,
 #ifdef CLS_ACT
 			(nvram_get_int("qos_default") + 1) * 10,
 #endif
