@@ -1779,6 +1779,10 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 		{
 			p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 8;
 		}
+		else
+		{
+			NMP_DEBUG("Find UPnP device: Unknown description! %s\n", description.description);
+		}
 
 		//Copy modelname to device name if exist.
 		if(strcmp("",description.modelname) &&
@@ -1838,7 +1842,7 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 	                else
 			{
        		                p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 6;
-                                NMP_DEBUG("Find: Nothing!\n");
+                                NMP_DEBUG("Find: Unknown SMB! SMB_OS=%s, SMB_PriDomain=%s\n", SMB_OS, SMB_PriDomain);
                         }
 		}
 	        else

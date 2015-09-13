@@ -283,10 +283,10 @@ int main(int argc, char *argv[])
 		}
 		else {
 		    arp_ptr = (ARP_HEADER*)(buffer);
-                    NMP_DEBUG("*Receive an ARP Packet from: %d.%d.%d.%d, len:%d\n",
-				(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
-				(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
-				arp_getlen);
+//                  NMP_DEBUG("*Receive an ARP Packet from: %d.%d.%d.%d, len:%d\n",
+//				(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
+//				(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
+//				arp_getlen);
 
 		    //Check ARP packet if source ip and router ip at the same network
                     if( !memcmp(my_ipaddr, arp_ptr->source_ipaddr, 3) ) {
