@@ -1136,7 +1136,8 @@ void http_login_timeout(unsigned int ip)
 
 // 2007.10 James. for really logout. {
 	//if (login_ip!=ip && (unsigned long)(now-login_timestamp) > 60) //one minitues
-	if (((login_ip != 0 && login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
+//	if (((login_ip != 0 && login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
+	if (((login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
 // 2007.10 James }
 	{
 		http_logout(login_ip);
@@ -1146,8 +1147,10 @@ void http_login_timeout(unsigned int ip)
 void http_logout(unsigned int ip)
 {
 	unsigned int login_port = nvram_get_int("login_port");
+	unsigned int http_lanport = nvram_get_int("http_lanport");
+	unsigned int https_lanport = nvram_get_int("https_lanport");
 
-	if ((ip == login_ip && (login_port == http_port || !login_port)) || ip == 0 ) {
+	if ((ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) || ip == 0 ) {
 		last_login_ip = login_ip;
 		login_ip = 0;
 		login_timestamp = 0;
