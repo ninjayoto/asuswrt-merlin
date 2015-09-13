@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-14j9527 (3-September-2015)
+Asuswrt-Merlin fork - build 374.43_2-14E1j9527 (17-September-2015)
 =============================================
 
 About
@@ -19,6 +19,15 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-14E1j9527 (17-September-2015)
+* FIXED: Cannot access gui after a factory reset
+* FIXED: Logon may be blocked with changed http port
+* FIXED: Auto logout not working if switch between http and https
+* FIXED: Correctly update path in external command in dropbear
+* FIXED: Networkmap sometimes cannot identify client
+* NEW: add sfq limit and r2q options for QOS (experimental)
+
+
 374.43_2-14j9527 (3-September-2015)
 * CHANGED: Allow decimal entries in QOS Mb/s
 * CHANGED: Allow paste into system password field

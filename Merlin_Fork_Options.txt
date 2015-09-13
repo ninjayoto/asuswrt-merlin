@@ -1,5 +1,5 @@
 Merlin Fork Custom Options
-Update-13E1
+Update-14E1
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
@@ -161,6 +161,19 @@ HTTP Lan Port
 	Notes:			Changes HTTP port for gui access from default port 80
 				Reset to default of 80 before loading firmware which does not support 
 					changing of the port
+----------------------------------------------------------------------------------------------------------------
+QOS SFQ limit (experimental)
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set qos_sfql=[0,off-default  1,auto  2-127,value]
+				nvram commit
+
+	Routers Supported:	All
+	Released:		Update-14
+	Reboot Required:	Yes
+	Notes:			Changes SFQ qdisc packet limit
+				A value of 1 automatically selects a value based on upload speed
+				A value of 2-127 sets this value as the packet limit
 ----------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
