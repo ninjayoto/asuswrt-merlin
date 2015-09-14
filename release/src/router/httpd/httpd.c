@@ -104,6 +104,7 @@ typedef union {
 #include "queue.h"
 #define MAX_CONN_ACCEPT 64
 #define MAX_CONN_TIMEOUT 60
+#define MAX_DISC_TIMEOUT 15
 
 typedef struct conn_item {
 	TAILQ_ENTRY(conn_item) entry;
@@ -356,7 +357,7 @@ auth_check( char* dirname, char* authorization ,char* url)
 
 	login_timestamp_tmp = uptime();
 	dt = login_timestamp_tmp - last_login_timestamp;
-	if(last_login_timestamp != 0 && dt > 60){
+	if(last_login_timestamp != 0 && dt > MAX_CONN_TIMEOUT){
 		login_try = 0;
 		last_login_timestamp = 0;
 	}
@@ -1137,7 +1138,7 @@ void http_login_timeout(unsigned int ip)
 // 2007.10 James. for really logout. {
 	//if (login_ip!=ip && (unsigned long)(now-login_timestamp) > 60) //one minitues
 //	if (((login_ip != 0 && login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
-	if (((login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
+	if (((login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > MAX_DISC_TIMEOUT))
 // 2007.10 James }
 	{
 		http_logout(login_ip);
