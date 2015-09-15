@@ -2898,11 +2898,21 @@ run_telnetd(void)
 void
 start_httpd(void)
 {
-//	char *httpd_argv[] = {"httpd", NULL};
-	char *httpd_argv[] = {"httpd", "-p", nvram_safe_get("http_lanport"), NULL};
+	int argc;
+        char *http_lanport = nvram_safe_get("http_lanport");
+        char *https_lanport = nvram_safe_get("https_lanport");
+
+        char *httpd_argv[]={"httpd",
+                NULL, NULL,		/* -p port */
+                NULL};
+        for (argc = 0; httpd_argv[argc]; argc++);
+        if ((strcmp(http_lanport, "80") != 0) && (strlen(http_lanport) > 0)) {
+                httpd_argv[argc++] = "-p";
+                httpd_argv[argc++] = http_lanport;
+        }
 	pid_t pid;
 #ifdef RTCONFIG_HTTPS
-	char *https_argv[] = {"httpd", "-s", "-p", nvram_safe_get("https_lanport"), NULL};
+	char *https_argv[] = {"httpd", "-s", "-p", https_lanport, NULL};
 	pid_t pid_https;
 #endif
 	int enable;

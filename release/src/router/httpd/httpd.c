@@ -233,7 +233,7 @@ int x_Setting = 0;
 int skip_auth = 0;
 int isLogout = 0;
 char url[128];
-int http_port=SERVER_PORT;
+int http_port;
 
 /* Added by Joey for handle one people at the same time */
 unsigned int login_ip=0; // the logined ip
@@ -1623,6 +1623,7 @@ int main(int argc, char **argv)
 	//int do_ssl = 0;
 
 	do_ssl = 0; // default
+	http_port = nvram_get_int("http_lanport");
 	// usage : httpd -s -p [port]
 	if(argc) {
 		while ((c = getopt(argc, argv, "sp:")) != -1) {
