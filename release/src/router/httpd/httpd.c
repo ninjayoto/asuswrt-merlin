@@ -1058,7 +1058,7 @@ void http_login(unsigned int ip, char *url) {
 //	  && http_port != SERVER_PORT
 #ifdef RTCONFIG_HTTPS
 	  && http_port != https_lanport
-//	  && http_port != SERVER_PORT_SSL
+	  && http_port != SERVER_PORT_SSL
 #endif
 	    ) || ip == 0x100007f)
 		return;
@@ -1112,7 +1112,7 @@ int http_login_check(void)
 //	  && http_port != SERVER_PORT
 #ifdef RTCONFIG_HTTPS
 	  && http_port != https_lanport
-//	  && http_port != SERVER_PORT_SSL
+	  && http_port != SERVER_PORT_SSL
 #endif
 	    ) || login_ip_tmp == 0x100007f)
 		//return 1;
@@ -1180,7 +1180,7 @@ int is_auth(void)
 //	    http_port==SERVER_PORT ||
 #ifdef RTCONFIG_HTTPS
 	    http_port==https_lanport ||
-//	    http_port==SERVER_PORT_SSL ||
+	    http_port==SERVER_PORT_SSL ||
 #endif
 		strcmp(nvram_get_x("PrinterStatus", "usb_webhttpcheck_x"), "1")==0) return 1;
 	else return 0;
