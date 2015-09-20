@@ -637,7 +637,7 @@ int add_qos_rules(char *pcWANIF)
 
 	/* The default class */
         i = nvram_get_int("qos_default");
-        if ((i < 0) || (i > 4)) i = 3;  // "lowest"
+        if ((i < 0) || (i > 4)) i = 3;  // "low"
         class_num = i + 1;
 
 #ifdef CONFIG_BCMWL5 // TODO: it is only for the case, eth0 as wan, vlanx as lan
@@ -851,8 +851,8 @@ int start_tqos(void)
 	i = nvram_get_int("qos_burst0");
 	if (i > 0) sprintf(burst_root, "burst %dk", i);
 		else burst_root[0] = 0;
-	i = nvram_get_int("qos_burst1");
 
+	i = nvram_get_int("qos_burst1");
 	if (i > 0) sprintf(burst_leaf, "burst %dk", i);
 		else burst_leaf[0] = 0;
 
@@ -920,10 +920,11 @@ int start_tqos(void)
 		"# download 1:2\n"
 		"\t$TCA parent 1: classid 1:2 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000\n"
 		"# 1:60 ALL Download for BCM\n"
-		"\t$TCA parent 1:2 classid 1:60 htb rate 1000000kbit ceil 1000000kbit burst 10000 cburst 10000 prio 6\n"
+		"\t$TCA parent 1:2 classid 1:60 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000 prio 6\n"
 		"\t$TQA parent 1:60 handle 60: pfifo\n"
 		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n",
 		ibw_max, ibw_max,
+		obw_max, obw_max,
 		protocol);
 #endif
 
