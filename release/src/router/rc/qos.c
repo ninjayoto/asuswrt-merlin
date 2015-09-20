@@ -815,6 +815,7 @@ int start_tqos(void)
 	unsigned int rate;
 	unsigned int ceil;
 	unsigned int ibw, obw, bw;
+	unsigned int ibw_max, obw_max;
 	unsigned int mtu;
 	FILE *f;
 	int x;
@@ -840,6 +841,7 @@ int start_tqos(void)
 	ibw = strtoul(nvram_safe_get("qos_ibw"), NULL, 10);
 	obw = strtoul(nvram_safe_get("qos_obw"), NULL, 10);
 	if(ibw==0||obw==0) return -1;
+	ibw_max = obw_max = 1000000; //1Gb
 
 	if ((f = fopen(qosfn, "w")) == NULL) return -2;
 
@@ -909,19 +911,20 @@ int start_tqos(void)
 #ifdef CLS_ACT
 			(nvram_get_int("qos_default") + 1) * 10,
 #endif
-			bw, bw, burst_root);
+			obw_max, obw_max, burst_root);
 
 	/* LAN protocol: 802.1q */
 #ifdef CONFIG_BCMWL5 // TODO: it is only for the case, eth0 as wan, vlanx as lan
 	protocol = "802.1q";
 	fprintf(f,
 		"# download 1:2\n"
-		"\t$TCA parent 1: classid 1:2 htb rate 1000000kbit ceil 1000000kbit burst 10000 cburst 10000\n"
+		"\t$TCA parent 1: classid 1:2 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000\n"
 		"# 1:60 ALL Download for BCM\n"
 		"\t$TCA parent 1:2 classid 1:60 htb rate 1000000kbit ceil 1000000kbit burst 10000 cburst 10000 prio 6\n"
 		"\t$TQA parent 1:60 handle 60: pfifo\n"
-		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n", protocol
-		);
+		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n",
+		ibw_max, ibw_max,
+		protocol);
 #endif
 
 	inuse = nvram_get_int("qos_inuse");
