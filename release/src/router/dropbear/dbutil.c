@@ -232,7 +232,7 @@ void set_sock_priority(int sock, enum dropbear_prio prio) {
 	}
 	/* linux specific, sets QoS class. see tc-prio(8) */
 	rc = setsockopt(sock, SOL_SOCKET, SO_PRIORITY, (void*) &so_prio_val, sizeof(so_prio_val));
-	if (rc < 0 && errno != ENOTSOCK && errno != EBADF)
+	if (rc < 0 && errno != ENOTSOCK)
 		dropbear_log(LOG_WARNING, "Couldn't set SO_PRIORITY (%s)",
 				strerror(errno));
 #endif
@@ -934,6 +934,23 @@ int m_str_to_uint(const char* str, unsigned int *val) {
 		*val = l;
 		return DROPBEAR_SUCCESS;
 	}
+}
+
+/* Returns malloced path. Only expands ~ in first character */
+char * expand_tilde(const char *inpath) {
+	struct passwd *pw = NULL;
+	if (inpath[0] == '~') {
+		pw = getpwuid(getuid());
+		if (pw && pw->pw_dir) {
+			int len = strlen(inpath) + strlen(pw->pw_dir) + 1;
+			char *buf = m_malloc(len);
+			snprintf(buf, len, "%s/%s", pw->pw_dir, &inpath[1]);
+			return buf;
+		}
+	}
+
+	/* Fallback */
+	return m_strdup(inpath);
 }
 
 int constant_time_memcmp(const void* a, const void *b, size_t n)
