@@ -271,7 +271,8 @@ void sethost(char *host)
 
 	if(!host) return;
 
-	strcpy(host_name, host);
+	memset(host_name, 0, sizeof(host_name));
+	strncpy(host_name, host, sizeof(host_name));
 
 	for ( cp = host_name; *cp && *cp != '\r' && *cp != '\n'; cp++ );
 	*cp = '\0';
