@@ -1274,7 +1274,7 @@ function refresh_captcha(){
 								<#PPPConnection_Password_itemname#>
 							</th>			
 							<td>
-								<input id="cloud_password" name="cloud_password" type="password" autocapitalization="off" onBlur="switchType(this, false);" onFocus="switchType(this, true);" maxlength="25" class="input_30_table" style="height: 23px;" value="">
+								<input id="cloud_password" name="cloud_password" type="password" readonly autocapitalization="off" onBlur="switchType(this, false);" onFocus="switchType(this, true); $(this).removeAttribute('readonly');" maxlength="25" class="input_30_table" style="height: 23px;" value="">
 							</td>
 						  </tr>						  				
 					  				

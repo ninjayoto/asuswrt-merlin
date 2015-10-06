@@ -151,7 +151,7 @@ function done_validating(action){
 				<#WLANAuthentication11a_ExAuthDBPassword_itemname#></a>
 			</th>
 			<td>
-				<input type="password" autocapitalization="off" maxlength="64" class="input_32_table" name="wl_radius_key" value="<% nvram_get("wl_radius_key"); %>">
+				<input type="password" readonly autocapitalization="off" maxlength="64" class="input_32_table" name="wl_radius_key" value="<% nvram_get("wl_radius_key"); %>" onFocus="$(this).removeAttribute('readonly');">
 			</td>
 		</tr>
 		</table>

@@ -707,7 +707,7 @@ function check_dongle_status(){
 					<tr style="display:none;">
 						<th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(21,2);"><#PIN_code#></a></th>
 						<td>
-							<input id="modem_pincode" name="modem_pincode" class="input_20_table" type="password" autocapitalization="off" maxLength="8" value="<% nvram_get("modem_pincode"); %>"/>
+							<input id="modem_pincode" name="modem_pincode" class="input_20_table" type="password" readonly autocapitalization="off" maxLength="8" value="<% nvram_get("modem_pincode"); %>" onFocus="$(this).removeAttribute('readonly');"/>
 							<br><span id="pincode_status" style="display:none;"><#pincode_wrong#></span>
 						</td>
 					</tr>
@@ -722,7 +722,7 @@ function check_dongle_status(){
 					<tr>
 						<th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(21,12);"><#PPPConnection_Password_itemname#></a></th>
 						<td>
-							<input id="modem_pass" name="modem_pass" class="input_20_table" type="password" value="<% nvram_get("modem_pass"); %>"/>
+							<input id="modem_pass" name="modem_pass" class="input_20_table" type="password" readonly value="<% nvram_get("modem_pass"); %>" onFocus="$(this).removeAttribute('readonly');"/>
 						</td>
 					</tr>
 

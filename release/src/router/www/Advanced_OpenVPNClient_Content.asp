@@ -920,7 +920,7 @@ function validate_ipcidr(obj){
 					<tr id="client_password">
 						<th>Password</th>
 						<td>
-							<input type="password" maxlength="50" class="input_25_table" name="vpn_client_password" value="<% nvram_get("vpn_client_password"); %>">
+							<input type="password" readonly maxlength="50" class="input_25_table" name="vpn_client_password" value="<% nvram_get("vpn_client_password"); %>" onFocus="$(this).removeAttribute('readonly');">
 							<input type="checkbox" name="show_pass_1" onclick="pass_checked(document.form.vpn_client_password)"><#QIS_show_pass#>
 						</td>
 					</tr>
