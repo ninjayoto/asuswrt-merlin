@@ -853,11 +853,15 @@ handle_request(void)
 	if ((query = index(file, '?')) != NULL) {
 		file_len = strlen(file)-strlen(query);
 
+		if(file_len > sizeof(url))
+			file_len = sizeof(url);
+
+
 		strncpy(url, file, file_len);
 	}
 	else
 	{
-		strcpy(url, file);
+		strncpy(url, file, sizeof(url));
 	}
 // 2007.11 James. }
 
