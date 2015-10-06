@@ -974,7 +974,7 @@ int start_iQos(void)
 			x = i + 1;
 			fprintf(f,
 				"# ingress %d: %u%%\n"
-				"\t$TFA parent ffff: prio %d protocol all handle %d"
+				"\t$TFA parent ffff: prio %d protocol ip handle %d"
 					" fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
 					i, rate, x, x, u, v, x);
 
@@ -982,7 +982,7 @@ int start_iQos(void)
 			x = down_class_num;
 			fprintf(f,
                                 "# ingress %d: %u%% (download default)\n"
-                                "\t$TFA parent ffff: prio %d protocol all handle %d"
+                                "\t$TFA parent ffff: prio %d protocol ip handle %d"
                                         " fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
                                         (x - 1), rate, x, x, u, v, x);
 			}
