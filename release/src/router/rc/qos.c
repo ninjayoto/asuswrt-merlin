@@ -28,6 +28,7 @@ static const char *mangle_fn = "/tmp/mangle_rules";
 static const char *mangle_fn_ipv6 = "/tmp/mangle_rules_ipv6";
 #endif
 
+int etable_flag = 0;
 int manual_return = 0;
 
 // FindMask : 
@@ -86,7 +87,6 @@ static unsigned calc(unsigned bw, unsigned pct)
 
 
 #ifdef CONFIG_BCMWL5 // TODO: it is only for the case, eth0 as wan, vlanx as lan
-int etable_flag = 0;
 void del_EbtablesRules(void)
 {
 	/* Flush all rules in nat table of ebtable*/
