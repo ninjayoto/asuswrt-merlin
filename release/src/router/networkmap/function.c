@@ -257,6 +257,7 @@ int lpd515(unsigned char *dest_ip)
     	if ((sockfd1 = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     	{
         	NMP_DEBUG_M("LPD515: socket create error.\n");
+		close(sockfd1);
         	return -1;
     	}
 
@@ -271,6 +272,7 @@ int lpd515(unsigned char *dest_ip)
     	if (connect(sockfd1, (struct sockaddr*)&other_addr1, sizeof(other_addr1)) == -1)
     	{
         	NMP_DEBUG_M("LPD515: socket connect failed!\n");
+		close(sockfd1);
 		return -1;
      	}
 
@@ -282,6 +284,7 @@ int lpd515(unsigned char *dest_ip)
         if ((sendlen1 = send(sockfd1, sendbuf1, strlen(sendbuf1), 0)) == -1)
         {
              	NMP_DEBUG_M("LPD515: Send packet failed!\n");
+		close(sockfd1);
 	    	return -1;
         }
         gettimeofday(&tv1, NULL);
