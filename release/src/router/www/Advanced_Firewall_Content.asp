@@ -185,17 +185,11 @@ function addRow_Group(upper){
 					document.form.filter_lw_srcip_x_0.select();
 					return false;
 	}else{		
-					if(document.form.filter_lw_srcip_x_0.value.split("*").length >= 2){
-								if(!valid_IP_subnet(document.form.filter_lw_srcip_x_0))
-										return false;
-					}else if(!valid_IP_form(document.form.filter_lw_srcip_x_0, 0))
-								return false;
+					if(!validate_ipcidr(document.form.filter_lw_srcip_x_0))
+                                                return false;
+					if(!validate_ipcidr(document.form.filter_lw_dstip_x_0))
+						return false;
 
-					if(document.form.filter_lw_dstip_x_0.value.split("*").length >= 2){
-								if(!valid_IP_subnet(document.form.filter_lw_dstip_x_0))
-										return false;
-					}else if(!valid_IP_form(document.form.filter_lw_dstip_x_0, 0))
-								return false;		
 	}
 		
 	if(document.form.filter_lw_srcport_x_0.value != "" || document.form.filter_lw_dstport_x_0.value != "")
@@ -450,6 +444,7 @@ function updateDateTime(){
 		  				<div class="formfonttitle"><#menu5_5#> - <#menu5_5_4#></div>
 		  				<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 		  				<div class="formfontdesc"><#FirewallConfig_display1_sectiondesc#></div>
+						<div class="formfontdesc">The IP address can be a simple IP (1.2.3.4), or use the CIDR format (1.2.3.4/24) to handle a whole subnet.</div>
 		  				<div class="formfontdesc"><#FirewallConfig_display3_sectiondesc#></div>
 		  				<div class="formfontdesc" style="color:#FFCC00;"><#FirewallConfig_display4_sectiondesc#></div>	
 		  				<div id="svc_hint_div" style="display:none;"><span onClick="location.href='Advanced_System_Content.asp?af=ntp_server0'" style="color:#FFCC00;text-decoration:underline;cursor:pointer;"><#General_x_SystemTime_syncNTP#></span></div>
@@ -548,9 +543,9 @@ function updateDateTime(){
             					<th><#list_add_delete#></th>
           					</tr>
           					<tr>
-          						<td width="20%"><input type="text" maxlength="15" class="input_15_table" name="filter_lw_srcip_x_0" onKeyPress="return is_iprange(this, event)"></td>
+							<td width="20%"><input type="text" maxlength="18" class="input_15_table" name="filter_lw_srcip_x_0"></td>
             					<td width="15%"><input type="text" maxlength="11" class="input_12_table" name="filter_lw_srcport_x_0" onKeyPress="return is_portrange(this,event)" value=""></td>
-            					<td width="20%"><input type="text" maxlength="15" class="input_15_table" name="filter_lw_dstip_x_0" onKeyPress="return is_iprange(this, event)"></td>
+						<td width="20%"><input type="text" maxlength="18" class="input_15_table" name="filter_lw_dstip_x_0"></td>
             					<td width="15%"><input type="text" maxlength="11" class="input_12_table" name="filter_lw_dstport_x_0" onKeyPress="return is_portrange(this,event)" value=""></td>
             					<td width="15%">
 								<select name="filter_lw_proto_x_0" class="input_option">
