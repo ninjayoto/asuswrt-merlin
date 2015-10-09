@@ -1085,6 +1085,36 @@ function clean_scorebar(obj){
           <td><input type="text" maxlength="15" class="input_15_table" name="log_ipaddr" value="<% nvram_get("log_ipaddr"); %>" onKeyPress="return is_ipaddr(this, event)" ></td>
         </tr>
         <tr>
+	  <th>Default message log level</th>
+	  <td>
+		<select name="message_loglevel" class="input_option">
+			<option value="0" <% nvram_match("message_loglevel", "0", "selected"); %>>Emergency</option>
+			<option value="1" <% nvram_match("message_loglevel", "1", "selected"); %>>Alert</option>
+			<option value="2" <% nvram_match("message_loglevel", "2", "selected"); %>>Critical</option>
+			<option value="3" <% nvram_match("message_loglevel", "3", "selected"); %>>Error</option>
+			<option value="4" <% nvram_match("message_loglevel", "4", "selected"); %>>Warning</option>
+			<option value="5" <% nvram_match("message_loglevel", "5", "selected"); %>>Notice</option>
+			<option value="6" <% nvram_match("message_loglevel", "6", "selected"); %>>Info</option>
+			<option value="7" <% nvram_match("message_loglevel", "7", "selected"); %>>Debug</option>
+		</select>
+	  </td>
+	</tr>
+	<tr>
+	  <th>Log only messages more urgent than</th>
+	  <td>
+		<select name="log_level" class="input_option">
+			<option value="1" <% nvram_match("log_level", "1", "selected"); %>>Alert</option>
+			<option value="2" <% nvram_match("log_level", "2", "selected"); %>>Critical</option>
+			<option value="3" <% nvram_match("log_level", "3", "selected"); %>>Error</option>
+			<option value="4" <% nvram_match("log_level", "4", "selected"); %>>Warning</option>
+			<option value="5" <% nvram_match("log_level", "5", "selected"); %>>Notice</option>
+			<option value="6" <% nvram_match("log_level", "6", "selected"); %>>Info</option>
+			<option value="7" <% nvram_match("log_level", "7", "selected"); %>>Debug</option>
+			<option value="8" <% nvram_match("log_level", "8", "selected"); %>>All</option>
+		</select>
+	  </td>
+	  </tr>
+	  <tr>
           <th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(11,2)"><#LANHostConfig_x_TimeZone_itemname#></a></th>
           <td>
             <select name="time_zone_select" class="input_option" onchange="select_time_zone();">          

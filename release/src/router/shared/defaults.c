@@ -1158,6 +1158,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "log_small", "1"},		/* <  SMALL LOG */
 	{ "log_level", "7" },		/* <  LOG_DEBUG */
 	{ "console_loglevel", "5"},	/* <  KERN_INFO */
+	{ "message_loglevel", "5"},	/* <  LOG_NOTICE */
 //	{ "cron_logfile", "0"},		/* <  CROND_LOG */
 	{ "cron_loglevel", "8"},        /* <  CROND_INFO */
 
