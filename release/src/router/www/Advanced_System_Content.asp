@@ -261,6 +261,12 @@ function validForm(){
 		return false;
 	}
 
+	if((document.form.sshd_enable[0].checked) && (document.form.sshd_authkeys.value.length >= 3499)){
+		alert("SSH Authentication Key maximum length exceeded!");
+		return false;
+	}
+
+
 	if(document.form.http_username.value.length == 0){
 		showtext($("alert_msg1"), "<#File_Pop_content_alert_desc1#>");
 		document.form.http_username.focus();
