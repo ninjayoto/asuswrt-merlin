@@ -87,6 +87,26 @@ if(sw_mode == 3 || (sw_mode == 4))
 function initial(){
 	show_menu();
 	show_http_clientlist();
+
+	if(reboot_schedule_support){
+		document.form.reboot_date_x_Sun.checked = getDateCheck(document.form.reboot_schedule.value, 0);
+		document.form.reboot_date_x_Mon.checked = getDateCheck(document.form.reboot_schedule.value, 1);
+		document.form.reboot_date_x_Tue.checked = getDateCheck(document.form.reboot_schedule.value, 2);
+		document.form.reboot_date_x_Wed.checked = getDateCheck(document.form.reboot_schedule.value, 3);
+		document.form.reboot_date_x_Thu.checked = getDateCheck(document.form.reboot_schedule.value, 4);
+		document.form.reboot_date_x_Fri.checked = getDateCheck(document.form.reboot_schedule.value, 5);
+		document.form.reboot_date_x_Sat.checked = getDateCheck(document.form.reboot_schedule.value, 6);
+		document.form.reboot_time_x_hour.value = getrebootTimeRange(document.form.reboot_schedule.value, 0);
+		document.form.reboot_time_x_min.value = getrebootTimeRange(document.form.reboot_schedule.value, 1);
+		document.getElementById('reboot_schedule_enable_tr').style.display = "";
+		hide_reboot_option('<% nvram_get("reboot_schedule_enable"); %>');
+	}
+	else{
+		document.getElementById('reboot_schedule_enable_tr').style.display = "none";
+		document.getElementById('reboot_schedule_date_tr').style.display = "none";
+		document.getElementById('reboot_schedule_time_tr').style.display = "none";
+	}
+
 	corrected_timezone();
 	load_timezones();
 	show_dst_chk();
@@ -240,6 +260,10 @@ function applyRule(){
 
 		// Set lan_port for firewall rules
 		document.form.lan_port.value = document.form.http_lanport.value;
+
+		if(reboot_schedule_support == 1){
+			updateDateTime();
+		}
 
 		// Reboot if clearing https certificate or change JFFS log state
                 if((document.form.https_crt_save.value = "0" && (document.form.https_crt_save.value != '<% nvram_get("https_crt_save"); %>')) ||
@@ -401,6 +425,14 @@ function validForm(){
 	}
 	else if(!validate_range_sp(document.form.http_autologout, 10, 999, '<% nvram_get("http_autologout"); %>'))
 		return false;
+
+	if(reboot_schedule_support == 1){
+		if(document.form.reboot_schedule_enable[0].checked == 1){
+			if(!validate_timerange(document.form.reboot_time_x_hour, 0)
+				|| !validate_timerange(document.form.reboot_time_x_min, 1))
+				return false;
+		}
+	}
 
 	return true;
 }
@@ -936,6 +968,41 @@ function clean_scorebar(obj){
 	if(obj.value == "")
 		document.getElementById("scorebarBorder").style.display = "none";
 }
+
+function hide_reboot_option(flag){
+	document.getElementById("reboot_schedule_date_tr").style.display = (flag == 1) ? "" : "none";
+	document.getElementById("reboot_schedule_time_tr").style.display = (flag == 1) ? "" : "none";
+}
+
+function getrebootTimeRange(str, pos)
+{
+	if (pos == 0)
+		return str.substring(7,9);
+	else if (pos == 1)
+		return str.substring(9,11);
+}
+
+function setrebootTimeRange(rd, rh, rm)
+{
+	return(rd.value+rh.value+rm.value);
+}
+
+function updateDateTime()
+{
+	document.form.reboot_schedule.value = setDateCheck(
+	document.form.reboot_date_x_Sun,
+	document.form.reboot_date_x_Mon,
+	document.form.reboot_date_x_Tue,
+	document.form.reboot_date_x_Wed,
+	document.form.reboot_date_x_Thu,
+	document.form.reboot_date_x_Fri,
+	document.form.reboot_date_x_Sat);
+	document.form.reboot_schedule.value = setrebootTimeRange(
+	document.form.reboot_schedule,
+	document.form.reboot_time_x_hour,
+	document.form.reboot_time_x_min)
+}
+
 </script>
 </head>
 
@@ -964,6 +1031,8 @@ function clean_scorebar(obj){
 <input type="hidden" name="http_clientlist" value="<% nvram_get("http_clientlist"); %>">
 <input type="hidden" name="https_crt_gen" value="<% nvram_get("https_crt_gen"); %>">
 <input type="hidden" name="lan_port" value="<% nvram_get("lan_port"); %>">
+<input type="hidden" name="reboot_schedule" value="<% nvram_get_x("", "reboot_schedule"); %>">
+
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -1079,6 +1148,32 @@ function clean_scorebar(obj){
 			<input type="radio" name="btn_ez_radiotoggle" class="input" value="1" <% nvram_match_x("", "btn_ez_radiotoggle", "1", "checked"); %>><#WPS_btn_toggle#>
 			<input type="radio" name="btn_ez_radiotoggle" class="input" value="0" <% nvram_match_x("", "btn_ez_radiotoggle", "0", "checked"); %>><#WPS_btn_actWPS#>
 		</td>
+	</tr>
+	<tr id="reboot_schedule_enable_tr">
+		<th width="40%" align="right">Enable Reboot Schedule</th>
+			<td width="300">
+				<input type="radio" value="1" name="reboot_schedule_enable"  onClick="hide_reboot_option(1);return change_common_radio(this, 'LANHostConfig', 'reboot_schedule_enable', '1')" <% nvram_match_x("LANHostConfig","reboot_schedule_enable", "1", "checked"); %>><#checkbox_Yes#>
+				<input type="radio" value="0" name="reboot_schedule_enable"  onClick="hide_reboot_option(0);return change_common_radio(this, 'LANHostConfig', 'reboot_schedule_enable', '0')" <% nvram_match_x("LANHostConfig","reboot_schedule_enable", "0", "checked"); %>><#checkbox_No#>
+			</td>
+	</tr>
+	<tr id="reboot_schedule_date_tr">
+		<th>Day(s) to Reboot</th>
+			<td>
+				<input type="checkbox" name="reboot_date_x_Sun" class="input" onChange="return changeDate();"><#date_Sun_itemdesc#>
+				<input type="checkbox" name="reboot_date_x_Mon" class="input" onChange="return changeDate();"><#date_Mon_itemdesc#>
+				<input type="checkbox" name="reboot_date_x_Tue" class="input" onChange="return changeDate();"><#date_Tue_itemdesc#>
+				<input type="checkbox" name="reboot_date_x_Wed" class="input" onChange="return changeDate();"><#date_Wed_itemdesc#>
+				<input type="checkbox" name="reboot_date_x_Thu" class="input" onChange="return changeDate();"><#date_Thu_itemdesc#>
+				<input type="checkbox" name="reboot_date_x_Fri" class="input" onChange="return changeDate();"><#date_Fri_itemdesc#>
+				<input type="checkbox" name="reboot_date_x_Sat" class="input" onChange="return changeDate();"><#date_Sat_itemdesc#>
+			</td>
+	</tr>
+	<tr id="reboot_schedule_time_tr">
+		<th>Time of Day to Reboot</th>
+			<td>
+				<input type="text" maxlength="2" class="input_3_table" name="reboot_time_x_hour" onKeyPress="return is_number(this,event);" onblur="validate_timerange(this, 0);" autocorrect="off" autocapitalize="off"> :
+				<input type="text" maxlength="2" class="input_3_table" name="reboot_time_x_min" onKeyPress="return is_number(this,event);" onblur="validate_timerange(this, 1);" autocorrect="off" autocapitalize="off">
+			</td>
 	</tr>
         <tr>
           <th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(11,1)"><#LANHostConfig_x_ServerLogEnable_itemname#></a></th>

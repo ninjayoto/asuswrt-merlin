@@ -772,6 +772,36 @@ int timecheck_item(char *activeDate, char *activeTime, char *activeTime2)
 	return active;
 }
 
+int timecheck_reboot(char *activeSchedule)
+{
+	int active, current_time, current_date, Time2Active, Date2Active;
+	time_t now;
+	struct tm *tm;
+	int i;
+
+	setenv("TZ", nvram_safe_get("time_zone_x"), 1);
+
+	time(&now);
+	tm = localtime(&now);
+	current_time = tm->tm_hour * 60 + tm->tm_min;
+	current_date = 1 << (6-tm->tm_wday);
+	active = 0;
+	Time2Active = 0;
+	Date2Active = 0;
+
+	Time2Active = ((activeSchedule[7]-'0')*10 + (activeSchedule[8]-'0'))*60 + ((activeSchedule[9]-'0')*10 + (activeSchedule[10]-'0'));
+
+	for(i=0;i<=6;i++){
+		Date2Active += (activeSchedule[i]-'0') << (6-i);
+	}
+
+	if((current_time == Time2Active) && (Date2Active & current_date))       active = 1;
+
+	//dbG("[watchdog] current_time=%d, ActiveTime=%d, current_date=%d, ActiveDate=%d, active=%d\n",
+	//      current_time, Time2Active, current_date, Date2Active, active);
+
+	return active;
+}
 
 int svcStatus[8] = { -1, -1, -1, -1, -1, -1, -1, -1};
 
@@ -878,6 +908,26 @@ void timecheck(void)
 			nvram_commit();
 		}
 	}
+
+	#ifdef RTCONFIG_REBOOT_SCHEDULE
+	/* Reboot Schedule */
+	char* reboot_schedule;
+	if (nvram_match("ntp_ready", "1") && nvram_match("reboot_schedule_enable", "1"))
+	{
+		//SMTWTFSHHMM
+		//XXXXXXXXXXX
+		reboot_schedule = nvram_safe_get("reboot_schedule");
+		if(strlen(reboot_schedule) == 11 && atoi(reboot_schedule) > 2359)
+		{
+			if(timecheck_reboot(reboot_schedule))
+			{
+				_dprintf("reboot plan alert...\n");
+				sleep(1);
+				eval("reboot");
+			}
+		}
+	}
+	#endif
 
 	return;
 }

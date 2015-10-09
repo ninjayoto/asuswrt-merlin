@@ -3569,6 +3569,15 @@ int init_nvram(void)
 #endif
 #endif
 
+#ifdef RTCONFIG_REBOOT_SCHEDULE
+	add_rc_support("reboot_schedule");
+	// tmp to add default nvram
+	if(nvram_match("reboot_schedule_enable", ""))
+		nvram_set("reboot_schedule_enable", "0");
+	if(nvram_match("reboot_schedule", ""))
+		nvram_set("reboot_schedule", "00000000000");
+#endif
+
 	return 0;
 }
 

@@ -994,6 +994,10 @@ define RouterOptions
 		sed -i "/RTCONFIG_BWDPI/d" $(1); \
 		echo "RTCONFIG_BWDPI=y" >>$(1); \
 	fi; \
+	if [ "$(REBOOT_SCHEDULE)" = "y" ]; then \
+		sed -i "/RTCONFIG_REBOOT_SCHEDULE/d" $(1); \
+		echo "RTCONFIG_REBOOT_SCHEDULE=y" >>$(1); \
+	fi; \
 	)
 	$(call platformRouterOptions, $(1))
 endef

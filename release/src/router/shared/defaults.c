@@ -1179,6 +1179,11 @@ struct nvram_tuple router_defaults[] = {
 	{ "ubifs_exec", "" },
 #endif
 
+#ifdef RTCONFIG_REBOOT_SCHEDULE
+	{ "reboot_schedule_enable", "0", 0},
+	{ "reboot_schedule", "00000000000", 0},
+#endif
+
 #ifdef RTCONFIG_USB
 	{ "acc_num", "1"},
 	{ "acc_list", "admin>admin"},

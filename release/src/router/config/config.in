@@ -649,3 +649,7 @@ config RTCONFIG_N18UTXBF
 config RTCONFIG_BWDPI
 	bool "TrendMicro DPI engine and iQoS and Partenl Control"
 	default n
+
+config RTCONFIG_REBOOT_SCHEDULE
+	bool "Reboot_schedule"
+	default n

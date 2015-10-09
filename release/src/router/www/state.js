@@ -176,6 +176,7 @@ if(based_modelid == "RT-AC56U" || based_modelid == "RT-AC56S"
 }	
 
 var ufsd_support = isSupport("ufsd");
+var reboot_schedule_support = isSupport("reboot_schedule");
 
 var QISWIZARD = "QIS_wizard.htm";
 // Todo: Support repeater mode
