@@ -1848,6 +1848,19 @@ padding-top:1px;
 	border-style:bevel;
 	color:#DFDFDF;
 }
+.textarea_ssh_table_8{
+	margin-left:2px;
+	padding-left:0.4em;
+	/*width: 500px;*/
+	height:184px;
+	line-height:23px;    /*IE*/
+	font-size:12px;
+	font-family: Lucida Console;
+	background: #172226;
+	border: 2px ridge #777;
+	border-style:bevel;
+	color:#DFDFDF;
+}
 .notification_on{
 	background-image:url(/images/New_ui/notification.png);
 	background-repeat:no-repeat;	

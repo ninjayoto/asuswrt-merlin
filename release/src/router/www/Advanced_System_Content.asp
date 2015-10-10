@@ -1182,6 +1182,14 @@ function updateDateTime()
 				<input type="text" maxlength="2" class="input_3_table" name="reboot_time_x_min" onKeyPress="return is_number(this,event);" onblur="validate_timerange(this, 1);" autocorrect="off" autocapitalize="off">
 			</td>
 	</tr>
+	</table>
+
+	<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
+        <thead>
+                <tr>
+          <td colspan="2">Syslog</td>
+        </tr>
+        </thead>
         <tr>
           <th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(11,1)"><#LANHostConfig_x_ServerLogEnable_itemname#></a></th>
           <td><input type="text" maxlength="15" class="input_15_table" name="log_ipaddr" value="<% nvram_get("log_ipaddr"); %>" onKeyPress="return is_ipaddr(this, event)" ></td>
@@ -1216,6 +1224,13 @@ function updateDateTime()
 		</select>
 	  </td>
 	  </tr>
+	</table>
+	<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
+        <thead>
+                <tr>
+          <td colspan="2">System Time</td>
+        </tr>
+        </thead>
 	  <tr>
           <th><a class="hintstyle"  href="javascript:void(0);" onClick="openHint(11,2)"><#LANHostConfig_x_TimeZone_itemname#></a></th>
           <td>
@@ -1255,7 +1270,13 @@ function updateDateTime()
 				<div id="svc_hint_div" style="display:none;"><span style="color:#FFCC00;"><#General_x_SystemTime_syncNTP#></span></div>
 			</td>
         </tr>
-
+	</table>
+	<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
+        <thead>
+                <tr>
+          <td colspan="2">Command Line</td>
+        </tr>
+        </thead>
 				<tr>
 				  <th><#Enable_Telnet#></th>
 				  <td>
@@ -1312,10 +1333,17 @@ function updateDateTime()
 					<tr>
 						<th>SSH Authentication key</th>
 						<td>
-							<textarea rows="8" class="textarea_ssh_table" name="sshd_authkeys" cols="55" maxlength="3499"><% nvram_clean_get("sshd_authkeys"); %></textarea>
+							<textarea class="textarea_ssh_table_8" name="sshd_authkeys" maxlength="3499"><% nvram_clean_get("sshd_authkeys"); %></textarea>
 							<span id="ssh_alert_msg"></span>
 						</td>
 				</tr>
+	</table>
+        <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
+        <thead>
+                <tr>
+          <td colspan="2">Web Access</td>
+        </tr>
+        </thead>
 
 		  	<tr id="https_tr">
 					<th><#WLANConfig11b_AuthenticationMethod_itemname#></th>
