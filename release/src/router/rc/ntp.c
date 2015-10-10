@@ -142,12 +142,14 @@ int ntp_main(int argc, char *argv[])
 //			dbg("run ntpclient\n");
 
 			nvram_set("ntp_server_tried", servers);
+			nvram_set("ntp_ready", "0");
+			logmessage("ntp", "start NTP update");
 			ret = _eval(args, NULL, 0, &pid);
 			sleep(SECONDS_TO_WAIT);
 
 			if(nvram_get_int("ntp_ready"))
 			{
-				nvram_set("ntp_ready", "0");
+				/* nvram_set("ntp_ready", "0"); */
 
 				/* ntp sync every hour when time_zone set as "DST" */
 				if(strstr(nvram_safe_get("time_zone_x"), "DST")) {
