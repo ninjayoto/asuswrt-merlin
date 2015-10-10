@@ -266,8 +266,8 @@ function applyRule(){
 		}
 
 		// Reboot if clearing https certificate or change JFFS log state
-                if((document.form.https_crt_save.value = "0" && (document.form.https_crt_save.value != '<% nvram_get("https_crt_save"); %>')) ||
-			(document.form.jffs2_log.value != '<% nvram_get("jffs2_log"); %>')){
+                if((document.form.https_crt_save[0].checked == "0" && (document.form.https_crt_save[0].checked != '<% nvram_get("https_crt_save"); %>')) ||
+			(document.form.jffs2_log[0].checked != '<% nvram_get("jffs2_log"); %>')){
                         FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
                 }
 
