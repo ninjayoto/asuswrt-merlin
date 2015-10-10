@@ -427,10 +427,17 @@ function validForm(){
 		return false;
 
 	if(reboot_schedule_support == 1){
+		updateDateTime();
+
 		if(document.form.reboot_schedule_enable[0].checked == 1){
 			if(!validate_timerange(document.form.reboot_time_x_hour, 0)
 				|| !validate_timerange(document.form.reboot_time_x_min, 1))
 				return false;
+			if(document.form.reboot_schedule.value.substring(0, 7) == "0000000"){
+				alert("Reboot schedule day(s) not selected!");
+				document.form.reboot_date_x_Sun.focus();
+				return false;
+			}
 		}
 	}
 
