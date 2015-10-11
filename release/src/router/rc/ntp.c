@@ -186,7 +186,7 @@ int ntp_main(int argc, char *argv[])
                         ret = _eval(args, NULL, 0, &pid);
                         sleep(SECONDS_TO_WAIT);
 
-			if (strlen(nvram_safe_get("ntp_server0")))
+			if (strlen(nvram_safe_get("ntp_server0")) && strlen(nvram_safe_get("ntp_server1")))
 			{
 				if (server_idx)
 					strcpy(server, nvram_safe_get("ntp_server1"));
@@ -196,7 +196,20 @@ int ntp_main(int argc, char *argv[])
 				server_idx = (server_idx + 1) % 2;
 			}
 			else
-				strcpy(server, "");
+			{
+				if (strlen(nvram_safe_get("ntp_server0")))
+				{
+					strcpy(server, nvram_safe_get("ntp_server0"));
+					server_idx = 0;
+				}
+				else if (strlen(nvram_safe_get("ntp_server1")))
+				{
+					strcpy(server, nvram_safe_get("ntp_server1"));
+					server_idx = 1;
+				}
+				else
+					strcpy(server, "");
+			}
 			args[2] = server;
 
 			set_alarm();
