@@ -463,6 +463,18 @@ add_option (char *p[], int line, int unit)
 			return VPN_UPLOAD_NEED_CERT;
 		}
 	}
+	else if  (streq (p[0], "crl-verify") && p[1])
+	{
+		if (streq (p[1], INLINE_FILE_TAG) && p[2])
+		{
+			sprintf(buf, "vpn_crt_client%d_crl", unit);
+			write_encoded_crt(buf, strstr(p[2], "-----BEGIN"));
+		}
+		else
+		{
+			return VPN_UPLOAD_NEED_CRL;
+		}
+	}
 	else if  (streq (p[0], "key") && p[1])
 	{
 		if (streq (p[1], INLINE_FILE_TAG) && p[2])
@@ -611,6 +623,8 @@ void reset_client_setting(int unit){
 	sprintf(nv, "vpn_crt_client%d_ca", unit);
 	nvram_set(nv, "");
 	sprintf(nv, "vpn_crt_client%d_crt", unit);
+	nvram_set(nv, "");
+	sprintf(nv, "vpn_crt_client%d_crl", unit);
 	nvram_set(nv, "");
 	sprintf(nv, "vpn_crt_client%d_key", unit);
 	nvram_set(nv, "");

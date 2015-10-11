@@ -253,12 +253,14 @@ function openvpn_decodeKeys(entities){
 	document.getElementById('edit_vpn_crt_server1_ca').value = document.getElementById('edit_vpn_crt_server1_ca').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server1_key').value = document.getElementById('edit_vpn_crt_server1_key').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server1_crt').value = document.getElementById('edit_vpn_crt_server1_crt').value.replace(expr,"\r\n");
+	document.getElementById('edit_vpn_crt_server1_crl').value = document.getElementById('edit_vpn_crt_server1_crl').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server1_dh').value = document.getElementById('edit_vpn_crt_server1_dh').value.replace(expr,"\r\n");
 
 	document.getElementById('edit_vpn_crt_server2_static').value = document.getElementById('edit_vpn_crt_server2_static').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server2_ca').value = document.getElementById('edit_vpn_crt_server2_ca').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server2_key').value = document.getElementById('edit_vpn_crt_server2_key').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server2_crt').value = document.getElementById('edit_vpn_crt_server2_crt').value.replace(expr,"\r\n");
+	document.getElementById('edit_vpn_crt_server2_crl').value = document.getElementById('edit_vpn_crt_server2_crl').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_server2_dh').value = document.getElementById('edit_vpn_crt_server2_dh').value.replace(expr,"\r\n");
 }
 
@@ -325,10 +327,12 @@ function update_visibility(){
 // we instead handle these at the webui level, loading both instances.
 	showhide("edit_vpn_crt_server1_ca",(openvpn_unit == "1"));
 	showhide("edit_vpn_crt_server1_crt", (openvpn_unit == "1"));
+	showhide("edit_vpn_crt_server1_crl", (openvpn_unit == "1"));
 	showhide("edit_vpn_crt_server1_key",(openvpn_unit == "1"));
 	showhide("edit_vpn_crt_server1_dh",(openvpn_unit == "1"));
 	showhide("edit_vpn_crt_server2_ca",(openvpn_unit == "2"));
 	showhide("edit_vpn_crt_server2_crt", (openvpn_unit == "2"));
+	showhide("edit_vpn_crt_server2_crl", (openvpn_unit == "2"));
 	showhide("edit_vpn_crt_server2_key",(openvpn_unit == "2"));
 	showhide("edit_vpn_crt_server2_dh",(openvpn_unit == "2"));
 
@@ -340,6 +344,7 @@ function update_visibility(){
 	showhide("edit_tls2", (auth == "tls"));
 	showhide("edit_tls3", (auth == "tls"));
 	showhide("edit_tls4", (auth == "tls"));
+	showhide("edit_tls5", (auth == "tls"));
 }
 
 function del_openvpnRow(r){
@@ -736,12 +741,14 @@ function cancel_Key_panel(auth){
 				setTimeout("document.getElementById('edit_vpn_crt_server1_static').value = '<% nvram_clean_get("vpn_crt_server1_static"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server1_ca').value = '<% nvram_clean_get("vpn_crt_server1_ca"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server1_crt').value = '<% nvram_clean_get("vpn_crt_server1_crt"); %>';", 300);
+				setTimeout("document.getElementById('edit_vpn_crt_server1_crl').value = '<% nvram_clean_get("vpn_crt_server1_crl"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server1_key').value = '<% nvram_clean_get("vpn_crt_server1_key"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server1_dh').value = '<% nvram_clean_get("vpn_crt_server1_dh"); %>';", 300);
 			}else{
 				setTimeout("document.getElementById('edit_vpn_crt_server2_static').value = '<% nvram_clean_get("vpn_crt_server2_static"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server2_ca').value = '<% nvram_clean_get("vpn_crt_server2_ca"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server2_crt').value = '<% nvram_clean_get("vpn_crt_server2_crt"); %>';", 300);
+				setTimeout("document.getElementById('edit_vpn_crt_server2_crl').value = '<% nvram_clean_get("vpn_crt_server2_crl"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server2_key').value = '<% nvram_clean_get("vpn_crt_server2_key"); %>';", 300);
 				setTimeout("document.getElementById('edit_vpn_crt_server2_dh').value = '<% nvram_clean_get("vpn_crt_server2_dh"); %>';", 300);
 			}
@@ -756,12 +763,14 @@ function save_keys(auth){
 			document.openvpn_form.vpn_crt_server1_static.value = document.getElementById('edit_vpn_crt_server1_static').value;
 			document.openvpn_form.vpn_crt_server1_ca.value = document.getElementById('edit_vpn_crt_server1_ca').value;
 			document.openvpn_form.vpn_crt_server1_crt.value = document.getElementById('edit_vpn_crt_server1_crt').value;
+			document.openvpn_form.vpn_crt_server1_crl.value = document.getElementById('edit_vpn_crt_server1_crl').value;
 			document.openvpn_form.vpn_crt_server1_key.value = document.getElementById('edit_vpn_crt_server1_key').value;
 			document.openvpn_form.vpn_crt_server1_dh.value = document.getElementById('edit_vpn_crt_server1_dh').value;
 		}else{
 			document.openvpn_form.vpn_crt_server2_static.value = document.getElementById('edit_vpn_crt_server2_static').value;
 			document.openvpn_form.vpn_crt_server2_ca.value = document.getElementById('edit_vpn_crt_server2_ca').value;
 			document.openvpn_form.vpn_crt_server2_crt.value = document.getElementById('edit_vpn_crt_server2_crt').value;
+			document.openvpn_form.vpn_crt_server2_crl.value = document.getElementById('edit_vpn_crt_server2_crl').value;
 			document.openvpn_form.vpn_crt_server2_key.value = document.getElementById('edit_vpn_crt_server2_key').value;
 			document.openvpn_form.vpn_crt_server2_dh.value = document.getElementById('edit_vpn_crt_server2_dh').value;
 		}
@@ -860,6 +869,14 @@ function cal_panel_block(){
 										<textarea rows="8" class="textarea_ssh_table" id="edit_vpn_crt_server2_dh" name="edit_vpn_crt_server2_dh" cols="65" maxlength="3499"><% nvram_clean_get("vpn_crt_server2_dh"); %></textarea>
 									</td>
 								</tr>
+								<tr id="edit_tls5">
+                                                                        <th>Certificate Revocation List (Optional)</th>
+                                                                        <td>
+                                                                                <textarea rows="8" class="textarea_ssh_table" id="edit_vpn_crt_server1_crl" name="edit_vpn_crt_server1_crl" cols="65" maxlength="3499"><% nvram_clean_get("vpn_crt_server1_crl"); %></textarea>
+                                                                                <textarea rows="8" class="textarea_ssh_table" id="edit_vpn_crt_server2_crl" name="edit_vpn_crt_server2_crl" cols="65" maxlength="3499"><% nvram_clean_get("vpn_crt_server2_crl"); %></textarea>
+                                                                        </td>
+                                                                </tr>
+
 							</table>
 			  			</td>
 			  		</tr>						

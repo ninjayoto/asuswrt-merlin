@@ -6104,11 +6104,17 @@ do_vpnupload_cgi(char *url, FILE *stream)
 			nvram_set_int("vpn_upload_state", state & (~VPN_UPLOAD_NEED_CA_CERT));
 		}
 		else if(!strcmp(filetype, "cert")) {
-			sprintf(nv, "vpn_crt_client%s_cert", unit);
+			sprintf(nv, "vpn_crt_client%s_crt", unit);
 			set_crt_parsed(nv, VPN_CLIENT_UPLOAD);
 			state = nvram_get_int("vpn_upload_state");
 			nvram_set_int("vpn_upload_state", state & (~VPN_UPLOAD_NEED_CERT));
 		}
+		else if(!strcmp(filetype, "pem")) {
+                        sprintf(nv, "vpn_crt_client%s_crl", unit);
+                        set_crt_parsed(nv, VPN_CLIENT_UPLOAD);
+                        state = nvram_get_int("vpn_upload_state");
+                        nvram_set_int("vpn_upload_state", state & (~VPN_UPLOAD_NEED_CRL));
+                }
 		else if(!strcmp(filetype, "key")) {
 			sprintf(nv, "vpn_crt_client%s_cert", unit);
 			set_crt_parsed(nv, VPN_CLIENT_UPLOAD);

@@ -3347,6 +3347,16 @@ int init_nvram(void)
 	if(nvram_get("jffs2_scripts") == NULL)
 		nvram_set("jffs2_scripts", "1");
 
+	// Initialize working variables for OpenVPN selective routing
+	if(nvram_get("vpn_crt_client1_crl") == NULL){
+		nvram_set("vpn_crt_client1_crl", "");
+		nvram_set("vpn_crt_client2_crl", "");
+	}
+	if(nvram_get("vpn_crt_server1_crl") == NULL){
+		nvram_set("vpn_crt_server1_crl", "");
+		nvram_set("vpn_crt_server2_crl", "");
+	}
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
