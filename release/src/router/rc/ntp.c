@@ -101,7 +101,7 @@ static void set_alarm()
 {
 	struct tm local;
 	time_t now;
-	int diff_sec;
+	int diff_sec, user_sec;
 	unsigned int sec;
 
 	if (nvram_get_int("ntp_ready"))
@@ -133,6 +133,8 @@ static void set_alarm()
 	else
 		sec = NTP_RETRY_INTERVAL - SECONDS_TO_WAIT;
 
+	user_sec = nvram_get_int("ntp_update");
+	sec = (user_sec ? (user_sec - SECONDS_TO_WAIT) : sec);
 	//cprintf("## %s 4: sec(%u)\n", __func__, sec);
 	alarm(sec);
 }
