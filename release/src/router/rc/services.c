@@ -796,15 +796,17 @@ void start_dnsmasq(int force)
 	/* Don't log DHCP queries */
 	if (nvram_match("dhcpd_querylog","0")) {
 		fprintf(fp,"quiet-dhcp\n");
-	} else {
-		if (nvram_get_int("log_level") < 7) {
-			nvram_set("log_level", "7");
-			if (pids("syslogd")) {
-				stop_syslogd();
-				start_syslogd();
-			}
-		}
 	}
+//	else
+//	{
+//		if (nvram_get_int("log_level") < 7) {
+//			nvram_set("log_level", "7");
+//			if (pids("syslogd")) {
+//				stop_syslogd();
+//				start_syslogd();
+//			}
+//		}
+//	}
 
 #ifdef RTCONFIG_OPENVPN
 	write_vpn_dnsmasq_config(fp);
