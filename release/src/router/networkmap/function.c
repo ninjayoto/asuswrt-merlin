@@ -1835,12 +1835,17 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 			if( strstr(SMB_OS, "Windows")!=NULL )
 			{
 				p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 1;
-				NMP_DEBUG("Find: PC!\n");
+				NMP_DEBUG("Find: Windows PC!\n");
 			}
                 	else if( strstr(SMB_PriDomain, "NAS")!=NULL )
 			{
                         	p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 4;
 				NMP_DEBUG("Find: NAS Server!\n");
+			}
+			else if( strstr(SMB_OS, "Unix")!=NULL )
+			{
+				p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 1;
+				NMP_DEBUG("Find: Unix PC!\n");
 			}
 	                else
 			{
