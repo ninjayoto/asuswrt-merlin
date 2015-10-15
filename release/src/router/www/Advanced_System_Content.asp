@@ -1039,7 +1039,7 @@ function updateDateTime()
 <input type="hidden" name="https_crt_gen" value="<% nvram_get("https_crt_gen"); %>">
 <input type="hidden" name="lan_port" value="<% nvram_get("lan_port"); %>">
 <input type="hidden" name="reboot_schedule" value="<% nvram_get_x("", "reboot_schedule"); %>">
-
+<input type="hidden" name="reboot_schedule_enable" value="<% nvram_get_x("","reboot_schedule_enable"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
