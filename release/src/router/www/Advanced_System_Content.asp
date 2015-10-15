@@ -334,6 +334,13 @@ function validForm(){
 		}
 	}
 
+	if(document.form.http_passwd2.value.length > 0 && document.form.http_passwd2.value.length < 5){
+		showtext(document.getElementById("alert_msg2"),"Your password is too short");
+		document.form.http_passwd2.focus();
+		document.form.http_passwd2.select();
+		return false;
+	}
+
 	if(document.form.http_passwd2.value != document.form.v_password2.value){
 		showtext($("alert_msg2"),"*<#File_Pop_content_alert_desc7#>");
 		if(document.form.http_passwd2.value.length <= 0){
