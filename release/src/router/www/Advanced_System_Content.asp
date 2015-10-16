@@ -164,6 +164,8 @@ function initial(){
 
 	if(based_modelid == "RT-AC66U" || based_modelid == "RT-AC56U" || based_modelid == "RT-AC68U") {
 		$("jffs2log").style.display = "";
+
+	hide_dhcp_querylog_option(document.form.log_level.value);
 	}
 
 }
@@ -988,6 +990,11 @@ function hide_reboot_option(flag){
 	document.getElementById("reboot_schedule_time_tr").style.display = (flag == 1) ? "" : "none";
 }
 
+function hide_dhcp_querylog_option(_value){
+	document.getElementById("dhcp_querylog_tr").style.display = (_value < 7) ? "none" : "";
+	document.getElementById("dhcp_message").style.display = (_value < 7) ? "" : "none";
+}
+
 function getrebootTimeRange(str, pos)
 {
 	if (pos == 0)
@@ -1217,20 +1224,31 @@ function updateDateTime()
 	  </td>
 	</tr>
 	<tr>
-	  <th>Log only messages more urgent than</th>
+	  <th>Log only messages with priority greater than</th>
 	  <td>
 		<select name="log_level" class="input_option">
-			<option value="1" <% nvram_match("log_level", "1", "selected"); %>>Alert</option>
-			<option value="2" <% nvram_match("log_level", "2", "selected"); %>>Critical</option>
-			<option value="3" <% nvram_match("log_level", "3", "selected"); %>>Error</option>
-			<option value="4" <% nvram_match("log_level", "4", "selected"); %>>Warning</option>
-			<option value="5" <% nvram_match("log_level", "5", "selected"); %>>Notice</option>
-			<option value="6" <% nvram_match("log_level", "6", "selected"); %>>Info</option>
-			<option value="7" <% nvram_match("log_level", "7", "selected"); %>>Debug</option>
-			<option value="8" <% nvram_match("log_level", "8", "selected"); %>>All</option>
+			<option value="1" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "1", "selected"); %>>Alert</option>
+			<option value="2" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "2", "selected"); %>>Critical</option>
+			<option value="3" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "3", "selected"); %>>Error</option>
+			<option value="4" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "4", "selected"); %>>Warning</option>
+			<option value="5" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "5", "selected"); %>>Notice</option>
+			<option value="6" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "6", "selected"); %>>Info</option>
+			<option value="7" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "7", "selected"); %>>Debug</option>
+			<option value="8" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "8", "selected"); %>>All</option>
 		</select>
 	  </td>
-	  </tr>
+	</tr>
+	<tr>
+	  <th>Log DHCP queries</a></th>
+	  <td>
+	  <div id="dhcp_querylog_tr">
+			<input type="radio" value="1" name="dhcpd_querylog" class="content_input_fd" onClick="return change_common_radio(this, 'LANHostConfig', 'dhcpd_querylog', '1')" <% nvram_match("dhcpd_querylog", "1", "checked"); %>><#checkbox_Yes#>
+			<input type="radio" value="0" name="dhcpd_querylog" class="content_input_fd" onClick="return change_common_radio(this, 'LANHostConfig', 'dhcpd_querylog', '0')" <% nvram_match("dhcpd_querylog", "0", "checked"); %>><#checkbox_No#>
+	  </div>
+	  <span id="dhcp_message" style="display:none">Logging of DHCP queries is disabled by message priority level</span>
+	  </td>
+	</tr>
+
 	</table>
 	<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
         <thead>
