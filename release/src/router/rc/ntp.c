@@ -144,7 +144,6 @@ int ntp_main(int argc, char *argv[])
 	FILE *fp;
 	pid_t pid;
 	char *args[] = {"ntpclient", "-h", server, "-i", "3", "-l", "-s", NULL};
-	int ret;
 
 	strcpy(server, nvram_safe_get("ntp_server0"));
 	args[2] = server;
@@ -177,6 +176,7 @@ int ntp_main(int argc, char *argv[])
 		}
 		else if (sig_cur == SIGCHLD && nvram_get_int("ntp_ready") != 0 )
 		{ //handle the delayed ntpclient process
+			sleep(SECONDS_TO_WAIT);
 			set_alarm();
 		}
 		else
@@ -186,8 +186,8 @@ int ntp_main(int argc, char *argv[])
 			nvram_set("ntp_server_tried", server);
 			nvram_set("ntp_ready", "0");
                         logmessage("ntp", "start NTP update");
-                        ret = _eval(args, NULL, 0, &pid);
-                        sleep(SECONDS_TO_WAIT);
+                        _eval(args, NULL, 0, &pid);
+			sleep(SECONDS_TO_WAIT);
 
 			if (strlen(nvram_safe_get("ntp_server0")) && strlen(nvram_safe_get("ntp_server1")))
 			{
