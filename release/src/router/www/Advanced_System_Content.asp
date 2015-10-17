@@ -1248,8 +1248,15 @@ function updateDateTime()
 	  <span id="dhcp_message" style="display:none">Logging of DHCP queries is disabled by message priority level</span>
 	  </td>
 	</tr>
-
+	<tr>
+	  <th>Smaller log output</th>
+	  <td>
+			<input type="radio" name="log_small" class="input" value="1" <% nvram_match_x("LANHostConfig", "log_small", "1", "checked"); %>><#checkbox_Yes#>
+			<input type="radio" name="log_small" class="input" value="0" <% nvram_match_x("LANHostConfig", "log_small", "0", "checked"); %>><#checkbox_No#>
+	  </td>
+	</tr>
 	</table>
+
 	<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
         <thead>
                 <tr>
