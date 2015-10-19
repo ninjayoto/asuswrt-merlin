@@ -362,10 +362,16 @@ int do_ping_detect(int wan_unit){
 }
 
 int do_dns_detect(){
-	const char *test_url = "www.asus.com";
+	char *test_url = "www.asus.com www.google.com www.baidu.com www.yandex.com";
+	char word[64], *next;
 
-	if(gethostbyname(test_url) != NULL)
-		return 1;
+	foreach(word, test_url, next){
+		_dprintf("do_dns_detect: %s.\n", word);
+		if(gethostbyname(word) != NULL){
+			nvram_set_int("link_internet", 1);
+			return 1;
+		}
+	}
 
 	return 0;
 }
