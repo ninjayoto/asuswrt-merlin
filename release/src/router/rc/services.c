@@ -3334,8 +3334,10 @@ int generate_mdns_config()
 	fprintf(fp, "enable-wide-area=yes\n");
 
 	/* Set [reflector] configuration */
-        fprintf(fp, "\n[reflector]\n");
-        fprintf(fp, "enable-reflector=yes\n");
+	if (!nvram_match("mdns_reflector","0")) {
+	        fprintf(fp, "\n[reflector]\n");
+        	fprintf(fp, "enable-reflector=yes\n");
+	}
 
 	/* Set [rlimits] configuration */
 	fprintf(fp, "\n[rlimits]\n");
