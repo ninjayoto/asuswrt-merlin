@@ -29,7 +29,7 @@ static inline int check_host_key(const char *ktype, const char *nvname, const ch
 void start_sshd(void)
 {
 	int dirty = 0;
-	char buf[2048];
+	char buf[3500];
 
 	mkdir("/etc/dropbear", 0700);
 	mkdir("/root/.ssh", 0700);

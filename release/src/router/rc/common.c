@@ -1585,6 +1585,7 @@ char *get_parsed_crt(const char *name, char *buf)
 	value = nvram_safe_get(name);
 
 	len = strlen(value);
+	if (len > MAX_CRT_LENGTH) len = MAX_CRT_LENGTH;
 
 	for (i=0; (i < len); i++) {
 		if (value[i] == '>') 

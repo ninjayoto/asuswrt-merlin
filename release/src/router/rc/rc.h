@@ -169,6 +169,7 @@ do {					\
 #define USB_DISCONNECT		0x07	//For WRTSL54GS
 
 #define SERIAL_NUMBER_LENGTH	12	//ATE need
+#define MAX_CRT_LENGTH		3500	//For buffer overflow prevention
 
 #define SET_LED(val)	do { } while(0)
 
