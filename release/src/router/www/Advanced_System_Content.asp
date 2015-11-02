@@ -116,6 +116,11 @@ function initial(){
 	load_dst_h_Options();
 	document.form.http_passwd2.value = "";
 	//Viz banned 2014.04.17 chkPass(" ", 'http_passwd');
+
+	if(document.form.ntpd_server[0].checked == true)
+		hide_ntpd_hint(0);
+	else
+		hide_ntpd_hint(1);
 	
 	if(svc_ready == "0")
 		$('svc_hint_div').style.display = "";	
@@ -782,6 +787,10 @@ function hide_https_wanport(_value){
 	$("https_cert").style.display = (_value == "0") ? "none" : "";
 }
 
+function hide_ntpd_hint(_value){
+	$("ntpd_hint").style.display = (_value == "1") ? "none" : "";
+}
+
 // show clientlist
 function show_http_clientlist(){
 	var http_clientlist_row = http_clientlist_array.split('&#60');
@@ -1307,9 +1316,9 @@ function updateDateTime()
 	<tr>
 		<th>Enable router as local SNTP server</th>
 		<td>
-			<input type="radio" name="ntpd_server" class="input" value="1" <% nvram_match_x("LANHostConfig", "ntpd_server", "1", "checked"); %>><#checkbox_Yes#>
-			<input type="radio" name="ntpd_server" class="input" value="0" <% nvram_match_x("LANHostConfig", "ntpd_server", "0", "checked"); %>><#checkbox_No#>
-			<span>&nbsp;&nbsp;Access SNTP server via&nbsp;&nbsp;</span><span style="color:#FC0; text-decoration: underline; font-family:Lucida Console;">router.asus.com</span>
+			<input type="radio" name="ntpd_server" class="input" value="1" onClick="hide_ntpd_hint(0);" <% nvram_match_x("LANHostConfig", "ntpd_server", "1", "checked"); %>><#checkbox_Yes#>
+			<input type="radio" name="ntpd_server" class="input" value="0" onClick="hide_ntpd_hint(1);" <% nvram_match_x("LANHostConfig", "ntpd_server", "0", "checked"); %>><#checkbox_No#>
+			<span id="ntpd_hint" style="display:none;">&nbsp;&nbsp;Access SNTP server via&nbsp;&nbsp;<span style="color:#FC0; text-decoration: underline; font-family:Lucida Console;">router.asus.com</span></span>
 		</td>
 	</tr>
 	</table>
