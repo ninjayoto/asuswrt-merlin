@@ -3205,7 +3205,7 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 	unsigned int expires;
 	int ret = 0;
 
-	ret += websWrite(wp, "%-32s %-15s %-17s %-9s\n",
+	ret += websWrite(wp, "%-32s %-16s %-18s %-9s\n",
 		"Hostname", "IP Address", "MAC Address", "Expires");
 
 	if (!nvram_get_int("dhcp_enable_x"))
@@ -3252,7 +3252,7 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 			    expires % 60);
 		}
 
-		ret += websWrite(wp, "%-32s %-15s %-17s %-9s\n",
+		ret += websWrite(wp, "%-32s %-16s %-18s %-9s\n",
 			name, ipaddr, hwaddr,
 			expires ? timestr : "Static");
 	}
