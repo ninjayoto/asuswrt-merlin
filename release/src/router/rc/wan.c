@@ -1776,6 +1776,7 @@ stop_wan_if(int unit)
 	if(unit == wan_primary_ifunit()){
 		killall_tk("stats");
 		killall_tk("ntpclient");
+		killall_tk("ntpd");
 
 #ifdef RTCONFIG_IPV6
 		if (nvram_match("ipv6_ifdev", "eth") ||
@@ -2311,6 +2312,8 @@ wan_up(char *wan_ifname)	// oleg patch, replace
 	if(strcmp(wan_proto, "static")){
 		/* Sync time */
 		refresh_ntpc();
+		stop_ntpd();
+		start_ntpd();
 	}
 
 #ifdef RTCONFIG_VPNC

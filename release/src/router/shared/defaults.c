@@ -613,6 +613,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "time_zone_dstoff", "" },
 	{ "ntp_server1", "time.nist.gov" },
 	{ "ntp_server0", "pool.ntp.org" },
+	{ "ntpd_server", "0" },
 
 	// NVRAM for do_startic_routes
 	{ "sr_enable_x", "0"},

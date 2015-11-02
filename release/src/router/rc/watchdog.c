@@ -1424,6 +1424,14 @@ void httpd_check()
 	}
 }
 
+void ntpd_check()
+{
+        if (!pids("ntpd")){
+                logmessage("watchdog", "restart ntpd");
+                start_ntpd();
+        }
+}
+
 void watchdog_check()
 {
 	if (!pids("watchdog")){
@@ -1987,6 +1995,8 @@ void watchdog(int sig)
 		nvram_set("ddns_updated", "0");
 	}
 
+	if (nvram_match("ntpd_server", "1"))
+		ntpd_check();
 	ddns_check();
 	httpd_check();
 

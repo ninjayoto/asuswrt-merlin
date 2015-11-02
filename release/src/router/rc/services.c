@@ -2806,6 +2806,8 @@ stop_misc(void)
 		killall_tk("ntp");
 	if (pids("ntpclient"))
 		killall_tk("ntpclient");
+	if (pids("ntpd"))
+		killall_tk("ntpd");
 
 	stop_wps();
 #ifdef RTCONFIG_BCMWL6
@@ -3212,6 +3214,33 @@ stop_ntpc(void)
 		killall_tk("ntpclient");
 }
 
+int
+start_ntpd(void)
+{
+        char *ntpd_argv[] = {"ntpd", "-l", NULL};
+        int pid;
+
+	if (nvram_match("ntpd_server","1")) {
+	        if (getpid() != 1) {
+		        notify_rc("start_ntpd");
+			return 0;
+	        }
+
+		if (!pids("ntpd"))
+			_eval(ntpd_argv, NULL, 0, &pid);
+	}
+
+        return 0;
+}
+
+void
+stop_ntpd(void)
+{
+        if (getpid() != 1) {
+                notify_rc("stop_ntpd");
+                return;
+        }
+}
 
 void refresh_ntpc(void)
 {
@@ -4263,6 +4292,7 @@ again:
 		//stop_infosvr(); //ATE need ifosvr
 		killall_tk("ntp");
 		stop_ntpc();
+		stop_ntpd();
 		stop_wps();
 #ifdef RTCONFIG_BCMWL6
 		stop_acsd();
@@ -5096,6 +5126,11 @@ check_ddr_done:
 		if(action&RC_SERVICE_STOP) stop_ntpc();
 		if(action&RC_SERVICE_START) start_ntpc();
 	}
+	else if (strcmp(script, "ntpd") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_ntpd();
+		if(action&RC_SERVICE_START) start_ntpd();
+	}
 	else if (strcmp(script, "rebuild_cifs_config_and_password") ==0)
 	{
 		fprintf(stderr, "rc rebuilding CIFS config and password databases.\n");
@@ -5111,9 +5146,11 @@ check_ddr_done:
 #endif
 			stop_logger();
 			stop_httpd();
+			stop_ntpd();
 		}
 		if(action&RC_SERVICE_START) {
 			refresh_ntpc();
+			start_ntpd();
 			start_logger();
 #ifdef RTCONFIG_SSH
 			if (nvram_match("sshd_enable", "1"))

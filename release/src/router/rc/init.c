@@ -3357,6 +3357,10 @@ int init_nvram(void)
 		nvram_set("vpn_crt_server2_crl", "");
 	}
 
+	// Initialize NTP server option
+	if(nvram_get("ntpd_server") == NULL)
+		nvram_set("ntpd_server", "0");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

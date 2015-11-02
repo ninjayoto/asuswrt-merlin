@@ -1302,6 +1302,14 @@ function updateDateTime()
 				<div id="svc_hint_div" style="display:none;"><span style="color:#FFCC00;"><#General_x_SystemTime_syncNTP#></span></div>
 			</td>
         </tr>
+	<tr>
+		<th>Enable router as local SNTP server</th>
+		<td>
+			<input type="radio" name="ntpd_server" class="input" value="1" <% nvram_match_x("LANHostConfig", "ntpd_server", "1", "checked"); %>><#checkbox_Yes#>
+			<input type="radio" name="ntpd_server" class="input" value="0" <% nvram_match_x("LANHostConfig", "ntpd_server", "0", "checked"); %>><#checkbox_No#>
+			<span>&nbsp;&nbsp;Access SNTP server via&nbsp;&nbsp;</span><span style="color:#FC0; text-decoration: underline; font-family:Lucida Console;">router.asus.com</span>
+		</td>
+	</tr>
 	</table>
 	<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable" style="margin-top:8px;">
         <thead>
