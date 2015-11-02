@@ -1221,6 +1221,7 @@ function updateDateTime()
 			<option value="6" <% nvram_match("message_loglevel", "6", "selected"); %>>Info</option>
 			<option value="7" <% nvram_match("message_loglevel", "7", "selected"); %>>Debug</option>
 		</select>
+		<span>&nbsp;&nbsp;Default: Notice</span>
 	  </td>
 	</tr>
 	<tr>
@@ -1228,7 +1229,7 @@ function updateDateTime()
 	  <td>
 		<select name="log_level" class="input_option">
 			<option value="1" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "1", "selected"); %>>Alert</option>
-			<option value="2" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "2", "selected"); %>>Critical</option>
+			<option value="2" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "2", "selected"); %>>Critical&nbsp;</option>
 			<option value="3" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "3", "selected"); %>>Error</option>
 			<option value="4" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "4", "selected"); %>>Warning</option>
 			<option value="5" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "5", "selected"); %>>Notice</option>
@@ -1236,6 +1237,7 @@ function updateDateTime()
 			<option value="7" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "7", "selected"); %>>Debug</option>
 			<option value="8" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "8", "selected"); %>>All</option>
 		</select>
+		<span>&nbsp;&nbsp;Default: Debug</span>
 	  </td>
 	</tr>
 	<tr>
