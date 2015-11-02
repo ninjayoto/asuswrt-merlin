@@ -107,7 +107,7 @@ static void set_alarm()
 	if (nvram_get_int("ntp_ready"))
 	{
 		/* ntp sync every hour when time_zone set as "DST" */
-		if (strstr(nvram_safe_get("time_zone_x"), "DST")) {
+		if (strstr(nvram_safe_get("time_zone_x"), "DST") || nvram_match("ntp_force","1")) {
 			time(&now);
 			localtime_r(&now, &local);
 //			dbg("%s: %d-%d-%d, %d:%d:%d dst:%d\n", __FUNCTION__, local.tm_year+1900, local.tm_mon+1, local.tm_mday, local.tm_hour, local.tm_min, local.tm_sec, local.tm_isdst);
