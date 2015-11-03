@@ -1058,12 +1058,14 @@ void http_login(unsigned int ip, char *url) {
 
 	unsigned int http_lanport = nvram_get_int("http_lanport");
 	unsigned int https_lanport = nvram_get_int("https_lanport");
+	unsigned int webdav_https_port = nvram_get_int("webdav_https_port");
 
 	if ((http_port != http_lanport
 //	  && http_port != SERVER_PORT
 #ifdef RTCONFIG_HTTPS
 	  && http_port != https_lanport
-	  && http_port != SERVER_PORT_SSL
+//	  && http_port != SERVER_PORT_SSL
+	  && http_port != webdav_https_port
 #endif
 	    ) || ip == 0x100007f)
 		return;
@@ -1112,12 +1114,14 @@ int http_login_check(void)
 	unsigned int login_port = nvram_get_int("login_port");
 	unsigned int http_lanport = nvram_get_int("http_lanport");
 	unsigned int https_lanport = nvram_get_int("https_lanport");
+	unsigned int webdav_https_port = nvram_get_int("webdav_https_port");
 
 	if ((http_port != http_lanport
 //	  && http_port != SERVER_PORT
 #ifdef RTCONFIG_HTTPS
 	  && http_port != https_lanport
-	  && http_port != SERVER_PORT_SSL
+//	  && http_port != SERVER_PORT_SSL
+	  && http_port != webdav_https_port
 #endif
 	    ) || login_ip_tmp == 0x100007f)
 		//return 1;
@@ -1180,12 +1184,14 @@ int is_auth(void)
 {
 	unsigned int http_lanport = nvram_get_int("http_lanport");
 	unsigned int https_lanport = nvram_get_int("https_lanport");
+	unsigned int webdav_https_port = nvram_get_int("webdav_https_port");
 
 	if (http_port==http_lanport ||
 //	    http_port==SERVER_PORT ||
 #ifdef RTCONFIG_HTTPS
 	    http_port==https_lanport ||
-	    http_port==SERVER_PORT_SSL ||
+//	    http_port==SERVER_PORT_SSL ||
+	    http_port==webdav_https_port ||
 #endif
 		strcmp(nvram_get_x("PrinterStatus", "usb_webhttpcheck_x"), "1")==0) return 1;
 	else return 0;
