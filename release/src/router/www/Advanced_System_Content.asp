@@ -390,19 +390,24 @@ function validForm(){
 
 	if(document.form.http_passwd2.value.length > 0)
 		alert("<#File_Pop_content_alert_desc10#>");
-		
-	if (document.form.misc_http_x[0].checked) {
-		if (!validate_range(document.form.misc_httpport_x, 1024, 65535)){
-			document.form.misc_httpport_x.focus();
+
+	if (document.form.http_enable.value != 1 && !validate_range(document.form.http_lanport, 1, 65535)){
+			document.form.http_lanport.focus();
 			return false;
 		}
-	
-		if (HTTPS_support && !validate_range(document.form.https_lanport, 1024, 65535)){
+
+	if (HTTPS_support && document.form.http_enable.value != 0 && !validate_range(document.form.https_lanport, 1, 65535)){
 			document.form.https_lanport.focus();
 			return false;
 		}
 
-		if (HTTPS_support && !validate_range(document.form.misc_httpsport_x, 1024, 65535)){
+	if (document.form.misc_http_x[0].checked) {
+		if (!validate_range(document.form.misc_httpport_x, 1, 65535)){
+			document.form.misc_httpport_x.focus();
+			return false;
+		}
+
+		if (HTTPS_support && !validate_range(document.form.misc_httpsport_x, 1, 65535)){
 			document.form.misc_httpsport_x.focus();
 			return false;
 		}
@@ -1439,14 +1444,6 @@ function updateDateTime()
            	</td>
         </tr>   					
         
-		<tr>
-			<th>Auto Logout</th>
-			<td>
-				<input type="text" class="input_3_table" maxlength="3" name="http_autologout" value='<% nvram_get("http_autologout"); %>'> min
-				<span>(0: Disable)</span>
-			</td>
-		</tr>
-
         <tr id="accessfromwan_port">
            	<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,3);"><#FirewallConfig_x_WanWebPort_itemname#></a></th>
            	<td>
@@ -1454,6 +1451,14 @@ function updateDateTime()
 								<span style="margin-left:5px;" id="https_port">HTTPS: <input type="text" maxlength="5" name="misc_httpsport_x" class="input_6_table" value="<% nvram_get("misc_httpsport_x"); %>" onKeyPress="return is_number(this,event);"/></span>
 						</td>
         </tr>		  	
+
+		<tr>
+			<th>Auto Logout</th>
+			<td>
+				<input type="text" class="input_3_table" maxlength="3" name="http_autologout" value='<% nvram_get("http_autologout"); %>'> min
+				<span>(0: Disable)</span>
+			</td>
+		</tr>
 
 				<tr id="http_client_tr">
 				  <th><#System_login_specified_IP#></th>
