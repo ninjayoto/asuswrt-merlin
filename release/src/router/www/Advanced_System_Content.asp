@@ -1267,7 +1267,7 @@ function updateDateTime()
 	  </td>
 	</tr>
 	<tr>
-	  <th>Smaller log output</th>
+	  <th>Smaller log output**</th>
 	  <td>
 			<input type="radio" name="log_small" class="input" value="1" <% nvram_match_x("LANHostConfig", "log_small", "1", "checked"); %>><#checkbox_Yes#>
 			<input type="radio" name="log_small" class="input" value="0" <% nvram_match_x("LANHostConfig", "log_small", "0", "checked"); %>><#checkbox_No#>
@@ -1321,7 +1321,7 @@ function updateDateTime()
 			</td>
         </tr>
 	<tr>
-		<th>Enable router as local SNTP server</th>
+		<th>Enable router as local SNTP server**</th>
 		<td>
 			<input type="radio" name="ntpd_server" class="input" value="1" onClick="hide_ntpd_hint(0);" <% nvram_match_x("LANHostConfig", "ntpd_server", "1", "checked"); %>><#checkbox_Yes#>
 			<input type="radio" name="ntpd_server" class="input" value="0" onClick="hide_ntpd_hint(1);" <% nvram_match_x("LANHostConfig", "ntpd_server", "0", "checked"); %>><#checkbox_No#>
