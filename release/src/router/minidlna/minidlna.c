@@ -569,6 +569,8 @@ init(int argc, char **argv)
 						MAX_LAN_ADDR, word);
 					break;
 				}
+				while (isspace(*word))
+					word++;
 				runtime_vars.ifaces[ifaces++] = word;
 			}
 			break;
