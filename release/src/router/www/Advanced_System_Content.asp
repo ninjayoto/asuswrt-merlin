@@ -793,6 +793,8 @@ function hide_https_wanport(_value){
 }
 
 function hide_ntpd_hint(_value){
+	var SNTPstr = "&nbsp;&nbsp;Access SNTP server via&nbsp;&nbsp;<span style=\"color:#FC0; text-decoration: underline; font-family:Lucida Console;\">"+theUrl+"</span>"
+	$("ntpd_hint").innerHTML = SNTPstr;
 	$("ntpd_hint").style.display = (_value == "1") ? "none" : "";
 }
 
@@ -1323,7 +1325,7 @@ function updateDateTime()
 		<td>
 			<input type="radio" name="ntpd_server" class="input" value="1" onClick="hide_ntpd_hint(0);" <% nvram_match_x("LANHostConfig", "ntpd_server", "1", "checked"); %>><#checkbox_Yes#>
 			<input type="radio" name="ntpd_server" class="input" value="0" onClick="hide_ntpd_hint(1);" <% nvram_match_x("LANHostConfig", "ntpd_server", "0", "checked"); %>><#checkbox_No#>
-			<span id="ntpd_hint" style="display:none;">&nbsp;&nbsp;Access SNTP server via&nbsp;&nbsp;<span style="color:#FC0; text-decoration: underline; font-family:Lucida Console;">router.asus.com</span></span>
+			<span id="ntpd_hint" style="display:none;">SNTPServer</span>
 		</td>
 	</tr>
 	</table>
