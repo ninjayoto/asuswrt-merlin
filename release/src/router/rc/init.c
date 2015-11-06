@@ -3357,9 +3357,11 @@ int init_nvram(void)
 		nvram_set("vpn_crt_server2_crl", "");
 	}
 
-	// Initialize NTP server option
+	// Initialize NTP options
 	if(nvram_get("ntpd_server") == NULL)
 		nvram_set("ntpd_server", "0");
+	if(nvram_get("ntp_log") == NULL)
+                nvram_set("ntp_log", "0");
 
 // End Custom variables
 

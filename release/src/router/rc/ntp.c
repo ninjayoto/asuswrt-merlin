@@ -141,6 +141,7 @@ static void set_alarm()
 
 int ntp_main(int argc, char *argv[])
 {
+	int attempts, tot_attempts, fflag;
 	FILE *fp;
 	pid_t pid;
 	char *args[] = {"ntpclient", "-h", server, "-i", "3", "-l", "-s", NULL};
@@ -162,6 +163,9 @@ int ntp_main(int argc, char *argv[])
 //	signal(SIGCHLD, chld_reap);
 	signal(SIGCHLD, catch_sig);
 
+	attempts = 0;
+	tot_attempts = 0;
+	fflag = 0;
 	nvram_set("ntp_ready", "0");
 	nvram_set("svc_ready", "0");
 
@@ -185,10 +189,31 @@ int ntp_main(int argc, char *argv[])
 
 			nvram_set("ntp_server_tried", server);
 			nvram_set("ntp_ready", "0");
-                        logmessage("ntp", "start NTP update");
+			if (nvram_match("ntp_log", "1") && tot_attempts == 0)
+				logmessage("ntp", "start NTP update");
                         _eval(args, NULL, 0, &pid);
 			sleep(SECONDS_TO_WAIT);
 
+			/* handle syslog */
+			attempts++;
+			tot_attempts++;
+			if (!nvram_get_int("ntp_ready")) {
+				if (attempts % 5 == 0) {
+					logmessage("ntp", "NTP update failed after %d attempts", attempts);
+					attempts = 0;
+					fflag = 1;
+				}
+			}
+			else
+			{
+				if (nvram_match("ntp_log", "1") || fflag == 1)
+					logmessage("ntp", "NTP update successful after %d attempt(s)", tot_attempts);
+				attempts = 0;
+				tot_attempts = 0;
+				fflag = 0;
+			}
+
+			/* rotate servers */
 			if (strlen(nvram_safe_get("ntp_server0")) && strlen(nvram_safe_get("ntp_server1")))
 			{
 				if (server_idx)
@@ -211,7 +236,7 @@ int ntp_main(int argc, char *argv[])
 					server_idx = 1;
 				}
 				else
-					strcpy(server, "");
+					strcpy(server, "pool.ntp.org");
 			}
 			args[2] = server;
 
