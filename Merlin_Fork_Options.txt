@@ -1,5 +1,5 @@
 Merlin Fork Custom Options
-Update-14E1
+Update-15
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
@@ -57,15 +57,15 @@ ports for SSH access
 Enable full syslog records for
 remote monitoring
 
-	Can be set in gui:	No
+	Can be set in gui:	Yes (Update-15)
 	Enable via NVRAM:	nvram set log_small=0
 				nvram commit && reboot
 
 	Routers Supported:	All
-	Released:		Update-08
+	Released:		Update-08 (NVRAM) Update-15 (GUI)
 	Reboot Required:	Yes
-	Notes:			This will include the full header (including hostname) in syslogd output to enable 
-				remote monitoring
+	Notes:			This will include the full header (including hostname and priority level) in the
+					syslogd output to enable remote monitoring
 ----------------------------------------------------------------------------------------------------------------
 Save HTTPS certificate
 
@@ -93,7 +93,6 @@ Filter IPv6 Neighbor Solicitation
 	Reboot Required:	No
 	Notes:			Control iptables rule dropping IPv6 neighbor solicitation requests 
 ----------------------------------------------------------------------------------------------------------------
-
 CROND logging options
 
 	Can be set in gui:	No
@@ -175,6 +174,55 @@ QOS SFQ limit (experimental)
 				A value of 1 automatically selects a value based on upload speed
 				A value of 2-127 sets this value as the packet limit
 ----------------------------------------------------------------------------------------------------------------
+SNTP Server
+
+	Can be set in gui:	Yes (Administration/System/Enable router as local SNTP server)
+	Enable via NVRAM:	nvram set ntpd_server=1
+				nvram commit
+				service restart_time
+
+	Routers Supported:	All
+	Released:		Update-15
+	Reboot Required:	No
+	Notes:			Enables the router to act as an SNTP time server
+				User 'router.asus.com' as your SNTP server
+----------------------------------------------------------------------------------------------------------------
+Networkmap UNIX/Linux Clients as PC
+
+	Can be set in gui:	No setting required
+	Enable via NVRAM:	No setting required
+
+	Routers Supported:	All
+	Released:		Update-15
+	Reboot Required:	No
+	Notes:			You must install SAMBA and winbind on the client for the client to be
+					recognized as a PC
+----------------------------------------------------------------------------------------------------------------
+Disable Avahi (mDNS) Reflector
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set mdns_reflector=0
+				nvram commit
+				service restart_mdns
+
+	Routers Supported:	All
+	Released:		Update-15
+	Reboot Required:	No
+	Notes:			Changes the default state of the Avahi reflector to disabled
+----------------------------------------------------------------------------------------------------------------
+Enable logging of successful NTP updates
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set ntp_log=0
+				nvram commit
+
+	Routers Supported:	All
+	Released:		Update-15
+	Reboot Required:	No
+	Notes:			Successful NTP updates are not logged by default, fails are always logged
+				This option enables logging of successful updates
+----------------------------------------------------------------------------------------------------------------
+
 
 Disabling the special options:
 

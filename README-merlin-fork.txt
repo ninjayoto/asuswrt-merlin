@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-14E1j9527 (17-September-2015)
+Asuswrt-Merlin fork - build 374.43_2-15E2j9527 (7-November-2015)
 =============================================
 
 About
@@ -19,6 +19,39 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-15E2j9527  (7-November-2015)
+* CHANGED: Updated logging for NTP updates
+
+374.43_2-15j9527  (4-November-2015)
+* CHANGED: Add categories to Administration/System webui
+* CHANGED: Improvements to syslog loglevel management
+* CHANGED: Increase number of lines displayed in syslog
+* CHANGED: Minor webui formatting changes
+* CHANGED: Revert QOS policing change possibly causing Xbox slowdowns
+- CHANGED: Add short password check for router password (ASUS-Security)
+- CHANGED: Add support for OpenVPN CRL certificates
+- CHANGED: Allow using a CIDR-formatted IP on the Firewall configuration page
+- CHANGED: Allow using privileged ports 1-1023 for http/https
+- CHANGED: Update avahi-daemon to 378 level
+* FIXED: Issue alert if max SSH key length is exceeded
+* FIXED: NTP client not working after initial boot timesync
+* FIXED: Only reboot when necessary on Administration/System page
+* FIXED: Prevent Chrome from autocompleting password fields
+- FIXED: Ensure QOS ebtables flag is correctly initialized (ASUS)
+- FIXED: Fix dhcp routes metric to avoid conflict with pptd
+- FIXED: Fix resource leaks in lpd test
+- FIXED: OpenVPN server subnet topology is only valid in TLS-TUN mode
+- FIXED: Dropbear - SSH Tunnel drops when accessing invalid resource
+- FIXED: Minidlna - Selected upstream server discovery fixes
+- FIXED: SSH buffer overflow for keys greater then 2048 characters
+- FIXED: Web server URL handler buffer overflow (ASUS-Security)
+- FIXED: Web server accept language buffer overflow (ASUS-Security)
+- FIXED: Web server host name buffer overflow (ASUS-Security)
+* NEW: Networkmap can now recognize UNIX/Linux clients as a PC
+* NEW: Router can now act as local SNTP server
+- NEW: Add support for scheduled reboots
+
+
 374.43_2-14E1j9527 (17-September-2015)
 * FIXED: Cannot access gui after a factory reset
 * FIXED: Logon may be blocked with changed http port
