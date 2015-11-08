@@ -3205,13 +3205,11 @@ start_ntpc(void)
 void
 stop_ntpc(void)
 {
-	if (getpid() != 1) {
-		notify_rc("stop_ntpc");
-		return;
-	}
-
 	if (pids("ntpclient"))
 		killall_tk("ntpclient");
+
+	if (pids("ntp"))
+		killall_tk("ntp");
 }
 
 int
