@@ -912,7 +912,7 @@ void timecheck(void)
 	#ifdef RTCONFIG_REBOOT_SCHEDULE
 	/* Reboot Schedule */
 	char* reboot_schedule;
-	if (nvram_match("ntp_ready", "1") && nvram_match("reboot_schedule_enable", "1"))
+	if (nvram_match("ntp_sync", "1") && nvram_match("reboot_schedule_enable", "1"))
 	{
 		//SMTWTFSHHMM
 		//XXXXXXXXXXX
