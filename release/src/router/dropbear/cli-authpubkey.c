@@ -58,7 +58,7 @@ void recv_msg_userauth_pk_ok() {
 	buffer* keybuf = NULL;
 	char* algotype = NULL;
 	unsigned int algolen;
-	enum signkey_type keytype;
+	int keytype;
 	unsigned int remotelen;
 
 	TRACE(("enter recv_msg_userauth_pk_ok"))
@@ -141,7 +141,7 @@ void cli_buf_put_sign(buffer* buf, sign_key *key, int type,
 static void send_msg_userauth_pubkey(sign_key *key, int type, int realsign) {
 
 	const char *algoname = NULL;
-	unsigned int algolen;
+	int algolen;
 	buffer* sigbuf = NULL;
 
 	TRACE(("enter send_msg_userauth_pubkey"))
