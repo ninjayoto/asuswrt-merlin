@@ -585,8 +585,8 @@ int add_iQosRules(char *pcWANIF)
 	free(buf);
 
 	/* ipv6_lan_addr for ip6tables use (LAN download) */
-	buf = strdup(nvram_safe_get("ipv6_prefix"));
-	sprintf(ipv6_lan_addr, "%s/%d", buf, nvram_get_int("ipv6_prefix_length") ? : 64);
+	g = buf = strdup(nvram_safe_get("ipv6_prefix"));
+	sprintf(ipv6_lan_addr, "%s/%d", g, nvram_get_int("ipv6_prefix_length") ? : 64);
 	free(buf);
 
 	//fprintf(stderr, "[qos] down_class_num=%x\n", down_class_num);
