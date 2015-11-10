@@ -53,6 +53,8 @@ static void ntp_service()
 		nvram_set("svc_ready", "1");
 
 	if (first_sync) {
+		if (!nvram_get_int("ntp_sync"))
+			nvram_set("ntp_sync", "0");
 		first_sync = 0;
 		nvram_set("reload_svc_radio", "1");
 
@@ -212,6 +214,7 @@ int ntp_main(int argc, char *argv[])
 			{
 				if (nvram_match("ntp_log", "1") || fflag == 1)
 					logmessage("ntp", "NTP update successful after %d attempt(s)", tot_attempts);
+				nvram_set("ntp_sync", "1");
 				attempts = 0;
 				tot_attempts = 0;
 				fflag = 0;
