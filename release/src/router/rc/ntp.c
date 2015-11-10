@@ -101,7 +101,7 @@ static void set_alarm()
 {
 	struct tm local;
 	time_t now;
-	int diff_sec, user_sec;
+	int diff_sec, user_hr;
 	unsigned int sec;
 
 	if (nvram_get_int("ntp_ready"))
@@ -129,12 +129,16 @@ static void set_alarm()
 		}
 		else	/* every 12 hours */
 			sec = 12 * 3600 - SECONDS_TO_WAIT;
+
+		user_hr = nvram_get_int("ntp_update");
+		if (sec <= 3600 + SECONDS_TO_WAIT)
+			sec = (user_hr ? (sec + ((user_hr - 1) * 3600)) : sec);
+		else
+			sec = (user_hr * 3600) - SECONDS_TO_WAIT;
 	}
 	else
 		sec = NTP_RETRY_INTERVAL - SECONDS_TO_WAIT;
 
-	user_sec = nvram_get_int("ntp_update");
-	sec = (user_sec ? (user_sec - SECONDS_TO_WAIT) : sec);
 	//cprintf("## %s 4: sec(%u)\n", __func__, sec);
 	alarm(sec);
 }
