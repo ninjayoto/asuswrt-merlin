@@ -174,26 +174,28 @@ void remove_connect_pending() {
 
 void set_connect_fds(fd_set *writefd) {
 	m_list_elem *iter;
-	TRACE(("enter set_connect_fds"))
-	iter = ses.conn_pending.first;
-	while (iter) {
-		m_list_elem *next_iter = iter->next;
+	TRACE(("enter handle_connect_fds"))
+	for (iter = ses.conn_pending.first; iter; iter = iter->next) {
 		struct dropbear_progress_connection *c = iter->item;
 		/* Set one going */
-		while (c->res_iter && c->sock < 0) {
+		while (c->res_iter && c->sock < 0)
+		{
 			connect_try_next(c);
 		}
 		if (c->sock >= 0) {
 			FD_SET(c->sock, writefd);
 		} else {
+			m_list_elem *remove_iter;
 			/* Final failure */
 			if (!c->errstring) {
 				c->errstring = m_strdup("unexpected failure");
 			}
 			c->cb(DROPBEAR_FAILURE, -1, c->cb_data, c->errstring);
-			remove_connect(c, iter);
+			/* Safely remove without invalidating iter */
+			remove_iter = iter;
+			iter = iter->prev;
+			remove_connect(c, remove_iter);
 		}
-		iter = next_iter;
 	}
 }
 
