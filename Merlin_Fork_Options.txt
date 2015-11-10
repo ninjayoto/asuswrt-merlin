@@ -64,7 +64,7 @@ remote monitoring
 	Routers Supported:	All
 	Released:		Update-08 (NVRAM) Update-15 (GUI)
 	Reboot Required:	Yes
-	Notes:			This will include the full header (including hostname and priority level) in the
+	Notes:			This will include the full header (including hostname and priority level) in the 
 					syslogd output to enable remote monitoring
 ----------------------------------------------------------------------------------------------------------------
 Save HTTPS certificate
@@ -162,7 +162,7 @@ HTTP Lan Port
 					changing of the port
 ----------------------------------------------------------------------------------------------------------------
 QOS SFQ limit (experimental)
-
+	
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set qos_sfql=[0,off-default  1,auto  2-127,value]
 				nvram commit
@@ -175,7 +175,7 @@ QOS SFQ limit (experimental)
 				A value of 2-127 sets this value as the packet limit
 ----------------------------------------------------------------------------------------------------------------
 SNTP Server
-
+	
 	Can be set in gui:	Yes (Administration/System/Enable router as local SNTP server)
 	Enable via NVRAM:	nvram set ntpd_server=1
 				nvram commit
@@ -188,18 +188,18 @@ SNTP Server
 				User 'router.asus.com' as your SNTP server
 ----------------------------------------------------------------------------------------------------------------
 Networkmap UNIX/Linux Clients as PC
-
+	
 	Can be set in gui:	No setting required
 	Enable via NVRAM:	No setting required
 
 	Routers Supported:	All
 	Released:		Update-15
 	Reboot Required:	No
-	Notes:			You must install SAMBA and winbind on the client for the client to be
+	Notes:			You must install SAMBA and winbind on the client for the client to be 
 					recognized as a PC
 ----------------------------------------------------------------------------------------------------------------
 Disable Avahi (mDNS) Reflector
-
+	
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set mdns_reflector=0
 				nvram commit
@@ -211,7 +211,7 @@ Disable Avahi (mDNS) Reflector
 	Notes:			Changes the default state of the Avahi reflector to disabled
 ----------------------------------------------------------------------------------------------------------------
 Enable logging of successful NTP updates
-
+	
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set ntp_log=0
 				nvram commit
@@ -222,7 +222,20 @@ Enable logging of successful NTP updates
 	Notes:			Successful NTP updates are not logged by default, fails are always logged
 				This option enables logging of successful updates
 ----------------------------------------------------------------------------------------------------------------
+Set NTP update interval
+	
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set ntp_update=[interval in hours]
+				nvram commit
 
+	Routers Supported:	All
+	Released:		Update-15
+	Reboot Required:	No
+	Notes:			Default is that the router will update with its NTP server every hour if you are in a 
+					DST timezone or every 12 hours when not in a DST timezone
+				This option changes the number of hours between updates.  The value is not currently error
+					checked and should be between 1 and 24 (hours).
+----------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
