@@ -448,7 +448,7 @@ function validForm(){
 	if(reboot_schedule_support == 1){
 		updateDateTime();
 
-		if(document.form.reboot_schedule_enable[0].checked == 1){
+		if(document.form.reboot_schedule_enable[1].checked == 1){
 			if(!validate_timerange(document.form.reboot_time_x_hour, 0)
 				|| !validate_timerange(document.form.reboot_time_x_min, 1))
 				return false;
