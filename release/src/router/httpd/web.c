@@ -5128,6 +5128,7 @@ apply_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 		}
 		else if(!strcmp(current_url, "Main_ConnStatus_Content.asp") && (
 			strncasecmp(system_cmd, "netstat-nat", 11) == 0
+		     || strncasecmp(system_cmd, "conntrkcnt.sh", 13) == 0
 		)){
 			strncpy(SystemCmd, system_cmd, sizeof(SystemCmd));
 		}

@@ -46,6 +46,9 @@ endif
 # Postconf helper script
 	install -m 0755 helper.sh $(INSTALLDIR)/usr/sbin
 
+# Conntrack connection counts script
+	install -m 0755 conntrkcnt.sh $(INSTALLDIR)/usr/sbin
+
 ifeq ($(RTN14U)$(RTAC52U)$(RTAC51U)$(RTN11P),y)
 # for read/write Ralink PHY registers
         install -D mii_mgr $(INSTALLDIR)/bin/mii_mgr

@@ -20,6 +20,8 @@
 resolveIPs = '<% nvram_get("webui_resolve_conn"); %>';
 
 function initial(){
+	// Initialize output option
+	document.form.conntrk_opt[0].checked = true;
 	show_menu();
 	load_body();
 }
@@ -30,13 +32,18 @@ function onSubmitCtrl(o, s) {
 }
 
 function updateOptions(){
+	if (document.form.conntrk_opt[0].checked == 1) {
+		document.form.SystemCmd.value = "netstat-nat";
 
-	document.form.SystemCmd.value = "netstat-nat";	
-
-	if (resolveIPs == "1")
-		document.form.SystemCmd.value += " -r state -x";
+		if (resolveIPs == "1")
+			document.form.SystemCmd.value += " -r state -x";
+		else
+			document.form.SystemCmd.value += " -r state -x -n";
+	}
 	else
-		document.form.SystemCmd.value += " -r state -x -n";
+	{
+		document.form.SystemCmd.value = "conntrkcnt.sh";
+	}
 
 	document.form.submit();
 	document.getElementById("cmdBtn").disabled = true;
@@ -130,7 +137,10 @@ function checkCmdRet(){
 									<div>&nbsp;</div>
 									<div class="formfonttitle"><#System_Log#> - <#System_act_connections#></div>
 									<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
-									<div class="formfontdesc" id="cmdDesc">Click below to generate a list of tracked connections.</div>
+									<div class="formfontdesc" id="cmdDesc">Click below to generate a list of tracked connections.&nbsp;&nbsp;
+										<input type="radio" name="conntrk_opt" class="input" value="1">Detail
+										<input type="radio" name="conntrk_opt" class="input" value="0">Counts by Client
+									</div>
 
 									<div class="apply_gen">
 										<span><input class="button_gen_long" id="cmdBtn" onClick="onSubmitCtrl(this, ' Refresh ')" type="button" value="Refresh"></span>
