@@ -1611,11 +1611,11 @@ static int validate_apply(webs_t wp) {
 						|| !strcmp(t->name, "http_passwd")){
 #ifdef RTCONFIG_USB
 					if(!strcmp(t->name, "http_username")){
-						strncpy(orig_acc, nvram_safe_get(name), 128);
-						strncpy(modified_acc, value, 128);
+						strlcpy(orig_acc, nvram_safe_get(name), 128);
+						strlcpy(modified_acc, value, 128);
 					}
 					else if(!strcmp(t->name, "http_passwd"))
-						strncpy(modified_pass, value, 128);
+						strlcpy(modified_pass, value, 128);
 
 #endif
 
@@ -1636,9 +1636,9 @@ static int validate_apply(webs_t wp) {
 
 #ifdef RTCONFIG_USB
 		if(strlen(orig_acc) <= 0)
-			strncpy(orig_acc, nvram_safe_get("http_username"), 128);
+			strlcpy(orig_acc, nvram_safe_get("http_username"), 128);
 		if(strlen(modified_pass) <= 0)
-			strncpy(modified_pass, nvram_safe_get("http_passwd"), 128);
+			strlcpy(modified_pass, nvram_safe_get("http_passwd"), 128);
 
 		if(strlen(modified_acc) <= 0)
 			mod_account(orig_acc, NULL, modified_pass);
@@ -2243,7 +2243,7 @@ static int ej_update_variables(int eid, webs_t wp, int argc, char_t **argv) {
 				if(strstr(action_script, "_wan_if"))
 					sprintf(notify_cmd, "%s %s", action_script, wan_unit);
 				else
-					strncpy(notify_cmd, action_script, 128);
+					strlcpy(notify_cmd, action_script, 128);
 
 				if(strcmp(action_script, "saveNvram"))
 					notify_rc(notify_cmd);
@@ -4731,10 +4731,10 @@ static int ej_get_printer_info(int eid, webs_t wp, int argc, char_t **argv){
 			if(get_path_by_node(usb_node, port_path, 8) != NULL){
 				snprintf(prefix, sizeof(prefix), "usb_path%s", port_path);
 
-				strncpy(printer_array[got_printer][0], nvram_safe_get(strcat_r(prefix, "_manufacturer", tmp)), 64);
-				strncpy(printer_array[got_printer][1], nvram_safe_get(strcat_r(prefix, "_product", tmp)), 64);
-				strncpy(printer_array[got_printer][2], nvram_safe_get(strcat_r(prefix, "_serial", tmp)), 64);
-				strncpy(printer_array[got_printer][3], port_path, 64);
+				strlcpy(printer_array[got_printer][0], nvram_safe_get(strcat_r(prefix, "_manufacturer", tmp)), 64);
+				strlcpy(printer_array[got_printer][1], nvram_safe_get(strcat_r(prefix, "_product", tmp)), 64);
+				strlcpy(printer_array[got_printer][2], nvram_safe_get(strcat_r(prefix, "_serial", tmp)), 64);
+				strlcpy(printer_array[got_printer][3], port_path, 64);
 
 				++got_printer;
 			}
@@ -4822,10 +4822,10 @@ static int ej_get_modem_info(int eid, webs_t wp, int argc, char_t **argv){
 		if(!strcmp(nvram_safe_get(prefix), "modem")){
 			snprintf(port_path, 8, "%d", i);
 
-			strncpy(modem_array[got_modem][0], nvram_safe_get(strcat_r(prefix, "_manufacturer", tmp)), 64);
-			strncpy(modem_array[got_modem][1], nvram_safe_get(strcat_r(prefix, "_product", tmp)), 64);
-			strncpy(modem_array[got_modem][2], nvram_safe_get(strcat_r(prefix, "_serial", tmp)), 64);
-			strncpy(modem_array[got_modem][3], port_path, 64);
+			strlcpy(modem_array[got_modem][0], nvram_safe_get(strcat_r(prefix, "_manufacturer", tmp)), 64);
+			strlcpy(modem_array[got_modem][1], nvram_safe_get(strcat_r(prefix, "_product", tmp)), 64);
+			strlcpy(modem_array[got_modem][2], nvram_safe_get(strcat_r(prefix, "_serial", tmp)), 64);
+			strlcpy(modem_array[got_modem][3], port_path, 64);
 
 			++got_modem;
 		}
@@ -4836,10 +4836,10 @@ static int ej_get_modem_info(int eid, webs_t wp, int argc, char_t **argv){
 				if(!strcmp(nvram_safe_get(prefix), "modem")){
 					snprintf(port_path, 8, "%d.%d", i, j);
 
-					strncpy(modem_array[got_modem][0], nvram_safe_get(strcat_r(prefix, "_manufacturer", tmp)), 64);
-					strncpy(modem_array[got_modem][1], nvram_safe_get(strcat_r(prefix, "_product", tmp)), 64);
-					strncpy(modem_array[got_modem][2], nvram_safe_get(strcat_r(prefix, "_serial", tmp)), 64);
-					strncpy(modem_array[got_modem][3], port_path, 64);
+					strlcpy(modem_array[got_modem][0], nvram_safe_get(strcat_r(prefix, "_manufacturer", tmp)), 64);
+					strlcpy(modem_array[got_modem][1], nvram_safe_get(strcat_r(prefix, "_product", tmp)), 64);
+					strlcpy(modem_array[got_modem][2], nvram_safe_get(strcat_r(prefix, "_serial", tmp)), 64);
+					strlcpy(modem_array[got_modem][3], port_path, 64);
 
 					++got_modem;
 				}

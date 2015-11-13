@@ -254,9 +254,9 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 
 			if (buffer) {
 				if ((tmp = strstr(buffer, "\n")))
-					strncpy(result, tmp+1, sizeof result);
+					strlcpy(result, tmp+1, sizeof result);
 				else
-					strncpy(result, buffer, sizeof result);
+					strlcpy(result, buffer, sizeof result);
 
 				free(buffer);
 			}
@@ -301,7 +301,7 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 					char *buffer = read_whole_file(buf);
 					if (buffer)
 					{
-						strncpy(result, buffer, sizeof(result));
+						strlcpy(result, buffer, sizeof(result));
 						free(buffer);
 					}
 				}
@@ -318,7 +318,7 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 				for (j=0; (j < len); j++) {
 					if (buffer[j] == '\n') buffer[j] = '>';
 				}
-				strncpy(result, buffer, sizeof result);
+				strlcpy(result, buffer, sizeof result);
 
 				free(buffer);
 			}
