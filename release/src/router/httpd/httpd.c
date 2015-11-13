@@ -753,7 +753,7 @@ handle_request(void)
 			char lang_buf[256];
 			memset(lang_buf, 0, sizeof(lang_buf));
 			alang = &cur[16];
-			strncpy(lang_buf, alang, sizeof(lang_buf));
+			strncpy(lang_buf, alang, sizeof(lang_buf)-1);
 			p = lang_buf;
 			while (p != NULL)
 			{
@@ -861,7 +861,7 @@ handle_request(void)
 	}
 	else
 	{
-		strncpy(url, file, sizeof(url));
+		strncpy(url, file, sizeof(url)-1);
 	}
 // 2007.11 James. }
 
