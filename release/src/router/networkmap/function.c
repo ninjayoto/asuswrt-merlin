@@ -1790,7 +1790,7 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 		//Copy modelname to device name if exist.
 		if(strcmp("",description.modelname) &&
 		  !strcmp("",p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num])) {
-			strncpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], description.modelname, 15);
+			strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], description.modelname, 15);
 			p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num][15]='\0';
 		}
 		file_unlock(lock);
@@ -1888,7 +1888,7 @@ int FindHostname(P_CLIENT_DETAIL_INFO_TABLE p_client_detail_info_tab)
 				    (strlen(name) > 0) &&
 				    (!strchr(name, '*')) &&	// Ensure it's not a clientid in
 				    (!strchr(name, ':')))	// case device didn't have a hostname
-						strncpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 15);
+						strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 15);
 			}
 		}
 		fclose(fp);
@@ -1901,7 +1901,7 @@ int FindHostname(P_CLIENT_DETAIL_INFO_TABLE p_client_detail_info_tab)
 		while ((b = strsep(&nvp, "<")) != NULL) {
 			if ((vstrsep(b, ">", &mac, &ip, &name) == 3) && (strlen(ip) > 0) && (strlen(name) > 0)) {
 				if (!strcmp(ipaddr, ip))
-					strncpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 15);
+					strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 15);
 			}
 		}
 		free(nv);
