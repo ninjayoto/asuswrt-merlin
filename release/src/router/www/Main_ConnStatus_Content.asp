@@ -36,9 +36,9 @@ function updateOptions(){
 		document.form.SystemCmd.value = "netstat-nat";
 
 		if (resolveIPs == "1")
-			document.form.SystemCmd.value += " -r state -x";
+			document.form.SystemCmd.value += " -r src -x";
 		else
-			document.form.SystemCmd.value += " -r state -x -n";
+			document.form.SystemCmd.value += " -r src -x -n";
 	}
 	else
 	{
