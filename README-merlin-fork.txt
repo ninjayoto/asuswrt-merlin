@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-15E3j9527 (11-November-2015)
+Asuswrt-Merlin fork - build 374.43_2-15E4j9527 (15-November-2015)
 =============================================
 
 About
@@ -19,6 +19,10 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-15E4j9527  (15November-2015)
+* FIXED: CIDR validator not available to all web pages
+
+
 374.43_2-15E3j9527  (11-November-2015)
 * CHANGED: Dropbear: Reverted to 2015.67 due to Chrome compatibility problems
 * CHANGED: NTP update schedule option
