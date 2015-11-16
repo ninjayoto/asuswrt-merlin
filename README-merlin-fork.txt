@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-15E4j9527 (15-November-2015)
+Asuswrt-Merlin fork - build 374.43_2-15E5j9527 (16-November-2015)
 =============================================
 
 About
@@ -19,7 +19,11 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
-374.43_2-15E4j9527  (15November-2015)
+374.43_2-15E5j9527  (16-November-2015)
+* FIXED: missing crl definition for OpenVPN server
+
+
+374.43_2-15E4j9527  (15-November-2015)
 * FIXED: CIDR validator not available to all web pages
 
 
