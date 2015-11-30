@@ -3364,6 +3364,8 @@ int init_nvram(void)
 		nvram_set("ntpd_server", "0");
 	if(nvram_get("ntp_log") == NULL)
                 nvram_set("ntp_log", "0");
+	if(nvram_get("ntp_update") == NULL)
+		nvram_set("ntp_update", "1");
 
 // End Custom variables
 

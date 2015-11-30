@@ -463,6 +463,12 @@ function validForm(){
 	return true;
 }
 
+function ntp_chk(obj){
+	if (obj.value == 0){
+		alert("WARNING:\nSystem time must be set manually when disabling NTP updates!");
+	}
+}
+
 function done_validating(action){
 	refreshpage();
 }
@@ -1320,6 +1326,13 @@ function updateDateTime()
 				<div id="svc_hint_div" style="display:none;"><span style="color:#FFCC00;"><#General_x_SystemTime_syncNTP#></span></div>
 			</td>
         </tr>
+	<tr id="ntp_interval">
+		<th>Router NTP update interval (hours)**</th>
+		<td>
+			<input type="text" maxlength="2" class="input_6_table" name="ntp_update" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 0, 24); ntp_chk(this);" value="<% nvram_get("ntp_update"); %>">
+			<span id="ntpd_upd_hint">&nbsp;&nbsp;Default: 1 hour (0 disables NTP updates)</span>
+		</td>
+	</tr>
 	<tr>
 		<th>Enable router as local SNTP server**</th>
 		<td>

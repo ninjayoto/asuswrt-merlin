@@ -615,6 +615,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ntp_server0", "pool.ntp.org" },
 	{ "ntpd_server", "0" },
 	{ "ntp_log", "0" },	// log successful NTP updates
+	{ "ntp_update", "1" },	// ntp update interval in hours
 
 	// NVRAM for do_startic_routes
 	{ "sr_enable_x", "0"},

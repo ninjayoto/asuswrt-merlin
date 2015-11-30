@@ -38,6 +38,7 @@
 #include <rc.h>
 #include <stdarg.h>
 
+#define ZERO 0
 #define SECONDS_TO_WAIT 3
 #define NTP_RETRY_INTERVAL 30
 
@@ -177,7 +178,14 @@ int ntp_main(int argc, char *argv[])
 
 	while (1)
 	{
-		if (sig_cur == SIGTSTP)
+		if (nvram_get_int("ntp_update") == ZERO)
+		{ //handle manual setting of time
+			nvram_set("ntp_ready", "1");
+			nvram_set("ntp_sync", "1");
+			nvram_set("ntp_server_tried", "none");
+			stop_ntpc();
+		}
+		else if (sig_cur == SIGTSTP)
 			;
 		else if (nvram_get_int("sw_mode") == SW_MODE_ROUTER &&
 			!nvram_match("link_internet", "1"))
