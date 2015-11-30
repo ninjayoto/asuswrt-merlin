@@ -994,6 +994,8 @@ restore_defaults(void)
 #endif
 	/* reset ntp status */
 	nvram_set("svc_ready", "0");
+	nvram_set("ntp_ready", "0");
+
 #ifdef RTCONFIG_QTN
 	nvram_unset("qtn_ready");
 #endif
