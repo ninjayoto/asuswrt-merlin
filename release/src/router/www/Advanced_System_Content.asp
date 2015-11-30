@@ -422,6 +422,11 @@ function validForm(){
 		document.form.misc_httpport_x.focus();
 		return false;
 	}
+	else if(isPortConflict(document.form.http_lanport.value)){
+		alert(isPortConflict(document.form.http_lanport.value));
+		document.form.http_lanport.focus();
+		return false;
+	}
 	else if(document.form.https_lanport.value == document.form.http_lanport.value){
 		alert("Duplicate port number with HTTP and HTTPS LAN port setting.");
 		document.form.https_lanport.focus();
