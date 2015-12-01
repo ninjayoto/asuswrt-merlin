@@ -20,19 +20,25 @@
 resolveIPs = '<% nvram_get("webui_resolve_conn"); %>';
 
 function initial(){
-	// Initialize output option
-	document.form.conntrk_opt[0].checked = true;
 	show_menu();
-	load_body();
+//	load_body();
 }
 
 function onSubmitCtrl(o, s) {
-	document.form.action_mode.value = s;
 	updateOptions();
+	document.form.submit();
+	document.form.action_mode.value = s;
+	updateData();
 }
 
 function updateOptions(){
-	if (document.form.conntrk_opt[0].checked == 1) {
+	if (document.form.connstat_opt[0].checked == true) {
+		document.form.connstat_opt.value = "0";
+		document.form.SystemCmd.value = "conntrkcnt.sh";
+	}
+	else
+	{
+		document.form.connstat_opt.value = "1";
 		document.form.SystemCmd.value = "netstat-nat";
 
 		if (resolveIPs == "1")
@@ -40,18 +46,15 @@ function updateOptions(){
 		else
 			document.form.SystemCmd.value += " -r src -x -n";
 	}
-	else
-	{
-		document.form.SystemCmd.value = "conntrkcnt.sh";
-	}
+}
 
+function updateData(){
 	document.form.submit();
 	document.getElementById("cmdBtn").disabled = true;
 	document.getElementById("cmdBtn").style.color = "#666";
 	document.getElementById("loadingIcon").style.display = "";
 	setTimeout("checkCmdRet();", 500);
 }
-
 
 var $j = jQuery.noConflict();
 var _responseLen;
@@ -111,7 +114,7 @@ function checkCmdRet(){
 <input type="hidden" name="next_page" value="Main_ConnStatus_Content.asp">
 <input type="hidden" name="group_id" value="">
 <input type="hidden" name="modified" value="0">
-<input type="hidden" name="action_mode" value="">
+<input type="hidden" name="action_mode" value="apply">
 <input type="hidden" name="action_script" value="">
 <input type="hidden" name="action_wait" value="">
 <input type="hidden" name="first_time" value="">
@@ -138,8 +141,8 @@ function checkCmdRet(){
 									<div class="formfonttitle"><#System_Log#> - <#System_act_connections#></div>
 									<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 									<div class="formfontdesc" id="cmdDesc">Click below to generate a list of tracked connections.&nbsp;&nbsp;
-										<input type="radio" name="conntrk_opt" class="input" value="1">Detail
-										<input type="radio" name="conntrk_opt" class="input" value="0">Counts by Client
+										<input type="radio" name="connstat_opt" class="input" value="0" <% nvram_match("connstat_opt", "0", "checked"); %>>Summary
+										<input type="radio" name="connstat_opt" class="input" value="1" <% nvram_match("connstat_opt", "1", "checked"); %>>Detail
 									</div>
 
 									<div class="apply_gen">
@@ -148,9 +151,7 @@ function checkCmdRet(){
 									</div>
 
 									<div style="margin-top:8px" id="logArea">
-										<textarea cols="63" rows="35" wrap="off" readonly="readonly" id="textarea" style="width:99%;font-family:Courier New, Courier, mono; font-size:11px;background:#475A5F;color:#FFFFFF; overflow-x:auto; overflow-y:auto;">
-											<% nvram_dump("syscmd.log","syscmd.sh"); %>
-										</textarea>
+										<textarea cols="63" rows="35" wrap="off" readonly="readonly" id="textarea" style="width:99%;font-family:Courier New, Courier, mono; font-size:11px;background:#475A5F;color:#FFFFFF; overflow-x:auto; overflow-y:auto;"><% nvram_dump("syscmd.log","syscmd.sh"); %></textarea>
 									</div>
 								</td>
 							</tr>

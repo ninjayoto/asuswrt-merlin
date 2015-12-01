@@ -1162,6 +1162,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "log_level", "7" },		/* <  LOG_DEBUG */
 	{ "console_loglevel", "5"},	/* <  KERN_INFO */
 	{ "message_loglevel", "5"},	/* <  LOG_NOTICE */
+	{ "connstat_opt", "0"},		/* <  CONNECTION LOG TYPE */
 //	{ "cron_logfile", "0"},		/* <  CROND_LOG */
 	{ "cron_loglevel", "8"},        /* <  CROND_INFO */
 

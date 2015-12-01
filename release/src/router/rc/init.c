@@ -3367,6 +3367,10 @@ int init_nvram(void)
 	if(nvram_get("ntp_update") == NULL)
 		nvram_set("ntp_update", "1");
 
+	// Initialize Connection Status option
+        if(nvram_get("connstat_opt") == NULL)
+                nvram_set("connstat_opt", "0");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
