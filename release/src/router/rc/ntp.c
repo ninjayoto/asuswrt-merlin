@@ -203,7 +203,7 @@ int ntp_main(int argc, char *argv[])
 
 			nvram_set("ntp_server_tried", server);
 			nvram_set("ntp_ready", "0");
-			if (nvram_match("ntp_log", "1") && tot_attempts == 0)
+			if (nvram_match("ntp_log_x", "1") && tot_attempts == 0)
 				logmessage("ntp", "start NTP update");
                         _eval(args, NULL, 0, &pid);
 			sleep(SECONDS_TO_WAIT);
@@ -220,7 +220,7 @@ int ntp_main(int argc, char *argv[])
 			}
 			else
 			{
-				if (nvram_match("ntp_log", "1") || fflag == 1)
+				if (nvram_match("ntp_log_x", "1") || fflag == 1)
 					logmessage("ntp", "NTP update successful after %d attempt(s)", tot_attempts);
 				nvram_set("ntp_sync", "1");
 				attempts = 0;

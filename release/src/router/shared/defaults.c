@@ -614,7 +614,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ntp_server1", "time.nist.gov" },
 	{ "ntp_server0", "pool.ntp.org" },
 	{ "ntpd_server", "0" },
-	{ "ntp_log", "0" },	// log successful NTP updates
+	{ "ntp_log_x", "1" },	// log successful NTP updates
 	{ "ntp_update", "1" },	// ntp update interval in hours
 
 	// NVRAM for do_startic_routes

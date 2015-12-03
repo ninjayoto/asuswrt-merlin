@@ -3362,8 +3362,10 @@ int init_nvram(void)
 	// Initialize NTP options
 	if(nvram_get("ntpd_server") == NULL)
 		nvram_set("ntpd_server", "0");
-	if(nvram_get("ntp_log") == NULL)
-                nvram_set("ntp_log", "0");
+	if(nvram_get("ntp_log_x") == NULL){
+                nvram_set("ntp_log_x", "1");
+		nvram_unset("ntp_log");
+	}
 	if(nvram_get("ntp_update") == NULL)
 		nvram_set("ntp_update", "1");
 

@@ -1280,8 +1280,8 @@ function updateDateTime()
 	<tr>
 	  <th>Log NTP updates**</th>
 	  <td>
-			<input type="radio" name="ntp_log" class="input" value="1" <% nvram_match_x("LANHostConfig", "ntp_log", "1", "checked"); %>><#checkbox_Yes#>
-			<input type="radio" name="ntp_log" class="input" value="0" <% nvram_match_x("LANHostConfig", "ntp_log", "0", "checked"); %>><#checkbox_No#>
+			<input type="radio" name="ntp_log_x" class="input" value="1" <% nvram_match_x("LANHostConfig", "ntp_log_x", "1", "checked"); %>><#checkbox_Yes#>
+			<input type="radio" name="ntp_log_x" class="input" value="0" <% nvram_match_x("LANHostConfig", "ntp_log_x", "0", "checked"); %>><#checkbox_No#>
 	  </td>
 	</tr>
 	<tr>
