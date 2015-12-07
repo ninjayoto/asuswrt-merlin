@@ -1338,6 +1338,12 @@ function updateDateTime()
 				<div id="svc_hint_div" style="display:none;"><span style="color:#FFCC00;"><#General_x_SystemTime_syncNTP#></span></div>
 			</td>
         </tr>
+	<tr>
+		<th><#LANHostConfig_x_NTPServer_itemname#> (Alternate)**</th>
+		<td>
+				<input type="text" maxlength="256" class="input_32_table" name="ntp_server1" value="<% nvram_get("ntp_server1"); %>" onKeyPress="return is_string(this,event);">
+		</td>
+	</tr>
 	<tr id="ntp_interval">
 		<th>Router NTP update interval (hours)**</th>
 		<td>
