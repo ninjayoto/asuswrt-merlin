@@ -27,6 +27,7 @@ static const char *mangle_fn = "/tmp/mangle_rules";
 #ifdef RTCONFIG_IPV6
 static const char *mangle_fn_ipv6 = "/tmp/mangle_rules_ipv6";
 #endif
+static const int MAX_RETRY = 5;
 
 int etable_flag = 0;
 int manual_return = 0;
@@ -574,26 +575,38 @@ int add_iQosRules(char *pcWANIF)
 	char ipv6_lan_addr[44];
 
 	/* ipv4 lan_addr for iptables use (LAN download) */
-	g = buf = strdup(nvram_safe_get("lan_ipaddr"));
-	if((vstrsep(g, ".", &a, &b, &c, &d)) != 4){
-		fprintf(stderr,"[qos] lan_ipaddr doesn't exist!!\n");
-	}
-	else{
-		sprintf(lan_addr, "%s.%s.%s.0/24", a, b, c);
-		fprintf(stderr,"[qos] lan_addr=%s\n", lan_addr);
+	for ( i = 1; i <= MAX_RETRY; i++ ) {
+		g = buf = strdup(nvram_safe_get("lan_ipaddr"));
+		if((vstrsep(g, ".", &a, &b, &c, &d)) != 4){
+			fprintf(stderr,"[qos] lan_ipaddr doesn't exist!!\n");
+			logmessage("qos","ipv4_lan_ipaddr doesn't exist, retrying");
+			sleep(1);
+		}
+		else{
+			sprintf(lan_addr, "%s.%s.%s.0/24", a, b, c);
+			fprintf(stderr,"[qos] lan_addr=%s\n", lan_addr);
+			logmessage("qos","using ipv4_lan_ipaddr %s", lan_addr);
+			i = MAX_RETRY + 1;
+		}
 	}
 	free(buf);
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()) {
 		/* ipv6_lan_addr for ip6tables use (LAN download) */
-		g = buf = strdup(nvram_safe_get("ipv6_prefix"));
-		if (!strlen(g)){
-			fprintf(stderr,"[qos] ipv6_lan_ipaddr doesn't exist!!\n");
-		}
-		else{
-			sprintf(ipv6_lan_addr, "%s/%d", g, nvram_get_int("ipv6_prefix_length") ? : 64);
-			fprintf(stderr,"[qos] ipv6_lan_addr=%s\n", ipv6_lan_addr);
+		for ( i = 1; i <= MAX_RETRY; i++ ) {
+			g = buf = strdup(nvram_safe_get("ipv6_prefix"));
+			if (!strlen(g)){
+				fprintf(stderr,"[qos] ipv6_lan_ipaddr doesn't exist!!\n");
+				logmessage("qos","ipv6_lan_ipaddr doesn't exist, retrying");
+				sleep(1);
+			}
+			else{
+				sprintf(ipv6_lan_addr, "%s/%d", g, nvram_get_int("ipv6_prefix_length") ? : 64);
+				fprintf(stderr,"[qos] ipv6_lan_addr=%s\n", ipv6_lan_addr);
+				logmessage("qos","using ipv6_lan_ipaddr %s", ipv6_lan_addr);
+				i = MAX_RETRY + 1;
+			}
 		}
 		free(buf);
 	}
