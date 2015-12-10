@@ -154,7 +154,7 @@ function apply(){
 	document.form.nfsd_exportlist.value = tmp_value;
 
 	showLoading();
-	FormActions("start_apply.htm", "apply", "restart_nasapps", "5");
+	FormActions("start_apply.htm", "apply", "restart_nfs", "5");
 	document.form.submit();
 }
 function get_disk_tree(){
@@ -607,7 +607,7 @@ function check_dir_path(){
 <iframe name="hidden_frame" id="hidden_frame" width="0" height="0" frameborder="0" scrolling="no"></iframe>
 <form method="post" name="serverForm" action="/start_apply.htm" target="hidden_frame">
 <input type="hidden" name="action_mode" value="apply">
-<input type="hidden" name="action_script" value="restart_nasapps">
+<input type="hidden" name="action_script" value="restart_nfs">
 <input type="hidden" name="action_wait" value="5">
 <input type="hidden" name="current_page" value="/Advanced_AiDisk_NFS.asp">
 <input type="hidden" name="flag" value="">

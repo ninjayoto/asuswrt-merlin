@@ -4788,6 +4788,17 @@ check_ddr_done:
 		if(action&RC_SERVICE_START) start_samba();
 	}
 #endif
+#ifdef RTCONFIG_NFS
+	else if (strcmp(script, "nfs") == 0)
+	{
+		if(action&RC_SERVICE_STOP){
+			stop_nfsd();
+		}
+		if(action&RC_SERVICE_START){
+			start_nfsd();
+		}
+	}
+#endif
 #ifdef RTCONFIG_WEBDAV
 	else if (strcmp(script, "webdav") == 0)
 	{
