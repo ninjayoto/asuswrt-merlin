@@ -3770,6 +3770,11 @@ void start_nfsd(void)
 
 	if (nvram_match("nfsd_enable", "0")) return;
 
+	if (getpid() != 1) {
+                notify_rc_after_wait("start_nfsd");
+                return;
+        }
+
 	/* create directories/files */
 	mkdir("/var/lib", 0755);
 	mkdir("/var/lib/nfs", 0755);
@@ -3839,6 +3844,12 @@ void restart_nfsd(void)
 
 void stop_nfsd(void)
 {
+
+	if (getpid() != 1) {
+                notify_rc_after_wait("stop_nfsd");
+                return;
+        }
+
 	killall_tk("mountd");
 	killall("nfsd", SIGKILL);
 	killall_tk("statd");
