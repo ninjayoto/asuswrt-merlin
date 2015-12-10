@@ -3824,6 +3824,8 @@ void start_nfsd(void)
 	sleep(1);
 	eval("/usr/sbin/exportfs", "-a");
 
+	logmessage("NFS Server", "daemon is started");
+
 	return;
 }
 
@@ -3845,6 +3847,8 @@ void stop_nfsd(void)
 #ifdef LINUX26
 	umount("/proc/fs/nfsd");
 #endif
+
+	logmessage("NFS Server", "daemon is stopped");
 
 	return;
 }
