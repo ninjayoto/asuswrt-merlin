@@ -2952,9 +2952,6 @@ void start_nas_services(int force)
 #ifdef RTCONFIG_SAMBASRV
 	start_samba();
 #endif
-#ifdef RTCONFIG_NFS
-	start_nfsd();
-#endif
 if (nvram_match("asus_mfg", "0")) {
 #ifdef RTCONFIG_FTP
 	start_ftpd();
@@ -2970,6 +2967,10 @@ if (nvram_match("asus_mfg", "0")) {
 #ifdef RTCONFIG_TIMEMACHINE
 	start_timemachine();
 #endif
+#ifdef RTCONFIG_NFS
+	start_nfsd();
+#endif
+
 }
 
 void stop_nas_services(int force)
@@ -2979,6 +2980,15 @@ void stop_nas_services(int force)
 		return;
 	}
 
+#ifdef RTCONFIG_NFS
+        stop_nfsd();
+#endif
+#ifdef RTCONFIG_TIMEMACHINE
+        stop_timemachine();
+#endif
+#ifdef RTCONFIG_WEBDAV
+        //stop_webdav();
+#endif
 #ifdef RTCONFIG_MEDIA_SERVER
 	force_stop_dms();
 	stop_mt_daapd();
@@ -2988,15 +2998,6 @@ void stop_nas_services(int force)
 #endif
 #ifdef RTCONFIG_SAMBASRV
 	stop_samba();
-#endif
-#ifdef RTCONFIG_NFS
-	stop_nfsd();
-#endif
-#ifdef RTCONFIG_WEBDAV
-	//stop_webdav();
-#endif
-#ifdef RTCONFIG_TIMEMACHINE
-	stop_timemachine();
 #endif
 }
 
@@ -3776,12 +3777,16 @@ void start_nfsd(void)
         }
 
 	/* create directories/files */
-	mkdir("/var/lib", 0755);
-	mkdir("/var/lib/nfs", 0755);
+	mkdir_if_none("/var/lib");
+	mkdir_if_none("/var/lib/nfs");
 #ifdef LINUX26
-	mkdir("/var/lib/nfs/v4recovery", 0755);
+	mkdir_if_none("/var/lib/nfs/v4recovery");
 	mount("nfsd", "/proc/fs/nfsd", "nfsd", MS_MGC_VAL, NULL);
 #endif
+	unlink("/var/lib/nfs/etab");
+	unlink("/var/lib/nfs/xtab");
+	unlink("/var/lib/nfs/rmtab");
+
 	close(creat("/var/lib/nfs/etab", 0644));
 	close(creat("/var/lib/nfs/xtab", 0644));
 	close(creat("/var/lib/nfs/rmtab", 0644));
@@ -3836,8 +3841,9 @@ void start_nfsd(void)
 
 void restart_nfsd(void)
 {
-	eval("/usr/sbin/exportfs", "-au");
-	eval("/usr/sbin/exportfs", "-a");
+	//eval("/usr/sbin/exportfs", "-au");
+	//eval("/usr/sbin/exportfs", "-a");
+	eval("/usr/sbin/exportfs", "-r");
 
 	return;
 }
@@ -3850,10 +3856,11 @@ void stop_nfsd(void)
                 return;
         }
 
+	eval("/usr/sbin/exportfs", "-au");
 	killall_tk("mountd");
 	killall("nfsd", SIGKILL);
 	killall_tk("statd");
-	killall_tk("portmap");
+	//killall_tk("portmap");
 
 #ifdef LINUX26
 	umount("/proc/fs/nfsd");
