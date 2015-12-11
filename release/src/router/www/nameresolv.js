@@ -102,7 +102,7 @@ function oui_query(mac) {
 	tab = mac.split(mac.substr(2,1));
 
   $j.ajax({
-    url: 'http://standards.ieee.org/cgi-bin/ouisearch?'+ tab[0] + '-' + tab[1] + '-' + tab[2],
+    url: 'https://services11.ieee.org/RST/standards-ra-web/rest/assignments/download/?registry=MA-L&format=html&text='+ tab[0] + tab[1] + tab[2],
 		type: 'GET',
     error: function(xhr) {
 			if(overlib.isOut)
@@ -113,7 +113,7 @@ function oui_query(mac) {
     success: function(response) {
 			if(overlib.isOut)
 				return nd();
-			var retData = response.responseText.split("pre")[1].split("(base 16)")[1].replace("PROVINCE OF CHINA", "R.O.C").split("&lt;/");
+			var retData = response.responseText.split("pre")[1].split("(base 16)")[1].split("&lt;/");
 			overlib_str_tmp += "<p><span>.....................................</span></p>";
 			return overlib(overlib_str_tmp + "<p style='margin-top:5px'><#Manufacturer#> :</p>" + retData[0]);
 		}    
