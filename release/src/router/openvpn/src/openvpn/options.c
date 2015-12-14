@@ -60,6 +60,8 @@
 
 #include "memdbg.h"
 
+bool pia_signal_settings = 0;
+
 const char title_string[] =
   PACKAGE_STRING
   " " TARGET_ALIAS
@@ -4192,6 +4194,10 @@ add_option (struct options *options,
     {
       VERIFY_PERMISSION (OPT_P_GENERAL);
       usage_version ();
+    }
+  else if (streq (p[0], "pia-signal-settings"))
+    {
+      pia_signal_settings = 1;
     }
   else if (streq (p[0], "config") && p[1])
     {
