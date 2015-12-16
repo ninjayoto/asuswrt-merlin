@@ -996,6 +996,9 @@ restore_defaults(void)
 	nvram_set("svc_ready", "0");
 	nvram_set("ntp_ready", "0");
 
+	/* reset qos err status */
+	nvram_set("qos_addr_err", "4");
+
 #ifdef RTCONFIG_QTN
 	nvram_unset("qtn_ready");
 #endif

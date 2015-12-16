@@ -27,10 +27,11 @@ static const char *mangle_fn = "/tmp/mangle_rules";
 #ifdef RTCONFIG_IPV6
 static const char *mangle_fn_ipv6 = "/tmp/mangle_rules_ipv6";
 #endif
-static const int MAX_RETRY = 5;
 
 int etable_flag = 0;
 int manual_return = 0;
+
+#define MAX_RETRY 10
 
 // FindMask : 
 // 1. sourceStr 	: replace "*'" to "0"
@@ -573,22 +574,29 @@ int add_iQosRules(char *pcWANIF)
 	char *a, *b, *c, *d;
 	char lan_addr[20];
 	char ipv6_lan_addr[44];
+	int ipv4_err, ipv6_err;
+
+	ipv4_err = 1;
+	ipv6_err = 2;
 
 	/* ipv4 lan_addr for iptables use (LAN download) */
 	for ( i = 1; i <= MAX_RETRY; i++ ) {
 		g = buf = strdup(nvram_safe_get("lan_ipaddr"));
 		if((vstrsep(g, ".", &a, &b, &c, &d)) != 4){
 			fprintf(stderr,"[qos] lan_ipaddr doesn't exist!!\n");
-			logmessage("qos","ipv4_lan_ipaddr doesn't exist, retrying");
+			//logmessage("qos","ipv4_lan_ipaddr doesn't exist, retrying");
 			sleep(1);
 		}
 		else{
 			sprintf(lan_addr, "%s.%s.%s.0/24", a, b, c);
 			fprintf(stderr,"[qos] lan_addr=%s\n", lan_addr);
 			logmessage("qos","using ipv4_lan_ipaddr %s", lan_addr);
+			ipv4_err = 0;
 			i = MAX_RETRY + 1;
 		}
 	}
+	if (ipv4_err > 0)
+		logmessage("qos","error setting ipv4_lan_ipaddr!");
 	free(buf);
 
 #ifdef RTCONFIG_IPV6
@@ -598,19 +606,24 @@ int add_iQosRules(char *pcWANIF)
 			g = buf = strdup(nvram_safe_get("ipv6_prefix"));
 			if (!strlen(g)){
 				fprintf(stderr,"[qos] ipv6_lan_ipaddr doesn't exist!!\n");
-				logmessage("qos","ipv6_lan_ipaddr doesn't exist, retrying");
+				//logmessage("qos","ipv6_lan_ipaddr doesn't exist, retrying");
 				sleep(1);
 			}
 			else{
 				sprintf(ipv6_lan_addr, "%s/%d", g, nvram_get_int("ipv6_prefix_length") ? : 64);
 				fprintf(stderr,"[qos] ipv6_lan_addr=%s\n", ipv6_lan_addr);
 				logmessage("qos","using ipv6_lan_ipaddr %s", ipv6_lan_addr);
+				ipv6_err = 0;
 				i = MAX_RETRY + 1;
 			}
 		}
+		if (ipv6_err > 0)
+			logmessage("qos","error setting ipv6_lan_ipaddr!");
 		free(buf);
 	}
 #endif
+
+	nvram_set_int("qos_addr_err", (ipv4_err + ipv6_err));
 
 	//fprintf(stderr, "[qos] down_class_num=%x\n", down_class_num);
 
@@ -722,14 +735,39 @@ int add_iQosRules(char *pcWANIF)
 	fprintf(fn, "COMMIT\n");
 	fclose(fn);
 	chmod(mangle_fn, 0700);
-	eval("iptables-restore", (char*)mangle_fn);
+
+	// add retries to iptables rules apply
+	for ( i = 1; i <= MAX_RETRY; i++ ) {
+		if (eval("iptables-restore", (char*)mangle_fn)) {
+			_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+			if (i == MAX_RETRY)
+				logmessage("qos", "apply rules (%s) failed!", mangle_fn);
+			sleep(1);
+		} else {
+			logmessage("qos", "apply rules (%s) success!", mangle_fn);
+			i = MAX_RETRY + 1;
+		}
+	}
+
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
 	{
 		fprintf(fn_ipv6, "COMMIT\n");
 		fclose(fn_ipv6);
 		chmod(mangle_fn_ipv6, 0700);
-		eval("ip6tables-restore", (char*)mangle_fn_ipv6);
+
+		// add retries to ip6tables rules apply
+		for ( i = 1; i <= MAX_RETRY; i++ ) {
+			if (eval("ip6tables-restore", (char*)mangle_fn_ipv6)) {
+				_dprintf("ip6tables-restore failed - attempt: %d ...\n", i);
+				if (i == MAX_RETRY)
+					logmessage("qos", "apply rules (%s) failed!", mangle_fn_ipv6);
+				sleep(1);
+			} else {
+				logmessage("qos", "apply rules (%s) success!", mangle_fn_ipv6);
+				i = MAX_RETRY + 1;
+			}
+		}
 	}
 #endif
 
