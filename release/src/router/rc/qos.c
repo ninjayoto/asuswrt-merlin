@@ -932,7 +932,7 @@ int start_iQos(void)
 			"# egress %d: %u-%u%%\n"
 			"\t$TCA parent 1:1 classid 1:%d htb rate %ukbit %s %s prio %d quantum %u\n"
 			"\t$TQA parent 1:%d handle %d: $SFQ\n"
-			"\t$TFA parent 1: prio %d protocol ip handle %d fw flowid 1:%d\n",
+			"\t$TFA parent 1: prio %d protocol all handle %d fw flowid 1:%d\n",
 				i, rate, ceil,
 				x, calc(bw, rate), s, burst_leaf, (i >= 6) ? 7 : (i + 1), mtu,
 				x, x,
@@ -950,7 +950,7 @@ int start_iQos(void)
 	if (nvram_match("qos_ack", "on")) {
 		fprintf(f,
 			"\n"
-			"\t$TFA parent 1: prio 14 protocol ip u32 "
+			"\t$TFA parent 1: prio 14 protocol all u32 "
 			"match ip protocol 6 0xff "			// TCP
 			"match u8 0x05 0x0f at 0 "			// IP header length
 			"match u16 0x0000 0xffc0 at 2 "			// total length (0-63)
@@ -960,7 +960,7 @@ int start_iQos(void)
 	if (nvram_match("qos_syn", "on")) {
 		fprintf(f,
 			"\n"
-			"\t$TFA parent 1: prio 15 protocol ip u32 "
+			"\t$TFA parent 1: prio 15 protocol all u32 "
 			"match ip protocol 6 0xff "			// TCP
 			"match u8 0x05 0x0f at 0 "			// IP header length
 			"match u16 0x0000 0xffc0 at 2 "			// total length (0-63)
@@ -970,7 +970,7 @@ int start_iQos(void)
 	if (nvram_match("qos_fin", "on")) {
 		fprintf(f,
 			"\n"
-			"\t$TFA parent 1: prio 17 protocol ip u32 "
+			"\t$TFA parent 1: prio 17 protocol all u32 "
 			"match ip protocol 6 0xff "			// TCP
 			"match u8 0x05 0x0f at 0 "			// IP header length
 			"match u16 0x0000 0xffc0 at 2 "			// total length (0-63)
@@ -980,7 +980,7 @@ int start_iQos(void)
 	if (nvram_match("qos_rst", "on")) {
 		fprintf(f,
 			"\n"
-			"\t$TFA parent 1: prio 19 protocol ip u32 "
+			"\t$TFA parent 1: prio 19 protocol all u32 "
 			"match ip protocol 6 0xff "			// TCP
 			"match u8 0x05 0x0f at 0 "			// IP header length
 			"match u16 0x0000 0xffc0 at 2 "			// total length (0-63)
@@ -988,7 +988,7 @@ int start_iQos(void)
 			"flowid 1:10\n");
 	}
 	if (nvram_match("qos_icmp", "on")) {
-		fputs("\n\t$TFA parent 1: prio 13 protocol ip u32 match ip protocol 1 0xff flowid 1:10\n", f);
+		fputs("\n\t$TFA parent 1: prio 13 protocol all u32 match ip protocol 1 0xff flowid 1:10\n", f);
 	}
 
 	// ingress
@@ -1026,7 +1026,7 @@ int start_iQos(void)
 				"# ingress %d: %u%%\n"
 				"\t$TCADL parent 2:1 classid 2:%d htb rate %ukbit %s prio %d quantum %u\n"
 				"\t$TQADL parent 2:%d handle %d: $SFQ\n"
-				"\t$TFADL parent 2: prio %d protocol ip handle %d fw flowid 2:%d\n",
+				"\t$TFADL parent 2: prio %d protocol all handle %d fw flowid 2:%d\n",
 					i, rate,
 					x, calc(bw, rate), burst_leaf, (i >= 6) ? 7 : (i + 1), mtu,
 					x, x,
@@ -1035,7 +1035,7 @@ int start_iQos(void)
 			x = i + 1;
 			fprintf(f,
 				"# ingress %d: %u%%\n"
-				"\t$TFA parent ffff: prio %d protocol ip handle %d"
+				"\t$TFA parent ffff: prio %d protocol all handle %d"
 					" fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
 					i, rate, x, x, u, v, x);
 
@@ -1043,7 +1043,7 @@ int start_iQos(void)
 			x = down_class_num;
 			fprintf(f,
                                 "# ingress %d: %u%% (download default)\n"
-                                "\t$TFA parent ffff: prio %d protocol ip handle %d"
+                                "\t$TFA parent ffff: prio %d protocol all handle %d"
                                         " fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
                                         (x - 1), rate, x, x, u, v, x);
 			}
