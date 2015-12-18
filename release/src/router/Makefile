@@ -217,7 +217,11 @@ ifneq ($(or $(findstring linux-2.6.36.x,$(LINUXDIR)),$(findstring linux-2.6.36,$
 #obj-$(RTCONFIG_USB_MODEM) += usbmodeswitch-1.2.3
 obj-$(RTCONFIG_USB_MODEM) += usb-modeswitch-2.1.1
 else
+ifeq ($(RTCONFIG_BCMWL6),y)
+obj-$(RTCONFIG_USB_MODEM) += usb-modeswitch-2.2.3
+else
 obj-$(RTCONFIG_USB_MODEM) += usbmodeswitch
+endif
 endif
 
 obj-$(RTCONFIG_USB_BECEEM) += madwimax-0.1.1 # for Samsung WiMAX
@@ -1495,6 +1499,17 @@ usb-modeswitch-2.1.1-install: usb-modeswitch-2.1.1
 	$(STRIP) -s $(INSTALLDIR)/usb-modeswitch-2.1.1/usr/sbin/usb_modeswitch
 	@mkdir -p $(TARGETDIR)/rom/etc
 	@sed 's/#.*//g;s/[ \t]\+/ /g;s/^[ \t]*//;s/[ \t]*$$//;/^$$/d' < $(TOP)/usb-modeswitch-2.1.1/usb_modeswitch.conf > $(TARGETDIR)/rom/etc/usb_modeswitch.conf
+
+usb-modeswitch-2.2.3: libusb10
+	$(MAKE) -C $@ CC=$(CC) CFLAGS="-Os $(EXTRACFLAGS) \
+		-Wl,-R/lib:/usr/lib:/opt/usr/lib:/usr/local/share -lpthread -ldl \
+		-I$(TOP)/libusb10/libusb -L$(TOP)/libusb10/libusb/.libs -lusb-1.0"
+
+usb-modeswitch-2.2.3-install: usb-modeswitch-2.2.3
+	install -D usb-modeswitch-2.2.3/usb_modeswitch $(INSTALLDIR)/usb-modeswitch-2.2.3/usr/sbin/usb_modeswitch
+	$(STRIP) -s $(INSTALLDIR)/usb-modeswitch-2.2.3/usr/sbin/usb_modeswitch
+	@mkdir -p $(TARGETDIR)/rom/etc
+	@sed 's/#.*//g;s/[ \t]\+/ /g;s/^[ \t]*//;s/[ \t]*$$//;/^$$/d' < $(TOP)/usb-modeswitch-2.2.3/usb_modeswitch.conf > $(TARGETDIR)/rom/etc/usb_modeswitch.conf
 
 libusb-0.1.12/stamp-h1:
 	cd libusb-0.1.12 && CFLAGS="-Os -Wall $(EXTRACFLAGS)" LIBS="-lpthread" \
