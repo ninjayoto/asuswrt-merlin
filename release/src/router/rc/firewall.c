@@ -1667,6 +1667,7 @@ start_default_filter(int lanunit)
 {
 	// TODO: handle multiple lan
 	FILE *fp;
+	int i;
 
 	printf("\nset default filter settings\n");	// tmp test
 	if ((fp=fopen("/tmp/filter.default", "w"))==NULL) return;
@@ -1692,8 +1693,17 @@ start_default_filter(int lanunit)
 	fprintf(fp, "COMMIT\n\n");
 	fclose(fp);
 
-	//system("iptables -F"); 
-	eval("iptables-restore", "/tmp/filter.default");
+	//system("iptables -F");
+	// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+	// Retry a few times with increasing wait time to resolve collision.
+	for ( i = 1; i < 4; i++ ) {
+		if (eval("iptables-restore", "/tmp/filter_rules")) {
+			_dprintf("iptables-restore failed - retrying in %d secs...\n", i*i);
+			sleep(i*i);
+		} else {
+			i = 4;
+		}
+	}
 }
 
 #ifdef WEBSTRFILTER
@@ -2938,7 +2948,16 @@ TRACE_PT("write url filter\n");
 		}
 		fprintf(fp_ipv6, "COMMIT\n\n");
 		fclose(fp_ipv6);
-		eval("ip6tables-restore", "/tmp/filter_rules_ipv6");
+		// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+		// Retry a few times with increasing wait time to resolve collision.
+		for ( i = 1; i < 4; i++ ) {
+			if (eval("ip6tables-restore", "/tmp/filter_rules_ipv6")) {
+				_dprintf("ip6tables-restore failed - retrying in %d secs...\n", i*i);
+				sleep(i*i);
+			} else {
+				i = 4;
+			}
+		}
 	}
 #endif
 }
@@ -4035,7 +4054,16 @@ TRACE_PT("write url filter\n");
 	fclose(fp);
 
 	//system("iptables -F");
-	eval("iptables-restore", "/tmp/filter_rules");
+	// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+	// Retry a few times with increasing wait time to resolve collision.
+	for ( i = 1; i < 4; i++ ) {
+		if (eval("iptables-restore", "/tmp/filter_rules")) {
+			_dprintf("iptables-restore failed - retrying in %d secs...\n", i*i);
+			sleep(i*i);
+		} else {
+			i = 4;
+		}
+	}
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
@@ -4047,7 +4075,16 @@ TRACE_PT("write url filter\n");
 		}
 		fprintf(fp_ipv6, "COMMIT\n\n");
 		fclose(fp_ipv6);
-		eval("ip6tables-restore", "/tmp/filter_rules_ipv6");
+		// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+		// Retry a few times with increasing wait time to resolve collision.
+		for ( i = 1; i < 4; i++ ) {
+			if (eval("ip6tables-restore", "/tmp/filter_rules_ipv6")) {
+				_dprintf("ip6tables-restore failed - retrying in %d secs...\n", i*i);
+				sleep(i*i);
+			} else {
+				i = 4;
+			}
+		}
 	}
 #endif
 }
