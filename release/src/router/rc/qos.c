@@ -736,17 +736,21 @@ int add_iQosRules(char *pcWANIF)
 	fclose(fn);
 	chmod(mangle_fn, 0700);
 
-	// add retries to iptables rules apply
-	for ( i = 1; i <= MAX_RETRY; i++ ) {
-		if (eval("iptables-restore", (char*)mangle_fn)) {
-			_dprintf("iptables-restore failed - attempt: %d ...\n", i);
-			if (i == MAX_RETRY)
-				logmessage("qos", "apply rules (%s) failed!", mangle_fn);
-			sleep(1);
-		} else {
-			logmessage("qos", "apply rules (%s) success!", mangle_fn);
-			i = MAX_RETRY + 1;
+	if (ipv4_err == 0) {
+		// add retries to iptables rules apply
+		for ( i = 1; i <= MAX_RETRY; i++ ) {
+			if (eval("iptables-restore", (char*)mangle_fn)) {
+				_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+				if (i == MAX_RETRY)
+					logmessage("qos", "apply rules (%s) failed!", mangle_fn);
+				sleep(1);
+			} else {
+				logmessage("qos", "apply rules (%s) success!", mangle_fn);
+				i = MAX_RETRY + 1;
+			}
 		}
+	} else {
+		logmessage("qos", "ipv4_lan_addr invalid - skipping rules (%s)", mangle_fn);
 	}
 
 #ifdef RTCONFIG_IPV6
@@ -756,17 +760,21 @@ int add_iQosRules(char *pcWANIF)
 		fclose(fn_ipv6);
 		chmod(mangle_fn_ipv6, 0700);
 
-		// add retries to ip6tables rules apply
-		for ( i = 1; i <= MAX_RETRY; i++ ) {
-			if (eval("ip6tables-restore", (char*)mangle_fn_ipv6)) {
-				_dprintf("ip6tables-restore failed - attempt: %d ...\n", i);
-				if (i == MAX_RETRY)
-					logmessage("qos", "apply rules (%s) failed!", mangle_fn_ipv6);
-				sleep(1);
-			} else {
-				logmessage("qos", "apply rules (%s) success!", mangle_fn_ipv6);
-				i = MAX_RETRY + 1;
+		if (ipv6_err == 0) {
+			// add retries to ip6tables rules apply
+			for ( i = 1; i <= MAX_RETRY; i++ ) {
+				if (eval("ip6tables-restore", (char*)mangle_fn_ipv6)) {
+					_dprintf("ip6tables-restore failed - attempt: %d ...\n", i);
+					if (i == MAX_RETRY)
+						logmessage("qos", "apply rules (%s) failed!", mangle_fn_ipv6);
+					sleep(1);
+				} else {
+					logmessage("qos", "apply rules (%s) success!", mangle_fn_ipv6);
+					i = MAX_RETRY + 1;
+				}
 			}
+		} else {
+			logmessage("qos", "ipv6_lan_addr invalid - skipping rules (%s)", mangle_fn);
 		}
 	}
 #endif
@@ -1079,6 +1087,7 @@ int start_iQos(void)
 	fclose(f);
 	chmod(qosfn, 0700);
 	eval((char *)qosfn, "start");
+	logmessage("qos", "start complete");
 
 	run_custom_script("qos-start", "init");
 	fprintf(stderr,"[qos] tc done!\n");
