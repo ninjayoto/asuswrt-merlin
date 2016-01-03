@@ -1445,7 +1445,9 @@ void start_ipv6(void)
 			nvram_set("ipv6_prefix_length", "");
 			nvram_set("ipv6_rtr_addr", "");
 		} else {
-			nvram_set_int("ipv6_prefix_length", 64);
+			int prefixlen = nvram_get_int("ipv6_prefix_length") ? : 64;
+                        /* prefix */
+                        nvram_set_int("ipv6_prefix_length", prefixlen);
 			add_ip6_lanaddr();
 		}
 		nvram_set("ipv6_get_dns", "");
