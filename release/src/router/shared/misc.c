@@ -622,16 +622,24 @@ const char *get_wan6face(void)
 	case IPV6_NATIVE:
 	case IPV6_NATIVE_DHCP:
 	case IPV6_MANUAL:
-		return get_wan6_ifname(0);
+		return (get_wan6_ifname(0) ? : nvram_safe_get("wan0_ifname"));
+		break;
 	case IPV6_6TO4:
 		return "v6to4";
+		break;
 	case IPV6_6IN4:
 		return "v6in4";
+		break;
 	case IPV6_6RD:
 		return "6rd";
+		break;
+	default:
+		return nvram_safe_get("wan0_ifname");
+		break;
 	}
-//	return nvram_safe_get("ipv6_ifname");
-	return "";
+
+	if (!ipv6_enabled())
+		return "";
 }
 
 int update_6rd_info(void)
