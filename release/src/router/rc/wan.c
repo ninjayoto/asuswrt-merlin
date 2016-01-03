@@ -2002,7 +2002,7 @@ void wan6_up(const char *wan_ifname)
 		break;
 	case IPV6_NATIVE_DHCP:
 		{
-			int prefixlen = 64;
+			int prefixlen = nvram_get_int("ipv6_prefix_length") ? : 64;
 
 			/* prefix */
 			nvram_set_int("ipv6_prefix_length", prefixlen);
