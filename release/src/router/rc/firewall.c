@@ -4515,6 +4515,7 @@ int start_firewall(int wanunit, int lanunit)
 
 #ifdef RTCONFIG_IPV6
 	strlcpy(wan6face, get_wan6face(), sizeof(wan6face));
+	nvram_set("ipv6_ifname", wan6face);
 #endif
 
 	// handle one only

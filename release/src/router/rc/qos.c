@@ -611,8 +611,10 @@ int add_iQosRules(char *pcWANIF)
 			}
 			else{
 				sprintf(ipv6_lan_addr, "%s/%d", g, nvram_get_int("ipv6_prefix_length") ? : 64);
+                                strlcpy(wan6face, get_wan6face(), IFNAMSIZ+1);  //refresh ipv6 ifname
+				nvram_set("ipv6_ifname", wan6face);
 				fprintf(stderr,"[qos] ipv6_lan_addr=%s\n", ipv6_lan_addr);
-				logmessage("qos","using ipv6_lan_ipaddr %s", ipv6_lan_addr);
+				logmessage("qos","using ipv6_lan_ipaddr %s on interface %s", ipv6_lan_addr, wan6face);
 				ipv6_err = 0;
 				i = MAX_RETRY + 1;
 			}
@@ -774,7 +776,7 @@ int add_iQosRules(char *pcWANIF)
 				}
 			}
 		} else {
-			logmessage("qos", "ipv6_lan_addr invalid - skipping rules (%s)", mangle_fn);
+			logmessage("qos", "ipv6_lan_addr invalid - skipping rules (%s)", mangle_fn_ipv6);
 		}
 	}
 #endif
