@@ -2219,6 +2219,41 @@ function valid_IP_subnet(obj){
 			return true;
 }
 
+function valid_IP_range(obj){
+	var iprange = obj.value.split("-");
+
+	for(var i = 0; i < 2; ++i){
+		var ipPattern = new RegExp("^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$", "gi");
+		if(!ipPattern.test(iprange[i])){
+			alert(iprange[i] + " <#JS_validip#>");
+			obj.focus();
+			obj.select();
+			return false;
+		}
+		var parts = iprange[i].split(".");
+		if(parts[0] > 255 || parts[1] > 255 || parts[2] > 255 || parts[3] > 255){
+			alert(iprange[i] + " <#JS_validip#>");
+			obj.focus();
+			obj.select();
+			return false;
+		}
+	}
+	if (dot2num(iprange[0]) > dot2num(iprange[1])){
+		alert("Invalid IP Range!");
+		obj.focus();
+		obj.select();
+		return false;
+	}
+
+	return true;
+}
+
+function dot2num(dot)
+{
+	var d = dot.split('.');
+	return ((((((+d[0])*256)+(+d[1]))*256)+(+d[2]))*256)+(+d[3]);
+}
+
 function ipaddr4_valid(obj){
 	var num = -1;	
 	var pos = 0;

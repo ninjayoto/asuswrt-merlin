@@ -707,25 +707,31 @@ function valid_IPorMAC(obj){
 			var legal_hwaddr = new RegExp("(^([a-fA-F0-9][aAcCeE02468])(\:))", "gi"); // for legal MAC, unicast & globally unique (OUI enforced)
 
 			if(obj.value.split(":").length >= 2){
-					if(!hwaddr.test(obj.value)){	
-							obj.focus();
-							alert("<#LANHostConfig_ManualDHCPMacaddr_itemdesc#>");							
-    					return false;
-    			}else if(!legal_hwaddr.test(obj.value)){
+				if(!hwaddr.test(obj.value)){
+					obj.focus();
+					alert("<#LANHostConfig_ManualDHCPMacaddr_itemdesc#>");
+					return false;
+				}else if(!legal_hwaddr.test(obj.value)){
     					obj.focus();
     					alert("<#IPConnection_x_illegal_mac#>");					
     					return false;
-    			}else
+				}else
     					return true;
 			}		
 			else if(obj.value.split("*").length >= 2){
-					if(!valid_IP_subnet(obj))
-							return false;
-					else
-							return true;				
+				if(!valid_IP_subnet(obj))
+					return false;
+				else
+					return true;
 			}
-			else if(!valid_IP_form(obj, 0)){
-    			return false;
+			else if(obj.value.split("-").length >=2){
+				if(!valid_IP_range(obj))
+					return false;
+				else
+					return true;
+			}
+			else if(!validate_ipcidr(obj)){
+					return false;
 			}
 			else
 					return true;		
@@ -896,7 +902,7 @@ function linkport(obj){
 									<div id="QoSList_Block" class="QoSList_Block" onclick="hideClients_Block()"></div>
 								</td>
 								<td width="20%">
-									<input type="text" maxlength="17" class="input_15_table" name="qos_ip_x_0" style="width:100px;float:left">
+									<input type="text" maxlength="32" class="input_15_table" name="qos_ip_x_0" style="width:100px;float:left">
 									<img id="pull_arrow_mac" class="pull_arrow"height="14px;" src="/images/arrow-down.gif" onclick="pullLANIPList(this);" title="<#select_client#>">
 									<div id="ClientList_Block_PC" class="ClientList_Block_PC" ></div>
 								</td>
