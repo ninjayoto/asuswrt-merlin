@@ -48,4 +48,3 @@ b\win64\vc_dll.bat          Visual C/C++ (AMD64 or Itanium) (DLL version)
 
 Notes:
   (1) includes support for i386 assembler versions
-
