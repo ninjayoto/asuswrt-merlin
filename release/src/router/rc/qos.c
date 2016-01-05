@@ -752,7 +752,7 @@ int add_iQosRules(char *pcWANIF)
 			}
 		}
 	} else {
-		logmessage("qos", "ipv4_lan_addr invalid - skipping rules (%s)", mangle_fn);
+		logmessage("qos", "ipv4_lan_addr not available - skipping rules (%s)", mangle_fn);
 	}
 
 #ifdef RTCONFIG_IPV6
@@ -776,7 +776,7 @@ int add_iQosRules(char *pcWANIF)
 				}
 			}
 		} else {
-			logmessage("qos", "ipv6_lan_addr invalid - skipping rules (%s)", mangle_fn_ipv6);
+			logmessage("qos", "ipv6_lan_addr not available - skipping rules (%s)", mangle_fn_ipv6);
 		}
 	}
 #endif
