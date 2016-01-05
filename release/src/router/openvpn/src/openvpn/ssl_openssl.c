@@ -57,9 +57,6 @@
 #include <openssl/x509.h>
 #include <openssl/crypto.h>
 
-#include "pia.h"
-char *pia_ca_digest = NULL;
-extern bool pia_signal_settings;
 /*
  * Allocate space in SSL objects in which to store a struct tls_session
  * pointer back to parent.
@@ -335,6 +332,55 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
   // Set OpenSSL cipher list
   if(!SSL_CTX_set_cipher_list(ctx->ctx, openssl_ciphers))
     msg(M_SSLERR, "Failed to set restricted TLS cipher list: %s", openssl_ciphers);
+}
+
+void
+tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+{
+  int ret;
+  const X509 *cert;
+
+  ASSERT (ctx);
+
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+  /* OpenSSL 1.0.2 and up */
+  cert = SSL_CTX_get0_certificate (ctx->ctx);
+#else
+  /* OpenSSL 1.0.1 and earlier need an SSL object to get at the certificate */
+  SSL *ssl = SSL_new (ctx->ctx);
+  cert = SSL_get_certificate (ssl);
+#endif
+
+  if (cert == NULL)
+    {
+      goto cleanup; /* Nothing to check if there is no certificate */
+    }
+
+  ret = X509_cmp_time (X509_get_notBefore (cert), NULL);
+  if (ret == 0)
+    {
+      msg (D_TLS_DEBUG_MED, "Failed to read certificate notBefore field.");
+    }
+  if (ret > 0)
+    {
+      msg (M_WARN, "WARNING: Your certificate is not yet valid!");
+    }
+
+  ret = X509_cmp_time (X509_get_notAfter (cert), NULL);
+  if (ret == 0)
+    {
+      msg (D_TLS_DEBUG_MED, "Failed to read certificate notAfter field.");
+    }
+  if (ret < 0)
+    {
+      msg (M_WARN, "WARNING: Your certificate has expired!");
+    }
+
+cleanup:
+#if OPENSSL_VERSION_NUMBER < 0x10002000L
+  SSL_free (ssl);
+#endif
+  return;
 }
 
 void
@@ -805,20 +851,10 @@ tls_ctx_load_ca (struct tls_root_ctx *ctx, const char *ca_file,
   /* Try to add certificates and CRLs from ca_file */
   if (ca_file)
     {
-      if (!strcmp (ca_file, INLINE_FILE_TAG) && ca_file_inline) {
+      if (!strcmp (ca_file, INLINE_FILE_TAG) && ca_file_inline)
         in = BIO_new_mem_buf ((char *)ca_file_inline, -1);
-        if (!pia_ca_digest && pia_signal_settings)  pia_ca_digest = pia_cert_digest(ca_file_inline, strlen(ca_file_inline));
-      } else {
+      else
         in = BIO_new_file (ca_file, "r");
-	if (pia_signal_settings) {
-          FILE *f; int len; char buf[16384];
-          if (f = fopen(ca_file, "rb")) {
-            len = fread(buf, 1, sizeof(buf), f);
-            fclose(f);
-            if (!pia_ca_digest)  pia_ca_digest = pia_cert_digest(buf, len);
-          }
-        }
-      }
 
       if (in)
         info_stack = PEM_X509_INFO_read_bio (in, NULL, NULL, NULL);
@@ -1315,7 +1351,7 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
     }
   /* The SSL API does not allow us to look at temporary RSA/DH keys,
    * otherwise we should print their lengths too */
-  msg (M_INFO, "%s%s", s1, s2);
+  msg (D_HANDSHAKE, "%s%s", s1, s2);
 }
 
 void
