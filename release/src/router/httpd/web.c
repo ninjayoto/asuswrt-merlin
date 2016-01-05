@@ -3694,7 +3694,7 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 {
 	FILE *fp;
 	char hostname[64], macaddr[32], ipaddr[8192], ipaddrs[8192];
-	char ipv6_dns_str[1024];
+	char word[48], ipv6_dns_str[1024];
 	char *wan_type, *wan_dns, *p;
 	int service, i, ret = 0, first;
 
@@ -3737,7 +3737,16 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 
 	if (service == IPV6_NATIVE_DHCP &&
 	    nvram_get_int("ipv6_dnsenable")) {
-		wan_dns = nvram_safe_get("ipv6_get_dns");
+		memset(ipv6_dns_str, 0, sizeof(ipv6_dns_str));
+		first = 1;
+		foreach(word, nvram_safe_get("ipv6_get_dns"), p) {
+			if (first)
+				first = 0;
+			else
+				sprintf(ipv6_dns_str, "%s,\n%-32s", ipv6_dns_str, " ");
+
+                        sprintf(ipv6_dns_str, "%s%s", ipv6_dns_str, word);
+                }
 	} else {
 		char nvname[sizeof("ipv6_dnsXXX")];
 		char *next = ipv6_dns_str;
@@ -3749,9 +3758,8 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 			if (*wan_dns)
 				next += sprintf(next, *ipv6_dns_str ? "\n%-32s%s" : "%s%s", *ipv6_dns_str ? " " : "", wan_dns);
 		}
-		wan_dns = ipv6_dns_str;
 	}
-	ret += websWrite(wp, "%30s: %s\n", "DNS Address", wan_dns);
+	ret += websWrite(wp, "%30s: %s\n", "DNS Address", ipv6_dns_str);
 
 	ret += websWrite(wp, "\n\nIPv6 LAN Devices List\n");
 	ret += websWrite(wp, "-------------------------------------------------------------------\n");
