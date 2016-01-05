@@ -510,7 +510,7 @@ int add_iQosRules(char *pcWANIF)
 		}
 		
 #ifdef RTCONFIG_IPV6
-		if (ipv6_enabled() && (v4v6_ok & IPT_V6)){
+		if (ipv6_enabled() && (v4v6_ok & IPT_V6) && (strcmp(saddr_1, "") == 0) && (strcmp(saddr_2, "") == 0)){ //don't build ipv6 rules with ipv4 addresses
 			// step1. check proto != "NO"
 			if(strcmp(proto_1, "NO")){
 				// step2. if proto = any, no proto / dport
