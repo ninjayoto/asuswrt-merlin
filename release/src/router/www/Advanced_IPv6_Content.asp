@@ -846,6 +846,10 @@ function applyRule(){
 				&& (document.form.ipv6_service.value == "6in4" || document.form.ipv6_service_orig.value == "6in4"))
     		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 		}
+
+		// 2016.4 Unpredictable results with restart_allnet, always reboot when enabling or changing options for native ipv6
+		if(document.form.ipv6_service.value == "dhcp6")
+			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 	
 		document.form.ipv6_radvd_mtu.value = (document.form.enable_mtu_ckb.checked) ? 1 : 0;
 		document.form.ipv6_accept_ra.value=1;			// 0/1/2 default:1	
