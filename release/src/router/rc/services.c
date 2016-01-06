@@ -1095,24 +1095,28 @@ void start_dhcp6s(void)
 	fprintf(fp,	"option refreshtime %d;\n", 900); /* 15 minutes for now */
 
 	/* set DNS server & domain */
-	if (((get_ipv6_service() == IPV6_NATIVE_DHCP) || nvram_match("ipv6_dns_router", "1")) && nvram_match("ipv6_dnsenable", "1")) {
-		p = nvram_invmatch("ipv6_get_dns", "") ?
+	if (nvram_match("ipv6_dns_router", "1")) {
+		p = getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
+	} else {
+		if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_match("ipv6_dnsenable", "1")) {
+			p = nvram_invmatch("ipv6_get_dns", "") ?
 			nvram_safe_get("ipv6_get_dns") :
 			getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
-	} else {
-		char nvname[sizeof("ipv6_dnsXXX")];
-		char *next = ipv6_dns_str;
-		int i;
+		} else {
+			char nvname[sizeof("ipv6_dnsXXX")];
+			char *next = ipv6_dns_str;
+			int i;
 
-		ipv6_dns_str[0] = '\0';
-		for (i = 0; i < 3; i++) {
-			snprintf(nvname, sizeof(nvname), "ipv6_dns%d", i + 1);
-			p = nvram_safe_get(nvname);
-			if (!strlen(p)) continue;
-			/* TODO: make validation ipv6 address */
-			next += sprintf(next, strlen(ipv6_dns_str) ? " %s" : "%s", p);
+			ipv6_dns_str[0] = '\0';
+			for (i = 0; i < 3; i++) {
+				snprintf(nvname, sizeof(nvname), "ipv6_dns%d", i + 1);
+				p = nvram_safe_get(nvname);
+				if (!strlen(p)) continue;
+				/* TODO: make validation ipv6 address */
+				next += sprintf(next, strlen(ipv6_dns_str) ? " %s" : "%s", p);
+			}
+			p = ipv6_dns_str;
 		}
-		p = ipv6_dns_str;
 	}
 	if (p && *p)
 		fprintf(fp,	"option domain-name-servers %s;\n", p);

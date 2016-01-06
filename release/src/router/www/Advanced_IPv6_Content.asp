@@ -157,6 +157,9 @@ function showInputfield(v){
 		$("ipv6_dns_setting").style.display="";
 		inputCtrl(document.form.ipv6_dnsenable[0], 1);
 		inputCtrl(document.form.ipv6_dnsenable[1], 1);
+		inputCtrl(document.form.ipv6_dns1, 0);
+		inputCtrl(document.form.ipv6_dns2, 0);
+		inputCtrl(document.form.ipv6_dns3, 0);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		var enable_pd = (document.form.ipv6_dhcp_pd[1].checked) ? '0' : '1';
@@ -468,8 +471,6 @@ function showInputfield2(s, v){
 		inputCtrl(document.form.ipv6_dns1, enable);
 		inputCtrl(document.form.ipv6_dns2, enable);
 		inputCtrl(document.form.ipv6_dns3, enable);
-		inputCtrl(document.form.ipv6_dns_router[0], enable);
-		inputCtrl(document.form.ipv6_dns_router[1], enable);
 		
 	}else if(s=='ipv6_dhcp_pd'){
 		inputCtrl(document.form.ipv6_rtr_addr, enable);
