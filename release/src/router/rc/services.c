@@ -5749,6 +5749,7 @@ void start_nat_rules(void)
 	char *fn = NAT_RULES, ln[PATH_MAX];
 	struct stat s;
 	int i, j;
+	char ffile[32], cmd[128];
 
 	// all rules applied directly according to currently status, wanduck help to triger those not cover by normal flow
  	if(nvram_match("x_Setting", "0")){
@@ -5783,11 +5784,21 @@ void start_nat_rules(void)
 		} else {
 			set_iptlock(1); // Set lock
 			for ( i = 1; i <= MAX_RETRY; i++ ) {
-				if (eval("iptables-restore", NAT_RULES)) {
+				if (eval("iptables-restore", fn)) {
 					_dprintf("iptables-restore failed - attempt: %d ...\n", i);
 					//logmessage("start_nat_rules", "attempt: %d of %d ...\n", i, MAX_RETRY);
-					if (i == MAX_RETRY)
-						logmessage("start_nat_rules", "(%s) failed!", fn);
+					if (i == MAX_RETRY) {
+						if (f_exists(fn)) {
+							logmessage("start_nat_rules", "(%s) failed!", fn);
+							sprintf(ffile, "%s_failed", fn);
+							if (!f_exists(ffile)) {
+								sprintf(cmd, "%s %s %s", "cp", fn, ffile);
+								system(cmd);
+							}
+						} else
+							logmessage("start_nat_rules", "(%s) cancelled!", fn);
+					}
+
 					sleep(1);
 				} else {
 					logmessage("start_nat_rules", "(%s) success!", fn);
