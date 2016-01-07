@@ -3820,7 +3820,9 @@ void start_nfsd(void)
 	append_custom_config("exports", fp);
 	fclose(fp);
 	run_postconf("exports.postconf", NFS_EXPORT);
-	eval("/usr/sbin/portmap");
+
+	if (!pids("portmap"))
+		eval("/usr/sbin/portmap");
 	eval("/usr/sbin/statd");
 
 	if (nvram_match("nfsd_enable_v2", "1")) {
