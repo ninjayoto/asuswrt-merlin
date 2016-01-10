@@ -1816,6 +1816,9 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_SHP
 	{ "lfp_disable", 		"0"},
 #endif
+#ifdef RTCONFIG_BCMARM
+	{ "drop_caches", "0"},
+#endif
 #ifdef RTCONFIG_ISP_METER
 	{ "isp_meter",			"disable"},
 	{ "isp_limit",			"0"},
