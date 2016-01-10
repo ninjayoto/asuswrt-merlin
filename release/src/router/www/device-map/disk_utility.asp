@@ -40,7 +40,7 @@ a:active {
 </style>
 <script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
 <script>
-var diskOrder = parent.getSelectedDiskOrder() - 1;
+var diskOrder = parent.getSelectedDiskOrder();
 var diskmon_status = '<% nvram_get("diskmon_status"); %>';
 var usb_path1_diskmon_freq = '<% nvram_get("usb_path1_diskmon_freq"); %>';
 var usb_path1_diskmon_freq_time = '<% nvram_get("usb_path1_diskmon_freq_time"); %>';
@@ -62,13 +62,13 @@ function initial(){
 
 	load_schedule_value();
 	freq_change();
-	check_status(parent.usbPorts[diskOrder]);
+	check_status(parent.usbPorts[diskOrder-1]);
 }
 
 function load_schedule_value(){
-	document.form.diskmon_usbport.value = parent.getDiskPort(diskOrder);
+	document.form.diskmon_usbport.value = parent.getDiskPort(diskOrder-1);
 
-	if(parseInt(parent.getDiskPort(diskOrder)) == 1){
+	if(parseInt(parent.getDiskPort(diskOrder-1)) == 1){
 		document.form.diskmon_freq.value = usb_path1_diskmon_freq;
 		diskmon_freq_row = usb_path1_diskmon_freq_time.split('&#62');
 	}
