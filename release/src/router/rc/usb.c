@@ -3386,9 +3386,6 @@ int diskmon_main(int argc, char *argv[])
 			continue;
 		}
 
-		diskmon_enable += 1<<port_num;
-cprintf("disk_monitor: diskmon_enable=%d.\n", diskmon_enable);
-
 		memset(nvram_name, 0, 32);
 		sprintf(nvram_name, "usb_path%d_diskmon_freq_time", (port_num+1));
 		nv = nvp = strdup(nvram_safe_get(nvram_name));
@@ -3404,6 +3401,9 @@ cprintf("disk_monitor: diskmon_enable=%d.\n", diskmon_enable);
 			continue;
 		}
 
+		diskmon_enable += (1<<port_num);
+cprintf("disk_monitor: diskmon_enable=%d.\n", diskmon_enable);
+
 		val_hour[port_num] = atoi(set_hour);
 		if(diskmon_freq == DISKMON_FREQ_MONTH)
 			val_day[port_num] = atoi(set_day);
@@ -3416,6 +3416,7 @@ cprintf("disk_monitor: Port %d: val_day=%d, val_hour=%d.\n", port_num, val_day[p
 		++port_num;
 	}
 
+	nvram_set_int("diskmon_enable", diskmon_enable);
 	/*if(diskmon_enable == 0){
 		cprintf("disk_monitor: Disable the disk_monitor.\n");
 		exit(0);
@@ -3435,6 +3436,10 @@ cprintf("disk_monitor: decide if scan the target...\n");
 			diskmon_alarm_sec = 0;
 			port_num = 0;
 			foreach(word, nvram_safe_get("ehci_ports"), next){
+				if((diskmon_enable & (1<<port_num)) == 0){
+					++port_num;
+					continue;
+				}
 				if(local.tm_min <= DISKMON_SAFE_RANGE){
 					if(val_hour[port_num] == local.tm_hour){
 						if((diskmon_freq == DISKMON_FREQ_MONTH && val_day[port_num] == local.tm_mday)
