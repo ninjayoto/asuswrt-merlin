@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-15E5j9527 (16-November-2015)
+Asuswrt-Merlin fork - build 374.43_2-16E1j9527 (12-January-2016)
 =============================================
 
 About
@@ -19,6 +19,39 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-16E1j9527  (12-January-2016)
+* CHANGED: Updated OpenSSL to 1.0.2e
+* CHANGED: Updated e2fsprogs to latest Merlin level
+* CHANGED: Increased max Parental Controls to 32
+* CHANGED: Updated entware install script to entware-ng
+* CHANGED: Added support for igmpproxy customization
+* CHANGED: Updated kernel Ethernet driver for ARM routers
+* CHANGED: Updated packet matching netfilter for ARM routers with improved IPv6 support
+* CHANGED: Updated usbmodeswitch to 2.2.3
+* CHANGED: Updated AICloud to latest ASUS binaries
+* CHANGED: Updated ASUS WebStorage to latest ASUS binaries
+* CHANGED: Updated OpenVPN to 2.3.10
+* CHANGED: Updated LZO to 2.09
+* CHANGED: Remove TCP ALL selection from Network Filter protocols
+* CHANGED: Show successful NTP syncs in syslog by default
+* CHANGED: OpenVPN policy mode pass standard paramters if not specified
+* NEW: Allow changing the alternate NTP server in the gui
+* NEW: Allow changing the time between NTP syncs in the gui ('0' disables sync attempts)
+* NEW: Allow changing the time between NTP syncs in the gui ('0' disables sync attempts)
+* NEW: Support OpenVPN custom setup for Private Internet Access (PIA) users
+* NEW: User QoS rules can now specify an address range
+* NEW: User QoS rules can now specify addresses in CIDR format
+* NEW: Add new option to System Log>Connections to display connection count summary
+* FIX: Closed multiple buffer overflow exposures (via code review)
+* FIX: Fixed numerous issues during boot when QoS is active with native IPv6
+* FIX: IPv6 performance degredation when using QoS rules that specified an IP address
+* FIX: Option to advertise router as IPv6 DNS server with native IPv6 (default)
+* FIX: Smart Sync not syncing after start (ASUS binary updates)
+* FIX: Router boot failure if NFS is active
+* FIX: Vendor lookup from the networkmap client status
+* FIX: Disk Utility disk scan unable to run or runs on wrong drive
+
+
 374.43_2-15E5j9527  (16-November-2015)
 * FIXED: missing crl definition for OpenVPN server
 

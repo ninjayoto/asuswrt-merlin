@@ -1,5 +1,5 @@
 Merlin Fork Custom Options
-Update-15
+Update-16
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
@@ -224,17 +224,44 @@ Enable logging of successful NTP updates
 ----------------------------------------------------------------------------------------------------------------
 Set NTP update interval
 	
-	Can be set in gui:	No
+	Can be set in gui:	Yes (Administration/System/Router NTP update interval (hours))
 	Enable via NVRAM:	nvram set ntp_update=[interval in hours]
 				nvram commit
 
 	Routers Supported:	All
-	Released:		Update-15
+	Released:		Update-15 w/o gui support, Update-16 w/ gui support
 	Reboot Required:	No
-	Notes:			Default is that the router will update with its NTP server every hour if you are in a 
-					DST timezone or every 12 hours when not in a DST timezone
+	Notes:			Default is that the router will update with its NTP server every hour
 				This option changes the number of hours between updates.  The value is not currently error
-					checked and should be between 1 and 24 (hours).
+					checked and should be an integer between 1 and 24 (hours)
+				A value of '0' disables NTP updates and the time must be set manually (Update-16)
+----------------------------------------------------------------------------------------------------------------
+Set NTP alternate time server
+
+	Can be set in gui:	Yes (Administration/System/NTP Server (Alternate))
+	Enable via NVRAM:	nvram set ntp_update=[interval in hours]
+				nvram commit
+
+	Routers Supported:	All
+	Released:		Update-15 w/o gui support, Update-16 w/ gui support
+	Reboot Required:	No
+	Notes:			Default is that the router will update with its NTP server every hour
+				This option changes the number of hours between updates.  The value is not currently error
+					checked and should be an integer between 1 and 24 (hours)
+				A value of '0' disables NTP updates and the time must be set manually (Update-16)
+----------------------------------------------------------------------------------------------------------------
+Special support for Private Internet Access (PIA) OpenVPN Client
+
+	Can be set in gui:	Yes (Administration/System/NTP Server (Alternate))
+	Enable via NVRAM:	N/A (see pia_openvpn_options.zip in the download directory)
+
+	Routers Supported:	All
+	Released:		Update-16
+	Reboot Required:	No
+	Notes:			You can now set cipher, authentication and encryption options via the router as you would using
+					the PIA app.
+				You need to add a line to the custom config section and replace the ca with a new cert
+					(included in the zip) in addition to setting the appropriate OpenVPN options.
 ----------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
