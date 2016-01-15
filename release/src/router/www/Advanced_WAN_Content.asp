@@ -86,6 +86,10 @@ function initial(){
 			document.form.wan_pppoe_passwd.value = decodeURIComponent('<% nvram_char_to_ascii("", "wan_pppoe_passwd"); %>');
 	}
 
+	if (isSupport("dnssec")){
+		document.getElementById("dnssec_tr").style.display = "";
+	}
+
 	display_upnp_range();
 }
 
@@ -905,6 +909,13 @@ function pass_checked(obj){
             		<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,14);"><#IPConnection_x_DNSServer2_itemname#></a></th>
             		<td><input type="text" maxlength="15" class="input_15_table" name="wan_dns2_x" value="<% nvram_get("wan_dns2_x"); %>" onkeypress="return is_ipaddr(this, event)" ></td>
           		</tr>
+			<tr id="dnssec_tr" style="display:none;">
+				<th>Enable DNSSEC support</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dnssec_enable" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnssec_enable" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
         		</table>
 
 		  			<table id="PPPsetting" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
