@@ -10,14 +10,23 @@
   <wan>wan_line_state=<% nvram_get("dsltmp_adslsyncsts"); %></wan>
   <wan>wlan0_radio_flag=<% nvram_get("wl0_radio"); %></wan>
   <wan>wlan1_radio_flag=<% nvram_get("wl1_radio"); %></wan>
-  <wan>data_rate_info_2g=<% wl_rate_2g(); %></wan>  
-  <wan>data_rate_info_5g=<% wl_rate_5g(); %></wan>  
-  <vpn>vpnc_proto=<% nvram_get("vpnc_proto"); %></vpn>  
-  <vpn>vpnc_state_t=<% nvram_get("vpnc_state_t"); %></vpn>  
+  <wan>data_rate_info_2g=<% wl_rate_2g(); %></wan>
+  <wan>data_rate_info_5g=<% wl_rate_5g(); %></wan>
+  <wan>active_wan_unit=<% get_wan_unit(); %></wan>
+  <wan>wan0_enable=<% nvram_get("wan0_enable"); %></wan>
+  <wan>wan1_enable=<% nvram_get("wan1_enable"); %></wan>
+  <wan>wan0_ipaddr=<% nvram_get("wan0_ipaddr"); %></wan>
+  <wan>wan1_ipaddr=<% nvram_get("wan1_ipaddr"); %></wan>
+  <vpn>vpnc_proto=<% nvram_get("vpnc_proto"); %></vpn>
+  <vpn>vpnc_state_t=<% nvram_get("vpnc_state_t"); %></vpn>
   <vpn>vpnc_sbstate_t=<% nvram_get("vpnc_sbstate_t"); %></vpn>
-  <vpn>vpn_client1_state=<% nvram_get("vpn_client1_state"); %></vpn>  
+  <vpn>vpn_client1_state=<% nvram_get("vpn_client1_state"); %></vpn>
   <vpn>vpn_client2_state=<% nvram_get("vpn_client2_state"); %></vpn>
   <vpn>vpnd_state=<% nvram_get("VPNServer_enable"); %></vpn>
+  <vpn>vpn_client1_errno=<% nvram_get("vpn_client1_errno"); %></vpn>
+  <vpn>vpn_client2_errno=<% nvram_get("vpn_client2_errno"); %></vpn>
+  <vpn>vpn_server1_state=<% nvram_get("vpn_server1_state"); %></vpn>
+  <vpn>vpn_server2_state=<% nvram_get("vpn_server2_state"); %></vpn>
   <% secondary_ajax_wanstate(); %>
 	<usb>'<% show_usb_path(); %>'</usb>
 </devicemap>
