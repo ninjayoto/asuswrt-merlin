@@ -193,7 +193,9 @@ function switchPage(page){
 	if(page == "1")
 		location.href = "/QoS_EZQoS.asp";
 	else if(page == "2")
-		location.href = "/Advanced_QOSUserRules_Content.asp";	
+		location.href = "/Advanced_QOSUserRules_Content.asp";
+	else if(page == "4")
+                location.href = "/Bandwidth_Limiter.asp";
 	else
     	return false;
 }
@@ -251,6 +253,7 @@ function switchPage(page){
 								<option value="1"><#qos_automatic_mode#></option>
 								<option value="2"><#qos_user_rules#></option>
 								<option value="3" selected><#qos_user_prio#></option>
+								<option value="4">User-defined Bandwidth Limiting</option>
 							</select>	    
 						</div>
 						

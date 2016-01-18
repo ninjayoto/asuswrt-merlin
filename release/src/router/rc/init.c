@@ -3376,6 +3376,12 @@ int init_nvram(void)
         if(nvram_get("connstat_opt") == NULL)
                 nvram_set("connstat_opt", "0");
 
+	// Initialize save variables for bandwidth limiter
+	if(nvram_get("qos_type") == NULL){
+		nvram_set("qos_type", "0");
+		nvram_set("qos_bw_rulelist", "");
+	}
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

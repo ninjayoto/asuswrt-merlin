@@ -958,6 +958,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "qos_orates",	"80-100,10-100,5-100,3-100,2-95,0-0,0-0,0-0,0-0,0-0"},
 	{ "qos_irates",	"100,100,100,100,100,0,0,0,0,0"},
 	{ "qos_enable",			"0"				},
+	{ "qos_type",                   "0"                             }, // 0: Traditional, 1: Adaptive (not supported), 2 : bandwidth limiter
 	{ "qos_method",			"0"				},
 	{ "qos_sticky",			"1"				},
 	{ "qos_ack",			"on"				},
@@ -974,7 +975,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "qos_r2q",			""				},
 	{ "qos_sfql",			""				},
 	{ "qos_default",		"3"				},
-
+	{ "qos_bw_rulelist",            ""                              },
 
 	// TriggerList
 	{ "autofw_enable_x", "0" },

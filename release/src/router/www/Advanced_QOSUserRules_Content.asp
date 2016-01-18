@@ -78,7 +78,7 @@ var overlib_str = new Array();	//Viz add 2011.06 for record longer portrange val
 function key_event(evt){
 	if(evt.keyCode != 27 || isMenuopen == 0) 
 		return false;
-	pullQoSList(document.getElementById("pull_arrow"));
+	pullQoSList($("pull_arrow"));
 }
 
 function initial(){
@@ -86,8 +86,10 @@ function initial(){
 	showqos_rulelist();
 
 	load_QoS_rule();
-	if('<% nvram_get("qos_enable"); %>' == "1")
+	if('<% nvram_get("qos_enable"); %>' != "1")
 		$('is_qos_enable_desc').style.display = "none";
+	else
+		$('is_qos_enable_desc').style.display = "";
 		
 	showLANIPList();	
 }
@@ -102,7 +104,7 @@ function save_table(){
 	var rule_num = $('qos_rulelist_table').rows.length;
 	var item_num = $('qos_rulelist_table').rows[0].cells.length;
 	var tmp_value = "";
-     var comp_tmp = "";
+	var comp_tmp = "";
 
 	for(i=0; i<rule_num; i++){
 		tmp_value += "<"		
@@ -283,6 +285,8 @@ function del_Row(r){
 function showqos_rulelist(){
 	var qos_rulelist_row = "";
 	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');	
+	var client_list_array = '<% get_client_detail_info(); %>';
+	var client_list_row = client_list_array.split('<');
 
 	var code = "";
 	code +='<table width="100%"  border="1" align="center" cellpadding="4" cellspacing="0" class="list_table" id="qos_rulelist_table">';
@@ -296,7 +300,7 @@ function showqos_rulelist(){
 			var qos_rulelist_col = qos_rulelist_row[i].split('>');
 			var wid=[21, 20, 14, 12, 15, 9];						
 				for(var j = 0; j < qos_rulelist_col.length; j++){
-						if(j != 0 && j !=2 && j!=5){
+						if(j != 0 && j != 1 && j != 2 && j != 5){
 							code +='<td width="'+wid[j]+'%">'+ qos_rulelist_col[j] +'</td>';
 						}else if(j==0){
 							if(qos_rulelist_col[0].length >15){
@@ -305,6 +309,24 @@ function showqos_rulelist(){
 								code +='<td width="'+wid[j]+'%"  title="'+overlib_str0[i]+'">'+ qos_rulelist_col[0] +'</td>';
 							}else
 								code +='<td width="'+wid[j]+'%">'+ qos_rulelist_col[j] +'</td>';
+						}else if(j==1){
+							var apps_client_name = "";
+							var apps_client_id = qos_rulelist_col[1];
+							for(var k = 1; k < client_list_row.length; k += 1) {
+								var client_list_col = client_list_row[k].split('>');
+								if(apps_client_id == client_list_col[3]){ // lookup name based on mac
+									apps_client_name = client_list_col[1];
+								}
+								if(apps_client_id == client_list_col[2]){ // lookup name based on ipaddr
+								apps_client_name = client_list_col[1];
+								}
+								if(apps_client_name != "")
+								break;
+							}
+							if(apps_client_name != "")
+								code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">'+ apps_client_name + '<br>(' +  apps_client_id +')</td>';
+							else
+								code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">' + apps_client_id + '</td>';
 						}else if(j==2){
 							if(qos_rulelist_col[2].length >13){
 								overlib_str[i] += qos_rulelist_col[2];
@@ -366,7 +388,9 @@ function switchPage(page){
 	if(page == "1")
 		location.href = "/QoS_EZQoS.asp";
 	else if(page == "3")
-		location.href = "/Advanced_QOSUserPrio_Content.asp";	
+		location.href = "/Advanced_QOSUserPrio_Content.asp";
+	else if(page == "4")
+		location.href = "/Bandwidth_Limiter.asp";
 	else
 		return false;		
 }
@@ -757,7 +781,7 @@ function showLANIPList(){
 		else
 			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP_mac(\''+client_list_col[3]+'\', \''+client_list_col[3]+'\');"><strong>'+client_list_col[2]+'</strong> ';
 			if(show_name && show_name.length > 0)
-				code += '( '+show_name+')';
+				code += '( '+show_name+' )';
 			code += ' </div></a>';
 		}
 	code +='<!--[if lte IE 6.5]><iframe class="hackiframe2"></iframe><![endif]-->';	
@@ -850,6 +874,7 @@ function linkport(obj){
 								<option value="1"><#qos_automatic_mode#></option>
 								<option value="2" selected><#qos_user_rules#></option>
 								<option value="3"><#qos_user_prio#></option>
+								<option value="4">User-defined Bandwidth Limiting</option>
 							</select>	    
 						</div>
 						
@@ -864,10 +889,10 @@ function linkport(obj){
         			</tr>
 					<tr id="is_qos_enable_desc">
 					<td>
-		  			<div class="formfontdesc" style="font-style: italic;font-size: 14px;color:#FFCC00;">
+					<div class="formfontdesc" style="font-style: italic;font-size: 14px;">
 							<ul>
 									<li><#UserQoSRule_desc_zero#></li>
-									<li><#UserQoSRule_desc_one#></li>
+									<!-- <li><#UserQoSRule_desc_one#></li> -->
 							</ul>
 					</div>
 					</td>

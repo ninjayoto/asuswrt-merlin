@@ -42,7 +42,11 @@ var $j = jQuery.noConflict();
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
+var qos_type = '<% nvram_get("qos_type"); %>';
 var qos_rulelist_array = "<% nvram_char_to_ascii("","qos_rulelist"); %>";
+var qos_bw_rulelist_array = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
+var ctf_disable = '<% nvram_get("ctf_disable"); %>';
+var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
 
 var overlib_str0 = new Array();	//Viz add 2011.06 for record longer qos rule desc
 var overlib_str = new Array();	//Viz add 2011.06 for record longer portrange value
@@ -64,8 +68,18 @@ function initial(){
 	}
 	init_changeScale("qos_obw");
 	init_changeScale("qos_ibw");	
-	showqos_rulelist();
+	if(qos_type == "0")
+		showqos_rulelist();
+	else if(qos_type == "2")
+		showqos_bw_rulelist();
 	addOnlineHelp($("faq"), ["ASUSWRT", "QoS"]);
+}
+
+function changeRule(obj){
+	if($(obj).value == "0")
+		showqos_rulelist();
+	else
+		showqos_bw_rulelist();
 }
 
 function init_changeScale(_obj_String){
@@ -87,6 +101,8 @@ function switchPage(page){
 		location.href = "/Advanced_QOSUserRules_Content.asp";
 	else if(page == "3")
 		location.href = "/Advanced_QOSUserPrio_Content.asp";
+	else if(page == "4")
+		location.href = "/Bandwidth_Limiter.asp";
 	else
 		return false;
 }
@@ -113,9 +129,22 @@ function submitQoS(){
 		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
 	if($("qos_ibw_scale").value == "Mb/s")
 		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
-  
-	if(document.form.qos_enable.value != document.form.qos_enable_orig.value)
-    	FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+
+	if(ctf_disable == 1){
+		document.form.action_script.value = "restart_qos;restart_firewall";
+	}
+	else{
+		if(ctf_fa_mode == "2"){
+			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+		}
+		else{
+			if(document.form.qos_enable.value != document.form.qos_enable_orig.value)
+				FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+			else{
+				document.form.action_script.value = "restart_qos;restart_firewall";
+			}
+		}
+	}
 
 	parent.showLoading();
 	document.form.submit();	
@@ -127,7 +156,24 @@ function showqos_rulelist(){
 	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');	
 
 	var code = "";
-	code +='<table style="margin-left:3px;margin-bottom:30px;" width="95%" border="1" align="center" cellpadding="4" cellspacing="0" class="list_table" id="qos_rulelist_table">';
+// table header
+	code +='<table style="margin-left:20px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table">';
+	code +='<thead>';
+	code +='<tr>';
+	code +='<td colspan="6" id="TriggerList" style="border-right:none;height:22px;"><#BM_UserList_title#></td>';
+	code +='</tr>';
+	code +='</thead>';
+	code +='<tr>';
+	code +='<th width="22%" style="height:30px;"><#BM_UserList1#></th>';
+	code +='<th width="21%"><a href="javascript:void(0);" onClick="openHint(18,6);"><div class="table_text">Source IP or MAC</div></a></th>';
+	code +='<th width="17%"><a href="javascript:void(0);" onClick="openHint(18,4);"><div class="table_text"><#BM_UserList3#></div></a></th>';
+	code +='<th width="14%"><div class="table_text"><#IPConnection_VServerProto_itemname#></div></th>';
+	code +='<th width="16%"><a href="javascript:void(0);" onClick="openHint(18,5);"><div class="table_text"><div class="table_text">Transferred</div></a></th>';
+	code +='<th width="12%"><#BM_UserList4#></th>';
+	code +='</tr>';
+	code +='</table>';
+//table data
+	code +='<table style="margin-left:20px;margin-bottom:30px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="list_table" id="qos_rulelist_table">';
 	if(qos_rulelist_row.length == 1)	// no exist "<"
 		code +='<tr><td style="color:#FFCC00;height:30px;" colspan="6"><#IPConnection_VSList_Norule#></td></tr>';
 	else{
@@ -174,11 +220,82 @@ function showqos_rulelist(){
 		}
 	}
 	code +='</table>';
-	$("qos_rulelist_Block").innerHTML = code;
-	
+	$("qos_current_rulelist").innerHTML = code;
 	
 	parse_port="";
 }
+
+function showqos_bw_rulelist(){
+	var qos_bw_rulelist_row = "";
+	qos_bw_rulelist_row = decodeURIComponent(qos_bw_rulelist_array).split('<');
+
+	var code = "";
+// table header
+	code +='<table style="margin-left:20px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table">';
+	code +='<thead>';
+	code +='<tr>';
+	code +='<td colspan="6" id="TriggerList" style="border-right:none;height:22px;"><#BM_UserList_title#></td>';
+	code +='</tr>';
+	code +='</thead>';
+	code +='<tr>';
+	code +='<th width="15%"><div class="table_text">Enabled</th>';
+	code +='<th width="35%"><a href="javascript:void(0);" onClick="openHint(18,6);"><div class="table_text"><#NetworkTools_target#></div></a></th>';
+	code +='<th width="25%"><div class="table_text"><#download_bandwidth#></th>';
+	code +='<th width="25%"><div class="table_text"><#upload_bandwidth#></div></th>';
+	code +='</tr>';
+	code +='</table>';
+//table data
+	code +='<table style="margin-left:20px;margin-bottom:30px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="list_table" id="qos_bw_rulelist_table">';
+	if(qos_bw_rulelist_row.length == 1)	// no exist "<"
+		code +='<tr><td style="color:#FFCC00;height:30px;" colspan="6"><#IPConnection_VSList_Norule#></td></tr>';
+	else{
+		var client_list_array = '<% get_client_detail_info(); %>';
+		var client_list_row = client_list_array.split('<');
+		for(var i = 1; i < qos_bw_rulelist_row.length; i++){
+			overlib_str0[i] ="";
+			overlib_str[i] ="";
+			code +='<tr id="row'+i+'">';
+			var qos_bw_rulelist_col = qos_bw_rulelist_row[i].split('>');
+			var wid=[15, 35, 25, 25];
+				for(var j = 0; j < qos_bw_rulelist_col.length; j++){
+						if(j==0){
+							if(qos_bw_rulelist_col[0] == "1")
+								code +='<td width="'+wid[j]+'%" style="height:30px;">'+ '<#checkbox_Yes#>' +'</td>';
+							else
+								code +='<td width="'+wid[j]+'%" style="height:30px;">'+ '<#checkbox_No#>' +'</td>';
+						}else if(j==1){
+							var apps_client_name = "";
+							var apps_client_id = qos_bw_rulelist_col[1];
+							for(var k = 1; k < client_list_row.length; k += 1) {
+								var client_list_col = client_list_row[k].split('>');
+								if(apps_client_id == client_list_col[3]){ // lookup name based on mac
+									apps_client_name = client_list_col[1];
+								}
+								if(apps_client_id == client_list_col[2]){ // lookup name based on ipaddr
+									apps_client_name = client_list_col[1];
+								}
+								if(apps_client_name != "")
+								break;
+							}
+							if(apps_client_name != "")
+								code += '<td width="'+wid[j]+'%" style="height:30px;">'+ apps_client_name +'<br>(' +  apps_client_id +')</td>';
+							else
+								code += '<td width="'+wid[j]+'%" style="height:30px;">'+ apps_client_id +'</td>';
+						}else if(j==2){
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+qos_bw_rulelist_col[2]/1024+' Mb/s</td>';
+						}else if(j==3){
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+qos_bw_rulelist_col[3]/1024+' Mb/s</td>';
+						}
+				}
+				code +='</tr>';
+		}
+	}
+	code +='</table>';
+	$("qos_current_rulelist").innerHTML = code;
+	
+	parse_port="";
+}
+
 </script>
 </head>
 
@@ -200,6 +317,7 @@ function showqos_rulelist(){
 <input type="hidden" name="flag" value="">
 <input type="hidden" name="qos_enable" value="<% nvram_get("qos_enable"); %>">
 <input type="hidden" name="qos_enable_orig" value="<% nvram_get("qos_enable"); %>">
+<input type="hidden" name="qos_type_orig" value="<% nvram_get("qos_type"); %>">
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
 	<td width="17">&nbsp;</td>
@@ -231,6 +349,7 @@ function showqos_rulelist(){
 												<option value="1" selected><#qos_automatic_mode#></option>
 												<option value="2"><#qos_user_rules#></option>
 												<option value="3"><#qos_user_prio#></option>
+												<option value="4">User-defined Bandwidth Limiting</option>
 											</select>	    
 										</div>
 									</td>	
@@ -250,7 +369,7 @@ function showqos_rulelist(){
 														<img id="guest_image" src="/images/New_ui/QoS.png">
 													</td>
 													<td style="font-style: italic;font-size: 14px;">
-														<div class="formfontdesc" style="line-height:20px;"><#ezqosDesw#></div>
+														<div class="formfontdesc" style="line-height:20px;"><#ezqosDesw#><br>Bandwidth Limiter allows you to control the max connection speed of the client device. You can select the host name from target or fill in IP address / IP Range / MAC address for limited speed profile setting.</div>
 														<div class="formfontdesc">
 															<a id="faq" href="" target="_blank" style="text-decoration:underline;">QoS FAQ</a>
 														</div>
@@ -290,7 +409,14 @@ function showqos_rulelist(){
 												</script>			
 												</div>	
 											</td>
-										</tr>										
+										</tr>
+										<tr id="qos_type_tr">
+											<th>QoS Type</a></th>
+											<td colspan="2">
+												<input id="trad_type" name="qos_type" value="0" type="radio" <% nvram_match("qos_type", "0","checked"); %> onClick="changeRule(this);">Traditional QoS
+												<input id="bw_limit_type" name="qos_type" value="2" type="radio" <% nvram_match("qos_type", "2","checked"); %> onClick="changeRule(this);">Bandwidth Limiter
+											</td>
+										</tr>
 										<tr>
 											<th><#upload_bandwidth#></a></th>
 											<td>
@@ -335,28 +461,15 @@ function showqos_rulelist(){
           					<div style=" *width:136px;margin-left:300px;" class="titlebtn" align="center" onClick="submitQoS();"><span><#CTL_onlysave#></span></div>
           				</td>
         			</tr>
-        			<tr>
-          				<td>
-											<table style="margin-left:3px;" width="95%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table">
-											<thead>
-											<tr>
-													<td colspan="6" id="TriggerList" style="border-right:none;height:22px;"><#BM_UserList_title#></td>
-											</tr>
-											</thead>			
-											<tr>
-													<th width="22%" style="height:30px;"><#BM_UserList1#></th>
-													<th width="21%"><a href="javascript:void(0);" onClick="openHint(18,6);"><div class="table_text">Source IP or MAC</div></a></th>
-													<th width="17%"><a href="javascript:void(0);" onClick="openHint(18,4);"><div class="table_text"><#BM_UserList3#></div></a></th>
-													<th width="14%"><div class="table_text"><#IPConnection_VServerProto_itemname#></div></th>
-													<th width="16%"><a href="javascript:void(0);" onClick="openHint(18,5);"><div class="table_text"><div class="table_text">Transferred</div></a></th>
-													<th width="12%"><#BM_UserList4#></th>
-											</tr>											
-										</table>          					
-          					
-          					<div id="qos_rulelist_Block"></div>
-          				</td>
-        			</tr>        			
-      			</table>
+			</table>
+			<table id="list_table" width="94%" border="0" cellpadding="0" cellspacing="0" style="padding-left:8px;">
+				<tr>
+					<td valign="top" align="center">
+						<div id="mainTable" style="margin-top:10px;"></div>
+						<div id="qos_current_rulelist"></div>
+					</td>
+				</tr>
+			</table>
       		</td>  
       	</tr>
 		</table>
