@@ -493,6 +493,11 @@ void start_vpnclient(int clientNum)
 		vpnlog(VPN_LOG_EXTRA,"Done adding cron job");
 	}
 
+	sprintf(&buffer[0], "vpn_client%d_state", clientNum);
+	nvram_set(&buffer[0], "2");
+	sprintf(&buffer[0], "vpn_client%d_errno", clientNum);
+	nvram_set(&buffer[0], "0");
+
 #ifdef LINUX26
 //	sprintf(&buffer[0], "vpn_client%d", clientNum);
 //	allow_fastnat(buffer, 0);
