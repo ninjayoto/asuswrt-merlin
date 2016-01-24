@@ -73,6 +73,12 @@ static void ntp_service()
 #ifdef RTCONFIG_DISK_MONITOR
 		notify_rc("restart_diskmon");
 #endif
+
+#ifdef RTCONFIG_DNSSEC
+		if (nvram_match("dnssec_enable", "1")) {
+			reload_dnsmasq();
+		}
+#endif
 	}
 }
 

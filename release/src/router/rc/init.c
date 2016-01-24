@@ -3575,6 +3575,10 @@ int init_nvram(void)
 	add_rc_support("nfsd");
 #endif
 
+#ifdef RTCONFIG_DNSSEC
+	add_rc_support("dnssec");
+#endif
+
 #ifdef RTCONFIG_WPSMULTIBAND
 	add_rc_support("wps_multiband");
 #endif

@@ -812,6 +812,17 @@ void start_dnsmasq(int force)
 	write_vpn_dnsmasq_config(fp);
 #endif
 
+#ifdef RTCONFIG_DNSSEC
+	if (nvram_match("dnssec_enable", "1")) {
+		fprintf(fp, "conf-file=/etc/dnssec-trust-anchors\n"
+		            "dnssec\n");
+
+		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
+		if (!nvram_match("ntp_ready","1"))
+			fprintf(fp, "dnssec-no-timecheck\n");
+	}
+#endif
+
 //#ifdef WEB_REDIRECT
 //	/* Web redirection - all unresolvable will return the router's IP */
 //	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
@@ -890,6 +901,15 @@ void restart_dnsmasq(int force)
 
 void reload_dnsmasq(void)
 {
+#ifdef RTCONFIG_DNSSEC
+	if (nvram_match("dnssec_enable", "1") && (!nvram_match("ntp_ready","1"))) {
+		/* Don't reload, as it would prematurely enable timestamp validation */
+		stop_dnsmasq(0);
+		sleep(1);
+		start_dnsmasq(0);
+	}
+	else
+#endif
 	/* notify dnsmasq */
 	kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
 }

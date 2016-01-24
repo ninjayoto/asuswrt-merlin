@@ -117,7 +117,11 @@ function initial(){
 	 		$("VPN_conflict").style.display = "";
 	 		$("VPN_conflict_span").innerHTML = "<#vpn_conflict_dhcp#>"+pptpd_clients;
 		}
-	}	
+	}
+
+	if (isSupport("dnssec")){
+		document.getElementById("dnssec_tr").style.display = "";
+	}
 
 	addOnlineHelp($("faq"), ["set", "up", "specific", "IP", "address"]);
 }
@@ -647,6 +651,13 @@ function check_vpn(){		//true: (DHCP ip pool & static ip ) conflict with VPN cli
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="lan_dns_fwd_local" class="content_input_fd" onclick="return change_common_radio(this, 'LANHostConfig', 'lan_dns_fwd_local', '1')" <% nvram_match("lan_dns_fwd_local", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="lan_dns_fwd_local" class="content_input_fd" onclick="return change_common_radio(this, 'LANHostConfig', 'lan_dns_fwd_local', '0')" <% nvram_match("lan_dns_fwd_local", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			  </tr>
+			  <tr id="dnssec_tr" style="display:none;">
+				<th>Enable DNSSEC support</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dnssec_enable" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnssec_enable" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			  </tr>
 			  <tr>
