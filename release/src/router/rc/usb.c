@@ -3773,6 +3773,7 @@ void start_nfsd(void)
 	FILE 		*fp;
         char *nv, *nvp, *b, *c;
 	char *dir, *access, *options;
+	int threads;
 
 	if (nvram_match("nfsd_enable", "0")) return;
 
@@ -3822,6 +3823,11 @@ void start_nfsd(void)
 		free(nv);
 	}
 
+	// Get number of threads to start
+	threads = nvram_get_int("nfsd_threads");
+	if (threads)
+		sprintf(options, "%d", threads);
+
 	append_custom_config("exports", fp);
 	fclose(fp);
 	run_postconf("exports.postconf", NFS_EXPORT);
@@ -3831,10 +3837,10 @@ void start_nfsd(void)
 	eval("/usr/sbin/statd");
 
 	if (nvram_match("nfsd_enable_v2", "1")) {
-		eval("/usr/sbin/nfsd");
+		eval("/usr/sbin/nfsd", (threads ? options : "2"));
 		eval("/usr/sbin/mountd");
 	} else {
-		eval("/usr/sbin/nfsd", "-N 2");
+		eval("/usr/sbin/nfsd", "-N 2", (threads ? options : "2"));
 		eval("/usr/sbin/mountd", "-N 2");
 	}
 
