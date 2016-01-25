@@ -153,7 +153,9 @@ function submitQoS(){
 
 function showqos_rulelist(){
 	var qos_rulelist_row = "";
-	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');	
+	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');
+	var client_list_array = '<% get_client_detail_info(); %>';
+	var client_list_row = client_list_array.split('<');
 
 	var code = "";
 // table header
@@ -184,7 +186,7 @@ function showqos_rulelist(){
 			var qos_rulelist_col = qos_rulelist_row[i].split('>');
 			var wid=[22, 21, 17, 14, 16, 12];						
 				for(var j = 0; j < qos_rulelist_col.length; j++){
-						if(j != 0 && j !=2 && j!=5){
+						if(j != 0 && j != 1 && j !=2 && j!=5){
 							code +='<td width="'+wid[j]+'%" style="height:30px;">'+ qos_rulelist_col[j] +'</td>';
 						}else if(j==0){
 							if(qos_rulelist_col[0].length >15){
@@ -193,6 +195,24 @@ function showqos_rulelist(){
 								code +='<td width="'+wid[j]+'%"  title="'+overlib_str0[i]+'" style="height:30px;">'+ qos_rulelist_col[0] +'</td>';
 							}else
 								code +='<td width="'+wid[j]+'%" style="height:30px;">'+ qos_rulelist_col[j] +'</td>';
+						}else if(j==1){
+							var apps_client_name = "";
+							var apps_client_id = qos_rulelist_col[1];
+							for(var k = 1; k < client_list_row.length; k += 1) {
+								var client_list_col = client_list_row[k].split('>');
+								if(apps_client_id == client_list_col[3]){ // lookup name based on mac
+									apps_client_name = client_list_col[1];
+								}
+								if(apps_client_id == client_list_col[2]){ // lookup name based on ipaddr
+									apps_client_name = client_list_col[1];
+								}
+								if(apps_client_name != "")
+									break;
+							}
+							if(apps_client_name != "")
+								code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">'+ apps_client_name + '<br>(' +  apps_client_id +')</td>';
+							else
+								code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">' + apps_client_id + '</td>';
 						}else if(j==2){
 							if(qos_rulelist_col[2].length >13){
 								overlib_str[i] += qos_rulelist_col[2];
