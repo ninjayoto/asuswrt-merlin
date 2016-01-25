@@ -188,6 +188,10 @@ function addRow_main(obj, length){
 		return false;
 	}
 
+	if(!valid_Target(document.form.PC_devicename)){
+                return false;
+        }
+
 	if(qos_bw_rulelist.search(document.form.PC_devicename.value) > -1){
 		alert("<#JS_duplicate#>");
 		document.form.PC_devicename.focus();
@@ -349,7 +353,7 @@ function hideClients_Block(evt){
 	isMenuopen = 0;
 }
 
-function valid_IPorMAC(obj){
+function valid_Target(obj){
 
 	if(obj.value == ""){
 			return true;
@@ -379,6 +383,9 @@ function valid_IPorMAC(obj){
 				if(!valid_IP_range(obj))
 					return false;
 				else
+					return true;
+			}
+			else if((obj.value.indexOf("wl0") == 0) || (obj.value.indexOf("wl1") == 0)){ // valid guest network
 					return true;
 			}
 			else if(!validate_ipcidr(obj)){
