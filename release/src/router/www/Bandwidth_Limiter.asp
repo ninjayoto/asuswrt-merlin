@@ -470,7 +470,7 @@ function hideClients_Block_mac(){
 
 var PC_mac = "";
 function setClientIP_mac(devname, macaddr){
-	document.form.PC_devicename.value = devname;
+	document.form.PC_devicename.value = macaddr;
 	PC_mac = macaddr;
 	hideClients_Block_mac();
 	over_var = 0;
