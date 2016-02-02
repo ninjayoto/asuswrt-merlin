@@ -162,7 +162,7 @@ function showqos_rulelist(){
 	code +='<table style="margin-left:20px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table">';
 	code +='<thead>';
 	code +='<tr>';
-	code +='<td colspan="6" id="TriggerList" style="border-right:none;height:22px;"><#BM_UserList_title#></td>';
+	code +="<td colspan=\"6\" id=\"TriggerList\" style=\"border-right:none;height:22px;\"><#BM_UserList_title#></td>";
 	code +='</tr>';
 	code +='</thead>';
 	code +='<tr>';
@@ -254,7 +254,7 @@ function showqos_bw_rulelist(){
 	code +='<table style="margin-left:20px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table">';
 	code +='<thead>';
 	code +='<tr>';
-	code +='<td colspan="6" id="TriggerList" style="border-right:none;height:22px;"><#BM_UserList_title#></td>';
+	code +="<td colspan=\"6\" id=\"TriggerList\" style=\"border-right:none;height:22px;\"><#BM_UserList_title#></td>";
 	code +='</tr>';
 	code +='</thead>';
 	code +='<tr>';
