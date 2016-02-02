@@ -1451,6 +1451,14 @@ void httpd_check()
 	}
 }
 
+void sshd_check()
+{
+        if (!pids("dropbear")){
+                logmessage("watchdog", "restart sshd");
+                start_sshd();
+        }
+}
+
 void ntpd_check()
 {
         if (!pids("ntpd")){
@@ -2025,6 +2033,12 @@ void watchdog(int sig)
 	if (nvram_match("ntpd_server", "1"))
 		ntpd_check();
 	ddns_check();
+#ifdef RTCONFIG_SSH
+	if (nvram_match("sshd_enable", "1"))
+	{
+		sshd_check();
+	}
+#endif
 	httpd_check();
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
