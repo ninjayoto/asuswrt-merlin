@@ -1796,3 +1796,4 @@ YandexDNS_mode0=无保护
 YandexDNS_mode1=安全模式
 YandexDNS_mode2=家庭模式
 yoursharesetting=即将设置文件共享方式为：
+select_all=全选
