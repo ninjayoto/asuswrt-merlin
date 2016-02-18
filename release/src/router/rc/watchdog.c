@@ -1437,7 +1437,7 @@ void httpd_check()
 				start_httpd();
 			}
 		}
-		if (http_enable == 1 || http_enable == 2){	//check https access
+		if ((http_enable == 1 || http_enable == 2) && check_if_file_exist("/etc/cert.pem")){	//check https access
 			snprintf(url, sizeof(url), "https://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("https_lanport"));
 			args[4] = "--cacert";
 			args[5] = "/etc/cert.pem";
