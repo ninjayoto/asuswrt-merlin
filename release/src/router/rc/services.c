@@ -1247,6 +1247,8 @@ void start_radvd(void)
 					mtu = nvram_safe_get("ipv6_mtu");
 				else if (nvram_get_int("ipv6_mtu") < 0)
 					mtu = "0";
+				else
+					mtu = "1280";
 				break;
 			}
 		}
