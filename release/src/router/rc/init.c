@@ -3382,6 +3382,10 @@ int init_nvram(void)
 		nvram_set("qos_bw_rulelist", "");
 	}
 
+	// Initialize native IPv6 MTU
+	if(nvram_get("ipv6_mtu") == NULL)
+		nvram_set("ipv6_mtu", "1280");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

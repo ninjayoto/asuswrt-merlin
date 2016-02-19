@@ -1764,6 +1764,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_prefix_len_wan","64"		},	// used in ipv6_service other
 	{ "ipv6_ipaddr",	""		},	// used in ipv6_service other
 	{ "ipv6_gateway",	""		},	// used in ipv6_service other
+	{ "ipv6_mtu",		"1280"		},	// MTU for native (radvd)
 	{ "ipv6_radvd",		"1"		},	// Enable Router Advertisement (radvd)
 	{ "ipv6_accept_ra",	"1"		},	// Accept RA from WAN (0x1) / LAN (0x2)
 	{ "ipv6_ifname",	"six0"		},	// The interface facing the rest of the IPv6 world
