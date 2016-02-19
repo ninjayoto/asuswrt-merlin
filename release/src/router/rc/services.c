@@ -5040,11 +5040,17 @@ check_ddr_done:
 		if (action & RC_SERVICE_START)
 			start_rdnssd();
 	}
-	else if (strncmp(script, "dhcp6", 5) == 0) {
+	else if (strcmp(script, "dhcp6c") == 0) {
 		if (action & RC_SERVICE_STOP)
 			stop_dhcp6c();
 		if (action & RC_SERVICE_START)
 			start_dhcp6c();
+	}
+	else if (strcmp(script, "dhcp6s") == 0) {
+		if (action & RC_SERVICE_STOP)
+			stop_dhcp6s();
+		if (action & RC_SERVICE_START)
+			start_dhcp6s();
 	}
 	else if (strcmp(script, "wan6") == 0) {
 		if (action & RC_SERVICE_STOP) {
