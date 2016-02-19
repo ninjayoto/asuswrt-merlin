@@ -756,6 +756,7 @@ start_dhcp6c(void)
 		NULL };
 	int index = 3;
 	int prefix_len;
+	int rc;
 	unsigned char ea[ETHER_ADDR_LEN];
 	unsigned long iaid = 0;
 	struct {
@@ -852,7 +853,10 @@ start_dhcp6c(void)
 
 	dhcp6c_argv[index++] = wan_ifname;
 
-	return _eval(dhcp6c_argv, NULL, 0, NULL);
+	rc = _eval(dhcp6c_argv, NULL, 0, NULL);
+	logmessage("dhcp6c", "start dhcp6c (%d)", rc);
+
+	return rc;
 }
 
 void stop_dhcp6c(void)

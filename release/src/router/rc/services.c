@@ -1087,6 +1087,7 @@ void start_dhcp6s(void)
 		NULL };
 	int index = 4;		/* first NULL */
 	int service, stateful;
+	int rc;
 
 	if (getpid() != 1) {
 		notify_rc("start_dhcp6s");
@@ -1195,7 +1196,10 @@ void start_dhcp6s(void)
 	if (nvram_get_int("ipv6_debug"))
 		dhcp6s_argv[index++] = "-D";
 
-	_eval(dhcp6s_argv, NULL, 0, &pid);
+	rc = _eval(dhcp6s_argv, NULL, 0, &pid);
+	logmessage("dhcp6s", "start dhcp6s (%d)", rc);
+
+	return rc;
 }
 
 static pid_t pid_radvd = -1;
