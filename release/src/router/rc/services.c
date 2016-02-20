@@ -556,7 +556,7 @@ void start_dnsmasq(int force)
 	char *lan_ifname;
 	char *lan_ipaddr;
 	char *nv, *nv2;
-	int n;
+	int i, n;
 
 	TRACE_PT("begin\n");
 
@@ -839,11 +839,18 @@ void start_dnsmasq(int force)
 	/* Create resolv.conf with empty nameserver list */
 	f_write(dmresolv, NULL, 0, FW_APPEND, 0666);
 
-	// Make the router use dnsmasq for its own local resolution
-	unlink("/etc/resolv.conf");
-	symlink("/rom/etc/resolv.conf", "/etc/resolv.conf");    // nameserver 127.0.0.1
-
 	eval("dnsmasq", "--log-async");
+
+	for ( i = 1; i < 4; i++ ) {
+		if (!pids("dnsmasq")) {
+			sleep(i);
+		} else {
+			// Make the router use dnsmasq for its own local resolution if it did start
+			unlink("/etc/resolv.conf");
+			symlink("/rom/etc/resolv.conf", "/etc/resolv.conf");	// nameserver 127.0.0.1
+			i = 4;
+		}
+	}
 
 /* TODO: remove it for here !!!*/
 	int unit;
