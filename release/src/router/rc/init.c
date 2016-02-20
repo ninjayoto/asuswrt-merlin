@@ -3666,7 +3666,7 @@ void force_free_caches()
 #endif
 #ifdef RTCONFIG_BCMARM
 	/* free pagecache */
-	if(!nvram_match("bcmarm_dc_default", "1")) {
+	if(nvram_match("drop_caches", "1")) {
 		system("echo 1 > /proc/sys/vm/drop_caches");
 	}
 #endif
@@ -4594,7 +4594,7 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 		check_services();
 #ifdef RTCONFIG_BCMARM
 		/* free pagecache */
-		if(nvram_match("bcmarm_dc_default", "1")) {
+		if(nvram_match("drop_caches", "1")) {
 			system("echo 1 > /proc/sys/vm/drop_caches");
 		}
 #endif
