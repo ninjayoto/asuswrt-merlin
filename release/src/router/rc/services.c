@@ -1468,6 +1468,7 @@ void stop_dhcp6s(void)
 void start_ipv6(void)
 {
 	int service;
+	int prefixlen;
 
 	service = get_ipv6_service();
 
@@ -1477,14 +1478,12 @@ void start_ipv6(void)
 	// Check if turned on
 	switch (service) {
 	case IPV6_NATIVE_DHCP:
+		prefixlen = nvram_get_int("ipv6_prefix_length") ? : 64;
+		nvram_set_int("ipv6_prefix_length", prefixlen);
 		nvram_set("ipv6_prefix", "");
 		if (nvram_get_int("ipv6_dhcp_pd")) {
-			nvram_set("ipv6_prefix_length", "");
 			nvram_set("ipv6_rtr_addr", "");
 		} else {
-			int prefixlen = nvram_get_int("ipv6_prefix_length") ? : 64;
-                        /* prefix */
-                        nvram_set_int("ipv6_prefix_length", prefixlen);
 			add_ip6_lanaddr();
 		}
 		nvram_set("ipv6_get_dns", "");
