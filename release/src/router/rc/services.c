@@ -5630,8 +5630,10 @@ _dprintf("test 2. turn off the USB power during %d seconds.\n", reset_seconds[re
 	else
 	{
 		fprintf(stderr,
-			"WARNING: rc notified of unrecognized event `%s'.\n",
+			"WARNING: rc notified of unrecognized event '%s'.\n",
 					script);
+		logmessage("rc_service", "WARNING: rc notified of unrecognized event '%s'\n",
+                                        script);
 	}
 
 	if(nvptr){
