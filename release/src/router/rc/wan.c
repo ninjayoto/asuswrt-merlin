@@ -2103,6 +2103,7 @@ void wan6_down(const char *wan_ifname)
 	stop_rdnssd();
 	stop_radvd();
 	stop_ipv6_tunnel();
+	stop_dhcp6s();
 	stop_dhcp6c();
 
 	update_resolvconf();
