@@ -1467,6 +1467,14 @@ void ntpd_check()
         }
 }
 
+void qos_check()
+{
+	if (nvram_get_int("qos_addr_err")){
+                logmessage("watchdog", "restart qos");
+		system("rc rc_service restart_qos");
+	}
+}
+
 void watchdog_check()
 {
 	if (!pids("watchdog")){
@@ -2040,6 +2048,9 @@ void watchdog(int sig)
 	}
 #endif
 	httpd_check();
+
+	if (nvram_get_int("qos_enable") == 1 && nvram_get_int("qos_type") == 0)
+		qos_check();
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
