@@ -2485,7 +2485,7 @@ TRACE_PT("writing Parental Control\n");
 		case IPV6_NATIVE_DHCP:
 			// allow responses from the dhcpv6 server
 			fprintf(fp_ipv6, "-A INPUT -p udp --sport 547 --dport 546 -j %s\n", logaccept);	// Add sporit
-			if (nvram_match("ipv6_dhcp_forward_disable", "0")) {
+			if (nvram_match("ipv6_dhcp_forward", "1")) {
 				fprintf(fp_ipv6, "-A FORWARD -p udp --sport 547 --dport 546 -j %s\n", logaccept); // Replicate rule in FORWARD chain
 			}
 			break;

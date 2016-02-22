@@ -3287,8 +3287,10 @@ int init_nvram(void)
 		nvram_set("ttl_inc_enable", "0");
 
 	// Initialize ipv6 dhcp forward working variable name
-	if(nvram_get("ipv6_dhcp_forward_disable") == NULL)
-		nvram_set("ipv6_dhcp_forward_disable", "0");
+	if(nvram_get("ipv6_dhcp_forward") == NULL) {
+		nvram_set("ipv6_dhcp_forward", "0");
+		nvram_unset("ipv6_dhcp_forward_disable");
+	}
 
 	// Initialize working variables for DDNS check
 	if(nvram_get("ddns_regular_check") == NULL){
