@@ -737,7 +737,7 @@ int dhcp6c_state_main(int argc, char **argv)
 		// Do not start radvd when dhcp6c released its address
 		// (i.e. when stop_dhcp6c is called)
 		start_radvd();
-	start_httpd();
+//	start_httpd();
 
 	TRACE_PT("end\n");
 	return 0;
@@ -777,7 +777,7 @@ start_dhcp6c(void)
 	{
 		// (re)start radvd and httpd
 		start_radvd();
-		start_httpd();
+//		start_httpd();
 
 		return -2;
 	}
