@@ -632,6 +632,9 @@ int add_qos_rules(char *pcWANIF)
 			logmessage("qos","error setting ipv6_lan_ipaddr!");
 		free(buf);
 	}
+	else{
+		ipv6_err = 0;
+	}
 #endif
 
 	nvram_set_int("qos_addr_err", (ipv4_err + ipv6_err));
