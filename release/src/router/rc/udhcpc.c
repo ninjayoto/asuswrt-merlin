@@ -843,11 +843,18 @@ start_dhcp6c(void)
 				"};\n", iaid, nvram_get_int("ipv6_prefix_length"), lan_ifname, prefix_len);
 		if (nvram_match("ipv6_ra_conf", "mset"))
 		fprintf(fp,	"id-assoc na %lu { };\n", iaid);
-		fclose(fp);
 	} else {
 		perror("/etc/dhcp6c.conf");
 		return -1;
 	}
+
+	append_custom_config("dhcp6c.conf", fp);
+	fclose(fp);
+
+	use_custom_config("dhcp6c.conf", "/etc/dhcp6c.conf");
+	run_postconf("dhcp6c.postconf", "/etc/dhcp6c.conf");
+
+	chmod("/etc/dhcp6c.conf", 0400);
 
 	if (nvram_get_int("ipv6_debug"))
 		dhcp6c_argv[index++] = "-D";
