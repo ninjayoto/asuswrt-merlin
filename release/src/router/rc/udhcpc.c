@@ -835,11 +835,12 @@ start_dhcp6c(void)
 				"};\n");
 		if (nvram_get_int("ipv6_dhcp_pd"))
 		fprintf(fp,	"id-assoc pd %lu {\n"
+					"prefix ::/%d infinity;\n"
 					"prefix-interface %s {\n"
 						"sla-id 1;\n"
 						"sla-len %d;\n"
 					"};\n"
-				"};\n", iaid, lan_ifname, prefix_len);
+				"};\n", iaid, nvram_get_int("ipv6_prefix_length"), lan_ifname, prefix_len);
 		if (nvram_match("ipv6_ra_conf", "mset"))
 		fprintf(fp,	"id-assoc na %lu { };\n", iaid);
 		fclose(fp);
