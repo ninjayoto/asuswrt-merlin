@@ -2092,6 +2092,8 @@ void wan6_up(const char *wan_ifname)
 #if 0
 	start_ecmh(wan_ifname);
 #endif
+
+	logmessage("wan6", "wan6 interface %s is up", wan_ifname);
 }
 
 void wan6_down(const char *wan_ifname)
@@ -2114,6 +2116,8 @@ void wan6_down(const char *wan_ifname)
 	eval("ip", "-6", "addr", "flush", "scope", "global", "dev", wan_ifname);
 	eval("ip", "-6", "route", "flush", "scope", "all");
 	eval("ip", "-6", "neigh", "flush", "dev", lan_ifname);
+
+	logmessage("wan6", "wan6 interface %s is down", wan_ifname);
 }
 
 void start_wan6(void)
