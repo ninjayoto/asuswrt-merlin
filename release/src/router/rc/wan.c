@@ -2096,6 +2096,8 @@ void wan6_up(const char *wan_ifname)
 
 void wan6_down(const char *wan_ifname)
 {
+	char *lan_ifname = nvram_safe_get("lan_ifname");
+
 	set_intf_ipv6_dad(wan_ifname, 0, 0);
 #if 0
 	stop_ecmh();
@@ -2107,6 +2109,11 @@ void wan6_down(const char *wan_ifname)
 	stop_dhcp6c();
 
 	update_resolvconf();
+
+	eval("ip", "-6", "addr", "flush", "scope", "global", "dev", lan_ifname);
+	eval("ip", "-6", "addr", "flush", "scope", "global", "dev", wan_ifname);
+	eval("ip", "-6", "route", "flush", "scope", "all");
+	eval("ip", "-6", "neigh", "flush", "dev", lan_ifname);
 }
 
 void start_wan6(void)
