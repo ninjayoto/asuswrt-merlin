@@ -2547,7 +2547,7 @@ openvpn/stamp-h1: lzo zlib nvram
 	IPROUTE="/usr/sbin/ip" \
 	$(CONFIGURE) --prefix=  --enable-iproute2 \
 	--disable-debug --enable-management --disable-small \
-	--disable-selinux --disable-socks --enable-password-save \
+	--disable-selinux --disable-socks \
 	--enable-plugin-auth-pam \
 	ac_cv_lib_resolv_gethostbyname=no
 	touch $@
