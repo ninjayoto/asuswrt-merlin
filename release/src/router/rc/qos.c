@@ -205,7 +205,7 @@ int add_qos_rules(char *pcWANIF)
 		":PREROUTING ACCEPT [0:0]\n"
 		":OUTPUT ACCEPT [0:0]\n"
 		":QOSO - [0:0]\n"
-		"-A QOSO -m mark --mark 0xb400 -j RETURN\n"
+		"-A QOSO -m mark --mark 0x8000 -j RETURN\n" //NAT Loopback
 		"-A QOSO -j CONNMARK --restore-mark --mask 0x7\n"
 		"-A QOSO -m connmark ! --mark 0/0xff00 -j RETURN\n"
 		);
