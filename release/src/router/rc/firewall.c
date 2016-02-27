@@ -1059,6 +1059,7 @@ void repeater_nat_setting(){
 void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	// oleg patch
 {
 	FILE *fp;		// oleg patch
+	char lan_class[32];     // oleg patch
 	int wan_port;
 	char dstips[64];
 	char *proto, *protono, *port, *lport, *dstip, *desc;
@@ -1271,9 +1272,12 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 			fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j MASQUERADE\n", p, wanx_if, wanx_ip);
 
 		/* masquerade lan to lan */
-		fprintf(fp, "-A POSTROUTING %s -m mark --mark 0x8000/0x8000 -j MASQUERADE\n" , p); //NAT Loopback
-//		ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
-//		fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, lan_if, lan_class, lan_class);
+		if (nvram_match("fw_nat_loopback", "1")) { //ASUS NAT Loopback
+			ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
+			fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, lan_if, lan_class, lan_class);
+		}
+		else
+			fprintf(fp, "-A POSTROUTING %s -m mark --mark 0x8000/0x8000 -j MASQUERADE\n" , p); //Merlin NAT Loopback
 	}
 
 	fprintf(fp, "COMMIT\n");
@@ -1295,6 +1299,7 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	// oleg patch
 {
 	FILE *fp = NULL;	// oleg patch
+	char lan_class[32];     // oleg patch
 	int wan_port;
 	char dstips[64];
 	char *proto, *protono, *port, *lport, *dstip, *desc;
@@ -1550,11 +1555,12 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 		}
 
 		// masquerade lan to lan
-
-		fprintf(fp, "-A POSTROUTING %s -m mark --mark 0x8000/0x8000 -j MASQUERADE\n", p); //NAT Loopback
-
-//		ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
-//		fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, lan_if, lan_class, lan_class);
+		if (nvram_match("fw_nat_loopback", "1")) { //ASUS NAT Loopback
+			ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
+			fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, lan_if, lan_class, lan_class);
+		}
+		else
+			fprintf(fp, "-A POSTROUTING %s -m mark --mark 0x8000/0x8000 -j MASQUERADE\n" , p); //Merlin NAT Loopback
 	}
 
 	fprintf(fp, "COMMIT\n");
@@ -4154,6 +4160,7 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 #endif
 
 /* For NAT loopback */
+	if(!nvram_match("fw_nat_loopback", "1"))
 	eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
 	     "-d", wan_ip, "-j", "MARK", "--set-mark", "0x8000/0x8000");
 
@@ -4291,6 +4298,7 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 		wan_ip = nvram_safe_get(strcat_r(prefix, "ipaddr", tmp));
 		wan_if = get_wan_ifname(unit);
 
+		if(!nvram_match("fw_nat_loopback", "1"))
 		eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
 		     "-d", wan_ip, "-j", "MARK", "--set-mark", "0x8000/0x8000");
 	}
