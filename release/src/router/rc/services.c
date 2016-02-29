@@ -4408,6 +4408,7 @@ again:
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
 #endif
+			stop_upnp();
 			stop_wps();
 #ifdef CONFIG_BCMWL5
 			stop_nas();
@@ -4454,6 +4455,7 @@ again:
 			/* Link-up LAN ports after DHCP server ready. */
 			start_lan_port(0);
 
+			start_upnp();
 			start_httpd();
 			start_wl();
 			lanaccess_wl();
