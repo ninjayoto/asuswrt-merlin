@@ -711,8 +711,9 @@ int add_qos_rules(char *pcWANIF)
         	fprintf(fn_ipv6,
 			"-A QOSO -j CONNMARK --set-return 0x%x/0x7\n"
                 	"-A FORWARD -o %s -j QOSO\n"
+			"-A OUTPUT -o %s -p icmpv6 -j RETURN\n"
                 	"-A OUTPUT -o %s -j QOSO\n",
-                        	class_num, wan6face, wan6face);
+				class_num, wan6face, wan6face, wan6face);
 		if(manual_return)
 			fprintf(fn_ipv6, "-A QOSO -j RETURN\n");
 	}
