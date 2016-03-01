@@ -1469,8 +1469,11 @@ void ntpd_check()
 
 void qos_check()
 {
-	if (nvram_get_int("qos_addr_err")){
-                logmessage("watchdog", "restart qos");
+	int errno;
+
+	errno = nvram_get_int("qos_addr_err");
+	if ((errno & 1) || ((errno & 2) && ipv6_enabled() && ((getifaddr( (char *)get_wan6face(), AF_INET6, GIF_PREFIXLEN) ? : "") != "")) || (errno & 4)) {
+		logmessage("watchdog", "restart qos");
 		system("rc rc_service restart_qos");
 	}
 }
