@@ -12,6 +12,7 @@ create_client_list(){
 	server=$1
 	VPN_IP_LIST=$(nvram get vpn_client$(echo $instance)_clientlist)
 
+	OLDIFS=$IFS
 	IFS="<"
 
 	for ENTRY in $VPN_IP_LIST
@@ -45,11 +46,10 @@ if [ -f $resolvfile ]; then rm $resolvfile; fileexists=1; fi
 
 if [ $script_type == 'up' ]
 then
-	echo iptables -t nat -N DNSVPN$instance >> $dnsscript
-
 	if [ $instance != 0 -a $(nvram get vpn_client$(echo $instance)_rgw) == 2 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 ]
 	then
 		setdns=0
+		echo iptables -t nat -N DNSVPN$instance >> $dnsscript
 	else
 		setdns=-1
 	fi
@@ -80,10 +80,13 @@ fi
 
 if [ $script_type == 'down' -a $instance != 0 ]
 then
-	/usr/sbin/iptables -t nat -D PREROUTING -p udp -m udp --dport 53 -j DNSVPN$instance
-	/usr/sbin/iptables -t nat -D PREROUTING -p tcp -m tcp --dport 53 -j DNSVPN$instance
-	/usr/sbin/iptables -t nat -F DNSVPN$instance
-	/usr/sbin/iptables -t nat -X DNSVPN$instance
+	if [ -f $dnsscript ]
+	then
+		/usr/sbin/iptables -t nat -D PREROUTING -p udp -m udp --dport 53 -j DNSVPN$instance
+		/usr/sbin/iptables -t nat -D PREROUTING -p tcp -m tcp --dport 53 -j DNSVPN$instance
+		/usr/sbin/iptables -t nat -F DNSVPN$instance
+		/usr/sbin/iptables -t nat -X DNSVPN$instance
+	fi
 fi
 
 if [ -f $conffile -o -f $resolvfile -o -n "$fileexists" ]
