@@ -24,6 +24,7 @@ var $j = jQuery.noConflict();
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
+daapd_name = '<% nvram_get("daapd_friendly_name"); %>'
 
 var varload = 0;
 var lan_ipaddr = '<% nvram_get("lan_ipaddr"); %>';
@@ -33,6 +34,7 @@ var extendno = '<% nvram_get("extendno"); %>';
 
 function initial(){
 	show_menu();
+	show_JFFS();
 }
 
 function restoreRule(){
@@ -54,7 +56,7 @@ function restoreRule(){
 function saveSetting(){
 	var i = extendno.indexOf('-');
 	extendno = (extendno ? "_"+extendno.substring(0, i) : "");
-	location.href='Settings_'+productid+'_'+buildno+extendno+'.CFG';
+	location.href='Settings_'+daapd_name+'_'+buildno+extendno+'.CFG';
 }
 
 function uploadSetting(){
@@ -65,8 +67,8 @@ function uploadSetting(){
 		file_obj.focus();
 	}
 	else if(file_obj.value.length < 6 ||
-					file_obj.value.lastIndexOf(".CFG")  < 0 || 
-					file_obj.value.lastIndexOf(".CFG") != (file_obj.value.length)-4){		
+					file_obj.value.toUpperCase.lastIndexOf(".CFG")  < 0 ||
+					file_obj.value.toUpperCase.lastIndexOf(".CFG") != (file_obj.value.length)-4){
 		alert("<#Setting_upload_hint#>");
 		file_obj.focus();
 	}
@@ -74,8 +76,43 @@ function uploadSetting(){
 		disableCheckChangedStatus();
 		showtext($("loading_block2"), "<#SET_ok_desc#>");
 		$('loading_block3').style.display = "none";
+		document.form.action = "upload.cgi";
 		document.form.submit();
 	}	
+}
+
+function show_JFFS(){
+	if ('<% nvram_get("jffs2_on"); %>' != '1') {
+		document.getElementById("jffsrestore").style.display = "none";
+		document.getElementById("jffsbackup").style.display = "none";
+	}
+}
+
+function saveJFFS(){
+//	location.href='backup_jffs.tar';
+	location.href='JFFS_Backup_'+daapd_name+'.TAR';
+}
+
+function uploadJFFS(){
+	var file_obj = document.form.file2;
+
+	if(file_obj.value == ""){
+		alert("<#JS_fieldblank#>");
+		file_obj.focus();
+	}
+	else if(file_obj.value.length < 6 ||
+			file_obj.value.toUpperCase().lastIndexOf(".TAR")  < 0 ||
+			file_obj.value.toUpperCase().lastIndexOf(".TAR") != (file_obj.value.length)-4){
+		alert("Invalid file!  Make sure you select a valid JFFS backup.");
+		file_obj.focus();
+	}
+	else{
+		disableCheckChangedStatus();
+		showtext(document.getElementById("loading_block2"), "<#SET_ok_desc#>");
+		document.getElementById('loading_block3').style.display = "none";
+		document.form.action = "jffsupload.cgi";
+		document.form.submit();
+	}
 }
 
 var dead = 0;
@@ -164,7 +201,7 @@ function detect_httpd(){
 		<div  id="subMenu"></div>		
 		</td>				
 		
-    <td valign="top">
+	<td valign="top">
 	<div id="tabMenu" class="submenuBlock"></div>
 		<!--===================================Beginning of Main Content===========================================-->
 <table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
@@ -181,43 +218,57 @@ function detect_httpd(){
 		  <div class="formfontdesc"><#Setting_save_upload_desc#></div>
 
 		<table width="100%" border="1" align="center" cellpadding="6" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
-          <tr>
-            <th width="25%" align="right"><a class="hintstyle"  href="javascript:void(0);" onclick="openHint(19,1)"><#Setting_factorydefault_itemname#></a></th>
-            <td>
-              <input class="button_gen" onclick="restoreRule();" type="button" value="<#CTL_restore#>" name="action1" />
-              <input type="hidden" name="wl_gmode_protection_x" value="<% nvram_get("wl_gmode_protection_x"); %>" /></td>
-          </tr>
-          <tr>
-            <th align="right"><a class="hintstyle"  href="javascript:void(0);" onclick="openHint(19,2)"><#Setting_save_itemname#></a></th>
-            <td>
-              <input class="button_gen" onclick="saveSetting();" type="button" value="<#CTL_onlysave#>" name="action2" />
-            </td>
-          </tr>
-          <tr>
-            <th align="right"><a class="hintstyle" href="javascript:void(0);" onclick="openHint(19,3)"><#Setting_upload_itemname#></a></th>
-            <td>
+		<tr>
+			<th width="25%" align="right"><a class="hintstyle"  href="javascript:void(0);" onclick="openHint(19,1)"><#Setting_factorydefault_itemname#></a></th>
+			<td>
+				<input class="button_gen" onclick="restoreRule();" type="button" value="<#CTL_restore#>" name="action1" />
+				<input type="hidden" name="wl_gmode_protection_x" value="<% nvram_get("wl_gmode_protection_x"); %>" />
+			</td>
+		</tr>
+		<tr>
+			<th align="right"><a class="hintstyle"  href="javascript:void(0);" onclick="openHint(19,2)"><#Setting_save_itemname#>&nbsp;(NVRAM)</a></th>
+			<td>
+				<input class="button_gen" onclick="saveSetting();" type="button" value="<#CTL_onlysave#>" name="action2" />
+			</td>
+		</tr>
+		<tr>
+			<th align="right"><a class="hintstyle" href="javascript:void(0);" onclick="openHint(19,3)"><#Setting_upload_itemname#>&nbsp;(NVRAM)</a></th>
+			<td>
 				<div style="margin-left:-10px;"><table><tr>
 					<td style="border:0px"><input type="button" class="button_gen" onclick="uploadSetting();" value="<#CTL_upload#>"/></td>
 					<td style="border:0px"><input type="file" name="file" class="input" style="color:#FFCC00;"/></td>
 				</tr></table></div>
-            </td>
-          </tr>
-        </table>
-			  </td>
-            </tr>
-          </tbody>
+			</td>
+		</tr>
+		<tr id="jffsbackup">
+			<th align="right">Backup JFFS partition</th>
+			<td>
+				<input class="button_gen" onclick="saveJFFS();" type="button" value="<#CTL_onlysave#>" name="action10" />
+			</td>
+		</tr>
+		<tr id="jffsrestore">
+			<th align="right">Restore JFFS partition</th>
+			<td>
+				<div style="margin-left:-10px;"><table><tr>
+					<td style="border:0px"><input type="button" class="button_gen" onclick="uploadJFFS();" value="<#CTL_upload#>"/></td>
+					<td style="border:0px"><input type="file" name="file2" class="input" style="color:#FFCC00;"/></td>
+				</tr></table></div>
+			</td>
+		</tr>
+
 		</table>
 		</td>
-</form>
-
-
-        </tr>
-      </table>		
-	</td>
-		
-    <td width="10" align="center" valign="top">&nbsp;</td>
+		</tr>
+		</tbody>
+		</table>
+		</td>
 	</tr>
 </table>
+		</td>
+		<td width="10" align="center" valign="top">&nbsp;</td>
+	</tr>
+</table>
+</form>
 
 <div id="footer"></div>
 

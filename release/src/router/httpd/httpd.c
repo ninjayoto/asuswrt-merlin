@@ -973,7 +973,7 @@ handle_request(void)
 #endif
 			}
 
-			if(!strstr(file, ".cgi") && !strstr(file, "syslog.txt") && !(strstr(file,".CFG")) && !check_if_file_exist(file)){
+			if(!strstr(file,".cgi") && !strstr(file,".log") && !strstr(file,".CFG") && !strstr(file,".TAR") && !(strstr(file, "syslog.txt")) && !check_if_file_exist(file)){
 				send_error( 404, "Not Found", (char*) 0, "File not found." );
 				return;
 			}

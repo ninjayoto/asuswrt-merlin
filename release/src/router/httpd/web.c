@@ -6486,12 +6486,137 @@ do_prf_ovpn_file(char *url, FILE *stream)
 	do_file(url, stream);
 }
 
+#if (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2))
+
+#define JFFS_BACKUP_FILE "/tmp/backup_jffs.TAR"
+
+static void
+do_jffs_file(char *url, FILE *stream)
+{
+//	system("tar -cf /tmp/backup_jffs.tar -C /jffs .");
+	snprintf(SystemCmd, sizeof(SystemCmd), "tar -cf %s -C /jffs .", JFFS_BACKUP_FILE);
+	system(SystemCmd);
+//	strcpy(SystemCmd,""); // Ensure we don't re-execute it again
+	do_file(JFFS_BACKUP_FILE, stream);
+	unlink(JFFS_BACKUP_FILE);
+}
+
+static void
+do_jffsupload_cgi(char *url, FILE *stream)
+{
+	int ret;
+
+#ifdef RTCONFIG_HTTPS
+	if(do_ssl)
+		ret = fcntl(ssl_stream_fd , F_GETOWN, 0);
+	else
+#endif
+	ret = fcntl(fileno(stream), F_GETOWN, 0);
+
+	if (ret == 0)
+	{
+		websApply(stream, "UploadingJFFS.asp");
+#ifdef RTCONFIG_HTTPS
+		if(do_ssl)
+			shutdown(ssl_stream_fd, SHUT_RDWR);
+		else
+#endif
+			shutdown(fileno(stream), SHUT_RDWR);
+
+		if (f_size(JFFS_BACKUP_FILE) > 10) {
+			logmessage("httpd", "Restoring JFFS backup...");
+			system("rm -rf /jffs/*"); /* */
+//			system("tar -xf /tmp/backup_jffs.tar -C /jffs");
+			snprintf(SystemCmd, sizeof(SystemCmd), "tar -xf %s -C /jffs", JFFS_BACKUP_FILE);
+			system(SystemCmd);
+//			strcpy(SystemCmd,""); // Ensure we don't re-execute it again
+			unlink(JFFS_BACKUP_FILE);
+			logmessage("httpd", "JFFS restore completed");
+		} else {
+			logmessage("httpd", "Error while restoring JFFS backup - no change made");
+		}
+	}
+	else
+	{
+		websApply(stream, "UploadError.asp");
+	}
+}
+
+static void
+do_jffsupload_post(char *url, FILE *stream, int len, char *boundary)
+{
+	FILE *fifo = NULL;
+	char buf[1024];
+	int count, ret = EINVAL, ch;
+	long filelen = 0;
+
+	/* Look for our part */
+	while (len > 0) {
+		if (!fgets(buf, MIN(len + 1, sizeof(buf)), stream)) {
+			goto err;
+		}
+
+		len -= strlen(buf);
+
+		if (!strncasecmp(buf, "Content-Disposition:", 20)
+				&& strstr(buf, "name=\"file2\""))
+			break;
+	}
+
+	/* Skip boundary and headers */
+	while (len > 0) {
+		if (!fgets(buf, MIN(len + 1, sizeof(buf)), stream)) {
+			goto err;
+		}
+
+		len -= strlen(buf);
+		if (!strcmp(buf, "\n") || !strcmp(buf, "\r\n")) {
+			break;
+		}
+	}
+
+	if (!(fifo = fopen(JFFS_BACKUP_FILE, "w")))
+		goto err;
+
+	while (len > 0) {
+		count = fread(buf, 1, MIN(len, sizeof(buf)), stream);
+		if(count <= 0)
+			goto err;
+
+		len -= count;
+		filelen += count;
+		fwrite(buf, 1, count, fifo);
+	}
+
+	fclose(fifo);
+	fifo = NULL;
+
+	/* Strip boundary from file */
+	if (boundary)
+		truncate(JFFS_BACKUP_FILE, filelen - strlen(boundary) - 8);
+
+err:
+	if (fifo)
+		fclose(fifo);
+
+	/* Slurp anything remaining in the request */
+	while (len-- > 0)
+		if((ch = fgetc(stream)) == EOF)
+			break;
+
+	fcntl(fileno(stream), F_SETOWN, -ret);
+}
+#endif // (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2)
+
 // 2010.09 James. {
 static char no_cache_IE7[] =
 "X-UA-Compatible: IE=EmulateIE7\r\n"
 "Cache-Control: no-cache\r\n"
 "Pragma: no-cache\r\n"
 "Expires: 0"
+;
+// 2010.09 James. }
+
 ;
 // 2010.09 James. }
 
@@ -6576,6 +6701,11 @@ struct mime_handler mime_handlers[] = {
 #ifdef TRANSLATE_ON_FLY
 	{ "change_lang.cgi*", "text/html", no_cache_IE7, do_lang_post, do_lang_cgi, do_auth },
 #endif //TRANSLATE_ON_FLY
+#if (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2))
+//	{ "backup_jffs.TAR", "application/force-download", NULL, NULL, do_jffs_file, do_auth },
+	{ "JFFS_Backup_*.TAR", "application/force-download", NULL, NULL, do_jffs_file, do_auth },
+	{ "jffsupload.cgi*", "text/html", no_cache_IE7, do_jffsupload_post, do_jffsupload_cgi, do_auth },
+#endif
 #ifdef RTCONFIG_OPENVPN
 	{ "vpnupload.cgi*", "text/html", no_cache_IE7, do_vpnupload_post, do_vpnupload_cgi, do_auth },
 #endif
@@ -6617,8 +6747,12 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "update_appstate.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "update_applist.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "update_cloudstatus.asp", MIME_EXCEPTION_NOAUTH_ALL},
+//#if (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2))
+//	{ "jffsupload.cgi", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
+//#endif
 	{ "*.gz", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.tgz", MIME_EXCEPTION_NOAUTH_ALL},
+//	{ "*.tar", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.zip", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.ipk", MIME_EXCEPTION_NOAUTH_ALL},
 	{ NULL, 0 }
