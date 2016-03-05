@@ -1419,6 +1419,7 @@ void stop_radvd(void)
 
 	pid_radvd = -1;
 	killall_tk("radvd");
+	unlink("/var/run/radvd.pid");
 #if 0
 	f_write_string("/proc/sys/net/ipv6/conf/all/forwarding", "0", 0, 0);
 #endif
