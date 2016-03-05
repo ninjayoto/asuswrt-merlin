@@ -1464,6 +1464,7 @@ void stop_dhcp6s(void)
 	}
 
 	killall_tk("dhcp6s");
+	unlink("/var/run/dhcp6s.pid");
 }
 
 void start_ipv6(void)
