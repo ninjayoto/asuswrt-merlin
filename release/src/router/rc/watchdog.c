@@ -1469,10 +1469,14 @@ void ntpd_check()
 
 void qos_check()
 {
-	int errno;
+	int errno, wan6valid;
 
 	errno = nvram_get_int("qos_addr_err");
-	if ((errno & 1) || ((errno & 2) && ipv6_enabled() && ((getifaddr( (char *)get_wan6face(), AF_INET6, GIF_PREFIXLEN) ? : "") != "")) || (errno & 4)) {
+	wan6valid = (getifaddr( (char *)get_wan6face(), AF_INET6, GIF_PREFIXLEN) ? 1 : 0);
+	if (!wan6valid)
+		nvram_set_int("qos_addr_err", (errno | 2));
+
+	if ((errno & 1) || ((errno & 2) && ipv6_enabled() && (wan6valid)) || (errno & 4)) {
 		logmessage("watchdog", "restart qos");
 		system("rc rc_service restart_qos");
 	}
