@@ -249,33 +249,6 @@ function addRow_main(obj, length){
 	showqos_bw_rulelist();
 }
 
-function del_Row(r){
-  var i=r.parentNode.parentNode.rowIndex;
-  $('qos_rulelist_table').deleteRow(i);
-
-  var qos_rulelist_value = "";
-	for(k=0; k<$('qos_rulelist_table').rows.length; k++){
-		for(j=0; j<$('qos_rulelist_table').rows[k].cells.length-1; j++){
-			if(j == 0)
-				qos_rulelist_value += "<";
-			else
-				qos_rulelist_value += ">";
-
-			if(j == 5){
-				qos_rulelist_value += $('qos_rulelist_table').rows[k].cells[j].firstChild.value;
-			}else if($('qos_rulelist_table').rows[k].cells[j].innerHTML.lastIndexOf("...")<0){
-				qos_rulelist_value += $('qos_rulelist_table').rows[k].cells[j].innerHTML;
-			}else{
-				qos_rulelist_value += $('qos_rulelist_table').rows[k].cells[j].title;
-			}
-		}
-	}
-
-	qos_rulelist_array = qos_rulelist_value;
-	if(qos_rulelist_array == "")
-		showqos_rulelist();
-}
-
 function showqos_bw_rulelist(){
 	var qos_bw_rulelist_row = qos_bw_rulelist.split("<");
 	var client_list_array = '<% get_client_detail_info(); %>';
@@ -419,7 +392,7 @@ function valid_IPorMAC(obj){
 function device_filter(obj){
 	var target_obj = document.getElementById("ClientList_Block_PC");
 	if(obj.value == ""){
-		hideClients_Block();
+		hideClients_Block_mac();
 		showLANIPList();
 	}
 	else{
@@ -470,7 +443,7 @@ function showLANIPList(){
 
 function pullLANIPList(obj){
 	if(isMenuopen_mac == 0){
-		obj.src = "/images/arrow-top.gif"
+		obj.src = "/images/arrow-top.gif";
 		$("ClientList_Block_PC").style.display = 'block';
 		document.form.PC_devicename.focus();
 		isMenuopen_mac = 1;
@@ -628,7 +601,7 @@ function enable_check(obj){
 									<input id="selRow" type="checkbox" checked>
 								</td>
 								<td style="border-bottom:2px solid #000;">
-									<input type="text" style="margin-left:10px;float:left;width:255px;" class="input_20_table" name="PC_devicename" onkeyup="device_filter(this);" onblur="if(!over_var){hideClients_Block();}" placeholder="Select Client or enter IP Range" autocorrect="off" autocapitalize="off" autocomplete="off">
+									<input type="text" style="margin-left:10px;float:left;width:285px;" class="input_20_table" name="PC_devicename" onkeyup="device_filter(this);" onblur="if(!over_var){hideClients_Block_mac();}" placeholder="Enter IP Range, MAC or Guest Network" autocorrect="off" autocapitalize="off" autocomplete="off">
 									<img id="pull_arrow" height="14px;" src="/images/arrow-down.gif" onclick="pullLANIPList(this);" title="<#select_client#>" onmouseover="over_var=1;" onmouseout="over_var=0;">
 									<div id="ClientList_Block_PC" class="ClientList_Block_PC"></div>
 								</td>
@@ -646,7 +619,7 @@ function enable_check(obj){
 							<div id="qos_bwlist_Block"></div>
 
 							<div class="apply_gen">
-								<input name="button" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
+								<input name="button" id="applybutton" style="color:#FFFFFF" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
 							</div>
 						</td>
 					</tr>

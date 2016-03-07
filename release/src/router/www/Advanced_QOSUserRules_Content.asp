@@ -94,37 +94,18 @@ function initial(){
 	showLANIPList();	
 }
 
-function applyRule(){	
+function applyRule(){
 		save_table();
 		showLoading();	 	
 		document.form.submit();
 }
 
 function save_table(){
-	var rule_num = $('qos_rulelist_table').rows.length;
-	var item_num = $('qos_rulelist_table').rows[0].cells.length;
-	var tmp_value = "";
-	var comp_tmp = "";
-
-	for(i=0; i<rule_num; i++){
-		tmp_value += "<"		
-		for(j=0; j<item_num-1; j++){							
-			if(j==5){
-				tmp_value += $('qos_rulelist_table').rows[i].cells[j].firstChild.value;
-			}else{						
-				if($('qos_rulelist_table').rows[i].cells[j].innerHTML.lastIndexOf("...")<0){
-					tmp_value += $('qos_rulelist_table').rows[i].cells[j].innerHTML;
-				}else{
-					tmp_value += $('qos_rulelist_table').rows[i].cells[j].title;
-				}
-			}
-			
-			if(j != item_num-2)	
-				tmp_value += ">";
-		}
-	}
-	if(tmp_value == "<"+"<#IPConnection_VSList_Norule#>" || tmp_value == "<")
-		tmp_value = "";	
+	var tmp_value = decodeURIComponent(qos_rulelist_array);
+	if(tmp_value == "")
+		return false;
+	if(tmp_value == "<"+"<#958#>" || tmp_value == "<")
+		tmp_value = "";
 	document.form.qos_rulelist.value = tmp_value;
 }
 
@@ -134,9 +115,9 @@ function done_validating(action){
 
 function addRow(obj, head){
 	if(head == 1)
-		qos_rulelist_array += "<"
+		qos_rulelist_array += "<";
 	else
-		qos_rulelist_array += ">"
+		qos_rulelist_array += ">";
 			
 	qos_rulelist_array += obj.value;
 	obj.value= "";
@@ -177,6 +158,8 @@ function addRow_Group(upper){
 	if(validForm()){
 		var rule_num = $('qos_rulelist_table').rows.length;
 		var item_num = $('qos_rulelist_table').rows[0].cells.length;	
+		var qos_rulelist_row = "";
+		qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');
 
 		if(rule_num >= upper){
 			alert("<#JS_itemlimit1#> " + upper + " <#JS_itemlimit2#>");
@@ -186,9 +169,10 @@ function addRow_Group(upper){
 		conv_to_transf();	
 		if(item_num >=2){		//duplicate check: {IP/MAC, port, proto, transferred}
 			for(i=0; i<rule_num; i++){
+				var qos_rulelist_col = qos_rulelist_row[i+1].split('>');
 				if(overlib_str[i]){
-					if(document.form.qos_ip_x_0.value == $('qos_rulelist_table').rows[i].cells[1].innerHTML
-						&& document.form.qos_port_x_0.value == overlib_str[i] 
+					if(document.form.qos_ip_x_0.value == qos_rulelist_col[1]
+						&& ((document.form.qos_port_x_0.value == overlib_str[i]) || document.form.qos_port_x_0.value == "")
 						&& document.form.qos_transferred_x_0.value == $('qos_rulelist_table').rows[i].cells[4].innerHTML){
 						
 							if(document.form.qos_proto_x_0.value == $('qos_rulelist_table').rows[i].cells[3].innerHTML
@@ -212,8 +196,9 @@ function addRow_Group(upper){
 							}				
 					}
 				}else{
-					if(document.form.qos_ip_x_0.value == $('qos_rulelist_table').rows[i].cells[1].innerHTML 
-						&& document.form.qos_port_x_0.value == $('qos_rulelist_table').rows[i].cells[2].innerHTML
+					if(document.form.qos_ip_x_0.value == qos_rulelist_col[1]
+						&& ((document.form.qos_port_x_0.value == $('qos_rulelist_table').rows[i].cells[2].innerHTML)
+						|| document.form.qos_port_x_0.value == "" || $('qos_rulelist_table').rows[i].cells[2].innerHTML =="")
 						&& document.form.qos_transferred_x_0.value == $('qos_rulelist_table').rows[i].cells[4].innerHTML){
 						
 								if(document.form.qos_proto_x_0.value == $('qos_rulelist_table').rows[i].cells[3].innerHTML
@@ -255,31 +240,34 @@ function addRow_Group(upper){
 	}
 }
 
-function del_Row(r){
-  var i=r.parentNode.parentNode.rowIndex;
-  $('qos_rulelist_table').deleteRow(i);
-  
-  var qos_rulelist_value = "";
-	for(k=0; k<$('qos_rulelist_table').rows.length; k++){
-		for(j=0; j<$('qos_rulelist_table').rows[k].cells.length-1; j++){
-			if(j == 0)	
-				qos_rulelist_value += "<";
-			else
-				qos_rulelist_value += ">";
-				
-			if(j == 5){
-				qos_rulelist_value += $('qos_rulelist_table').rows[k].cells[j].firstChild.value;
-			}else if($('qos_rulelist_table').rows[k].cells[j].innerHTML.lastIndexOf("...")<0){	
-				qos_rulelist_value += $('qos_rulelist_table').rows[k].cells[j].innerHTML;	
-			}else{
-				qos_rulelist_value += $('qos_rulelist_table').rows[k].cells[j].title;
+function deleteRow_main(obj){
+	var item_index = obj.parentNode.parentNode.rowIndex;
+		document.getElementById(obj.parentNode.parentNode.parentNode.parentNode.id).deleteRow(item_index);
+
+	var target_mac = obj.parentNode.parentNode.children[1].title;
+	var qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split("<");
+	var qos_rulelist_tmp = "";
+	for(i=0;i<qos_rulelist_row.length;i++){
+	var qos_rulelist_col = qos_rulelist_row[i].split(">");
+		if((qos_rulelist_col[1] != target_mac) && (qos_rulelist_col[1] != undefined)){
+			var string_temp = qos_rulelist_row[i].substring(0,qos_rulelist_row[i].length);
+
+			if(qos_rulelist_tmp == ""){
+				qos_rulelist_tmp += string_temp;
+			}
+			else{
+				qos_rulelist_tmp += "<" + string_temp;
 			}
 		}
+
 	}
-	
-	qos_rulelist_array = qos_rulelist_value;
-	if(qos_rulelist_array == "")
-		showqos_rulelist();
+
+	if(qos_rulelist_tmp == "")
+		qos_rulelist_array = "";
+	else
+		qos_rulelist_array = "<" + qos_rulelist_tmp;
+
+	showqos_rulelist();
 }
 
 function showqos_rulelist(){
@@ -321,7 +309,7 @@ function showqos_rulelist(){
 								apps_client_name = client_list_col[1];
 								}
 								if(apps_client_name != "")
-								break;
+									break;
 							}
 							if(apps_client_name != "")
 								code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">'+ apps_client_name + '<br>(' +  apps_client_id +')</td>';
@@ -367,7 +355,7 @@ function showqos_rulelist(){
 						}
 				}
 				code +='<td  width="9%">';
-				code +='<input class="remove_btn" type="button" onclick="del_Row(this);"/></td></tr>';
+				code +='<input class="remove_btn" type="button" onclick="deleteRow_main(this);"/></td></tr>';
 		}
 	}
 	code +='</table>';
@@ -679,7 +667,7 @@ function showQoSList(){
 var isMenuopen = 0;
 function pullQoSList(obj){
 	if(isMenuopen == 0){
-		obj.src = "/images/arrow-top.gif"
+		obj.src = "/images/arrow-top.gif";
 		$("QoSList_Block").style.display = 'block';
 		//document.form.qos_service_name_x_0.focus();		
 		isMenuopen = 1;
@@ -772,7 +760,7 @@ function showLANIPList(){
 	for(var i = 1; i < client_list_row.length; i++){
 		var client_list_col = client_list_row[i].split('>');
 		if(client_list_col[1] && client_list_col[1].length > 20)
-			show_name = client_list_col[1].substring(0, 16) + "..";
+			show_name = client_list_col[1].substring(0, 16) + "...";
 		else
 			show_name = client_list_col[1];
 
@@ -790,7 +778,7 @@ function showLANIPList(){
 
 function pullLANIPList(obj){
 	if(isMenuopen_mac == 0){		
-		obj.src = "/images/arrow-top.gif"
+		obj.src = "/images/arrow-top.gif";
 		$("ClientList_Block_PC").style.display = 'block';		
 		document.form.qos_ip_x_0.focus();		
 		isMenuopen_mac = 1;
@@ -840,7 +828,7 @@ function linkport(obj){
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
-<input type="hidden" name="qos_rulelist" value=''>
+<input type="hidden" name="qos_rulelist" value="">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
 	<tr>
@@ -922,18 +910,18 @@ function linkport(obj){
 							</tr>							
 							<tr>
 								<td width="21%">							
-									<input type="text" maxlength="32" class="input_12_table" style="float:left;width:105px;" placeholder="<#Select_menu_default#>" name="qos_service_name_x_0" onKeyPress="return is_string(this, event)">
-									<img id="pull_arrow" height="14px;" src="/images/arrow-down.gif" onclick="pullQoSList(this);" title="<#select_service#>">
-									<div id="QoSList_Block" class="QoSList_Block" onclick="hideClients_Block()"></div>
+									<input type="text" maxlength="32" class="input_12_table" style="float:left;width:105px;" onblur="if(!over_var){hideClients_Block();}" placeholder="<#Select_menu_default#>" name="qos_service_name_x_0" onKeyPress="return is_string(this, event);">
+									<img id="pull_arrow" height="14px;" src="/images/arrow-down.gif" onclick="pullQoSList(this);" title="<#select_service#>" onmouseover="over_var=1;" onmouseout="over_var=0;">
+									<div id="QoSList_Block" class="QoSList_Block"></div>
 								</td>
 								<td width="20%">
-									<input type="text" maxlength="32" class="input_15_table" name="qos_ip_x_0" style="width:100px;float:left">
+									<input type="text" maxlength="32" class="input_15_table" name="qos_ip_x_0" style="width:100px;float:left;" onblur="if(!over_var){hideClients_Block_mac();}">
 									<img id="pull_arrow_mac" class="pull_arrow"height="14px;" src="/images/arrow-down.gif" onclick="pullLANIPList(this);" title="<#select_client#>">
 									<div id="ClientList_Block_PC" class="ClientList_Block_PC" ></div>
 								</td>
 								
 								
-								<td width="14%"><input type="text" maxlength="32" class="input_12_table" name="qos_port_x_0" onKeyPress="return is_portrange(this, event)"></td>
+								<td width="14%"><input type="text" maxlength="32" class="input_12_table" name="qos_port_x_0" onKeyPress="return is_portrange(this, event);"></td>
 								<td width="12%">
 									<select name="qos_proto_x_0" class="input_option" style="width:75px;" onChange="linkport(this);">
 										<option value="tcp">TCP</option>
@@ -951,7 +939,7 @@ function linkport(obj){
 									<input type="hidden" name="qos_transferred_x_0" value="">
 								</td>
 								<td width="9%">
-									<select name='qos_prio_x_0' class="input_option" style="width:87px;"> <!--style="width:auto;"-->
+									<select name='qos_prio_x_0' class="input_option" style="width:87px;" onclick="changeButton();"> <!--style="width:auto;"-->
 										<option value='0'><#Highest#></option>
 										<option value='1' selected><#High#></option>
 										<option value='2'><#Medium#></option>
@@ -973,7 +961,7 @@ function linkport(obj){
 						</td></tr-->
 						<tr><td>
 							<div class="apply_gen">
-								<input name="button" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
+								<input name="button" id="applybutton" style="color:#FFFFFF" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
 							</div>
 						</td></tr>		
 						</table>			

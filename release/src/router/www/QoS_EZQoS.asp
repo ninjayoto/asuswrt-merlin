@@ -443,11 +443,11 @@ function showqos_bw_rulelist(){
 											<th>Default Priority Level**</th>
 											<td>
 												<select name="qos_default" class="input_option">
-													<option value="0"<% nvram_match("qos_default", "0","selected"); %>>Highest</option>
-													<option value="1"<% nvram_match("qos_default", "1","selected"); %>>High</option>
-													<option value="2"<% nvram_match("qos_default", "2","selected"); %>>Medium</option>
-													<option value="3"<% nvram_match("qos_default", "3","selected"); %>>Low (Default)</option>
-													<option value="4"<% nvram_match("qos_default", "4","selected"); %>>Lowest</option>
+													<option value="0"<% nvram_match("qos_default", "0","selected"); %> onclick="changeButton();">Highest</option>
+													<option value="1"<% nvram_match("qos_default", "1","selected"); %> onclick="changeButton();">High</option>
+													<option value="2"<% nvram_match("qos_default", "2","selected"); %> onclick="changeButton();">Medium</option>
+													<option value="3"<% nvram_match("qos_default", "3","selected"); %> onclick="changeButton();">Low (Default)</option>
+													<option value="4"<% nvram_match("qos_default", "4","selected"); %> onclick="changeButton();">Lowest</option>
 												</select>
 											</td>
 										</tr>
@@ -458,7 +458,7 @@ function showqos_bw_rulelist(){
 
         			<tr>
           				<td height="50" >
-          					<div style=" *width:136px;margin-left:300px;" class="titlebtn" align="center" onClick="submitQoS();"><span><#CTL_onlysave#></span></div>
+						<div style=" *width:136px;margin-left:300px;" id="applybutton" style="color:#FFFFFF" class="titlebtn" align="center" onClick="submitQoS();"><span><#CTL_onlysave#></span></div>
           				</td>
         			</tr>
 			</table>

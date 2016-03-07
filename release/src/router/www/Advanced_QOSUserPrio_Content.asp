@@ -320,7 +320,7 @@ function switchPage(page){
 														<span style="color:white">%</span>
 													</td>	
 													<td  align="center">
-														<select name="upload_bw_max_1" class="input_option" id="upload_bw_max_1" onchange="gen_options();"></select>
+														<select name="upload_bw_max_1" class="input_option" id="upload_bw_max_1" onchange="gen_options(); "></select>
 														<span style="color:white">%</span>
 													</td>
 													<td align="center">
@@ -463,23 +463,23 @@ function switchPage(page){
 											</tr>
 											<tr>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">		
-													<input type="checkbox" name="qos_ack_checkbox" <% nvram_match("qos_ack", "on", "checked"); %>>ACK
+													<input type="checkbox" name="qos_ack_checkbox" <% nvram_match("qos_ack", "on", "checked"); %> onclick="changeButton();">ACK
 													<input type="hidden" name="qos_ack">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_syn_checkbox" <% nvram_match("qos_syn", "on", "checked"); %>>SYN
+													<input type="checkbox" name="qos_syn_checkbox" <% nvram_match("qos_syn", "on", "checked"); %> onclick="changeButton();">SYN
 													<input type="hidden" name="qos_syn">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_fin_checkbox" <% nvram_match("qos_fin", "on", "checked"); %>>FIN
+													<input type="checkbox" name="qos_fin_checkbox" <% nvram_match("qos_fin", "on", "checked"); %> onclick="changeButton();">FIN
 													<input type="hidden" name="qos_fin">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_rst_checkbox" <% nvram_match("qos_rst", "on", "checked"); %>>RST
+													<input type="checkbox" name="qos_rst_checkbox" <% nvram_match("qos_rst", "on", "checked"); %> onclick="changeButton();">RST
 													<input type="hidden" name="qos_rst">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_icmp_checkbox" <% nvram_match("qos_icmp", "on", "checked"); %>>ICMP
+													<input type="checkbox" name="qos_icmp_checkbox" <% nvram_match("qos_icmp", "on", "checked"); %> onclick="changeButton();">ICMP
 													<input type="hidden" name="qos_icmp">
 												</td>
 											</tr>
@@ -491,7 +491,7 @@ function switchPage(page){
 					</td></tr>	
 					<tr><td>
 					<div class="apply_gen">
-						<input name="button" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
+						<input name="button" id="applybutton" style="color:#FFFFFF" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
 					</div>
 					</td></tr>
 					<tr><td>					
