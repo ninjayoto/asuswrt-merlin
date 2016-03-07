@@ -176,7 +176,7 @@ int add_qos_rules(char *pcWANIF)
 	const char *chain;
 	int v4v6_ok;
 
-	if (pcWANIF == NULL || !nvram_match("qos_enable", "1")) return -1;
+	if( pcWANIF == NULL || nvram_get_int("qos_enable") != 1 || nvram_get_int("qos_type") != 0) return -1;
 	if ((fn = fopen(mangle_fn, "w")) == NULL) return -2;
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled() && (fn_ipv6 = fopen(mangle_fn_ipv6, "w")) == NULL){
