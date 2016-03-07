@@ -708,38 +708,74 @@ static void update_nvram_prefix_lifetimes(char *p)
 
 int dhcp6c_state_main(int argc, char **argv)
 {
-	char *p, *state;
+	char *state;
+	char *lan_ifname = nvram_safe_get("lan_ifname");
+	struct in6_addr range;
+	char addr[INET6_ADDRSTRLEN + 1], *value;
+	int lanaddr_changed, prefix_changed, dns_changed;
+	int size, start, end;
 
-	TRACE_PT("begin\n");
+	/* Check if enabled */
+	if (get_ipv6_service() != IPV6_NATIVE_DHCP)
+		return 0;
 
-	if (!wait_action_idle(10)) return 1;
+	if (!wait_action_idle(10))
+		return 1;
 
-	if ((get_ipv6_service() == IPV6_NATIVE_DHCP) &&
-		nvram_get_int("ipv6_dhcp_pd")) {
-		nvram_set("ipv6_rtr_addr",
-			  getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, 0));
-		p = (char *)ipv6_prefix(NULL);
-		if (*p) nvram_set("ipv6_prefix", p);
-		if (*p) update_nvram_prefix_lifetimes(p);
+	prefix_changed = lanaddr_changed = 0;
+	if (nvram_get_int("ipv6_dhcp_pd")) {
+		value = (char *) getifaddr(lan_ifname, AF_INET6, GIF_PREFIXLEN) ? : "";
+		if (sscanf(value, "%[^/]/%d", addr, &size) == 2) {
+			lanaddr_changed = !nvram_match("ipv6_rtr_addr", addr);
+			if (lanaddr_changed)
+				nvram_set("ipv6_rtr_addr", addr);
+
+			value = (char *) ipv6_prefix(NULL);
+			prefix_changed = (!nvram_match("ipv6_prefix", value));
+			if (prefix_changed) {
+				nvram_set("ipv6_prefix", value);
+				update_nvram_prefix_lifetimes(value);
+			}
+			if (prefix_changed && nvram_get_int("ipv6_autoconf_type")) {
+			/* TODO: rework WEB UI to specify ranges without prefix
+			* TODO: add size checking, now range takes all of 16 bit */
+				start = (inet_pton(AF_INET6, nvram_safe_get("ipv6_dhcp_start"), &range) > 0) ?
+					ntohs(range.s6_addr16[7]) : 0x1000;
+				end = (inet_pton(AF_INET6, nvram_safe_get("ipv6_dhcp_end"), &range) > 0) ?
+					ntohs(range.s6_addr16[7]) : 0x2000;
+
+				value = nvram_safe_get("ipv6_prefix");
+				inet_pton(AF_INET6, *value ? value : "::", &range);
+
+				range.s6_addr16[7] = (start < end) ? htons(start) : htons(end);
+				inet_ntop(AF_INET6, &range, addr, sizeof(addr));
+				nvram_set("ipv6_dhcp_start", addr);
+				range.s6_addr16[7] = (start < end) ? htons(end) : htons(start);
+				inet_ntop(AF_INET6, &range, addr, sizeof(addr));
+				nvram_set("ipv6_dhcp_end", addr);
+			}
+		}
 	}
 
-	if (env2nv("new_domain_name_servers", "ipv6_get_dns")) {
-		TRACE_PT("ipv6_get_dns=%s\n", nvram_safe_get("ipv6_get_dns"));
+	dns_changed = env2nv("new_domain_name_servers", "ipv6_get_dns");
+	dns_changed += env2nv("new_domain_name", "ipv6_get_domain");
+	if (dns_changed && nvram_get_int("ipv6_dnsenable"))
 		update_resolvconf();
-	}
 
-	if (env2nv("new_domain_name", "ipv6_get_domain"))
-		TRACE_PT("ipv6_get_domain=%s\n", nvram_safe_get("ipv6_get_domain"));
-
-	// (re)start radvd and httpd
+/* dhcp6s already always restarted with radvd
+	if (lanaddr_changed ||
+	    (prefix_changed && nvram_get_int("ipv6_autoconf_type")) ||
+	    !pids("dhcp6s"))
+		start_dhcp6s();
+*/
+// (re)start radvd
+//      if (prefix_changed || lanaddr_changed || !pids("radvd"))
 	state = getenv("state");
 	if (!state || (strcmp("RELEASE", state) != 0))
 		// Do not start radvd when dhcp6c released its address
 		// (i.e. when stop_dhcp6c is called)
 		start_radvd();
-//	start_httpd();
 
-	TRACE_PT("end\n");
 	return 0;
 }
 
