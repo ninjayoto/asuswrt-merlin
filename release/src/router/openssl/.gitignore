@@ -67,3 +67,4 @@ certs/demo/.0
 include/openssl/*.h
 crypto/opensslconf.h
 rehash.time
+test/
