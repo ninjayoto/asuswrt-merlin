@@ -817,6 +817,10 @@ void start_dnsmasq(int force)
 		fprintf(fp, "conf-file=/etc/dnssec-trust-anchors\n"
 		            "dnssec\n");
 
+		/* Force checking of unsigned replies */
+		if (nvram_match("dnssec_check_unsigned","1"))
+			fprintf(fp, "dnssec-check-unsigned\n");
+
 		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
 		if (!nvram_match("ntp_ready","1"))
 			fprintf(fp, "dnssec-no-timecheck\n");
