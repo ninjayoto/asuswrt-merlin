@@ -3388,6 +3388,10 @@ int init_nvram(void)
 	if(nvram_get("ipv6_mtu") == NULL)
 		nvram_set("ipv6_mtu", "1280");
 
+	// Initialize VPN dns parms
+        if(nvram_get("vpn_dns_mode") == NULL)
+                nvram_set("vpn_dns_mode", "0");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

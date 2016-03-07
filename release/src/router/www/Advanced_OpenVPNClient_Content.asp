@@ -215,6 +215,7 @@ function initial()
 
 	// Set these based on a compound field
 	setRadioValue(document.form.vpn_client_x_eas, ((document.form.vpn_clientx_eas.value.indexOf(''+(openvpn_unit)) >= 0) ? "1" : "0"));
+	document.form.enable_dns_ckb.checked = ('<% nvram_get("vpn_dns_mode"); %>' == 1) ? true : false;
 
 	// Remove CR characters in custom config
 	document.form.vpn_client_custom.value = document.form.vpn_client_custom.value.replace(/[\r]/g, '');
@@ -258,6 +259,7 @@ function update_visibility(){
 	tlsremote = getRadioValue(document.form.vpn_client_tlsremote);
 	userauth = (getRadioValue(document.form.vpn_client_userauth) == 1) && (auth == 'tls') ? 1 : 0;
 	useronly = userauth && getRadioValue(document.form.vpn_client_useronly);
+	adns = document.form.vpn_client_adns.value;
 
 	showhide("client_userauth", (auth == "tls"));
 	showhide("client_hmac", (auth == "tls"));
@@ -289,6 +291,7 @@ function update_visibility(){
 	showhide("clientlist_Block", (rgw == 2));
 	showhide("selectiveTable", (rgw == 2));
 	showhide("client_enforce", (rgw == 2));
+	showhide("enable_dns_span", (adns == 3 && rgw == 2));
 
 // Since instancing certs/keys would waste many KBs of nvram,
 // we instead handle these at the webui level, loading both instances.
@@ -302,7 +305,6 @@ function update_visibility(){
 	showhide("edit_vpn_crt_client2_crl", (openvpn_unit == "2"));
 	showhide("edit_vpn_crt_client2_key",(openvpn_unit == "2"));
 	showhide("edit_vpn_crt_client2_static",(openvpn_unit == "2"));
-
 }
 
 function set_Keys(auth){
@@ -423,6 +425,8 @@ function applyRule(){
 	     (policy_orig != document.form.vpn_client_rgw.value)) &&
 	     (!service_state))
 		document.form.action_script.value += "start_vpnrouting"+openvpn_unit;
+
+	document.form.vpn_dns_mode.value = ((document.form.vpn_client_adns.value == 3 && document.form.vpn_client_rgw.value == 2) ? ((document.form.enable_dns_ckb.checked) ? 1 : 0) : 0);
 
 	document.form.submit();
 }
@@ -743,6 +747,7 @@ function pullLANIPList(obj){
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
 <input type="hidden" name="vpn_clientx_eas" value="<% nvram_clean_get("vpn_clientx_eas"); %>">
+<input type="hidden" name="vpn_dns_mode" value="<% nvram_clean_get("vpn_dns_mode"); %>">
 <input type="hidden" name="vpn_crt_client1_ca" value="<% nvram_clean_get("vpn_crt_client1_ca"); %>">
 <input type="hidden" name="vpn_crt_client1_crt" value="<% nvram_clean_get("vpn_crt_client1_crt"); %>">
 <input type="hidden" name="vpn_crt_client1_crl" value="<% nvram_clean_get("vpn_crt_client1_crl"); %>">
@@ -923,7 +928,7 @@ function pullLANIPList(obj){
 					<tr id="client_password">
 						<th>Password</th>
 						<td>
-							<input type="password" readonly maxlength="50" class="input_25_table" name="vpn_client_password" value="<% nvram_get("vpn_client_password"); %>" onFocus="$(this).removeAttribute('readonly');">
+							<input type="password" readonly maxlength="50" class="input_25_table" id="vpn_client_password" name="vpn_client_password" value="<% nvram_get("vpn_client_password"); %>" onFocus="$(this).removeAttribute('readonly');">
 							<input type="checkbox" name="show_pass_1" onclick="pass_checked(document.form.vpn_client_password)"><#QIS_show_pass#>
 						</td>
 					</tr>
@@ -1001,12 +1006,13 @@ function pullLANIPList(obj){
 					<tr id="client_adns">
 						<th>Accept DNS Configuration</th>
 						<td>
-			        		<select name="vpn_client_adns" class="input_option">
-								<option value="0" <% nvram_match("vpn_client_adns","0","selected"); %> >Disabled</option>
-								<option value="1" <% nvram_match("vpn_client_adns","1","selected"); %> >Relaxed</option>
-								<option value="2" <% nvram_match("vpn_client_adns","2","selected"); %> >Strict</option>
-								<option value="3" <% nvram_match("vpn_client_adns","3","selected"); %> >Exclusive</option>
+							<select name="vpn_client_adns" class="input_option">
+								<option value="0" onclick="update_visibility();" <% nvram_match("vpn_client_adns","0","selected"); %> >Disabled</option>
+								<option value="1" onclick="update_visibility();" <% nvram_match("vpn_client_adns","1","selected"); %> >Relaxed</option>
+								<option value="2" onclick="update_visibility();" <% nvram_match("vpn_client_adns","2","selected"); %> >Strict</option>
+								<option value="3" onclick="update_visibility();" <% nvram_match("vpn_client_adns","3","selected"); %> >Exclusive</option>
 							</select>
+							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;"> Only VPN clients use VPN DNS**</input></span>
 			   			</td>
 					</tr>
 

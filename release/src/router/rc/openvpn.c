@@ -1758,7 +1758,7 @@ int write_vpn_resolv(FILE* f)
 
 			// Don't modify dnsmasq if policy routing is enabled and dns mode set to "Exclusive"
 			snprintf(&buf[0], sizeof(buf), "vpn_client%c_rgw", num);
-			if ((nvram_get_int(&buf[0]) == 2 ) && (strictlevel == 3))
+			if ((nvram_get_int(&buf[0]) == 2 ) && (strictlevel == 3) && (nvram_get_int("vpn_dns_mode") == 1))
 				continue;
 
 			if ( (dnsf = fopen(fn, "r")) == NULL )

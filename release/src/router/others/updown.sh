@@ -6,6 +6,7 @@ resolvfile=$filebase\.resolv
 dnsscript=$(echo /etc/openvpn/fw/$(echo $dev)-dns\.sh | sed 's/\(tun\|tap\)1/client/;s/\(tun\|tap\)2/server/')
 fileexists=
 instance=$(echo $dev | sed "s/tun1//;s/tun2*/0/")
+vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
 
 
 create_client_list(){
@@ -44,9 +45,19 @@ if [ ! -d $filedir ]; then mkdir $filedir; fi
 if [ -f $conffile ]; then rm $conffile; fileexists=1; fi
 if [ -f $resolvfile ]; then rm $resolvfile; fileexists=1; fi
 
+if [ $(nvram get vpn_client$(echo $instance)_adns) == 3 ]
+then
+	if [ $vpn_dns_mode == 1 ]
+	then
+		logger -t "openvpn-updown" "Using ISP DNS for non-VPN clients"
+	else
+		logger -t "openvpn-updown" "Using VPN DNS for non-VPN clients"
+	fi
+fi
+
 if [ $script_type == 'up' ]
 then
-	if [ $instance != 0 -a $(nvram get vpn_client$(echo $instance)_rgw) == 2 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 ]
+	if [ $instance != 0 -a $(nvram get vpn_client$(echo $instance)_rgw) == 2 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 -a $vpn_dns_mode == 1 ]
 	then
 		setdns=0
 		echo iptables -t nat -N DNSVPN$instance >> $dnsscript
@@ -96,7 +107,10 @@ then
 		then
 			sh $dnsscript
 		fi
-		service updateresolv
+		if [ $(nvram get vpn_client$(echo $instance)_adns) -lt 3 -o $vpn_dns_mode == 0 ]
+		then
+			service updateresolv
+		fi
 	elif [ $script_type == 'down' ]; then
 		rm $dnsscript
 		service updateresolv
