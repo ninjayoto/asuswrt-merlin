@@ -914,6 +914,15 @@ void stop_dhcp6c(void)
 	killall("dhcp6c-event", SIGTERM);
 	killall_tk("dhcp6c");
 
+	nvram_set("ipv6_get_dns", "");
+	nvram_set("ipv6_get_domain", "");
+	if (nvram_get_int("ipv6_dhcp_pd")) {
+		nvram_set("ipv6_rtr_addr", "");
+		nvram_set("ipv6_prefix", "");
+		nvram_set("ipv6_pd_vlifetime", "");
+		nvram_set("ipv6_pd_plifetime", "");
+	}
+
 	if (nvram_get_int("ipv6_dhcp_pd"))
 	eval("ip", "-6", "addr", "flush", "scope", "global", "dev", lan_ifname);
 	eval("ip", "-6", "neigh", "flush", "dev", lan_ifname);
