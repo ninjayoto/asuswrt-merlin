@@ -1427,25 +1427,27 @@ void httpd_check()
 		start_httpd();
 	}
 	else {
-		http_enable = nvram_get_int("http_enable");
-		if (http_enable == 0 || http_enable == 2){	//check http access
-			snprintf(url, sizeof(url), "http://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("http_lanport"));
-			args[4] = url;
-			if (rc = _eval(args, NULL, 0, NULL)){
-				logmessage("watchdog", "restart httpd, error detected or process not responding (%d)", rc);
-				stop_httpd();
-				start_httpd();
+		if (nvram_match("upgrade_fw_status", "0")) {  //only check if not during upgrade
+			http_enable = nvram_get_int("http_enable");
+			if (http_enable == 0 || http_enable == 2){	//check http access
+				snprintf(url, sizeof(url), "http://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("http_lanport"));
+				args[4] = url;
+				if (rc = _eval(args, NULL, 0, NULL)){
+					logmessage("watchdog", "restart httpd, error detected or process not responding (%d)", rc);
+					stop_httpd();
+					start_httpd();
+				}
 			}
-		}
-		if ((http_enable == 1 || http_enable == 2) && check_if_file_exist("/etc/cert.pem")){	//check https access
-			snprintf(url, sizeof(url), "https://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("https_lanport"));
-			args[4] = "--cacert";
-			args[5] = "/etc/cert.pem";
-			args[6] = url;
-			if (rc = _eval(args, NULL, 0, NULL)){
-				logmessage("watchdog", "restart httpd - SSL, error detected or process not responding (%d)", rc);
-				stop_httpd();
-				start_httpd();
+			if ((http_enable == 1 || http_enable == 2) && check_if_file_exist("/etc/cert.pem")){	//check https access
+				snprintf(url, sizeof(url), "https://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("https_lanport"));
+				args[4] = "--cacert";
+				args[5] = "/etc/cert.pem";
+				args[6] = url;
+				if (rc = _eval(args, NULL, 0, NULL)){
+					logmessage("watchdog", "restart httpd - SSL, error detected or process not responding (%d)", rc);
+					stop_httpd();
+					start_httpd();
+				}
 			}
 		}
 	}
