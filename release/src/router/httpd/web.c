@@ -6648,6 +6648,7 @@ do_log_cgi(char *path, FILE *stream)
 //2008.08 magic{
 struct mime_handler mime_handlers[] = {
 	{ "Nologin.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
+	{ "Logout.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "error_page.htm*", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "gotoHomePage.htm", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "ure_success.htm", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
@@ -6740,6 +6741,7 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "result_of_detect_client.asp", MIME_EXCEPTION_NORESETTIME},
 	{ "detect_firmware.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "Nologin.asp", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "Logout.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "alertImg.gif", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "error_page.htm", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "jquery.js", MIME_EXCEPTION_NOAUTH_ALL},
