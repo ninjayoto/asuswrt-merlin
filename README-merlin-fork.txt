@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-16E1j9527 (12-January-2016)
+Asuswrt-Merlin fork - build 374.43_2-17E2j9527 (15-March-2016)
 =============================================
 
 About
@@ -19,6 +19,44 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-17E2j9527  (15-March-2016)
+* CHANGED: Change default for sfq limiting in traditional QOS to auto (1) during a factory reset.
+* CHANGED: Improved dnsmasq resolv.conf handling (Merlin backport)
+* CHANGED: Updated iproute2 to latest ASUS levels (ASUS backport)
+* CHANGED: Updates to the Traditional QoS rules pages so that the client name is now shown in addition to the MAC address
+* CHANGED: ntp time syncs now based on boot time instead of the top of every hour
+* CHANGED: ntp sync retries adjusted to comply with time server tos
+- CHANGED: Add HW acceleration FA status to the Tools page for 68P users
+- CHANGED: Changed mark for NAT loopback from 0xb400 to 0x8000 (Merlin backport)
+- CHANGED: Updated OpenSSL to 1.0.2g
+* FIXED: A fix for the VPN client state nvram variables not being set correctly when the client is fully up
+* FIXED: Added QoS rules status check to watchdog to handle case of slow to start IPv6
+* FIXED: Autostart of OpenVPN servers/clients now waits up to 1 minute to obtain a valid system time before starting
+* FIXED: Fix for gui hang if a different client has been logged on and is now displaying the logout page
+* FIXED: Optimize native IPv6 boot process
+* FIXED: Fixes for native IPv6 failing in the event of a modem reboot
+* FIXED: Simple NTPD server will now not start until system time is valid (via watchdog)
+* FIXED: Fix for ICMPv6 when QOS is enabled (Tomato backport)
+- FIXED: Fixes for QoS and IPv6 accept RA (Tomato backport)
+- FIXED: 20+ Memory leak fixes (backported from Shibby Tomato and Linux repository)
+- FIXED: OpenVPN clients will now all run at the highest DNS security level (Merlin backport)
+- FIXED: Selected updates for IPROUTE2, udhcpc and dhcp6c from later ASUS levels
+* NEW: Ability to disable DNSSEC permissive mode (only accept signed responses)
+* NEW: Ability to specify the number of threads for the NFS server (default is now 2 threads)
+* NEW: Add NVRAM option to set number of threads for NFS server (default now set to 2)
+* NEW: Added sshd process to watchdog
+* NEW: Enhanced httpd watchdog that now checks the process is responding in addition to being loaded.
+* NEW: Improved syslog messages for services start/stop
+* NEW: Option to set MTU for native IPv6 - initially will be set to 1280 for maximum compatibility
+* NEW: The manually assigned DHCP address list is now automatically sorted by IP (code by @aswild)
+- NEW: Added ca certs to curl support (Merlin backport)
+- NEW: Added JFFS backup function (Merlin backport) - access via Administration>Restore/Save/Upload Settings page
+- NEW: Clients set to bypass OpenVPN in policy based routing may now use default DNS servers in exclusive mode (Merlin backport)
+- NEW: DNSSEC support (Merlin backport)
+- NEW: NVRAM option to use ASUS NAT loopback method instead of the default Merlin implementation (special cases only)
+- NEW: Support for AUS QoS Bandwidth Limiter
+
+
 374.43_2-16E1j9527  (12-January-2016)
 * CHANGED: Updated OpenSSL to 1.0.2e
 * CHANGED: Updated e2fsprogs to latest Merlin level

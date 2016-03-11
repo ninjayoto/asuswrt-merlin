@@ -1,5 +1,5 @@
 Merlin Fork Custom Options
-Update-16
+Update-17
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
@@ -161,7 +161,7 @@ HTTP Lan Port
 				Reset to default of 80 before loading firmware which does not support 
 					changing of the port
 ----------------------------------------------------------------------------------------------------------------
-QOS SFQ limit (experimental)
+QOS SFQ limit
 	
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set qos_sfql=[0,off-default  1,auto  2-127,value]
@@ -171,7 +171,7 @@ QOS SFQ limit (experimental)
 	Released:		Update-14
 	Reboot Required:	Yes
 	Notes:			Changes SFQ qdisc packet limit
-				A value of 1 automatically selects a value based on upload speed
+				A value of 1 automatically selects a value based on upload speed (recommended)
 				A value of 2-127 sets this value as the packet limit
 ----------------------------------------------------------------------------------------------------------------
 SNTP Server
@@ -249,6 +249,7 @@ Set NTP alternate time server
 				This option changes the number of hours between updates.  The value is not currently error
 					checked and should be an integer between 1 and 24 (hours)
 				A value of '0' disables NTP updates and the time must be set manually (Update-16)
+
 ----------------------------------------------------------------------------------------------------------------
 Special support for Private Internet Access (PIA) OpenVPN Client
 
@@ -263,6 +264,59 @@ Special support for Private Internet Access (PIA) OpenVPN Client
 				You need to add a line to the custom config section and replace the ca with a new cert
 					(included in the zip) in addition to setting the appropriate OpenVPN options.
 ----------------------------------------------------------------------------------------------------------------
+Set number of threads for NVS server
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set nfsd_threads=x (where x is the number of threads)
+				nvram commit & service restart_nfs
+
+	Routers Supported:	All
+	Released:		Update-17
+	Reboot Required:	No
+	Notes:			The default number of threads has now been raised to two (instead of a single thread)
+---------------------------------------------------------------------------------------------------------------
+Set preferred interface for bandwidth limiter
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set qos_iface=[iface]
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-17
+	Reboot Required:	No
+	Notes:			The default interface is eth0 (standard WAN interface).   This may be useful if running
+					an OpenVPN client and wish to limit that bandwidth (set to tun11 for example for
+					vpnclient1.
+---------------------------------------------------------------------------------------------------------------
+Use alternate NAT Loopback implementation (ASUS)
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set fw_nat_loopback=1
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-17
+	Reboot Required:	No
+	Notes:			The default NAT Loopback is that developed by Merlin and has been used in all fork
+					firmware levels which have been released.   Merlin's implementation employs
+					iptables marks in it's implementation.   This alternate method does not use
+					marks and may be helpful if the user is employing custom marks.   Note also
+					that in V17 the standard Merlin implementation has been changed to only use
+					a single bit, to aid users who what to perform custom packet marking.
+---------------------------------------------------------------------------------------------------------------
+Ability to disable DNSSEC permissive mode
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set dnssec_check_unsigned=1
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-17
+	Reboot Required:	No
+	Notes:			By default, DNSSEC will also accept unsigned responses.  This option forces DNSSEC
+				to only accept signed responses.  USE WITH CAUTION:  This can disable dns lookups
+				if no DNSSEC enabled servers are available.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
