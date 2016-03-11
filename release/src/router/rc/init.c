@@ -995,6 +995,7 @@ restore_defaults(void)
 	/* reset ntp status */
 	nvram_set("svc_ready", "0");
 	nvram_set("ntp_ready", "0");
+	nvram_set("ntp_sync", "0");
 
 	/* reset qos err status */
 	nvram_set("qos_addr_err", "4");

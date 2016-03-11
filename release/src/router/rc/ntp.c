@@ -55,7 +55,7 @@ static void ntp_service()
 
 	if (first_sync) {
 		first_sync = 0;
-		nvram_set("ntp_sync", "0");
+		//nvram_set("ntp_sync", "0");
 		nvram_set("reload_svc_radio", "1");
 
 		setup_timezone();
