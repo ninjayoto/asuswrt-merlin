@@ -73,6 +73,9 @@ else
 endif
 #	cp -f others/usbtest.sh $(INSTALLDIR)/usr/sbin/usbtest.sh
 
+#	Used by Curl
+	cp -f others/ca-bundle.crt $(INSTALLDIR)/rom/ca-bundle.crt
+
 ifeq ($(RTCONFIG_OPENVPN),y)
 	cp -f others/dh2048.pem	 $(INSTALLDIR)/rom/dh2048.pem
 endif

@@ -2797,7 +2797,7 @@ webdav_client$(BCMEX)-clean:
 #add install libcurl
 curl-7.21.7/stamp-h1:
 	cd curl-7.21.7 && \
-	$(CONFIGURE) CC=$(CC) --enable-http --with-ssl=$(TOP)/openssl
+	$(CONFIGURE) CC=$(CC) --enable-http --with-ssl=$(TOP)/openssl LDFLAGS="-ldl" --with-ca-bundle=/rom/ca-bundle.crt
 	touch $@
 
 curl-7.21.7: curl-7.21.7/stamp-h1
