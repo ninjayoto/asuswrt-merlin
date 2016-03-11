@@ -64,12 +64,15 @@ static void ntp_service()
 			notify_rc("restart_upnp");
 #ifdef RTCONFIG_IPV6
 		if (get_ipv6_service() != IPV6_DISABLED) {
-			if (get_ipv6_service() != IPV6_NATIVE_DHCP)
-				notify_rc("restart_radvd");
-			else
-				notify_rc("restart_rdnssd");
+			if ((getifaddr( (char *)get_wan6face(), AF_INET6, GIF_PREFIXLEN) ? : "") == "") { // only if ipv6 not already up
+				if (get_ipv6_service() != IPV6_NATIVE_DHCP)
+					notify_rc("restart_radvd");
+				else
+					notify_rc("restart_rdnssd");
+			}
 		}
 #endif
+
 #ifdef RTCONFIG_DISK_MONITOR
 		notify_rc("restart_diskmon");
 #endif
