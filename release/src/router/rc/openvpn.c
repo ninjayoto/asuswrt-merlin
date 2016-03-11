@@ -1549,8 +1549,8 @@ void start_vpn_eas()
 
 	if (strlen(nvram_safe_get("vpn_serverx_eas")) == 0 && strlen(nvram_safe_get("vpn_clientx_eas")) == 0) return;
 	// wait for time sync for a while
-	i = 10;
-	while (time(0) < 1325376000 && i--) {
+	i = 60;
+	while (time(0) < 1325376000 && i--) {	//another way to check ntp_ready, system time < 01-Jan-2012
 		sleep(1);
 	}
 
