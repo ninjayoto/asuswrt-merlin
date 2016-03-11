@@ -2734,10 +2734,6 @@ stop_wan(void)
 	stop_vpn_eas();
 #endif
 
-#ifdef RTCONFIG_OPENVPN
-	stop_vpn_eas();
-#endif
-
 	/* Remove dynamically created links */
 #ifdef RTCONFIG_EAPOL
 	unlink("/tmp/wpa_cli");
