@@ -3282,6 +3282,9 @@ stop_ntpd(void)
                 notify_rc("stop_ntpd");
                 return;
         }
+
+	if (pids("ntpd"))
+		killall_tk("ntpd");
 }
 
 void refresh_ntpc(void)
