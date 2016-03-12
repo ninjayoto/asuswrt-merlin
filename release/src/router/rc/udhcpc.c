@@ -769,12 +769,16 @@ int dhcp6c_state_main(int argc, char **argv)
 		start_dhcp6s();
 */
 // (re)start radvd
-//      if (prefix_changed || lanaddr_changed || !pids("radvd"))
 	state = getenv("state");
-	if (!state || (strcmp("RELEASE", state) != 0))
+	if ((prefix_changed || lanaddr_changed || !pids("radvd")) &&
+		(!state || (strcmp("RELEASE", state) != 0)))
 		// Do not start radvd when dhcp6c released its address
 		// (i.e. when stop_dhcp6c is called)
 		start_radvd();
+
+// restart QoS
+	if (prefix_changed && nvram_get_int("qos_enable") && (nvram_get_int("qos_type") == 0))
+		system("rc rc_service restart_qos");
 
 	return 0;
 }
