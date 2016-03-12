@@ -1461,12 +1461,23 @@ void sshd_check()
         }
 }
 
+static int ntpflag = 0;
 void ntpd_check()
 {
-        if (!pids("ntpd")){
-                logmessage("watchdog", "restart ntpd");
-                start_ntpd();
-        }
+	if (nvram_match("ntp_sync", "1")) {
+		if (!pids("ntpd")){
+			ntpflag = 0;
+			logmessage("watchdog", "restart ntpd");
+			start_ntpd();
+		}
+	}
+	else {
+		if (!ntpflag) {
+			ntpflag = 1;
+			logmessage("watchdog", "ntpd server not available - system time not valid");
+		}
+		stop_ntpd(); //shut down server if not valid time
+	}
 }
 
 void qos_check()

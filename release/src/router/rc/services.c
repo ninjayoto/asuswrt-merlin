@@ -3262,14 +3262,16 @@ start_ntpd(void)
         char *ntpd_argv[] = {"ntpd", "-l", NULL};
         int pid;
 
-	if (nvram_match("ntpd_server","1")) {
+	if (nvram_match("ntpd_server","1") && nvram_match("ntp_sync", "1" )) { // check for valid time before starting server
 	        if (getpid() != 1) {
 		        notify_rc("start_ntpd");
 			return 0;
 	        }
 
-		if (!pids("ntpd"))
+		if (!pids("ntpd")) {
 			_eval(ntpd_argv, NULL, 0, &pid);
+			logmessage("ntpd", "ntpd simple time server started");
+		}
 	}
 
         return 0;
