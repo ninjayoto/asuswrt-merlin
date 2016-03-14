@@ -2352,8 +2352,10 @@ function updateStatus_AJAX(){
 	if(stopFlag == 1)
 		return false;
 
-	if(updateStatusCounter > parseInt(20 * AUTOLOGOUT_MAX_MINUTE))
+	if(updateStatusCounter > parseInt(20 * AUTOLOGOUT_MAX_MINUTE)) {
 		location = "Logout.asp";
+		disableCheckChangedStatus();
+	}
 
 	var ie = window.ActiveXObject;
 	if(ie)
