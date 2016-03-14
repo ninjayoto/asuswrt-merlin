@@ -2381,15 +2381,18 @@ void start_dms(void)
 
 		/* start media server if it's not already running */
 		if (pidof(MEDIA_SERVER_APP) <= 0) {
-			if ((_eval(argv, NULL, 0, &pid) == 0) && (once)) {
-				/* If we started the media server successfully, wait 1 sec
-				 * to let it die if it can't open the database file.
-				 * If it's still alive after that, assume it's running and
-				 * disable forced once-after-reboot rescan.
-				 */
-				sleep(1);
-				if (pidof(MEDIA_SERVER_APP) > 0)
-					once = 0;
+			if (_eval(argv, NULL, 0, &pid) == 0) {
+				logmessage("MediaServer", "daemon is started");
+				if (once) {
+					/* If we started the media server successfully, wait 1 sec
+					 * to let it die if it can't open the database file.
+					 * If it's still alive after that, assume it's running and
+					 * disable forced once-after-reboot rescan.
+					 */
+					sleep(1);
+					if (pidof(MEDIA_SERVER_APP) > 0)
+						once = 0;
+				}
 			}
 		}
 	}
@@ -2405,6 +2408,7 @@ void stop_dms(void)
 
 	// keep dms always run except for disabling it
 	// killall_tk(MEDIA_SERVER_APP);
+	//logmessage("MediaServer", "daemon is up");
 }
 
 
@@ -2412,6 +2416,7 @@ void stop_dms(void)
 void force_stop_dms(void)
 {
 	killall_tk(MEDIA_SERVER_APP);
+	logmessage("MediaServer", "daemon is stopped");
 }
 
 
