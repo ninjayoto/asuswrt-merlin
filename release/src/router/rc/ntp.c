@@ -39,7 +39,7 @@
 #include <stdarg.h>
 
 #define ZERO 0
-#define SECONDS_TO_WAIT 3
+#define SECONDS_TO_WAIT 5
 #define NTP_RETRY_INTERVAL 30
 
 static char server[32];
@@ -159,7 +159,7 @@ int ntp_main(int argc, char *argv[])
 	int attempts, tot_attempts, fflag;
 	FILE *fp;
 	pid_t pid;
-	char *args[] = {"ntpclient", "-h", server, "-i", "3", "-l", "-s", NULL};
+	char *args[] = {"ntpclient", "-h", server, "-i", "5", "-l", "-s", NULL};
 
 	strlcpy(server, nvram_safe_get("ntp_server0"), sizeof(server));
 	args[2] = server;
