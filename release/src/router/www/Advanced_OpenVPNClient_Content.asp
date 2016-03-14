@@ -428,6 +428,8 @@ function applyRule(){
 
 	document.form.vpn_dns_mode.value = ((document.form.vpn_client_adns.value == 3 && document.form.vpn_client_rgw.value == 2) ? ((document.form.enable_dns_ckb.checked) ? 1 : 0) : 0);
 
+	$("vpn_client_password").type = "text"; // workaround for password save prompt in firefox
+
 	document.form.submit();
 }
 
