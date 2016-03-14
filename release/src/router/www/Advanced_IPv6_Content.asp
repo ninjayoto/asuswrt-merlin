@@ -101,6 +101,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		$("auto_config").style.display="";
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -168,6 +169,7 @@ function showInputfield(v){
 		showInputfield2('ipv6_dhcp_pd', enable_pd);
 		var enable_dns = (document.form.ipv6_dnsenable[1].checked) ? '0' : '1';
 		showInputfield2('ipv6_dnsenable', enable_dns);
+		$("auto_config").style.display="";
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -224,6 +226,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		$("auto_config").style.display="";
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -278,6 +281,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		$("auto_config").style.display="";
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}
@@ -326,6 +330,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		$("auto_config").style.display="";
 		document.form.enable_mtu_ckb.checked = true;
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
@@ -392,6 +397,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		$("auto_config").style.display="";
 		$("enable_mtu_span").style.display="";
 		$("enable_mtu_defaults").style.display="";
 	}	
@@ -437,6 +443,7 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 0);
 		inputCtrl(document.form.ipv6_dns_router[0], 0);
 		inputCtrl(document.form.ipv6_dns_router[1], 0);
+		$("auto_config").style.display="none";
 		document.form.enable_mtu_ckb.checked = true;
 		$("enable_mtu_span").style.display="none";
 		$("enable_mtu_defaults").style.display="none";
