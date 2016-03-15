@@ -202,6 +202,12 @@ int ntp_main(int argc, char *argv[])
 		}
 		else if (sig_cur == SIGCHLD && nvram_get_int("ntp_ready") != 0 )
 		{ //handle the delayed ntpclient process
+			if ((nvram_match("ntp_log_x", "1") || fflag == 1) && tot_attempts != 0)
+				logmessage("ntp", "NTP update successful after %d attempt(s)", tot_attempts);
+			nvram_set("ntp_sync", "1");
+			attempts = 0;
+			tot_attempts = 0;
+			fflag = 0;
 			sleep(SECONDS_TO_WAIT);
 			set_alarm();
 		}
