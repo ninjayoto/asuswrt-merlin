@@ -207,7 +207,7 @@ int ntp_main(int argc, char *argv[])
 		}
 		else
 		{
-			/* stop_ntpc(); */
+			stop_ntpc();
 
 			nvram_set("ntp_server_tried", server);
 			nvram_set("ntp_ready", "0");

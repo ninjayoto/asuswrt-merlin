@@ -3252,8 +3252,8 @@ stop_ntpc(void)
 	if (pids("ntpclient"))
 		killall_tk("ntpclient");
 
-	if (pids("ntp"))
-		killall_tk("ntp");
+//	if (pids("ntp"))
+//		killall_tk("ntp");
 }
 
 int
