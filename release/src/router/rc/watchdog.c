@@ -1416,6 +1416,8 @@ void ddns_check(void)
 	return;
 }
 
+static int http_err=0;
+static int https_err=0;
 void httpd_check()
 {
 	int rc, http_enable;
@@ -1429,16 +1431,21 @@ void httpd_check()
 	else {
 		if (nvram_match("upgrade_fw_status", "0")) {  //only check if not during upgrade
 			http_enable = nvram_get_int("http_enable");
-			if (http_enable == 0 || http_enable == 2){	//check http access
+			if ((http_enable == 0 || http_enable == 2) && (http_err < 5)){	//check http access
 				snprintf(url, sizeof(url), "http://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("http_lanport"));
 				args[4] = url;
 				if (rc = _eval(args, NULL, 0, NULL)){
 					logmessage("watchdog", "restart httpd, error detected or process not responding (%d)", rc);
 					stop_httpd();
 					start_httpd();
+					http_err++;
+					if (http_err = 5)
+						logmessage("watchdog", "aborting httpd response checks - unrecoverable error");
 				}
+				else
+					http_err = 0;
 			}
-			if ((http_enable == 1 || http_enable == 2) && check_if_file_exist("/etc/cert.pem")){	//check https access
+			if ((http_enable == 1 || http_enable == 2) && check_if_file_exist("/etc/cert.pem") && (https_err < 5)){	//check https access
 				snprintf(url, sizeof(url), "https://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("https_lanport"));
 				args[4] = "--cacert";
 				args[5] = "/etc/cert.pem";
@@ -1447,7 +1454,12 @@ void httpd_check()
 					logmessage("watchdog", "restart httpd - SSL, error detected or process not responding (%d)", rc);
 					stop_httpd();
 					start_httpd();
+					https_err++;
+					if (https_err = 5)
+						logmessage("watchdog", "aborting httpd - SSL response checks - unrecoverable error");
 				}
+				else
+					https_err = 0;
 			}
 		}
 	}
