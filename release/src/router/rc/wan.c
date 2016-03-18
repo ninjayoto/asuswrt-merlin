@@ -2322,7 +2322,7 @@ wan_up(char *wan_ifname)	// oleg patch, replace
 		start_igmpproxy(wan_ifname);
 
 	//add_iQosRules(wan_ifname);
-	//start_iQos();
+	start_iQos();
 
 	stop_upnp();
 	start_upnp();
@@ -2336,10 +2336,6 @@ wan_up(char *wan_ifname)	// oleg patch, replace
 		stop_ntpd();
 		start_ntpd();
 	}
-
-	if(nvram_get_int("qos_addr_err") > 0)
-		add_iQosRules(wan_ifname);
-        start_iQos();
 
 #ifdef RTCONFIG_VPNC
 	if((nvram_match("vpnc_proto", "pptp") || nvram_match("vpnc_proto", "l2tp")) && nvram_match("vpnc_auto_conn", "1"))
