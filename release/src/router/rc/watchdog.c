@@ -1502,8 +1502,8 @@ void qos_check()
 		nvram_set_int("qos_addr_err", (errno | 2));
 
 	if ((errno & 1) || ((errno & 2) && ipv6_enabled() && (wan6valid)) || (errno & 4)) {
-		logmessage("watchdog", "restart qos");
-		system("rc rc_service restart_qos");
+		logmessage("watchdog", "update qos rules");
+		system("rc rc_service restart_firewall"); //use firewall to preserve added mangle rules
 	}
 }
 
