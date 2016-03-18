@@ -431,9 +431,9 @@ struct nvram_tuple router_defaults[] = {
 
 // WPS 
 //	#if defined (W7_LOGO) || defined (WIFI_LOGO)
-	{ "wps_enable", "1"},
+//	{ "wps_enable", "1"},
 //	#else
-//	{ "wps_enable", "0"},					// win7 logo
+	{ "wps_enable", "0"},					// win7 logo
 //	#endif
 #ifdef RTCONFIG_RALINK
 	{ "wl_wsc_config_state", "0"},				/* config state unconfiged */
