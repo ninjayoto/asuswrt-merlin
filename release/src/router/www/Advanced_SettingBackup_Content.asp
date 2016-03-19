@@ -67,8 +67,8 @@ function uploadSetting(){
 		file_obj.focus();
 	}
 	else if(file_obj.value.length < 6 ||
-					file_obj.value.toUpperCase.lastIndexOf(".CFG")  < 0 ||
-					file_obj.value.toUpperCase.lastIndexOf(".CFG") != (file_obj.value.length)-4){
+					file_obj.value.toUpperCase().lastIndexOf(".CFG")  < 0 ||
+					file_obj.value.toUpperCase().lastIndexOf(".CFG") != (file_obj.value.length)-4){
 		alert("<#Setting_upload_hint#>");
 		file_obj.focus();
 	}
