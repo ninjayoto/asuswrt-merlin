@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-17E4j9527 (19-March-2016)
+Asuswrt-Merlin fork - build 374.43_2-17E5j9527 (20-March-2016)
 =============================================
 
 About
@@ -19,7 +19,7 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
-374.43_2-17E4j9527  (19-March-2016)
+374.43_2-17E5j9527  (20-March-2016)
 * CHANGED: Default state for WPS is disabled after a reset to factory defaults
 * FIXED: NAT Loopback not working if booting with QOS active
 * FIXED: NAT Loopback not working on MIPS routers
