@@ -4162,13 +4162,7 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 /* For NAT loopback */
 	if(!nvram_match("fw_nat_loopback", "1"))
 	eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
-	     "-d", wan_ip, "-j", "MARK", "--set-mark",
-#ifdef RTCONFIG_BCMARM
-                        "0x8000/0x8000"
-#else
-                        "0x8000"
-#endif
-                        );
+	     "-d", wan_ip, "-j", "MARK", "--set-mark", "0x8000/0x8000");
 
 /* Workaround for incorrect DSCP from Comcast */
 	if (nvram_get_int("DSCP_fix_enable")) {
@@ -4306,13 +4300,7 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 
 		if(!nvram_match("fw_nat_loopback", "1"))
 		eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
-		     "-d", wan_ip, "-j", "MARK", "--set-mark",
-#ifdef RTCONFIG_BCMARM
-			"0x8000/0x8000"
-#else
-			"0x8000"
-#endif
-			);
+		     "-d", wan_ip, "-j", "MARK", "--set-mark", "0x8000/0x8000");
 	}
 #endif
 
