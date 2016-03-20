@@ -146,7 +146,7 @@ iptables.o: iptables.c
 	$(CC) $(CFLAGS) -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\" -c -o $@ $<
 
 libiptc.so: libiptc/libiptc.a
-	$(LD) -shared -o $@ --whole-archive -Llibiptc -liptc
+	$(LD) -shared -o $@ --whole-archive --allow-multiple-definition -Llibiptc -liptc
 
 
 ifeq ($(DO_MULTI), 1)
