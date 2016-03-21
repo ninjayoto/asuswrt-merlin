@@ -1439,7 +1439,7 @@ void httpd_check()
 					stop_httpd();
 					start_httpd();
 					http_err++;
-					if (http_err = 5)
+					if (http_err == 5)
 						logmessage("watchdog", "aborting httpd response checks - unrecoverable error");
 				}
 				else
@@ -1455,7 +1455,7 @@ void httpd_check()
 					stop_httpd();
 					start_httpd();
 					https_err++;
-					if (https_err = 5)
+					if (https_err == 5)
 						logmessage("watchdog", "aborting httpd - SSL response checks - unrecoverable error");
 				}
 				else
