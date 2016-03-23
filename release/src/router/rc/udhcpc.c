@@ -722,6 +722,9 @@ int dhcp6c_state_main(int argc, char **argv)
 	if (!wait_action_idle(10))
 		return 1;
 
+	state = getenv("state");
+	logmessage("dhcp6c", "dhcp6c state change detected %s", state);
+
 	prefix_changed = lanaddr_changed = 0;
 	if (nvram_get_int("ipv6_dhcp_pd")) {
 		value = (char *) getifaddr(lan_ifname, AF_INET6, GIF_PREFIXLEN) ? : "";
@@ -771,7 +774,7 @@ int dhcp6c_state_main(int argc, char **argv)
 // (re)start radvd
 	state = getenv("state");
 	if ((prefix_changed || lanaddr_changed || !pids("radvd")) &&
-		(!state || (strcmp("RELEASE", state) != 0)))
+		(strcmp("RELEASE", state) != 0))
 		// Do not start radvd when dhcp6c released its address
 		// (i.e. when stop_dhcp6c is called)
 		start_radvd();
