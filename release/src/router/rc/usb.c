@@ -3783,7 +3783,7 @@ void start_nfsd(void)
 	if (nvram_match("nfsd_enable", "0")) return;
 
 	if (getpid() != 1) {
-                notify_rc_after_wait("start_nfsd");
+                notify_rc_after_wait("start_nfs");
                 return;
         }
 
