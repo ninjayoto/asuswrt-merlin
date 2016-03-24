@@ -63,19 +63,19 @@
 #define SMB_SESSON_ANDX_REQ     5
 #define SMB_SESSON_ANDX_RSP     6
 
-#ifdef DEBUG
-	//#define NMP_DEBUG(fmt, args...) printf(fmt, ## args)
-	#define NMP_DEBUG(fmt, args...) syslog(LOG_NOTICE, fmt, ## args)
-#else
-	#define NMP_DEBUG(fmt, args...)
-#endif
+//#ifdef DEBUG
+//	#define NMP_DEBUG(fmt, args...) printf(fmt, ## args)
+//#else
+//	#define NMP_DEBUG(fmt, args...)
+//#endif
+#define NMP_DEBUG(fmt, args...) if(nvram_get_int("nmp_debug")>0) syslog(LOG_NOTICE, fmt, ## args)
 
-#ifdef DEBUG_MORE
-        //#define NMP_DEBUG_M(fmt, args...) printf(fmt, ## args)
-	#define NMP_DEBUG_M(fmt, args...) syslog(LOG_NOTICE, fmt, ## args)
-#else
-        #define NMP_DEBUG_M(fmt, args...)
-#endif
+//#ifdef DEBUG_MORE
+//	#define NMP_DEBUG_M(fmt, args...) printf(fmt, ## args)
+//#else
+//	#define NMP_DEBUG_M(fmt, args...)
+//#endif
+#define NMP_DEBUG_M(fmt, args...) if(nvram_get_int("nmp_debug")>1) syslog(LOG_NOTICE, fmt, ## args)
 
 typedef unsigned char UCHAR;
 typedef unsigned short USHORT;
