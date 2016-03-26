@@ -1320,6 +1320,7 @@ iptables-1.4.x-install:
 
 ifeq ($(RTCONFIG_IPV6),y)
 	cd $(INSTALLDIR)/iptables-1.4.x/usr/sbin && \
+		ln -sf xtables-multi ip6tables-save && \
 		ln -sf xtables-multi ip6tables-restore && \
 		ln -sf xtables-multi ip6tables
 endif
