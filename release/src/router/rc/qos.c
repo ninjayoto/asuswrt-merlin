@@ -38,6 +38,7 @@ int etable_flag = 0;
 int manual_return = 0;
 
 #define MAX_RETRY 10
+#define BUF_SIZE 256
 
 // FindMask : 
 // 1. sourceStr 	: replace "*'" to "0"
@@ -140,6 +141,11 @@ void add_EbtablesRules(void)
 
 void del_iQosRules(void)
 {
+	FILE *fn;
+	char *argv[7];
+	char buffer[BUF_SIZE];
+	char rule[BUF_SIZE];
+
 #ifdef CLS_ACT
 	eval("ip", "link", "set", "imq0", "down");
 #endif
@@ -148,10 +154,52 @@ void del_iQosRules(void)
 	del_EbtablesRules(); // flush ebtables nat table
 #endif
 
-	/* Flush all rules in mangle table */
-	eval("iptables", "-t", "mangle", "-F");
+	/* Remove or Flush all rules in mangle table */
+        argv[0] = "sed";
+        argv[1] = "-i";
+        argv[2] = "s/-A/-D/g;s/-I/-D/g;/-D/!d";
+        argv[3] = NULL;
+        argv[4] = NULL;
+
+	sprintf(&buffer[0], "%s", mangle_fn);
+	if(check_if_file_exist(&buffer[0])) {
+		argv[3] = &buffer[0];
+		if (!_eval(argv, NULL, 0, NULL)) {
+			if (fn = fopen(mangle_fn, "r")) {
+				while (fgets(rule, sizeof(rule), fn)) /* read a line */
+				{
+					sprintf(&buffer[0], "iptables -t mangle %s", rule);
+					system(&buffer[0]);
+				}
+				fclose(fn);
+				unlink(mangle_fn);
+			}
+		}
+		else {
+			logmessage("qos","error removing ipv4 rules, flushing table");
+			eval("iptables", "-t", "mangle", "-F");
+		}
+	}
 #ifdef RTCONFIG_IPV6
-	eval("ip6tables", "-t", "mangle", "-F");
+	sprintf(&buffer[0], "%s", mangle_fn_ipv6);
+	if(check_if_file_exist(&buffer[0])) {
+		argv[3] = &buffer[0];
+		if (!_eval(argv, NULL, 0, NULL)) {
+			if (fn = fopen(mangle_fn_ipv6, "r")) {
+				while (fgets(rule, sizeof(rule), fn)) /* read a line */
+				{
+					sprintf(&buffer[0], "iptables -t mangle %s", rule);
+					system(&buffer[0]);
+				}
+				fclose(fn);
+				unlink(mangle_fn_ipv6);
+			}
+		}
+		else {
+			logmessage("qos","error removing ipv6 rules, flushing table");
+	                eval("ip6tables", "-t", "mangle", "-F");
+		}
+	}
 #endif
 }
 
@@ -176,6 +224,8 @@ int add_qos_rules(char *pcWANIF)
 	const char *chain;
 	int v4v6_ok;
 
+	del_iQosRules(); // clear all Qos rules in mangle table
+
 	if( pcWANIF == NULL || nvram_get_int("qos_enable") != 1 || nvram_get_int("qos_type") != 0) return -1;
 	if ((fn = fopen(mangle_fn, "w")) == NULL) return -2;
 #ifdef RTCONFIG_IPV6
@@ -193,7 +243,7 @@ int add_qos_rules(char *pcWANIF)
 	if (nvram_match("qos_sticky", "0"))
 		sticky_enable = 1;
 
-	del_iQosRules(); // flush all rules in mangle table
+//	del_iQosRules(); // flush all rules in mangle table
 
 #ifdef CLS_ACT
 	eval("ip", "link", "set", "imq0", "up");
