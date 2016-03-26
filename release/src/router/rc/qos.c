@@ -804,7 +804,7 @@ int add_qos_rules(char *pcWANIF)
 	if (ipv4_err == 0) {
 		// add retries to iptables rules apply
 		for ( i = 1; i <= MAX_RETRY; i++ ) {
-			if (eval("iptables-restore", (char*)mangle_fn)) {
+			if (eval("iptables-restore", "-n", (char*)mangle_fn)) {
 				_dprintf("iptables-restore failed - attempt: %d ...\n", i);
 				if (i == MAX_RETRY)
 					logmessage("qos", "apply rules (%s) failed!", mangle_fn);
@@ -828,7 +828,7 @@ int add_qos_rules(char *pcWANIF)
 		if (ipv6_err == 0) {
 			// add retries to ip6tables rules apply
 			for ( i = 1; i <= MAX_RETRY; i++ ) {
-				if (eval("ip6tables-restore", (char*)mangle_fn_ipv6)) {
+				if (eval("ip6tables-restore", "-n", (char*)mangle_fn_ipv6)) {
 					_dprintf("ip6tables-restore failed - attempt: %d ...\n", i);
 					if (i == MAX_RETRY)
 						logmessage("qos", "apply rules (%s) failed!", mangle_fn_ipv6);
@@ -1335,7 +1335,7 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 	fprintf(fn, "COMMIT\n");
 	fclose(fn);
 	chmod(mangle_fn, 0700);
-	eval("iptables-restore", (char*)mangle_fn);
+	eval("iptables-restore", "-n", (char*)mangle_fn);
 	_dprintf("[BWLIT] %s: create rules\n", __FUNCTION__);
 
 	return 0;
