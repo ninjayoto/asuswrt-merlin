@@ -779,9 +779,9 @@ int dhcp6c_state_main(int argc, char **argv)
 		// (i.e. when stop_dhcp6c is called)
 		start_radvd();
 
-// update QoS rules
+// restart QoS
 	if (prefix_changed && nvram_get_int("qos_enable") && (nvram_get_int("qos_type") == 0))
-		system("rc rc_service restart_firewall");  //use firewall to preserve added mangle rules
+		system("rc rc_service restart_qos");
 
 	return 0;
 }
