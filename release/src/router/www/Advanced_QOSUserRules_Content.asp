@@ -241,33 +241,28 @@ function addRow_Group(upper){
 }
 
 function deleteRow_main(obj){
-	var item_index = obj.parentNode.parentNode.rowIndex;
-		document.getElementById(obj.parentNode.parentNode.parentNode.parentNode.id).deleteRow(item_index);
+	var i=obj.parentNode.parentNode.rowIndex;
+	$('qos_rulelist_table').deleteRow(i);
+	var qos_rulelist_row = "";
+	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');
+	var tmp_value = "";
 
-	var target_mac = obj.parentNode.parentNode.children[1].title;
-	var qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split("<");
-	var qos_rulelist_tmp = "";
-	for(i=0;i<qos_rulelist_row.length;i++){
-	var qos_rulelist_col = qos_rulelist_row[i].split(">");
-		if((qos_rulelist_col[1] != target_mac) && (qos_rulelist_col[1] != undefined)){
-			var string_temp = qos_rulelist_row[i].substring(0,qos_rulelist_row[i].length);
+        for(i=0; i<rule_num; i++){
+                tmp_value += "<";
+                for(j=0; j<item_num-1; j++){
+                        var qos_rulelist_col = qos_rulelist_row[i+1].split('>');
+                        if(j==5){
+                                tmp_value += $('qos_rulelist_table').rows[i].cells[j].firstChild.value; //save modified priority
+                        }else{
+                                tmp_value += qos_rulelist_col[j]; //only save input values, not enhanced table entries
+                                tmp_value += ">";
+                        }
+                }
+        }
 
-			if(qos_rulelist_tmp == ""){
-				qos_rulelist_tmp += string_temp;
-			}
-			else{
-				qos_rulelist_tmp += "<" + string_temp;
-			}
-		}
-
-	}
-
-	if(qos_rulelist_tmp == "")
-		qos_rulelist_array = "";
-	else
-		qos_rulelist_array = "<" + qos_rulelist_tmp;
-
-	showqos_rulelist();
+	qos_rulelist_array = tmp_value;
+	if(qos_rulelist_array == "")
+		showqos_rulelist();
 }
 
 function showqos_rulelist(){
