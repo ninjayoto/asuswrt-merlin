@@ -101,10 +101,28 @@ function applyRule(){
 }
 
 function save_table(){
-	var tmp_value = decodeURIComponent(qos_rulelist_array);
+	var rule_num = $('qos_rulelist_table').rows.length;
+	var item_num = $('qos_rulelist_table').rows[0].cells.length;
+	var qos_rulelist_row = "";
+        qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');
+	var tmp_value = "";
+
+	for(i=0; i<rule_num; i++){
+		tmp_value += "<";
+		for(j=0; j<item_num-1; j++){
+			var qos_rulelist_col = qos_rulelist_row[i+1].split('>');
+			if(j==5){
+				tmp_value += $('qos_rulelist_table').rows[i].cells[j].firstChild.value; //save modified priority
+			}else{
+				tmp_value += qos_rulelist_col[j]; //only save input values, not enhanced table entries
+				tmp_value += ">";
+			}
+		}
+	}
+
 	if(tmp_value == "")
 		return false;
-	if(tmp_value == "<"+"<#958#>" || tmp_value == "<")
+	if(tmp_value == "<"+"<#IPConnection_VSList_Norule#>" || tmp_value == "<")
 		tmp_value = "";
 	document.form.qos_rulelist.value = tmp_value;
 }
@@ -121,8 +139,6 @@ function addRow(obj, head){
 			
 	qos_rulelist_array += obj.value;
 	obj.value= "";
-	document.form.qos_min_transferred_x_0.value= "";
-	document.form.qos_max_transferred_x_0.value= "";
 }
 
 function validForm(){
@@ -236,6 +252,8 @@ function addRow_Group(upper){
 		addRow(document.form.qos_transferred_x_0, 0);
 		addRow(document.form.qos_prio_x_0, 0);
 		document.form.qos_prio_x_0.value="1";
+		document.form.qos_min_transferred_x_0.value= "";
+		document.form.qos_max_transferred_x_0.value= "";
 		showqos_rulelist();
 	}
 }
