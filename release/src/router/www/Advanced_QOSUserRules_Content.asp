@@ -181,6 +181,17 @@ function addRow_Group(upper){
 			alert("<#JS_itemlimit1#> " + upper + " <#JS_itemlimit2#>");
 			return;	
 		}			
+
+		//check for null entry
+		if((document.form.qos_ip_x_0.value == "") && (document.form.qos_port_x_0.value == "")  && (document.form.qos_transferred_x_0.value == "")){
+			alert("Rule must specify at least one condition.");
+
+			parse_port="";
+			document.form.qos_port_x_0.value =="";
+			document.form.qos_ip_x_0.focus();
+			document.form.qos_ip_x_0.select();
+			return;
+		}
 		
 		conv_to_transf();	
 		if(item_num >=2){		//duplicate check: {IP/MAC, port, proto, transferred}
@@ -241,7 +252,7 @@ function addRow_Group(upper){
 				}	
 			}
 		}
-		
+
 		addRow(document.form.qos_service_name_x_0 ,1);
 		addRow(document.form.qos_ip_x_0, 0);
 		addRow(document.form.qos_port_x_0, 0);
