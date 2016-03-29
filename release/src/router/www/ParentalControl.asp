@@ -228,8 +228,12 @@ function showLANIPList(){
 
 	for(var i = 1; i < client_list_row.length; i++){
 		var client_list_col = client_list_row[i].split('>');
-		show_name = hostnamecache[client_list_col[2]];
+                if(client_list_col[1] && client_list_col[1].length > 20)
+                        show_name = client_list_col[1].substring(0, 16) + "..";
+                else
+                        show_name = client_list_col[1];
 		client_list_col[1] = show_name;
+
 
 		if(client_list_col[1])
 			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP(\''+client_list_col[1]+'\', \''+client_list_col[3]+'\');"><strong>'+client_list_col[2]+'</strong> ';
