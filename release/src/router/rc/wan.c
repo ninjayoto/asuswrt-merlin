@@ -1910,7 +1910,7 @@ int update_resolvconf(void)
 #ifdef RTCONFIG_OPENVPN
 	dnsstrict = write_vpn_resolv(fp);
 	// If dns not set to exclusive
-	if (dnsstrict != 3 || nvram_get_int("vpn_dns_mode") == 1) {
+	if (dnsstrict != 3) {
 #endif
 		for (unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; unit++) {
 			char *wan_dns, *wan_xdns;
@@ -1938,7 +1938,7 @@ int update_resolvconf(void)
 	if (ipv6_enabled()) {
 		if (nvram_match("ipv6_dns_router", "1")
 #ifdef RTCONFIG_OPENVPN
-		    && (dnsstrict != 3 || nvram_get_int("vpn_dns_mode") == 1)
+		    && (dnsstrict != 3)
 #endif
 		) {
 			if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_get_int("ipv6_dnsenable")) {

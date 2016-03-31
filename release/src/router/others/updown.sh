@@ -7,7 +7,29 @@ dnsscript=$(echo /etc/openvpn/fw/$(echo $dev)-dns\.sh | sed 's/\(tun\|tap\)1/cli
 fileexists=
 instance=$(echo $dev | sed "s/tun1//;s/tun2*/0/")
 vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
+if [ "$(nvram get ipv6_service)" == "disabled" ]
+then
+	ipv6_enabled=0
+else
+	ipv6_enabled=1
+fi
+lan_if=$(nvram get lan_ifname)
 
+# Set up VPN server
+if [ $(nvram get dhcpd_dns_router) == 1 ]
+then
+	VPNserver=$(nvram get lan_ipaddr)
+else
+	VPNserver=$server
+fi
+
+# Set up ISP server
+if [ $(nvram get wan0_dnsenable_x) == 1 ]
+then
+	ISPserver=$(nvram get wan0_dns | awk -F" " '{ print $1; }')
+else
+	ISPserver=$(nvram get wan0_dns1_x)
+fi
 
 create_client_list(){
 	server=$1
@@ -29,14 +51,17 @@ create_client_list(){
 			TARGET_ROUTE=$(echo $ENTRY | cut -d ">" -f 4)
 			if [ "$TARGET_ROUTE" = "VPN" ]
 			then
-				echo iptables -t nat -A DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $server >> $dnsscript
-				logger -t "openvpn-updown" "Forcing $VPN_IP to use DNS server $server"
+				echo iptables -t nat -A DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $VPNserver >> $dnsscript
+				logger -t "openvpn-updown" "Forcing $VPN_IP to use DNS server $server `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
 			else
-				echo iptables -t nat -I DNSVPN$instance -s $VPN_IP -j RETURN >> $dnsscript
+				echo iptables -t nat -I DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
 				logger -t "openvpn-updown" "Excluding $VPN_IP from forced DNS routing"
 			fi
 		fi
 	done
+
+	echo iptables -t nat -A DNSVPN$instance -j DNAT --to-destination $ISPserver >> $dnsscript
+
 	IFS=$OLDIFS
 }
 
@@ -45,24 +70,17 @@ if [ ! -d $filedir ]; then mkdir $filedir; fi
 if [ -f $conffile ]; then rm $conffile; fileexists=1; fi
 if [ -f $resolvfile ]; then rm $resolvfile; fileexists=1; fi
 
-if [ $(nvram get vpn_client$(echo $instance)_adns) == 3 ]
-then
-	if [ $vpn_dns_mode == 1 ]
-	then
-		logger -t "openvpn-updown" "Using ISP DNS for non-VPN clients"
-	else
-		logger -t "openvpn-updown" "Using VPN DNS for non-VPN clients"
-	fi
-fi
-
 if [ $script_type == 'up' ]
 then
 	if [ $instance != 0 -a $(nvram get vpn_client$(echo $instance)_rgw) == 2 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 -a $vpn_dns_mode == 1 ]
 	then
 		setdns=0
+		if [ -f $dnsscript ]; then rm $resolvfile; fi
 		echo iptables -t nat -N DNSVPN$instance >> $dnsscript
+		logger -t "openvpn-updown" "Using ISP DNS for non-VPN clients"
 	else
 		setdns=-1
+		logger -t "openvpn-updown" "Using VPN DNS for non-VPN clients"
 	fi
 
 	for optionname in `set | grep "^foreign_option_" | sed "s/^\(.*\)=.*$/\1/g"`
@@ -83,8 +101,20 @@ then
 
 	if [ $setdns == 1 ]
 	then
-		echo iptables -t nat -A PREROUTING -p udp -m udp --dport 53 -j DNSVPN$instance >> $dnsscript
-		echo iptables -t nat -A PREROUTING -p tcp -m tcp --dport 53 -j DNSVPN$instance >> $dnsscript
+		echo iptables -t nat -A PREROUTING -i $lan_if -p udp -m udp --dport 53 -j DNSVPN$instance >> $dnsscript
+		echo iptables -t nat -A PREROUTING -i $lan_if -p tcp -m tcp --dport 53 -j DNSVPN$instance >> $dnsscript
+		if [ $ipv6_enabled == 1 ]
+		then
+			if [ $(nvram get ipv6_dns_router) == 1 ]
+			then
+				echo ip6tables -I INPUT 2 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	#dnsmasq as ipv6 dns server
+				echo ip6tables -I INPUT 2 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+			else
+				echo ip6tables -I FORWARD 4 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	#router not ipv6 dns server
+				echo ip6tables -I FORWARD 4 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+			fi
+			logger -t "openvpn-updown" "VPN IPv6 DNS leak protection enabled"
+		fi
 	fi
 fi
 
@@ -93,10 +123,20 @@ if [ $script_type == 'down' -a $instance != 0 ]
 then
 	if [ -f $dnsscript ]
 	then
-		/usr/sbin/iptables -t nat -D PREROUTING -p udp -m udp --dport 53 -j DNSVPN$instance
-		/usr/sbin/iptables -t nat -D PREROUTING -p tcp -m tcp --dport 53 -j DNSVPN$instance
+		/usr/sbin/iptables -t nat -D PREROUTING -i $lan_if -p udp -m udp --dport 53 -j DNSVPN$instance
+		/usr/sbin/iptables -t nat -D PREROUTING -i $lan_if -p tcp -m tcp --dport 53 -j DNSVPN$instance
 		/usr/sbin/iptables -t nat -F DNSVPN$instance
 		/usr/sbin/iptables -t nat -X DNSVPN$instance
+		logger -t "openvpn-updown" "Removed ISP DNS rules for non-VPN clients"
+
+		if [ $ipv6_enabled == 1 ]
+		then
+			/usr/sbin/ip6tables -D INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
+			/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
+			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
+			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
+			logger -t "openvpn-updown" "Removed VPN IPv6 DNS leak protection"
+		fi
 	fi
 fi
 
@@ -107,10 +147,7 @@ then
 		then
 			sh $dnsscript
 		fi
-		if [ $(nvram get vpn_client$(echo $instance)_adns) -lt 3 -o $vpn_dns_mode == 0 ]
-		then
-			service updateresolv
-		fi
+		service updateresolv
 	elif [ $script_type == 'down' ]; then
 		rm $dnsscript
 		service updateresolv
