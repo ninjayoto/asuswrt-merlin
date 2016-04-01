@@ -4142,14 +4142,14 @@ void
 mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 {
 	char prefix[32], tmp[32], *wan_proto;
+
+	eval("iptables", "-t", "mangle", "-F");
+#ifdef RTCONFIG_IPV6
+	eval("ip6tables", "-t", "mangle", "-F");
+#endif
+
 	if(nvram_match("qos_enable", "1")) {
 		add_iQosRules(wan_if);
-	}
-	else {
-		eval("iptables", "-t", "mangle", "-F");
-#ifdef RTCONFIG_IPV6
-		eval("ip6tables", "-t", "mangle", "-F");
-#endif
 	}
 
 /* DNSFilter - prevent DNS access over IPv6 since all our filters are IPv4-only anyway*/
@@ -4262,6 +4262,11 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	char *wan_ip;
 	char *wan_proto;
 
+	eval("iptables", "-t", "mangle", "-F");
+#ifdef RTCONFIG_IPV6
+	eval("ip6tables", "-t", "mangle", "-F");
+#endif
+
 	if(nvram_match("qos_enable", "1")) {
 		for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
 			snprintf(prefix, sizeof(prefix), "wan%d_", unit);
@@ -4272,12 +4277,6 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 
 			add_iQosRules(wan_if);
 		}
-	}
-	else {
-		eval("iptables", "-t", "mangle", "-F");
-#ifdef RTCONFIG_IPV6
-		eval("ip6tables", "-t", "mangle", "-F");
-#endif
 	}
 
 /* DNSFilter - prevent DNS access over IPv6 since all our filters are IPv4-only anyway*/
