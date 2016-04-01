@@ -189,6 +189,7 @@ char ibuf2[8192];
 
 #define ACTION_UPGRADE_OK   0
 #define ACTION_UPGRADE_FAIL 1
+#define NATSRC_SUPPORT      1
 
 int action;
 
@@ -9751,6 +9752,10 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 		/* Don't list DNS redirections  from DNSFilter */
 		if (strcmp(chain, "DNSFILTER") ==0)
 			continue;
+
+		/* Don't list DNS redirections  from DNSVPNx */
+                if (strncmp(chain, "DNSVPN", 6) ==0)
+                        continue;
 
 		/* uppercase proto */
 		for (ptr = proto; *ptr; ptr++)
