@@ -188,7 +188,7 @@ void del_iQosRules(void)
 			if (fn = fopen(mangle_fn_ipv6, "r")) {
 				while (fgets(rule, sizeof(rule), fn)) /* read a line */
 				{
-					sprintf(&buffer[0], "iptables -t mangle %s", rule);
+					sprintf(&buffer[0], "ip6tables -t mangle %s", rule);
 					system(&buffer[0]);
 				}
 				fclose(fn);
