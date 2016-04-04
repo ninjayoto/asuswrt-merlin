@@ -4041,13 +4041,13 @@ TRACE_PT("write url filter\n");
 		if (nvram_match("fw_pt_stun", "1")) {
 			eval("iptables", "-t", "mangle", "-A", "FORWARD",
 			     "-p", "udp",
-			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
 
 #ifdef RTCONFIG_IPV6
 		if (get_ipv6_service() == IPV6_6IN4) {
 			eval("ip6tables", "-t", "mangle", "-A", "FORWARD",
-			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
 #endif
 #endif
@@ -4220,31 +4220,33 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 		if (nvram_match("url_enable_x", "1") || nvram_match("keyword_enable_x", "1")) {
 			eval("iptables", "-t", "mangle", "-A", "FORWARD",
 			     "-p", "tcp", "--dport", "80",
-			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
-#if 0  // New NAT loopback code already marked it, so no longer needed
-		/* mark VTS loopback connections */
-		if (nvram_match("vts_enable_x", "1")||!nvram_match("dmz_ip", "")) {
-			char lan_class[32];
 
-			ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
-			eval("iptables", "-t", "mangle", "-A", "FORWARD",
-			     "-o", lan_if, "-s", lan_class, "-d", lan_class,
-			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
-		}
-#endif
+		if (nvram_match("fw_nat_loopback", "1")) { 
+			/* mark VTS loopback connections */ 
+			if (nvram_match("vts_enable_x", "1")||!nvram_match("dmz_ip", "")) { 
+				char lan_class[32]; 
+ 
+				ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class); 
+				eval("iptables", "-t", "mangle", "-A", "FORWARD", 
+				     "-o", lan_if, "-s", lan_class, "-d", lan_class, 
+				     "-j", "MARK", "--set-mark", "0x01/0x7"); 
+			} 
+		} 
+
 #ifdef RTCONFIG_BCMARM
 		/* mark STUN connection*/
 		if (nvram_match("fw_pt_stun", "1")) {
 			eval("iptables", "-t", "mangle", "-A", "FORWARD",
 				"-p", "udp",
-				"-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+				"-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
 
 #ifdef RTCONFIG_IPV6
 		if (get_ipv6_service() == IPV6_6IN4) {
 			eval("ip6tables", "-t", "mangle", "-A", "FORWARD",
-				"-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+				"-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
 #endif
 #endif
@@ -4367,33 +4369,33 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 		if (nvram_match("url_enable_x", "1") || nvram_match("keyword_enable_x", "1")) {
 			eval("iptables", "-t", "mangle", "-A", "FORWARD",
 			     "-p", "tcp", "--dport", "80",
-			     "-m", "state", "--state NEW", "-j", "MARK", "--set-mark", "0x01");
+			     "-m", "state", "--state NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
 
-#if 0	// New NAT loopback code already marked it, so no longer needed
-		/* mark VTS loopback connections */
-		if (nvram_match("vts_enable_x", "1")) {
-			char lan_class[32];
-
-			ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
-			eval("iptables", "-t", "mangle", "-A", "FORWARD",
-			     "-o", lan_if, "-s", lan_class, "-d", lan_class,
-			     "-m", "state", "--state NEW", "-j", "MARK", "--set-mark", "0x01");
-		}
-#endif
+		if (nvram_match("fw_nat_loopback", "1")) { 
+			/* mark VTS loopback connections */ 
+			if (nvram_match("vts_enable_x", "1")||!nvram_match("dmz_ip", "")) { 
+				char lan_class[32]; 
+ 
+				ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class); 
+				eval("iptables", "-t", "mangle", "-A", "FORWARD", 
+				     "-o", lan_if, "-s", lan_class, "-d", lan_class, 
+				     "-j", "MARK", "--set-mark", "0x01/0x7"); 
+			} 
+		} 
 
 #ifdef RTCONFIG_BCMARM
                 /* mark STUN connection*/
                 if (nvram_match("fw_pt_stun", "1")) {
                         eval("iptables", "-t", "mangle", "-A", "FORWARD",
                              "-p", "udp",
-                             "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+                             "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
                 }
 
 #ifdef RTCONFIG_IPV6
 		if (get_ipv6_service() == IPV6_6IN4) {
 			eval("ip6tables", "-t", "mangle", "-A", "FORWARD",
-			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01");
+			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x07");
 		}
 #endif
 #endif
