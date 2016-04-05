@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-17E5j9527 (20-March-2016)
+Asuswrt-Merlin fork - build 374.43_2-17E8j9527 (9-April-2016)
 =============================================
 
 About
@@ -19,6 +19,20 @@ Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
 
 Changelog
 ---------
+374.43_2-17E8j9527  (9-April-2016)
+* CHANGED: No longer flush the mangle table on QOS start, just delete any existing QOS rules
+* CHANGED: Rewrite VPN exclusive mode/ISP DNS code
+* CHANGED: Source address field added to Port Forwarding system log page
+* CHANGED: default for radvd DecrementLifetimes changed to off
+* FIXED: Dropbear: validates xauth input (security fix from upstream)
+* FIXED: Dropbear: disable X11 forwarding support (security fix)
+* FIXED: Enhanced httpd status watchdog could incorrectly shutdown on the first failure/recovery
+* FIXED: Native DHCP addresses could sometimes fail to renew successfully
+* FIXED: Traditional QOS gui issues in modifying or deleting user rules
+* FIXED: Client names not shown in Parental Controls selection pulldown
+* FIXED: add missing rule for ASUS NAT loopback with vts/dmz
+
+
 374.43_2-17E5j9527  (20-March-2016)
 * CHANGED: Default state for WPS is disabled after a reset to factory defaults
 * FIXED: NAT Loopback not working if booting with QOS active
