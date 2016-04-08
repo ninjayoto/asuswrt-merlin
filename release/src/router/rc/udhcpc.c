@@ -772,11 +772,11 @@ int dhcp6c_state_main(int argc, char **argv)
 		start_dhcp6s();
 */
 // (re)start radvd
-	state = getenv("state");
-	if ((prefix_changed || lanaddr_changed || !pids("radvd")) &&
-		(strcmp("RELEASE", state) != 0))
+	if (((prefix_changed || lanaddr_changed) && strcmp("RELEASE", state) != 0) || 
+		(!pids("radvd") || !state || nvram_get_int("ipv6_radvd_dl_x")))
 		// Do not start radvd when dhcp6c released its address
 		// (i.e. when stop_dhcp6c is called)
+		// If DecrementLifetimes is active always restart
 		start_radvd();
 
 // restart QoS

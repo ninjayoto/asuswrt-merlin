@@ -1303,6 +1303,7 @@ void start_radvd(void)
 			valid_lifetime = nvram_get_int("ipv6_pd_vlifetime") ? nvram_safe_get("ipv6_pd_vlifetime") : NULL;
 			preferred_lifetime = nvram_get_int("ipv6_pd_plifetime") ? nvram_safe_get("ipv6_pd_plifetime") : NULL;
 			decrement_lifetime = (valid_lifetime || preferred_lifetime) && nvram_get_int("ipv6_radvd_dl");
+			nvram_set_int("ipv6_radvd_dl_x", decrement_lifetime ? 1 : 0);
 		}
 
 		fprintf(f,
