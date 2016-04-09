@@ -3327,8 +3327,10 @@ int init_nvram(void)
 	// Initialize radvd options
 	if(nvram_get("ipv6_radvd_dp") == NULL)
 		nvram_set("ipv6_radvd_dp", "1");
-	if(nvram_get("ipv6_radvd_dl") == NULL)
-		nvram_set("ipv6_radvd_dl", "1");
+	if(nvram_get("ipv6_radvd_dlx") == NULL) {
+		nvram_set("ipv6_radvd_dlx", "0");
+		nvram_unset("ipv6_radvd_dl");
+	}
 	if(nvram_get("ipv6_radvd_mtu") == NULL)
 		nvram_set("ipv6_radvd_mtu", "1");
 
