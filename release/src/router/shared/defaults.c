@@ -1040,6 +1040,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "fw_pt_h323", "1" },
 	{ "fw_pt_sip", "1" },
 	{ "fw_pt_pppoerelay", "0"},
+	{ "fw_nat_loopback", "1"},
 #ifdef RTCONFIG_BCMARM
 	{ "fw_pt_stun", "1"},
 #endif

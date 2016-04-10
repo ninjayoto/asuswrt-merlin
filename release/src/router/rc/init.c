@@ -3395,6 +3395,10 @@ int init_nvram(void)
         if(nvram_get("vpn_dns_mode") == NULL)
                 nvram_set("vpn_dns_mode", "0");
 
+	// Initialize default NAT loopback to ASUS
+	if(nvram_get("fw_nat_loopback") == NULL)
+		nvram_set("fw_nat_loopback", "1");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
