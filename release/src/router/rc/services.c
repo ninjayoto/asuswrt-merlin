@@ -4209,6 +4209,10 @@ again:
 	}
 	else if(strcmp(script, "upgrade") == 0) {
 		if(action&RC_SERVICE_STOP) {
+#ifdef RTCONFIG_WIRELESSREPEATER
+		if(nvram_get_int("sw_mode") == SW_MODE_REPEATER)
+			stop_wlcconnect();
+#endif
 			stop_wan();
 			// what process need to stop to free memory or 
 			// to avoid affecting upgrade
