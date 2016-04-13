@@ -4223,6 +4223,9 @@ again:
 			stop_logger();
 			stop_wanduck();
 			stop_upnp();
+#if defined(RTCONFIG_MDNS)
+			stop_mdns();
+#endif
 			stop_all_webdav();
 #if defined(RTN56U)
 			stop_if_misc();
