@@ -3206,6 +3206,8 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 	unsigned int expires;
 	int ret = 0;
 
+	char *sort_argv[] = {"sort", "-o", "/tmp/dnsmasq.leases.sort", "-k", "1", "/var/lib/misc/dnsmasq.leases", NULL};
+
 	ret += websWrite(wp, "%-32s %-16s %-18s %-9s\n",
 		"Hostname", "IP Address", "MAC Address", "Expires");
 
@@ -3221,6 +3223,11 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 
 	/* Read leases file */
 	if (!(fp = fopen("/var/lib/misc/dnsmasq.leases", "r")))
+                return ret;
+	fclose(fp);
+
+	_eval(sort_argv, NULL, 0, NULL); //sort leases file by lease time remaining
+	if (!(fp = fopen("/tmp/dnsmasq.leases.sort", "r")))
 		return ret;
 
 	while ((next = fgets(line, sizeof(line), fp)) != NULL) {
@@ -3258,6 +3265,7 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 			expires ? timestr : "Static");
 	}
 	fclose(fp);
+	unlink("/tmp/dnsmasq.leases.sort");
 
 	return ret;
 }
