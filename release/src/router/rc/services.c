@@ -4213,6 +4213,9 @@ again:
 		if(nvram_get_int("sw_mode") == SW_MODE_REPEATER)
 			stop_wlcconnect();
 #endif
+			eval("/sbin/ejusb", "-1", "0");
+                        logmessage("usb", "USB is ejected");
+
 			stop_wan();
 			// what process need to stop to free memory or 
 			// to avoid affecting upgrade
