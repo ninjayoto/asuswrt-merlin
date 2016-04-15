@@ -329,13 +329,21 @@ static int build_temp_rootfs(const char *newroot)
 	struct stat st;
 	char d1[PATH_MAX], d2[1024];
 	const char *mdir[] = { "/proc", "/tmp", "/sys", "/usr", "/var", "/var/lock" };
-	const char *bin = "ash busybox cat cp dd df grep iwpriv kill ls ps mount nvram ping sh tar umount uname";
+	const char *bin = "ash busybox cat cp dd df echo grep iwpriv kill ls ps mkdir mount nvram ping sh tar umount uname";
 	const char *sbin = "init rc hotplug2 insmod lsmod modprobe reboot rmmod rtkswitch";
 	const char *lib = "librt*.so* libnsl* libdl* libm* ld-* libiw* libgcc* libpthread* libdisk* libc*";
 	const char *usrbin = "killall";
-	const char *usrlib = "libnvram.so libshared.so libcrypto.so* libbcm*";
+#ifdef RTCONFIG_BCMARM
+	const char *usrsbin = "nvram";
+#endif
+	const char *usrlib = "libnvram.so libshared.so libcrypto.so* libbcm*"
+#if defined(RTCONFIG_HTTPS) || defined(RTCONFIG_PUSH_EMAIL)
+			     " libssl*"
+#endif
+		;
 	const char *kmod = "find /lib/modules -name '*.ko'|"
 		"grep '\\("
+		"usbcore\\|"                    /* usbcore.ko */
 		"nvram_linux\\)";		/* nvram_linux.ko */
 
 	if (!newroot || *newroot == '\0')
@@ -352,6 +360,9 @@ static int build_temp_rootfs(const char *newroot)
 	__cp("", "/lib", lib, newroot);
 	__cp("", "/lib", "libcrypt*", newroot);
 	__cp("", "/usr/bin", usrbin, newroot);
+#ifdef RTCONFIG_BCMARM
+	__cp("", "/usr/sbin", usrsbin, newroot);
+#endif
 	__cp("", "/usr/lib", usrlib, newroot);
 	__cp("L", "/etc", "", newroot);		/* don't creat symbolic link (/tmp/etc/foo) that will be broken soon */
 
@@ -4251,8 +4262,10 @@ again:
 			killall("udhcpc", SIGTERM);
 #ifdef RTCONFIG_IPV6
 			stop_dhcp6c();
+			stop_dhcp6s();
 #endif
 			stop_jffs2(1);
+			stop_networkmap();
 			// TODO free necessary memory here
 		}
 		if(action&RC_SERVICE_START) {
@@ -4312,6 +4325,9 @@ again:
 #endif
 #elif defined(RTCONFIG_TEMPROOTFS)
 				stop_lan_wl();
+				stop_dnsmasq(0);
+				stop_networkmap();
+				stop_wpsaide();
 #endif
 				if (!(r = build_temp_rootfs(TMP_ROOTFS_MNT_POINT)))
 					sw = 1;
