@@ -5595,9 +5595,11 @@ do_upgrade_post(char *url, FILE *stream, int len, char *boundary)
 	nvram_set_int("upgrade_fw_status", 1);
 	upgrade_err=1;
 	eval("/sbin/ejusb", "-1", "0");
+	f_write_string("/tmp/usb.log", "", 0, 0); //clear usb log
 #if defined(RTCONFIG_SMALL_FW_UPDATE)
 	notify_rc("stop_upgrade");
 	stop_upgrade_once = 1;
+	sleep(10);
 	/* Mount 16M ram disk to avoid out of memory */
 	system("mkdir /tmp/mytmpfs");
 	system("mount -t tmpfs -o size=16M,nr_inodes=10k,mode=700 tmpfs /tmp/mytmpfs");
@@ -5638,8 +5640,10 @@ do_upgrade_post(char *url, FILE *stream, int len, char *boundary)
 
 #if !defined(RTCONFIG_SMALL_FW_UPDATE)
 	sysinfo(&si);
-	if ((si.freeram * si.mem_unit) < len)
+	/* free memory should be 4 * TRX_size */
+	if ((si.freeram * si.mem_unit)/4 < len)
 	{
+		eval("/sbin/ejusb", "-1", "0");
 		notify_rc("stop_upgrade");
 		stop_upgrade_once = 1;
 	}
