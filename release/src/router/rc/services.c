@@ -344,7 +344,7 @@ static int build_temp_rootfs(const char *newroot)
 	const char *kmod = "find /lib/modules -name '*.ko'|"
 		"grep '\\("
 		"usbcore\\|"                    /* usbcore.ko */
-		"nvram_linux\\)";		/* nvram_linux.ko */
+		"nvram_linux\\)'";		/* nvram_linux.ko */
 
 	if (!newroot || *newroot == '\0')
 		newroot = TMP_ROOTFS_MNT_POINT;
