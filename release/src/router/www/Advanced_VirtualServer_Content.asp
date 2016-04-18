@@ -125,10 +125,11 @@ function applyRule(){
 
 	document.form.vts_rulelist.value = tmp_value;
 
+	/* 2014.04 Viz: No need to reboot for ctf enable models.
 	if(ctf_disable == '0' && isChange()){
 		document.form.action_script.value = "reboot";
 		document.form.action_wait.value = "<% get_default_reboot_time(); %>";
-	}	
+	}*/
 
 	showLoading();
 	document.form.submit();
@@ -533,7 +534,7 @@ function changeBgColor(obj, num){
 <input type="hidden" name="modified" value="0">
 <input type="hidden" name="action_wait" value="5">
 <input type="hidden" name="action_mode" value="apply">
-<input type="hidden" name="action_script" value="restart_firewall">
+<input type="hidden" name="action_script" value="restart_firewall;restart_upnp">
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
