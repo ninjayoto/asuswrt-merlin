@@ -212,7 +212,8 @@ var st_samba_force_mode = '<% nvram_get("st_samba_force_mode"); %>';
 var enable_samba = '<% nvram_get("enable_samba"); %>';
 var enable_ftp = '<% nvram_get("enable_ftp"); %>';
 var dsl_loss_sync = '<% nvram_get("dsltmp_syncloss"); %>';
-
+var nvram_used = '<% sysinfo("nvram.used"); %>';
+var nvram_total = '<% sysinfo("nvram.total"); %>';
 
 var newDisk = function(){
 	this.usbPath = "";
@@ -1060,7 +1061,21 @@ function show_menu(){
 	else
 		notification.loss_sync = 0;
 
-	if( notification.acpw || notification.upgrade || notification.wifi_2g || notification.wifi_5g || notification.ftp || notification.samba || notification.loss_sync){
+	//nvram low
+        if(nvram_total){
+                if((nvram_total - nvram_used) < 1024){         //case7
+                        notification.array[7] = 'noti_low_nvram';
+                        notification.low_nvram = 1;
+                        notification.desc[7] = Untranslated.ASUSGATE_note7;
+                        notification.action_desc[7] = Untranslated.ASUSGATE_act_sysinfo;
+                        notification.clickCallBack[7] = "location.href = 'Tools_Sysinfo.asp';"
+                }else
+                        notification.low_nvram = 0;
+        }
+        else
+                notification.loss_sync = 0;
+
+	if( notification.acpw || notification.upgrade || notification.wifi_2g || notification.wifi_5g || notification.ftp || notification.samba || notification.loss_sync || notification.low_nvram ){
 		notification.stat = "on";
 		notification.flash = "on";
 		notification.run();
