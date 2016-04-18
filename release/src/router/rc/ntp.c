@@ -157,6 +157,7 @@ static void set_alarm()
 int ntp_main(int argc, char *argv[])
 {
 	int attempts, tot_attempts, fflag;
+	int i;
 	FILE *fp;
 	pid_t pid;
 	char *args[] = {"ntpclient", "-h", server, "-i", "5", "-l", "-s", NULL};
@@ -212,7 +213,16 @@ int ntp_main(int argc, char *argv[])
 			set_alarm();
 		}
 		else
-		{
+		{ //make sure dnsmasq is up before starting update
+			for ( i = 1; i < 4; i++ ) {
+				if (!pids("dnsmasq")) {
+					logmessage("ntp", "waiting for dnsmasq...");
+					sleep(i*i);
+				} else {
+					i = 99;
+				}
+			}
+
 			stop_ntpc();
 
 			nvram_set("ntp_server_tried", server);
