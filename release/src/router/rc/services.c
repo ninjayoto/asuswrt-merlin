@@ -330,7 +330,7 @@ static int build_temp_rootfs(const char *newroot)
 	char d1[PATH_MAX], d2[1024];
 	const char *mdir[] = { "/proc", "/tmp", "/sys", "/usr", "/var", "/var/lock" };
 	const char *bin = "ash busybox cat cp dd df echo grep iwpriv kill ls ps mkdir mount nvram ping sh tar umount uname";
-	const char *sbin = "preinit rc hotplug2 insmod lsmod modprobe reboot rmmod rtkswitch";
+	const char *sbin = "preinit init rc hotplug2 insmod lsmod modprobe reboot rmmod rtkswitch";
 	const char *lib = "librt*.so* libnsl* libdl* libm* ld-* libiw* libgcc* libpthread* libdisk* libc*";
 	const char *usrbin = "killall";
 #ifdef RTCONFIG_BCMARM
@@ -394,7 +394,10 @@ static int switch_root(const char *newroot)
 	int r;
 	dev_t rdev;
 	struct stat st;
-	char *const argv[] = { "/sbin/preinit", "reboot", NULL };
+	char *argv[] = { "/sbin/preinit", "reboot", NULL }; //default older code
+
+	if (!f_exists("/sbin/preinit"))
+		argv[0] = "/sbin/init"; //newer code
 
 	if (!newroot || *newroot == '\0')
 		newroot = TMP_ROOTFS_MNT_POINT;
