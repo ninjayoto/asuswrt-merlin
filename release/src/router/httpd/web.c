@@ -3206,7 +3206,7 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 	unsigned int expires;
 	int ret = 0;
 
-	char *sort_argv[] = {"sort", "-o", "/tmp/dnsmasq.leases.sort", "-k", "1", "/var/lib/misc/dnsmasq.leases", NULL};
+	char *sort_argv[] = {"sort", "-o", "/tmp/dnsmasq.leases.sort", "-k", "1", "-n", "/var/lib/misc/dnsmasq.leases", NULL};
 
 	ret += websWrite(wp, "%-32s %-16s %-18s %-9s\n",
 		"Hostname", "IP Address", "MAC Address", "Expires");
