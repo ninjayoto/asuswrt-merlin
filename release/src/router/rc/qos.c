@@ -1225,8 +1225,9 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 	int addr_type;
 	char *action = NULL;
 
-	if ((fn = fopen(mangle_fn, "w")) == NULL) return -2;
 	del_iQosRules(); // flush all rules in mangle table
+
+	if ((fn = fopen(mangle_fn, "w")) == NULL) return -2;
 
 	switch (get_model()){
 		case MODEL_DSLN55U:
