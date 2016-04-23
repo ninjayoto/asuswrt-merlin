@@ -1357,6 +1357,8 @@ static int start_bandwidth_limiter(void)
 {
 	FILE *f = NULL;
 	char *buf, *g, *p;
+	char bw_iface[128] = " ";
+	char word[8], *next;
 	char *enable, *addr, *dlc, *upc, *prio;
 	int class = 0;
 	int s[6]; // strip mac address
@@ -1492,7 +1494,7 @@ static int start_bandwidth_limiter(void)
 			else{
 				wl_if = addr_new;
 			}
-
+			strcat(bw_iface, strcat(wl_if, " "));
 
 			fprintf(f,
 				"\n"
@@ -1539,16 +1541,36 @@ static int start_bandwidth_limiter(void)
 		"tc qdisc del dev $WAN ingress 2>/dev/null\n"
 		"tc qdisc del dev br0 root 2>/dev/null\n"
 		"tc qdisc del dev br0 ingress 2>/dev/null\n"
+	);
+	if(strlen(bw_iface) > 0){
+		foreach(word, bw_iface, next) {
+			fprintf(f, "tc qdisc del dev %s root 2>/dev/null\n"
+				   "tc qdisc del dev %s ingress 2>/dev/null\n"
+				   , word, word
+			);
+		}
+	}
+	fprintf(f,
 		";;\n"
 		"*)\n"
 		"tc -s -d class ls dev $WAN\n"
 		"tc -s -d class ls dev br0\n"
+	);
+	if(strlen(bw_iface) > 0){
+                foreach(word, bw_iface, next) {
+                        fprintf(f, "tc -s -d class ls dev %s\n"
+				   , word
+			);
+                }
+        }
+	fprintf(f,
 		"esac"
 	);
 
 	fclose(f);
 	chmod(qosfn, 0700);
 	eval((char *)qosfn, "start");
+	logmessage("qos", "start complete");
 	_dprintf("[BWLIT] %s: create bandwidth limiter\n", __FUNCTION__);
 
 	return 0;
