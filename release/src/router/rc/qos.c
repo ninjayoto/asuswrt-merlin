@@ -165,7 +165,7 @@ void del_iQosRules(void)
 	if(check_if_file_exist(&buffer[0])) {
 		argv[3] = &buffer[0];
 		if (!_eval(argv, NULL, 0, NULL)) {
-			if (fn = fopen(mangle_fn, "r")) {
+			if ((fn = fopen(mangle_fn, "r")) != NULL) {
 				while (fgets(rule, sizeof(rule), fn)) /* read a line */
 				{
 					sprintf(&buffer[0], "iptables -t mangle %s", rule);
@@ -185,7 +185,7 @@ void del_iQosRules(void)
 	if(check_if_file_exist(&buffer[0])) {
 		argv[3] = &buffer[0];
 		if (!_eval(argv, NULL, 0, NULL)) {
-			if (fn = fopen(mangle_fn_ipv6, "r")) {
+			if ((fn = fopen(mangle_fn_ipv6, "r")) != NULL) {
 				while (fgets(rule, sizeof(rule), fn)) /* read a line */
 				{
 					sprintf(&buffer[0], "ip6tables -t mangle %s", rule);
