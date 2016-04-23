@@ -1225,6 +1225,7 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 	char addr_new[32];
 	int addr_type;
 	char *action = NULL;
+	char mssid_mark[4];
 
 #ifdef CONFIG_BCMWL5
 	del_EbtablesRules(); // flush ebtables nat table
@@ -1333,7 +1334,11 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 				);
 			}
 		}
-		else if (addr_type == TYPE_GUEST) continue;
+		else if (addr_type == TYPE_GUEST){
+			snprintf(mssid_mark, sizeof(mssid_mark), "%d", atoi(prio)+10);
+			eval("ebtables", "-t", "nat", "-A", "PREROUTING", "-i", addr_new, "-j", "mark", "--set-mark", mssid_mark, "--mark-target", "ACCEPT");
+			eval("ebtables", "-t", "nat", "-A", "POSTROUTING", "-o", addr_new, "-j", "mark", "--set-mark", mssid_mark, "--mark-target", "ACCEPT");
+		}
 	}
 	free(buf);
 
@@ -1488,8 +1493,6 @@ static int start_bandwidth_limiter(void)
 				wl_if = addr_new;
 			}
 
-			eval("ebtables", "-t", "nat", "-A", "PREROUTING", "-i", wl_if, "-j", "mark", "--set-mark", mssid_mark, "--mark-target", "ACCEPT");
-			eval("ebtables", "-t", "nat", "-A", "POSTROUTING", "-o", wl_if, "-j", "mark", "--set-mark", mssid_mark, "--mark-target", "ACCEPT");
 
 			fprintf(f,
 				"\n"
