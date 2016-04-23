@@ -150,8 +150,8 @@ function deleteRow_main(obj){
 			else{
 //				qos_bw_rulelist_tmp += "<" + string_temp + ">" + priority;  // reorder priority number
 				qos_bw_rulelist_tmp += "<" + string_temp;
-				priority++
 			}
+			priority++;
 		}
 
 	}
@@ -170,7 +170,7 @@ function addRow_main(obj, length){
 	var qos_bw_rulelist_row =  qos_bw_rulelist.split("<");
 	var max_priority = 0;
 	if(qos_bw_rulelist != "")
-		max_priority = qos_bw_rulelist_row.length;
+		max_priority = qos_bw_rulelist_row.length - 1;
 
 	if(!validate_string(document.form.PC_devicename))
 		return false;
