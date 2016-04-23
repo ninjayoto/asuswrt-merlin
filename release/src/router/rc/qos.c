@@ -1226,6 +1226,9 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 	int addr_type;
 	char *action = NULL;
 
+#ifdef CONFIG_BCMWL5
+	del_EbtablesRules(); // flush ebtables nat table
+#endif
 	del_iQosRules(); // flush all rules in mangle table
 
 	if ((fn = fopen(mangle_fn, "w")) == NULL) return -2;
