@@ -1157,7 +1157,7 @@ int start_tqos(void)
 	fclose(f);
 	chmod(qosfn, 0700);
 	eval((char *)qosfn, "start");
-	logmessage("qos", "start complete");
+	logmessage("qos", "tqos start complete");
 
 	run_custom_script("qos-start", "init");
 	fprintf(stderr,"[qos] tc done!\n");
@@ -1570,7 +1570,7 @@ static int start_bandwidth_limiter(void)
 	fclose(f);
 	chmod(qosfn, 0700);
 	eval((char *)qosfn, "start");
-	logmessage("qos", "start complete");
+	logmessage("qos", "bwl start complete");
 	_dprintf("[BWLIT] %s: create bandwidth limiter\n", __FUNCTION__);
 
 	return 0;
