@@ -130,18 +130,18 @@ function submitQoS(){
 	if($("qos_ibw_scale").value == "Mb/s")
 		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
 
-	if(ctf_disable == 1){
-		document.form.action_script.value = "restart_qos;restart_firewall";
+	if(document.form.qos_enable.value != document.form.qos_enable_orig.value){
+		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 	}
 	else{
-		if(ctf_fa_mode == "2"){
-			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
-		}
+		if(ctf_disable == 1)
+			document.form.action_script.value = "restart_qos";
 		else{
-			if(document.form.qos_enable.value != document.form.qos_enable_orig.value)
+			if(ctf_fa_mode == "2"){
 				FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+			}
 			else{
-				document.form.action_script.value = "restart_qos;restart_firewall";
+				document.form.action_script.value = "restart_qos";
 			}
 		}
 	}
