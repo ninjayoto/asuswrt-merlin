@@ -414,7 +414,7 @@ auth_check( char* dirname, char* authorization ,char* url)
 		//}
 		login_try = 0;
 		last_login_timestamp = 0;
-		if ( login_ip != login_ip_tmp || last_login_ip != 0 ) {
+		if ( login_ip == 0 || last_login_ip != 0 ) {
 			// Send login msg to syslog
 			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s", authinfo, temp_ip_str);
 		}
