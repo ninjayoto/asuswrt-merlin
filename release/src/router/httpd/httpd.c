@@ -412,18 +412,19 @@ auth_check( char* dirname, char* authorization ,char* url)
 		//	last_login_ip=0;
 		//	return 0;
 		//}
-		login_try = 0;
-		last_login_timestamp = 0;
-		if ( login_ip == 0 || last_login_ip != 0 ) {
+		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp ) {
 			// Send login msg to syslog
-			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s", authinfo, temp_ip_str);
+			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s:%d", authinfo, temp_ip_str, http_port);
 		}
+		login_try = 0;
+                last_login_timestamp = 0;
+		last_login_ip = 0;
 		return 1;
 	}
 	else
 	{
 		// Failed login msg to syslog
-		logmessage(HEAD_HTTP_LOGIN, "login '%s' failed from %s", authinfo, temp_ip_str);
+		logmessage(HEAD_HTTP_LOGIN, "login '%s' failed from %s:%d", authinfo, temp_ip_str, http_port);
 	}
 
 	send_authenticate( dirname );
@@ -1002,10 +1003,16 @@ handle_request(void)
 
 	if(!fromapp) {
 		if(!strcmp(file, "Logout.asp")){
+			struct in_addr temp_ip_addr;
+		        char *temp_ip_str;
+
+			temp_ip_addr.s_addr = login_ip_tmp;
+			temp_ip_str = inet_ntoa(temp_ip_addr);
+
 			isLogout = 1;
 			http_logout(login_ip_tmp);
 			// Send logout msg to syslog
-			logmessage (HEAD_HTTP_LOGIN, "logout successful");
+			logmessage (HEAD_HTTP_LOGIN, "logout successful %s:%d", temp_ip_str, http_port);
 
 		}
 	}
@@ -1138,7 +1145,12 @@ int http_login_check(void)
 void http_login_timeout(unsigned int ip)
 {
 	time_t now, login_ts;
+	struct in_addr temp_ip_addr;
+	char *temp_ip_str;
 	unsigned int login_port = nvram_get_int("login_port");
+
+	temp_ip_addr.s_addr = login_ip;
+	temp_ip_str = inet_ntoa(temp_ip_addr);
 
 //	time(&now);
 	now = uptime();
@@ -1147,10 +1159,14 @@ void http_login_timeout(unsigned int ip)
 // 2007.10 James. for really logout. {
 	//if (login_ip!=ip && (unsigned long)(now-login_timestamp) > 60) //one minitues
 //	if (((login_ip != 0 && login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
-	if (((login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > MAX_DISC_TIMEOUT))
+	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port)) && ((unsigned long)(now-login_ts) > MAX_DISC_TIMEOUT))
 // 2007.10 James }
 	{
 		http_logout(login_ip);
+		if (login_ip)
+			logmessage(HEAD_HTTP_LOGIN, "logout successful (ip %s disconnected)", temp_ip_str);
+		if (login_port)
+			logmessage(HEAD_HTTP_LOGIN, "logout successful (port %d disconnected)", login_port);
 	}
 }
 
