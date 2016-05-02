@@ -254,6 +254,8 @@ static int forward_query(int udpfd, union mysockaddr *udpaddr,
 #endif
  unsigned int gotname = extract_request(header, plen, daemon->namebuff, NULL);
  unsigned char *pheader;
+ struct server *serv;
+ int port;
 
  (void)do_bit;
 
@@ -318,6 +320,9 @@ static int forward_query(int udpfd, union mysockaddr *udpaddr,
       /* retry on existing query, send to all available servers  */
       domain = forward->sentto->domain;
       forward->sentto->failed_queries++;
+      serv = forward->sentto;
+      port = prettyprint_addr(&serv->addr, daemon->addrbuff);
+      my_syslog(LOG_DEBUG, _("server %s#%d: query failed for %s"), daemon->addrbuff, port, daemon->namebuff);
       if (!option_bool(OPT_ORDER))
 	{
 	  forward->forwardall = 1;
