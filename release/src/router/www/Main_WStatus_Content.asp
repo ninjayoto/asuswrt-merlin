@@ -72,7 +72,7 @@ function initial(){
 									<div class="formfontdesc"><#WLLog_title#></div>
 									<div style="margin-top:8px"> 
 <!--										<textarea  cols="63" rows="30" style="width:99%;font-family:'Courier New', Courier, mono; font-size:13px; background:#475A5F;color:#FFFFFF" readonly="readonly" wrap=VIRTUAL><% nvram_dump("wlan11b_2g.log","wlan11b.sh"); %></textarea> -->
-									<div id="wlstatus" style="display:none";><% nvram_dump("wlan11b_2g.log","wlan11b.sh"); %></div>
+									<div id="wlstatus" style="display:none;"><% nvram_dump("wlan11b_2g.log","wlan11b.sh"); %></div>
 									<div id="wltext" style="width:752px; height:445px; border:2px solid gray; border-bottom-color:white; font-family:'Courier New', Courier, mono; font-size:13px; line-height:110%; overflow-x:auto; overflow-y:auto;">WLSTATUS</div>
 									</div>
 									<div class="apply_gen">
