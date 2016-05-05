@@ -47,6 +47,10 @@ var qos_rulelist_array = "<% nvram_char_to_ascii("","qos_rulelist"); %>";
 var qos_bw_rulelist_array = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
 var ctf_disable = '<% nvram_get("ctf_disable"); %>';
 var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
+if ((based_modelid == "RT-AC56U") || (based_modelid == "RT-AC68U"))
+	var codel_support = true;
+else
+	var codel_support = false;
 
 var overlib_str0 = new Array();	//Viz add 2011.06 for record longer qos rule desc
 var overlib_str = new Array();	//Viz add 2011.06 for record longer portrange value
@@ -62,15 +66,20 @@ function initial(){
 			document.form.qos_obw.parentNode.parentNode.style.display = "";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "";
 			document.form.qos_default.parentNode.parentNode.style.display = "";
+			(codel_support)
+				document.getElementById('qos_sched_tr').style.display = "";
 		}else{
 			document.form.qos_obw.parentNode.parentNode.style.display = "none";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 			document.form.qos_default.parentNode.parentNode.style.display = "none";
+			if (codel_support)
+				document.getElementById('qos_sched_tr').style.display = "";
 		}
 	}else{
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 		document.form.qos_default.parentNode.parentNode.style.display = "none";
+		document.getElementById('qos_sched_tr').style.display = "none";
 	}
 
 	init_changeScale("qos_obw");
@@ -79,12 +88,20 @@ function initial(){
 		document.form.qos_obw.parentNode.parentNode.style.display = "";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "";
 		document.form.qos_default.parentNode.parentNode.style.display = "";
+		if (codel_support)
+			document.getElementById('qos_sched_tr').style.display = "";
+		else
+			document.getElementById('qos_sched_tr').style.display = "none";
 		showqos_rulelist();
 	}
 	else if(qos_type == "2"){
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 		document.form.qos_default.parentNode.parentNode.style.display = "none";
+		if (codel_support)
+			document.getElementById('qos_sched_tr').style.display = "";
+		else
+			document.getElementById('qos_sched_tr').style.display = "none";
 		showqos_bw_rulelist();
 	}
 	addOnlineHelp($("faq"), ["ASUSWRT", "QoS"]);
@@ -95,11 +112,19 @@ function changeRule(obj){
 		document.form.qos_obw.parentNode.parentNode.style.display = "";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "";
 		document.form.qos_default.parentNode.parentNode.style.display = "";
+		if (codel_support)
+			document.getElementById('qos_sched_tr').style.display = "";
+		else
+			document.getElementById('qos_sched_tr').style.display = "none";
 		showqos_rulelist();
-	}else{
+	}else if($(obj).value == "2"){
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
                 document.form.qos_ibw.parentNode.parentNode.style.display = "none";
                 document.form.qos_default.parentNode.parentNode.style.display = "none";
+		if (codel_support)
+			document.getElementById('qos_sched_tr').style.display = "";
+		else
+			document.getElementById('qos_sched_tr').style.display = "none";
 		showqos_bw_rulelist();
 	}
 }
@@ -437,12 +462,22 @@ function showqos_bw_rulelist(){
 															document.form.qos_obw.parentNode.parentNode.style.display = "";
 															document.form.qos_ibw.parentNode.parentNode.style.display = "";
 															document.form.qos_default.parentNode.parentNode.style.display = "";
+															if (codel_support)
+																document.getElementById('qos_sched_tr').style.display = "";
+															else
+																document.getElementById('qos_sched_tr').style.display = "none";
+
 														 },
 														 function() {
 															document.form.qos_enable.value = "0";
 															document.form.qos_obw.parentNode.parentNode.style.display = "none";
 															document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 															document.form.qos_default.parentNode.parentNode.style.display = "none";
+															if (codel_support)
+																document.getElementById('qos_sched_tr').style.display = "";
+															else
+																document.getElementById('qos_sched_tr').style.display = "none";
+
 														 },
 														 {
 															switch_on_container_path: '/switcherplugin/iphone_switch_container_off.png'
@@ -457,6 +492,15 @@ function showqos_bw_rulelist(){
 											<td colspan="2">
 												<input id="trad_type" name="qos_type" value="0" type="radio" <% nvram_match("qos_type", "0","checked"); %> onClick="changeRule(this);">Traditional QoS
 												<input id="bw_limit_type" name="qos_type" value="2" type="radio" <% nvram_match("qos_type", "2","checked"); %> onClick="changeRule(this);">Bandwidth Limiter
+											</td>
+										</tr>
+
+										<tr id="qos_sched_tr" style="display:none">
+											<th>Queueing Discipline</th>
+											<td colspan="2">
+												<input id="sfq" name="qos_sched" value="0" type="radio" <% nvram_match("qos_sched", "0","checked"); %>><label for="sfq">SFQ</label>
+												<input id="codel" name="qos_sched" value="1" type="radio" <% nvram_match("qos_sched", "1","checked"); %>><label for="codel">CODEL</label>
+												<input id="fq_codel" name="qos_sched" value="2" type="radio" <% nvram_match("qos_sched", "2","checked"); %>><label for="fq_codel">FQ_CODEL</label>
 											</td>
 										</tr>
 
