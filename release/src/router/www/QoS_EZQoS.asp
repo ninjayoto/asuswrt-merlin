@@ -58,28 +58,50 @@ function initial(){
 		$("guest_image").parentNode.style.display = "none";
 
 	if(document.form.qos_enable.value==1){
-		document.form.qos_obw.parentNode.parentNode.style.display = "";
-		document.form.qos_ibw.parentNode.parentNode.style.display = "";		
-		document.form.qos_default.parentNode.parentNode.style.display = "";
+		if(qos_type == 0){
+			document.form.qos_obw.parentNode.parentNode.style.display = "";
+			document.form.qos_ibw.parentNode.parentNode.style.display = "";
+			document.form.qos_default.parentNode.parentNode.style.display = "";
+		}else{
+			document.form.qos_obw.parentNode.parentNode.style.display = "none";
+			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
+			document.form.qos_default.parentNode.parentNode.style.display = "none";
+		}
 	}else{
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
-		document.form.qos_ibw.parentNode.parentNode.style.display = "none";		
+		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 		document.form.qos_default.parentNode.parentNode.style.display = "none";
 	}
+
 	init_changeScale("qos_obw");
-	init_changeScale("qos_ibw");	
-	if(qos_type == "0")
+	init_changeScale("qos_ibw");
+	if(qos_type == "0"){
+		document.form.qos_obw.parentNode.parentNode.style.display = "";
+		document.form.qos_ibw.parentNode.parentNode.style.display = "";
+		document.form.qos_default.parentNode.parentNode.style.display = "";
 		showqos_rulelist();
-	else if(qos_type == "2")
+	}
+	else if(qos_type == "2"){
+		document.form.qos_obw.parentNode.parentNode.style.display = "none";
+		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
+		document.form.qos_default.parentNode.parentNode.style.display = "none";
 		showqos_bw_rulelist();
+	}
 	addOnlineHelp($("faq"), ["ASUSWRT", "QoS"]);
 }
 
 function changeRule(obj){
-	if($(obj).value == "0")
+	if($(obj).value == "0"){
+		document.form.qos_obw.parentNode.parentNode.style.display = "";
+		document.form.qos_ibw.parentNode.parentNode.style.display = "";
+		document.form.qos_default.parentNode.parentNode.style.display = "";
 		showqos_rulelist();
-	else
+	}else{
+		document.form.qos_obw.parentNode.parentNode.style.display = "none";
+                document.form.qos_ibw.parentNode.parentNode.style.display = "none";
+                document.form.qos_default.parentNode.parentNode.style.display = "none";
 		showqos_bw_rulelist();
+	}
 }
 
 function init_changeScale(_obj_String){
@@ -437,6 +459,7 @@ function showqos_bw_rulelist(){
 												<input id="bw_limit_type" name="qos_type" value="2" type="radio" <% nvram_match("qos_type", "2","checked"); %> onClick="changeRule(this);">Bandwidth Limiter
 											</td>
 										</tr>
+
 										<tr>
 											<th><#upload_bandwidth#></a></th>
 											<td>
