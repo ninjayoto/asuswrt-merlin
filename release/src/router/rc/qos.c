@@ -884,6 +884,7 @@ int start_tqos(void)
 	char burst_leaf[32];
 	char r2q[32];
 	char sfq_limit[32];
+	char qsched[64];
 #ifdef CONFIG_BCMWL5
 	char *protocol="802.1q";
 #endif
@@ -937,12 +938,32 @@ int start_tqos(void)
 	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10);
 	bw = obw;
 
+#ifdef RTCONFIG_BCMARM
+	switch(nvram_get_int("qos_sched")){
+		case 1:
+			sprintf(qsched, "codel");
+			break;
+		case 2:
+			if (bw < 51200)
+				sprintf(qsched, "fq_codel quantum 300 noecn");
+			else
+				sprintf(qsched, "fq_codel noecn");
+			break;
+		default:
+			/* qsched = "sfq perturb 10"; */
+			sprintf(qsched, "sfq perturb 10 %s", sfq_limit);
+			break;
+	}
+#else
+	sprintf(qsched, "sfq perturb 10 %s", sfq_limit);
+#endif
+
 	/* WAN */
 	fprintf(f,
 		"#!/bin/sh\n"
 		"#LAN/WAN\n"
 		"I=%s\n"
-		"SFQ=\"sfq perturb 10 %s\"\n"
+		"SFQ=\"%s\"\n"
 		"TQA=\"tc qdisc add dev $I\"\n"
 		"TCA=\"tc class add dev $I\"\n"
 		"TFA=\"tc filter add dev $I\"\n"
@@ -964,7 +985,7 @@ int start_tqos(void)
 		"# upload 1:1\n"
 		"\t$TCA parent 1: classid 1:1 htb rate %ukbit ceil %ukbit %s\n" ,
 			get_wan_ifname(0), // judge WAN interface 
-			sfq_limit,
+			qsched,
 			(nvram_get_int("qos_default") + 1) * 10, r2q,
 #ifdef CLS_ACT
 			(nvram_get_int("qos_default") + 1) * 10,
@@ -1364,9 +1385,26 @@ static int start_bandwidth_limiter(void)
 	int s[6]; // strip mac address
 	int addr_type;
 	char addr_new[30];
+	char qsched[32];
 
 	// init guest 3: ~ 12: (9 guestnetwork), start number = 3
 	guest = 3;
+
+#ifdef RTCONFIG_BCMARM
+	switch(nvram_get_int("qos_sched")){
+		case 1:
+			sprintf(qsched, "codel");
+			break;
+		case 2:
+			sprintf(qsched, "fq_codel quantum 300");
+			break;
+		default:
+			sprintf(qsched, "sfq perturb 10");
+			break;
+	}
+#else
+	sprintf(qsched, "sfq perturb 10");
+#endif
 
 	if ((f = fopen(qosfn, "w")) == NULL) return -2;
 	fprintf(f,
@@ -1401,7 +1439,7 @@ static int start_bandwidth_limiter(void)
 		"TQAU=\"tc qdisc add dev $WAN\"\n"
 		"TCAU=\"tc class add dev $WAN\"\n"
 		"TFAU=\"tc filter add dev $WAN\"\n"
-		"SFQ=\"sfq perturb 10\"\n"
+		"SFQ=\"%s\"\n"
 		"TQA=\"tc qdisc add dev br0\"\n"
 		"TCA=\"tc class add dev br0\"\n"
 		"TFA=\"tc filter add dev br0\"\n"
@@ -1410,7 +1448,8 @@ static int start_bandwidth_limiter(void)
 		"$TCA parent 1: classid 1:1 htb rate 10240000kbit\n"
 		"\n"
 		"$TQAU root handle 2: htb\n"
-		"$TCAU parent 2: classid 2:1 htb rate 10240000kbit\n"
+		"$TCAU parent 2: classid 2:1 htb rate 10240000kbit\n" ,
+		qsched
 		);
 
 		// access router : mark 9
