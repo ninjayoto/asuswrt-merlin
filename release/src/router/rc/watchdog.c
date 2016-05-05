@@ -1488,7 +1488,8 @@ void ntpd_check()
 			ntpflag = 1;
 			logmessage("watchdog", "ntpd server not available - system time not valid");
 		}
-		stop_ntpd(); //shut down server if not valid time
+		if (pids("ntpd"))
+			stop_ntpd(); //shut down server if not valid time
 	}
 }
 
