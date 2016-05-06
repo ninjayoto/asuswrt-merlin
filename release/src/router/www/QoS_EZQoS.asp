@@ -473,10 +473,7 @@ function showqos_bw_rulelist(){
 															document.form.qos_obw.parentNode.parentNode.style.display = "none";
 															document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 															document.form.qos_default.parentNode.parentNode.style.display = "none";
-															if (codel_support)
-																document.getElementById('qos_sched_tr').style.display = "";
-															else
-																document.getElementById('qos_sched_tr').style.display = "none";
+															document.getElementById('qos_sched_tr').style.display = "none";
 
 														 },
 														 {
@@ -497,10 +494,12 @@ function showqos_bw_rulelist(){
 
 										<tr id="qos_sched_tr" style="display:none">
 											<th>Queueing Discipline</th>
-											<td colspan="2">
-												<input id="sfq" name="qos_sched" value="0" type="radio" <% nvram_match("qos_sched", "0","checked"); %>><label for="sfq">SFQ</label>
-												<input id="codel" name="qos_sched" value="1" type="radio" <% nvram_match("qos_sched", "1","checked"); %>><label for="codel">CODEL</label>
-												<input id="fq_codel" name="qos_sched" value="2" type="radio" <% nvram_match("qos_sched", "2","checked"); %>><label for="fq_codel">FQ_CODEL</label>
+											<td>
+												<select name="qos_sched" class="input_option">
+													<option value="0"<% nvram_match("qos_sched", "0","selected"); %>>SFQ (Default)</option>
+													<option value="1"<% nvram_match("qos_sched", "1","selected"); %>>CODEL</option>
+													<option value="2"<% nvram_match("qos_sched", "2","selected"); %>>FQ_CODEL</option>
+												</select>
 											</td>
 										</tr>
 
