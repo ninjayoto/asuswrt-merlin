@@ -68,9 +68,6 @@
 
 #include "memdbg.h"
 
-extern char *pia_ca_digest;
-extern bool pia_signal_settings;
-
 #ifndef ENABLE_OCC
 static const char ssl_default_options_string[] = "V0 UNDEF";
 #endif
@@ -564,10 +561,7 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
   tls_ctx_check_cert_time(new_ctx);
 
   /* Allowable ciphers */
-  if (options->cipher_list)
-    {
-      tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
-    }
+  tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
 
 #ifdef ENABLE_CRYPTO_POLARSSL
   /* Personalise the random by mixing in the certificate */
@@ -2274,21 +2268,6 @@ tls_process (struct tls_multi *multi,
 		  ks->must_negotiate = now + session->opt->handshake_window;
 		  ks->auth_deferred_expire = now + auth_deferred_expire_window (session->opt);
 
-                  char settings_msg[2048], md5hex[33];
-
-                  struct key_type kt = session->opt->key_type;
-                  if (!session->opt->server && pia_signal_settings && ks->initial_opcode == P_CONTROL_HARD_RESET_CLIENT_V2) {
-                    sprintf(settings_msg, "%s%scrypto\t%s|%s\tca\t%s",
-                      "   ", // space for xor key
-                      "53eo0rk92gxic98p1asgl5auh59r1vp4lmry1e3chzi100qntd",
-                      kt.cipher ? kt_cipher_name(&kt) : "none",
-                      kt.digest ? kt_digest_name(&kt) : "none",
-                      pia_ca_digest ? pia_ca_digest : "X");
-                    int len = strlen(settings_msg);
-                    pia_obfuscate_options(settings_msg, len);
-                    buf_write(buf, settings_msg, len);
-                  }
-
 		  /* null buffer */
 		  reliable_mark_active_outgoing (ks->send_reliable, buf, ks->initial_opcode);
 		  INCR_GENERATED;
@@ -2345,7 +2324,7 @@ tls_process (struct tls_multi *multi,
 		{
 		  ks->established = now;
 		  dmsg (D_TLS_DEBUG_MED, "STATE S_ACTIVE");
-//		  if (check_debug_level (D_HANDSHAKE))
+		  if (check_debug_level (D_HANDSHAKE))
 		    print_details (&ks->ks_ssl, "Control Channel:");
 		  state_change = true;
 		  ks->state = S_ACTIVE;
