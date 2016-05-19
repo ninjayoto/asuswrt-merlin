@@ -232,7 +232,9 @@ void start_vpnclient(int clientNum)
 		fprintf(fp, "resolv-retry infinite\n");
 	fprintf(fp, "nobind\n");
 	fprintf(fp, "persist-key\n");
-	fprintf(fp, "persist-tun\n");
+	sprintf(&buffer[0], "vpn_client%d_adns", clientNum);
+        if ( nvram_get_int(&buffer[0]) != 3 )
+		fprintf(fp, "persist-tun\n");	//only set if not DNS exclusive
 	sprintf(&buffer[0], "vpn_client%d_comp", clientNum);
 	if ( nvram_get_int(&buffer[0]) >= 0 )
 		fprintf(fp, "comp-lzo %s\n", nvram_safe_get(&buffer[0]));
