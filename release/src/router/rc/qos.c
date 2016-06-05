@@ -870,7 +870,7 @@ int start_tqos(void)
 {
 	int i;
 	char *buf, *g, *p;
-	unsigned int rate;
+	unsigned int rate, irate_min;
 	unsigned int ceil;
 	unsigned int ibw, obw, bw;
 	unsigned int ibw_max, obw_max;
@@ -992,9 +992,21 @@ int start_tqos(void)
 #endif
 			obw_max, obw_max, burst_root);
 
+	inuse = nvram_get_int("qos_inuse");
+
 	/* LAN protocol: 802.1q */
 #ifdef CONFIG_BCMWL5 // TODO: it is only for the case, eth0 as wan, vlanx as lan
 	protocol = "802.1q";
+	irate_min = 100;
+	g = buf = strdup(nvram_safe_get("qos_irates"));
+	for (i = 0; i < 5; ++i) {
+		if ((!g) || ((p = strsep(&g, ",")) == NULL)) break;
+		if ((inuse & (1 << i)) == 0) continue;
+		if ((rate = atoi(p)) < 1) continue;     // 0 = off
+
+		if ((rate > 0) && (rate < irate_min)) irate_min = rate; // get minimum in use download rate
+	}
+
 	fprintf(f,
 		"# download 1:2\n"
 		"\t$TCA parent 1: classid 1:2 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000\n"
@@ -1003,11 +1015,9 @@ int start_tqos(void)
 		"\t$TQA parent 1:60 handle 60: pfifo\n"
 		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n",
 		ibw_max, ibw_max,
-		obw_max, obw_max,
+		calc(ibw, irate_min), ibw_max,
 		protocol);
 #endif
-
-	inuse = nvram_get_int("qos_inuse");
 
 	g = buf = strdup(nvram_safe_get("qos_orates"));
 	for (i = 0; i < 5; ++i) { // 0~4 , 0:highest, 4:lowest
