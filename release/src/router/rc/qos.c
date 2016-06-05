@@ -901,6 +901,7 @@ int start_tqos(void)
 	obw = strtoul(nvram_safe_get("qos_obw"), NULL, 10);
 	if(ibw==0||obw==0) return -1;
 	ibw_max = obw_max = 1000000; //1Gb
+	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10);
 
 	if ((f = fopen(qosfn, "w")) == NULL) return -2;
 
@@ -916,7 +917,16 @@ int start_tqos(void)
 		else burst_leaf[0] = 0;
 
 	/* r2q */
-	i = nvram_get_int("qos_r2q");
+	i = 10;
+	if ((ibw * 1000) / (8 * i) < mtu)
+	{
+		i = (ibw * 1000) / (8 * mtu);
+		if (i < 1) i = 1;
+	}
+	else if ((ibw * 1000) / (8 * i) > 60000)
+	{
+		i = (ibw * 1000) / (8 * 60000) + 1;
+	}
 	if (i > 0) sprintf(r2q, "r2q %d", i);
 		else r2q[0] = 0;
 
@@ -934,8 +944,6 @@ int start_tqos(void)
 	/* Egress OBW  -- set the HTB shaper (Classful Qdisc)  
 	* the BW is set here for each class 
 	*/
-
-	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10);
 	bw = obw;
 
 #ifdef RTCONFIG_BCMARM
