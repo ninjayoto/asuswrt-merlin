@@ -42,6 +42,7 @@ var $j = jQuery.noConflict();
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
+var productid = '<% nvram_get("productid"); %>';
 var qos_type = '<% nvram_get("qos_type"); %>';
 var qos_rulelist_array = "<% nvram_char_to_ascii("","qos_rulelist"); %>";
 var qos_bw_rulelist_array = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
@@ -68,19 +69,24 @@ function initial(){
 			document.form.qos_default.parentNode.parentNode.style.display = "";
 			(codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
+			document.form.enable_bw_ckb.parentNode.style.display = "";
 		}else{
 			document.form.qos_obw.parentNode.parentNode.style.display = "none";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 			document.form.qos_default.parentNode.parentNode.style.display = "none";
 			if (codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
+			document.form.enable_bw_ckb.parentNode.style.display = "none";
 		}
 	}else{
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 		document.form.qos_default.parentNode.parentNode.style.display = "none";
 		document.getElementById('qos_sched_tr').style.display = "none";
+		document.form.enable_bw_ckb.parentNode.style.display = "none";
 	}
+
+	document.form.enable_bw_ckb.checked = ('<% nvram_get("qos_limitbw"); %>' == 1) ? true : false;
 
 	init_changeScale("qos_obw");
 	init_changeScale("qos_ibw");
@@ -176,6 +182,8 @@ function submitQoS(){
 		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
 	if($("qos_ibw_scale").value == "Mb/s")
 		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+
+	document.form.qos_limitbw.value = (document.form.enable_bw_ckb.checked) ? 1 : 0;
 
 	if(document.form.qos_enable.value != document.form.qos_enable_orig.value){
 		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
@@ -385,6 +393,7 @@ function showqos_bw_rulelist(){
 <input type="hidden" name="qos_enable" value="<% nvram_get("qos_enable"); %>">
 <input type="hidden" name="qos_enable_orig" value="<% nvram_get("qos_enable"); %>">
 <input type="hidden" name="qos_type_orig" value="<% nvram_get("qos_type"); %>">
+<input type="hidden" name="qos_limitbw" value="<% nvram_get("qos_limitbw"); %>">
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
 	<td width="17">&nbsp;</td>
@@ -522,6 +531,7 @@ function showqos_bw_rulelist(){
 															<option value="Kb/s">Kb/s</option>
 															<option value="Mb/s">Mb/s</option>
 														</select>
+														<span><input type="checkbox" name="enable_bw_ckb" id="enable_bw_ckb" value="" style="margin-left:20px;" onclick="document.form.qos_limitbw.value=(this.checked==true)?1:0;"> Limit download bandwidth**</span>
 											</td>
 										</tr>
 

@@ -977,6 +977,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "qos_burst1",			""				},
 	{ "qos_r2q",			""				},
 	{ "qos_sfql",			"1"				},
+	{ "qos_limitbw",		"0"				},
 	{ "qos_default",		"3"				},
 	{ "qos_bw_rulelist",            ""                              },
 
