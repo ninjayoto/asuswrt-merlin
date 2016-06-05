@@ -1021,11 +1021,11 @@ int start_tqos(void)
 		"# download 1:2\n"
 		"\t$TCA parent 1: classid 1:2 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000\n"
 		"# 1:60 ALL Download for BCM\n"
-		"\t$TCA parent 1:2 classid 1:60 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000 prio 6\n"
+		"\t$TCA parent 1:2 classid 1:60 htb rate %ukbit ceil %ukbit burst 10000 cburst 10000 prio 6 quantum %u\n"
 		"\t$TQA parent 1:60 handle 60: pfifo\n"
 		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n",
 		ibw_max, ibw_max,
-		calc(ibw, irate_min), ibw,
+		calc(ibw, irate_min), ibw, mtu,
 		protocol);
 #endif
 
