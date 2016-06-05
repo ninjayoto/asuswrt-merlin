@@ -1023,7 +1023,7 @@ int start_tqos(void)
 		"\t$TQA parent 1:60 handle 60: pfifo\n"
 		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n",
 		ibw_max, ibw_max,
-		calc(ibw, irate_min), ibw_max,
+		calc(ibw, irate_min), ibw,
 		protocol);
 #endif
 
