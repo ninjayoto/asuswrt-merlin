@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2015 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2016 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -154,13 +154,11 @@ static int check_name(char *in)
    for the tighter criteria. */
 int legal_hostname(char *name)
 {
-  char c, *at;
+  char c;
   int first;
 
   if (!check_name(name))
     return 0;
-
-  at = strchr(name, '@');
 
   for (first = 1; (c = *name); name++, first = 0)
     /* check for legal char a-z A-Z 0-9 - _ . */
@@ -171,10 +169,6 @@ int legal_hostname(char *name)
 	continue;
 
       if (!first && (c == '-' || c == '_'))
-	continue;
-
-      /* relax name part */
-      if (at && (name <= at) && (c >= 33) && (c < 127))
 	continue;
       
       /* end of hostname part */

@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2015 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2016 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ static int dhcp6_maybe_relay(struct state *state, void *inbuff, size_t sz,
       MAC address from the local ND cache. */
       
       if (!state->link_address)
-	get_client_mac(client_addr, state->interface, state->mac, &state->mac_len, &state->mac_type);
+	get_client_mac(client_addr, state->interface, state->mac, &state->mac_len, &state->mac_type, now);
       else
 	{
 	  struct dhcp_context *c;
@@ -153,8 +153,7 @@ static int dhcp6_maybe_relay(struct state *state, void *inbuff, size_t sz,
 	  if (!state->context)
 	    {
 	      inet_ntop(AF_INET6, state->link_address, daemon->addrbuff, ADDRSTRLEN); 
-	      if (option_bool(OPT_LOG_OPTS))
-		my_syslog(MS_DHCP | LOG_WARNING,
+	      my_syslog(MS_DHCP | LOG_WARNING,
 			_("no address range available for DHCPv6 request from relay at %s"),
 			daemon->addrbuff);
 	      return 0;
@@ -163,8 +162,7 @@ static int dhcp6_maybe_relay(struct state *state, void *inbuff, size_t sz,
 	  
       if (!state->context)
 	{
-	  if (option_bool(OPT_LOG_OPTS))
-	    my_syslog(MS_DHCP | LOG_WARNING,
+	  my_syslog(MS_DHCP | LOG_WARNING,
 		    _("no address range available for DHCPv6 request via %s"), state->iface_name);
 	  return 0;
 	}
@@ -1051,7 +1049,7 @@ static int dhcp6_no_relay(struct state *state, int msg_type, void *inbuff, size_
 		    message = _("address invalid");
 		  }
 
-		if (message)
+		if (message && (message != state->hostname))
 		  log6_packet(state, "DHCPREPLY", req_addr, message);	
 		else
 		  log6_quiet(state, "DHCPREPLY", req_addr, message);
@@ -1134,8 +1132,7 @@ static int dhcp6_no_relay(struct state *state, int msg_type, void *inbuff, size_
 	else
 	  state->send_domain = get_domain6(NULL);
 
-	if (ignore || option_bool(OPT_LOG_OPTS))
-	  log6_quiet(state, "DHCPINFORMATION-REQUEST", NULL, ignore ? _("ignored") : state->hostname);
+	log6_quiet(state, "DHCPINFORMATION-REQUEST", NULL, ignore ? _("ignored") : state->hostname);
 	if (ignore)
 	  return 0;
 	*outmsgtypep = DHCP6REPLY;
@@ -1323,14 +1320,14 @@ static struct dhcp_netid *add_options(struct state *state, int do_refresh)
       
       if (opt_cfg->opt == OPTION6_REFRESH_TIME)
 	done_refresh = 1;
+
+      if (opt_cfg->opt == OPTION6_DNS_SERVER)
+	done_dns = 1;
       
       if (opt_cfg->flags & DHOPT_ADDR6)
 	{
 	  int len, j;
 	  struct in6_addr *a;
-	  
-	  if (opt_cfg->opt == OPTION6_DNS_SERVER)
-	    done_dns = 1;
 	  
 	  for (a = (struct in6_addr *)opt_cfg->val, len = opt_cfg->len, j = 0; 
 	       j < opt_cfg->len; j += IN6ADDRSZ, a++)
@@ -2057,7 +2054,8 @@ static unsigned int opt6_uint(unsigned char *opt, int offset, int size)
   return ret;
 } 
 
-void relay_upstream6(struct dhcp_relay *relay, ssize_t sz, struct in6_addr *peer_address, u32 scope_id)
+void relay_upstream6(struct dhcp_relay *relay, ssize_t sz,
+		     struct in6_addr *peer_address, u32 scope_id, time_t now)
 {
   /* ->local is same value for all relays on ->current chain */
   
@@ -2071,7 +2069,7 @@ void relay_upstream6(struct dhcp_relay *relay, ssize_t sz, struct in6_addr *peer
   unsigned char mac[DHCP_CHADDR_MAX];
 
   inet_pton(AF_INET6, ALL_SERVERS, &multicast);
-  get_client_mac(peer_address, scope_id, mac, &maclen, &mactype);
+  get_client_mac(peer_address, scope_id, mac, &maclen, &mactype, now);
 
   /* source address == relay address */
   from.addr.addr6 = relay->local.addr.addr6;
