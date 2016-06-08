@@ -2310,7 +2310,7 @@ libvorbis/stamp-h1: libogg
 		--with-ogg-includes="$(TOP)/libogg/include" \
 		--with-ogg-libraries="$(TOP)/libogg/src/.libs"
 	touch $@
-	touch libvorbis/aclocal.m4
+	#touch libvorbis/aclocal.m4
 
 libvorbis: libvorbis/stamp-h1
 	@$(MAKE) -C libvorbis/lib all $(PARALLEL_BUILD)
