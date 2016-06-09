@@ -344,6 +344,7 @@ obj-$(RTCONFIG_L2TP) += rp-l2tp
 obj-$(RTCONFIG_PPTP) += accel-pptp
 obj-$(RTCONFIG_EAPOL) += wpa_supplicant
 obj-$(RTCONFIG_HTTPS) += openssl
+obj-$(RTCONFIG_HTTPS) += wget zlib
 obj-$(RTCONFIG_SSH) += dropbear
 #obj-$(RTCONFIG_ZEBRA) += zebra
 #	obj-$(RTCONFIG_IPP2P) += ipp2p
@@ -3227,6 +3228,19 @@ diskdev_cmds-332.14-clean:
 	rm -f $(INSTALLDIR)/diskdev_cmds-332.14/usr/sbin/mkfs.hfs 
 	rm -f $(INSTALLDIR)/diskdev_cmds-332.14/usr/sbin/fsck.hfs 
 	
+wget/Makefile:
+	cd wget && autoreconf -i -f && $(CONFIGURE) --with-ssl=openssl --with-libssl-prefix=$(TOP)/openssl --sysconfdir=/etc --disable-opie --disable-ntlm --disable-debug --disable-nls --disable-iri --disable-dependency-tracking CFLAGS="$(EXTRACFLAGS) -I$(TOP)/openssl/include -I$(TOP)/zlib" LDFLAGS="-L$(TOP)/openssl -lssl -lcrypto -L$(TOP)/zlib -lz"
+
+wget: openssl zlib wget/Makefile
+	$(MAKE) -C wget CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections -Wl,--gc-sections -I$(TOP)/openssl/include -I$(TOP)/zlib"
+
+wget-clean:
+	[ ! -f wget/Makefile ] || $(MAKE) -C wget distclean
+	@rm -f wget/Makefile
+
+wget-install:
+	install -D wget/src/wget $(INSTALLDIR)/wget/usr/sbin/wget
+	$(STRIP) $(INSTALLDIR)/wget/usr/sbin/wget
 
 #
 # Generic rules
