@@ -1186,10 +1186,14 @@ int start_tqos(void)
 		"\ttc -s -d class ls dev $I\n"
 		"\ttc -s -d qdisc ls dev $I\n"
 		"\techo\n"
-#ifdef CLS_ACT
+
 		"\t#--------- Download ---------\n"
+#ifdef CLS_ACT
 		"\ttc -s -d class ls dev $DLIF\n"
 		"\ttc -s -d qdisc ls dev $DLIF\n"
+		"\techo\n"
+#else
+		"\ttc -s filter show dev $I parent ffff:\n"
 		"\techo\n"
 #endif
 		"esac\n",
