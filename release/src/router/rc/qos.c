@@ -1136,7 +1136,7 @@ int start_tqos(void)
 			unsigned int u = calc(bw, rate);
 
 			// burst rate
-			unsigned int v = u / 2;
+			unsigned int v = u / 50; // recommended 2% of police rate
 			if (v < 50) v = 50;
 
 #ifdef CLS_ACT
