@@ -987,19 +987,16 @@ int start_tqos(void)
 		"start)\n"
 		"#LAN/WAN\n"
 		"\ttc qdisc del dev $I root 2>/dev/null\n"
-		"\t$TQA root handle 1: htb default %u %s\n"
+		"\t$TQA root handle 1: htb %s\n"
 #ifdef CLS_ACT
 		"\ttc qdisc del dev $DLIF root 2>/dev/null\n"
-		"\t$TQADL root handle 2: htb default %u\n"
+		"\t$TQADL root handle 2: htb\n"
 #endif
 		"# upload 1:1\n"
 		"\t$TCA parent 1: classid 1:1 htb rate %ukbit ceil %ukbit %s\n" ,
 			get_wan_ifname(0), // judge WAN interface 
 			qsched,
-			(nvram_get_int("qos_default") + 1) * 10, r2q,
-#ifdef CLS_ACT
-			(nvram_get_int("qos_default") + 1) * 10,
-#endif
+			r2q,
 			obw_max, obw_max, burst_root);
 
 	inuse = nvram_get_int("qos_inuse");
