@@ -1155,16 +1155,16 @@ int start_tqos(void)
 			fprintf(f,
 				"# ingress %d: %u%%\n"
 				"\t$TFA parent ffff: prio %d protocol all handle %d"
-					" fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
-					i, rate, x, x, u, v, x);
+					" fw police rate %ukbit burst %ukbit mtu %u drop flowid ffff:%d\n",
+					i, rate, x, x, u, v, mtu, x);
 
 			if (i == nvram_get_int("qos_default")) { // police filter for downloads
 			x = down_class_num;
 			fprintf(f,
                                 "# ingress %d: %u%% (download default)\n"
                                 "\t$TFA parent ffff: prio %d protocol all handle %d"
-                                        " fw police rate %ukbit burst %ukbit drop flowid ffff:%d\n",
-                                        (x - 1), rate, x, x, u, v, x);
+                                        " fw police rate %ukbit burst %ukbit mtu %u drop flowid ffff:%d\n",
+                                        (x - 1), rate, x, x, u, v, mtu, x);
 			}
 #endif
 		}
