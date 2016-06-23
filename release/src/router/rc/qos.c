@@ -1006,7 +1006,7 @@ int start_tqos(void)
 
 	/* LAN protocol: 802.1q */
 #ifdef CONFIG_BCMWL5 // TODO: it is only for the case, eth0 as wan, vlanx as lan
-	protocol = "802.1q";
+	protocol = "all"; // cover ip ipv6 and udp
 	irate_min = 100;
 	g = buf = strdup(nvram_safe_get("qos_irates"));
 	for (i = 0; i < 5; ++i) {
