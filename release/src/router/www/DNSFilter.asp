@@ -248,6 +248,12 @@ function addRow_main(upper){
 		return false;
 	}
 
+	if(document.form.rule_mode.value == document.form.dnsfilter_mode.value){
+		alert("Cannot specify a rule which matches the global filter mode!");
+		document.form.rule_mode.focus();
+		return false;
+	}
+
 	dnsfilter_rule_list += "<";
 	dnsfilter_rule_list += document.form.rule_devname.value + "&#62";
 	dnsfilter_rule_list += document.form.rule_mac.value + "&#62";
@@ -294,6 +300,12 @@ function changeRow_main(r){
 		dnsfilter_devname = $('mainTable_table').rows[i].cells[0].title;
 		dnsfilter_mac = $('mainTable_table').rows[i].cells[1].title;
 		dnsfilter_mode = $('mainTable_table').rows[i].cells[2].childNodes[0].value;
+
+		if(dnsfilter_mode == document.form.dnsfilter_mode.value){
+			alert("Cannot specify a rule which matches the global filter mode!");
+			$('mainTable_table').rows[i].cells[2].childNodes[0].focus();
+			return false;
+		}
 
 		dnsfilter_rulelist_tmp += "<";
 		dnsfilter_rulelist_tmp += dnsfilter_devname + "&#62";
