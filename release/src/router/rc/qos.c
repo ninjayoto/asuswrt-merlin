@@ -1029,8 +1029,7 @@ int start_tqos(void)
 		"\t$TQA parent 1:60 handle 60: pfifo\n"
 		"\t$TFA parent 1: prio 6 protocol %s handle 6 fw flowid 1:60\n",
 		ibw_max, ibw_max,
-//		nvram_get_int("qos_limitbw") ? calc(ibw, irate_min) : ibw, nvram_get_int("qos_limitbw") ? ibw : calc(ibw, ceiling_factor), mtu,
-		nvram_get_int("qos_limitbw") ? calc(ibw, irate_min) : ibw, calc(ibw, ceiling_factor), mtu,
+		nvram_get_int("qos_ibwopt") ? calc(ibw, irate_min) : ibw, nvram_get_int("qos_ibwopt") ? calc(ibw, ceiling_factor) : ibw_max, mtu,
 		protocol);
 #endif
 

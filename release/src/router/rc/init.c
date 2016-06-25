@@ -3401,6 +3401,12 @@ int init_nvram(void)
 	if(nvram_get("fw_nat_loopback") == NULL)
 		nvram_set("fw_nat_loopback", "1");
 
+	// Initialize qos bandwidth limiting
+	if(nvram_get("qos_ibwopt") == NULL) {
+		nvram_set("qos_ibwopt", "1");
+		nvram_unset("qos_limitbw");
+	}
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
