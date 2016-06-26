@@ -902,7 +902,7 @@ int start_tqos(void)
 	obw = strtoul(nvram_safe_get("qos_obw"), NULL, 10);
 	if(ibw==0||obw==0) return -1;
 	ibw_max = obw_max = 1000000; //1Gb
-	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10);
+	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10) + 14; //add 14 bytes for hardware header
 
 	if ((f = fopen(qosfn, "w")) == NULL) return -2;
 
