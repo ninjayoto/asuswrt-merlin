@@ -593,7 +593,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "dhcp_static_x", "0"},
 	{ "dhcp_staticlist", ""},
 	{ "dhcpd_lmax", "253"},
-	{ "dhcpc_mode", "1"},
+	{ "dhcpc_mode", "0"},
 	{ "dhcpd_querylog", "1"},
 	{ "dhcpd_dns_router", "1"},
 	// NVRAM for start_dhcpd
