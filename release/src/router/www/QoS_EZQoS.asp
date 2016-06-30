@@ -67,7 +67,7 @@ function initial(){
 			document.form.qos_obw.parentNode.parentNode.style.display = "";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "";
 			document.form.qos_default.parentNode.parentNode.style.display = "";
-			(codel_support)
+			if (codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
 		}else{
 			document.form.qos_obw.parentNode.parentNode.style.display = "none";
@@ -87,23 +87,9 @@ function initial(){
 	init_changeScale("qos_obw");
 	init_changeScale("qos_ibw");
 	if(qos_type == "0"){
-		document.form.qos_obw.parentNode.parentNode.style.display = "";
-		document.form.qos_ibw.parentNode.parentNode.style.display = "";
-		document.form.qos_default.parentNode.parentNode.style.display = "";
-		if (codel_support)
-			document.getElementById('qos_sched_tr').style.display = "";
-		else
-			document.getElementById('qos_sched_tr').style.display = "none";
 		showqos_rulelist();
 	}
 	else if(qos_type == "2"){
-		document.form.qos_obw.parentNode.parentNode.style.display = "none";
-		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
-		document.form.qos_default.parentNode.parentNode.style.display = "none";
-		if (codel_support)
-			document.getElementById('qos_sched_tr').style.display = "";
-		else
-			document.getElementById('qos_sched_tr').style.display = "none";
 		showqos_bw_rulelist();
 	}
 	addOnlineHelp($("faq"), ["ASUSWRT", "QoS"]);
