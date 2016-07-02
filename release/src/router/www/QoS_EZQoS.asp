@@ -69,18 +69,22 @@ function initial(){
 			document.form.qos_default.parentNode.parentNode.style.display = "";
 			if (codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
+			if (wan_proto == "pppoe")
+				document.getElementById('qos_overhead_tr').style.display = "";
 		}else{
 			document.form.qos_obw.parentNode.parentNode.style.display = "none";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 			document.form.qos_default.parentNode.parentNode.style.display = "none";
 			if (codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
+			document.getElementById('qos_overhead_tr').style.display = "none";
 		}
 	}else{
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 		document.form.qos_default.parentNode.parentNode.style.display = "none";
 		document.getElementById('qos_sched_tr').style.display = "none";
+		document.getElementById('qos_overhead_tr').style.display = "none";
 	}
 
 
@@ -104,6 +108,10 @@ function changeRule(obj){
 			document.getElementById('qos_sched_tr').style.display = "";
 		else
 			document.getElementById('qos_sched_tr').style.display = "none";
+		if (wan_proto == "pppoe")
+			document.getElementById('qos_overhead_tr').style.display = "";
+		else
+			document.getElementById('qos_overhead_tr').style.display = "none";
 		showqos_rulelist();
 	}else if($(obj).value == "2"){
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
@@ -113,6 +121,7 @@ function changeRule(obj){
 			document.getElementById('qos_sched_tr').style.display = "";
 		else
 			document.getElementById('qos_sched_tr').style.display = "none";
+		document.getElementById('qos_overhead_tr').style.display = "none";
 		showqos_bw_rulelist();
 	}
 }
@@ -487,6 +496,17 @@ function showqos_bw_rulelist(){
 													<option value="0"<% nvram_match("qos_sched", "0","selected"); %>>SFQ (Default)</option>
 													<option value="1"<% nvram_match("qos_sched", "1","selected"); %>>CODEL</option>
 													<option value="2"<% nvram_match("qos_sched", "2","selected"); %>>FQ_CODEL</option>
+												</select>
+											</td>
+										</tr>
+
+										<tr id="qos_overhead_tr" style="display:none">
+											<th>WAN packet overhead</th>
+											<td colspan="2">
+												<select name="qos_overhead" class="input_option" >
+													<option value="0" <% nvram_match("qos_overhead", "0","selected"); %>>0-None</option>
+													<option value="32" <% nvram_match("qos_overhead", "32","selected"); %>>32-PPPoE VC-Mux, RFC2684/RFC1483 Bridged LLC/Snap</option>
+													<option value="40" <% nvram_match("qos_overhead", "40","selected"); %>>40-PPPoE LLC/Snap</option>
 												</select>
 											</td>
 										</tr>

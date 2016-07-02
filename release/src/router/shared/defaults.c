@@ -961,6 +961,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "qos_type",                   "0"                             }, // 0: Traditional, 1: Adaptive (not supported), 2 : bandwidth limiter
 #ifdef RTCONFIG_BCMARM
 	{ "qos_sched",			"0"				},
+	{ "qos_overhead",		"0"				}, // ATM overhead
 #endif
 	{ "qos_method",			"0"				},
 	{ "qos_sticky",			"1"				},
