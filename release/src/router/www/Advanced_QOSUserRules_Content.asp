@@ -270,24 +270,30 @@ function addRow_Group(upper){
 }
 
 function deleteRow_main(obj){
-	var i=obj.parentNode.parentNode.rowIndex;
-	$('qos_rulelist_table').deleteRow(i);
-	var qos_rulelist_row = "";
+	var item_index=obj.parentNode.parentNode.rowIndex;
+		document.getElementById(obj.parentNode.parentNode.parentNode.parentNode.id).deleteRow(item_index);
+
 	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');
 	var tmp_value = "";
+	var array_index = item_index + 1;  //match array and table index
 
-        for(i=0; i<rule_num; i++){
-                tmp_value += "<";
-                for(j=0; j<item_num-1; j++){
-                        var qos_rulelist_col = qos_rulelist_row[i+1].split('>');
-                        if(j==5){
-                                tmp_value += $('qos_rulelist_table').rows[i].cells[j].firstChild.value; //save modified priority
-                        }else{
-                                tmp_value += qos_rulelist_col[j]; //only save input values, not enhanced table entries
-                                tmp_value += ">";
-                        }
-                }
-        }
+        for(i=1; i<qos_rulelist_row.length; i++){
+		var table_index = i - 1;
+		if (i > array_index)
+			table_index = table_index - 1;	//account for deleted row
+		if (i != array_index) {
+			var qos_rulelist_col = qos_rulelist_row[i].split('>');
+			tmp_value += "<";
+			for(j=0; j<qos_rulelist_col.length; j++){
+				if(j==5){
+					tmp_value += $('qos_rulelist_table').rows[table_index].cells[j].firstChild.value; //save modified priority
+				}else{
+					tmp_value += qos_rulelist_col[j]; //only save input values, not enhanced table entries
+					tmp_value += ">";
+				}
+			}
+		}
+	}
 
 	qos_rulelist_array = tmp_value;
 	if(qos_rulelist_array == "")
