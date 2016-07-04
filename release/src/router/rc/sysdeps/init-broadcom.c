@@ -3264,11 +3264,23 @@ int set_wltxpower()
 					}
 					else if (nvram_match(strcat_r(prefix, "country_code", tmp), "EU"))
 					{
-						if (!nvram_match(strcat_r(prefix2, "regrev", tmp2), "3"))
+						if (nvram_match("wl_dfs_enable","1"))
 						{
-							nvram_set(strcat_r(prefix, "country_rev", tmp), "3");
-							nvram_set(strcat_r(prefix2, "regrev", tmp2), "3");
-							commit_needed++;
+							if (!nvram_match(strcat_r(prefix2, "regrev", tmp2), "13"))
+							{
+								nvram_set(strcat_r(prefix, "country_rev", tmp), "13");
+								nvram_set(strcat_r(prefix2, "regrev", tmp2), "13");
+								commit_needed++;
+							}
+						}
+						else
+						{
+							if (!nvram_match(strcat_r(prefix2, "regrev", tmp2), "3"))
+							{
+								nvram_set(strcat_r(prefix, "country_rev", tmp), "3");
+								nvram_set(strcat_r(prefix2, "regrev", tmp2), "3");
+								commit_needed++;
+							}
 						}
 					}
 				}
