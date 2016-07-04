@@ -33,6 +33,6 @@ The following routers are supported by this fork:
 
 The following routers were released after the base code used for this fork was available, and are NOT supported.
 
-- AC87U, AC3100, AC3200, AC88U, AC5300 (and any retail R versions)
+- TM-1900P, AC87U, AC3100, AC3200, AC88U, AC5300 (and any retail R versions)
 
 See http://www.snbforums.com/threads/18914/ for the latest download information for firmware builds.

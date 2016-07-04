@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-17E8j9527 (9-April-2016)
+Asuswrt-Merlin fork - build 374.43_2-18BBj9527 (xx-July-2016)
 =============================================
 
 About
@@ -16,4 +16,3 @@ implied by either the individual author or the author of the original
 Asuswrt-merlin base.
 
 Source:  https://github.com/john9527/asuswrt-merlin : branch 374.43_2-update
-
