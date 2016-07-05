@@ -4230,10 +4230,10 @@ void generate_wl_para(int unit, int subunit)
 				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) ||
 				((get_model() == MODEL_RTAC66U) &&
 				nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) /*||
-				((get_model() == MODEL_RTN66U) &&
+				nvram_match(strcat_r(prefix, "country_rev", tmp), "13")) ||
+				((get_model() == MODEL_RTN66U && nvram_match("wl_dfs_enable","1")) &&
 				nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-				nvram_match(strcat_r(prefix, "country_rev", tmp), "0"))*/
+				nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))
 			)
 			{
 				if (nvram_match(strcat_r(prefix, "reg_mode", tmp), "off") || nvram_match(strcat_r(prefix, "reg_mode", tmp), "d"))
