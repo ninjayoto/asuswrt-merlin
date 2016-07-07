@@ -1073,7 +1073,7 @@ function show_menu(){
                         notification.low_nvram = 0;
         }
         else
-                notification.loss_sync = 0;
+                notification.low_nvram = 0;
 
 	if( notification.acpw || notification.upgrade || notification.wifi_2g || notification.wifi_5g || notification.ftp || notification.samba || notification.loss_sync || notification.low_nvram ){
 		notification.stat = "on";
