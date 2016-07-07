@@ -214,6 +214,7 @@ var enable_ftp = '<% nvram_get("enable_ftp"); %>';
 var dsl_loss_sync = '<% nvram_get("dsltmp_syncloss"); %>';
 var nvram_used = '<% sysinfo("nvram.used"); %>';
 var nvram_total = '<% sysinfo("nvram.total"); %>';
+var firewall_enabled = '<% nvram_get("fw_enable_x"); %>';
 
 var newDisk = function(){
 	this.usbPath = "";
@@ -1076,6 +1077,22 @@ function show_menu(){
                 notification.low_nvram = 0;
 
 	if( notification.acpw || notification.upgrade || notification.wifi_2g || notification.wifi_5g || notification.ftp || notification.samba || notification.loss_sync || notification.low_nvram ){
+		notification.stat = "on";
+		notification.flash = "on";
+		notification.run();
+	}
+
+	//firewall disabled
+	if(firewall_enabled == 0){	//case8
+		notification.array[8] = 'noti_no_firewall';
+		notification.no_firewall = 1;
+		notification.desc[8] = Untranslated.ASUSGATE_note8;
+		notification.action_desc[8] = Untranslated.ASUSGATE_act_firewall;
+		notification.clickCallBack[8] = "location.href = 'Advanced_BasicFirewall_Content.asp';"
+	}else
+		notification.no_firewall = 0;
+
+	if( notification.acpw || notification.upgrade || notification.wifi_2g || notification.wifi_5g || notification.ftp || notification.samba || notification.loss_sync || notification.low_nvram || notification.no_firewall ){
 		notification.stat = "on";
 		notification.flash = "on";
 		notification.run();
