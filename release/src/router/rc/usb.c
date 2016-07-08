@@ -2926,6 +2926,26 @@ void stop_cloudsync(int type)
 //#endif
 
 #ifdef RTCONFIG_USB
+int sd_partition_num()
+{
+	FILE *procpt;
+	char line[128], ptname[32];
+	int ma, mi, sz;
+	int count = 0;
+
+	if ((procpt = fopen("/proc/partitions", "r"))) {
+		while (fgets(line, sizeof(line), procpt)) {
+			if (sscanf(line, " %d %d %d %[^\n ]", &ma, &mi, &sz, ptname) != 4)
+				continue;
+
+			if (!strncmp(ptname, "sd", 2))
+				count++;
+		}
+	}
+
+	return count;
+}
+
 void start_nas_services(int force)
 {
 	if(!force && getpid() != 1){
