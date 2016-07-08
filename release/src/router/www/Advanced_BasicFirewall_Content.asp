@@ -70,10 +70,22 @@ function showPortItem(_value){
 	}
 }
 
+function validForm(){
+	if(document.form.fw_enable_x[1].checked){
+			if(!confirm("Disabling the router firewall will expose your entire network to the internet!  Do you want to continue?")){
+				document.form.fw_enable_x[0].focus();
+				return false;
+			}
+	}
+	return true;
+}
+
 function applyRule(){
-	inputRCtrl1(document.form.misc_ping_x, 1);
-	showLoading();
-	document.form.submit();	
+	if(validForm()){
+		inputRCtrl1(document.form.misc_ping_x, 1);
+		showLoading();
+		document.form.submit();
+	}
 }
 
 function hideport(flag){
@@ -136,7 +148,7 @@ function done_validating(action){
 				<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
           	<tr>
             	<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,6);"><#FirewallConfig_FirewallEnable_itemname#></a></th>
-            	<td>
+		<td id="fw_enable">
             		<input type="radio" value="1" name="fw_enable_x"  onClick="return change_common_radio(this, 'FirewallConfig', 'fw_enable_x', '1')" <% nvram_match("fw_enable_x", "1", "checked"); %>><#checkbox_Yes#>
             		<input type="radio" value="0" name="fw_enable_x"  onClick="return change_common_radio(this, 'FirewallConfig', 'fw_enable_x', '0')" <% nvram_match("fw_enable_x", "0", "checked"); %>><#checkbox_No#>
             	</td>
