@@ -374,6 +374,15 @@ function validForm(){
 		return false;
 	}
 
+	//confirm common string combination	#JS_common_passwd#
+	var is_common_string = check_common_string(document.form.http_passwd2.value, "httpd_password");
+	if(document.form.http_passwd2.value.length > 0 && is_common_string){
+			if(!confirm("This appears to be a common password or key and may not be secure.  Do you want to continue?")){
+				document.form.http_passwd2.focus();
+				document.form.http_passwd2.select();
+				return false;
+			}
+	}
 
 	if(!validate_ipaddr_final(document.form.log_ipaddr, 'log_ipaddr')
 			|| !validate_string(document.form.ntp_server0)
