@@ -472,7 +472,7 @@ CFLAGS = $(CFLAGS_COMMON) $(CFLAGS_OS) $(CFLAGS_DEBUG)
 #############################################################################
 
 #all: setup Daemon libdns_sd Clients SAClient SAResponder SAProxyResponder Identify NetMonitor dnsextd $(OPTIONALTARG)
-all: SAProxyResponder
+all: SAProxyResponder NetMonitor Query
 
 install: setup InstalledDaemon InstalledStartup InstalledLib InstalledManPages InstalledClients $(OPTINSTALL)
 
@@ -723,6 +723,9 @@ NetMonitor: setup $(BUILDDIR)/mDNSNetMonitor
 dnsextd: setup $(BUILDDIR)/dnsextd
 	@echo "dnsextd done"
 
+Query: setup $(BUILDDIR)/mDNSQuery
+	@echo "mDNSQuery done"
+
 $(BUILDDIR)/mDNSClientPosix:         $(APPOBJ)     $(OBJDIR)/Client.c.o
 	$(CC) $+ -o $@ $(LINKOPTS)
 
@@ -744,6 +747,9 @@ $(OBJDIR)/NetMonitor.c.o:            $(COREDIR)/mDNS.c # Note: NetMonitor.c text
 
 $(BUILDDIR)/dnsextd:                 $(DNSEXTDOBJ) $(OBJDIR)/dnsextd.c.threadsafe.o
 	$(CC) $+ -o $@ $(LINKOPTS) $(LINKOPTS_PTHREAD)
+
+$(BUILDDIR)/mDNSQuery:               $(COMMONOBJ)  $(OBJDIR)/Query.c.o
+	$(CC) $+ -o $@ $(LINKOPTS)
 
 #############################################################################
 
@@ -781,4 +787,8 @@ romfs:
 	install -d $(INSTALLDIR)/usr/sbin
 	$(STRIP) build/prod/mDNSProxyResponderPosix 
 	install build/prod/mDNSProxyResponderPosix $(INSTALLDIR)/usr/sbin/mDNSResponder
+	$(STRIP) build/prod/mDNSNetMonitor
+	install build/prod/mDNSNetMonitor $(INSTALLDIR)/usr/sbin/mDNSNetMonitor
+	$(STRIP) build/prod/mDNSQuery
+	install build/prod/mDNSQuery $(INSTALLDIR)/usr/sbin/mDNSQuery
 
