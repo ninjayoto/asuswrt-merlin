@@ -1,4 +1,4 @@
-Asuswrt-Merlin fork - build 374.43_2-18BBj9527 (xx-July-2016)
+Asuswrt-Merlin fork - build 374.43_2-18E1j9527 (21-July-2016)
 =============================================
 
 About

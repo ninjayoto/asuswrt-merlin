@@ -259,8 +259,8 @@ Special support for Private Internet Access (PIA) OpenVPN Client
 	Routers Supported:	All
 	Released:		Update-16
 	Reboot Required:	No
-	Notes:			You can now set cipher, authentication and encryption options via the router as you would using
-					the PIA app.
+	Notes:			You can now set cipher, authentication and encryption options via the router as you would
+					using the PIA app.
 				You need to add a line to the custom config section and replace the ca with a new cert
 					(included in the zip) in addition to setting the appropriate OpenVPN options.
 ----------------------------------------------------------------------------------------------------------------
@@ -314,13 +314,28 @@ Ability to disable DNSSEC permissive mode
 	Released:		Update-17
 	Reboot Required:	No
 	Notes:			By default, DNSSEC will also accept unsigned responses.  This option forces DNSSEC
-				to only accept signed responses.  USE WITH CAUTION:  This can disable dns lookups
-				if no DNSSEC enabled servers are available.
+					to only accept signed responses.  USE WITH CAUTION:  This can disable dns lookups
+					if no DNSSEC enabled servers are available.
+---------------------------------------------------------------------------------------------------------------
+Ability to enable DFS channels for N66U EU routers
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set wl_dfs_enable=1
+				nvram commit & reboot
+
+	Routers Supported:	N66U/R/W
+	Released:		Update-18
+	Reboot Required:	Yes
+	Notes:			The base 374.43 firmware only supports the lower channels on the 5GHz band in
+					EU configured routers.
+				This setting enables support for the DFS and upper 5GHz channels with full regulatory
+					support.
 ---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
-For options set with 'nvram set variable=1', setting 'nvram set variable=0' will disable (nvram commit and reboot if required)
+For options set with 'nvram set variable=1', setting 'nvram set variable=0' will disable
+	(nvram commit and reboot if required)
 
 For options set with 'nvram set variable=some_string', setting the with no data 'nvram set variable=', 
 	will disable (nvram commit and reboot if required)

@@ -4,10 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_2-18BCj9527  (xx-July-2016)
+374.43_2-18E1j9527  (21-July-2016)
 - CHANGED: openvpn: update to 2.3.11
 - CHANGED: openssl: update to 1.0.2h
 - CHANGED: dnsmasq: update to 2.76final
+- CHANGED: lighttpd: update to 1.4.39
+- CHANGED: mDNSResponder: update to latest ASUS release
+- CHANGED: timemachine: update to latest ASUS release
 - CHANGED: (multiple backports) support codel/fq_codel on ARM
 - CHANGED: (backport) kernel-arm: patch mirred so it will preserve kernel marks
 - CHANGED: (backport) kernel-arm: sync netfilter modules with fixes from kernel 4.0
@@ -15,6 +18,8 @@ Changelog
 - CHANGED: vts: (backport) no need to reboot vts/port forwards for ctf enabled
 - CHANGED: kernel: (backport) activate 64M ROOTFS and TEMPROOTFS for ARM
 - CHANGED: nat: change default NAT loopback method from Merlin to ASUS
+- CHANGED: webui: add common password checking for router password
+* CHANGED: wl: allow extended 5GHz channels to be enabled for EU N66 (wl_dfs_enable)
 * CHANGED: improvements to traditional qos
   - traditional qos download class bandwidth changes
   - add quantum to download class
@@ -24,7 +29,6 @@ Changelog
   - update qos police filters
   - workaround for bug in restore-mark
   - allow up to 15 marks for traditional qos for custom rules
-  - change iptables to use MARK/set-mark instead of CONNMARK/set-return for traditional qos
   - remove default from tc class since its controlled by iptables
   - change download filter protocol to all to cover ip and ipv6
   - add option to control ATM overhead (backport from Merlin/Tomato)
@@ -33,6 +37,8 @@ Changelog
 * CHANGED: httpd: add port to login messages; add disconnect logout message
 * CHANGED: webui: sort DHCP leases syslog by time remaining
 * CHANGED: webui: add low nvram notification in banner
+* CHANGED: webui: add firewall disabled notification in banner
+* CHANGED: webui: add alert message when attempting to disable firewall
 * CHANGED: qos: update start complete log message for tqos vs bwl
 * CHANGED: kernel: r2q change message from priority WARNING to priority DEBUG
 * CHANGED: busybox: include mktemp (required for EasyRSA)
@@ -49,7 +55,6 @@ Changelog
 * FIXED: qos: only add rule for Merlin NAT loopback when Merlin NAT loopback enabled
 * FIXED: qos: open file after clearing for bandwidth_limiter rules generation
 * FIXED: qos: properly clean up tc rules on bandwidth limiter qos stop
-* FIXED: qos: fix delete row for traditional qos rules
 * FIXED: webui: fix priority level assignment on qos bandwidth limiter
 * FIXED: webui: wrong rule deleted in traditional qos rules
 
