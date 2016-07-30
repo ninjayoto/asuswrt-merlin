@@ -69,8 +69,7 @@ function initial(){
 			document.form.qos_default.parentNode.parentNode.style.display = "";
 			if (codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
-			if (wan_proto == "pppoe")
-				document.getElementById('qos_overhead_tr').style.display = "";
+			document.getElementById('qos_overhead_tr').style.display = "";
 		}else{
 			document.form.qos_obw.parentNode.parentNode.style.display = "none";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
@@ -108,10 +107,7 @@ function changeRule(obj){
 			document.getElementById('qos_sched_tr').style.display = "";
 		else
 			document.getElementById('qos_sched_tr').style.display = "none";
-		if (wan_proto == "pppoe")
-			document.getElementById('qos_overhead_tr').style.display = "";
-		else
-			document.getElementById('qos_overhead_tr').style.display = "none";
+		document.getElementById('qos_overhead_tr').style.display = "";
 		showqos_rulelist();
 	}else if($(obj).value == "2"){
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
@@ -501,12 +497,16 @@ function showqos_bw_rulelist(){
 										</tr>
 
 										<tr id="qos_overhead_tr" style="display:none">
-											<th>WAN packet overhead</th>
+											<th>DSL/ATM Overhead Value</th>
 											<td colspan="2">
 												<select name="qos_overhead" class="input_option" >
-													<option value="0" <% nvram_match("qos_overhead", "0","selected"); %>>0-None</option>
-													<option value="32" <% nvram_match("qos_overhead", "32","selected"); %>>32-PPPoE VC-Mux, RFC2684/RFC1483 Bridged LLC/Snap</option>
-													<option value="40" <% nvram_match("qos_overhead", "40","selected"); %>>40-PPPoE LLC/Snap</option>
+													<option value="0" <% nvram_match("qos_overhead", "0","selected"); %>>0-None (Not a DSL connection)</option>
+													<option value="32" <% nvram_match("qos_overhead", "32","selected"); %>>32-PPPoE VC-Mux (Router authentication)</option>
+													<option value="40" <% nvram_match("qos_overhead", "40","selected"); %>>40-PPPoE LLC/Snap (Router authentication)</option>
+													<option value="8" <% nvram_match("qos_overhead", "8","selected"); %>>8-PPPoE RFC2684/RFC1483 Routed VC-Mux (Modem authentication)</option>
+													<option value="16" <% nvram_match("qos_overhead", "16","selected"); %>>16-PPPoE RFC2684/RFC1483 Routed LLC/Snap (Modem authentication)</option>
+													<option value="24" <% nvram_match("qos_overhead", "24","selected"); %>>24-DHCP RFC2684/RFC1483 Bridged VC-Mux</option>
+													<option value="32" <% nvram_match("qos_overhead", "32","selected"); %>>32-DHCP RFC2684/RFC1483 Bridged LLC/Snap</option>
 												</select>
 											</td>
 										</tr>
