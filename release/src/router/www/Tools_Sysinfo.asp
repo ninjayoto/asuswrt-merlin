@@ -74,6 +74,7 @@ if ((extendno == "") || (extendno == "0"))
 		$("fwver").innerHTML =  firmver + "." + buildno + '_' + extendno.split("-g")[0];
 
 	update_temperatures();
+	nvram_state();
 	hwaccel_state();
 	show_etherstate();
 }
@@ -99,6 +100,13 @@ function update_temperatures(){
 	});
 }
 
+function nvram_state(){
+	var nvram_used = '<% sysinfo("nvram.used"); %>';
+	var nvram_total = '<% sysinfo("nvram.total"); %>';
+	var nvram_util = Math.floor(nvram_used/nvram_total*100);
+	var code = nvram_used + ' / ' + nvram_total + ' bytes&nbsp;&nbsp;&nbsp;(' + nvram_util + '% utilized)';
+	$("nvram_td").innerHTML = code;                                                                                 
+}
 
 function hwaccel_state(){
 	if (hwacc == "1") {
@@ -377,7 +385,7 @@ function show_etherstate(){
 					</thead>
 					<tr>
 						<th>NVRAM usage</th>
-						<td><% sysinfo("nvram.used"); %>&nbsp;/ <% sysinfo("nvram.total"); %> bytes</td>
+						<td id="nvram_td"></td>
 					</tr>
 					<tr>
 						<th>JFFS</th>
