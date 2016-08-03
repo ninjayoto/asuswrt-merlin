@@ -220,7 +220,8 @@ function addRow_Group(upper){
 					}				
 			}
 		}
-		
+
+		document.form.dhcp_staticmac_x_0.value = document.form.dhcp_staticmac_x_0.value.toUpperCase();		
 		addRow(document.form.dhcp_staticmac_x_0 ,1);
 		addRow(document.form.dhcp_staticip_x_0, 0);
 		addRow(document.form.dhcp_staticname_x_0, 0);
