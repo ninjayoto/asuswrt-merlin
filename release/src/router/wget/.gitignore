@@ -22,15 +22,6 @@ INSTALL
 Makefile
 Makefile.in
 aclocal.m4
-build-aux/compile
-build-aux/config.guess
-build-aux/config.rpath
-build-aux/config.sub
-build-aux/depcomp
-build-aux/install-sh
-build-aux/mdate-sh
-build-aux/missing
-build-aux/texinfo.tex
 configure
 src/config.h.in
 src/css.c
