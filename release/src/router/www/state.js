@@ -2387,6 +2387,7 @@ function updateStatus_AJAX(){
 	if(updateStatusCounter > parseInt(20 * AUTOLOGOUT_MAX_MINUTE)) {
 		location = "Logout.asp";
 		disableCheckChangedStatus();
+		return false;
 	}
 
 	var ie = window.ActiveXObject;
@@ -2900,6 +2901,7 @@ function unload_body(){
 }
 
 function enableCheckChangedStatus(){
+	stopFlag = 0;
 }
 
 function disableCheckChangedStatus(){
