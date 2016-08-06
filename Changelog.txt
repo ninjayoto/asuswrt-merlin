@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-18E2j9527  (6-August-2016)
+- CHANGED: dropbear: update to 2016-74
+- CHANGED: webui: (backport) Convert MACs to uppercase when entered on the DHCP static lease form
+* CHANGED: qos: update and clarify ATM overhead options for DSL
+* CHANGED: webui: add percent utilized to nvram tools status
+* CHANGED: ntp: make sure dnsmasq is up before attempting ntp update
+- FIXED: timemachine: add missing include
+* FIXED: webui: http logon dialogue shown on autologout
+
+
 374.43_2-18E1j9527  (21-July-2016)
 - CHANGED: openvpn: update to 2.3.11
 - CHANGED: openssl: update to 1.0.2h
