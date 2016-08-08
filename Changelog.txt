@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-18E3j9527  (13-August-2016)
+* FIXED: should not allow qos_overhead option on MIPS routers
+* FIXED: could not Apply settings in Administration>System on IE11
+
+
 374.43_2-18E2j9527  (6-August-2016)
 - CHANGED: dropbear: update to 2016-74
 - CHANGED: webui: (backport) Convert MACs to uppercase when entered on the DHCP static lease form
