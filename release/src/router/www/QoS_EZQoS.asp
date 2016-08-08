@@ -48,10 +48,13 @@ var qos_rulelist_array = "<% nvram_char_to_ascii("","qos_rulelist"); %>";
 var qos_bw_rulelist_array = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
 var ctf_disable = '<% nvram_get("ctf_disable"); %>';
 var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
-if ((based_modelid == "RT-AC56U") || (based_modelid == "RT-AC68U"))
+if ((based_modelid == "RT-AC56U") || (based_modelid == "RT-AC68U")) {
 	var codel_support = true;
-else
+	var overhead_support = true;
+} else {
 	var codel_support = false;
+	var overhead_support = false;
+}
 
 var overlib_str0 = new Array();	//Viz add 2011.06 for record longer qos rule desc
 var overlib_str = new Array();	//Viz add 2011.06 for record longer portrange value
@@ -69,7 +72,8 @@ function initial(){
 			document.form.qos_default.parentNode.parentNode.style.display = "";
 			if (codel_support)
 				document.getElementById('qos_sched_tr').style.display = "";
-			document.getElementById('qos_overhead_tr').style.display = "";
+			if (overhead_support)
+				document.getElementById('qos_overhead_tr').style.display = "";
 		}else{
 			document.form.qos_obw.parentNode.parentNode.style.display = "none";
 			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
@@ -107,7 +111,10 @@ function changeRule(obj){
 			document.getElementById('qos_sched_tr').style.display = "";
 		else
 			document.getElementById('qos_sched_tr').style.display = "none";
-		document.getElementById('qos_overhead_tr').style.display = "";
+		if (overhead_support)
+			document.getElementById('qos_overhead_tr').style.display = "";
+		else
+			document.getElementById('qos_overhead_tr').style.display = "none";
 		showqos_rulelist();
 	}else if($(obj).value == "2"){
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
@@ -459,6 +466,10 @@ function showqos_bw_rulelist(){
 																document.getElementById('qos_sched_tr').style.display = "";
 															else
 																document.getElementById('qos_sched_tr').style.display = "none";
+															if (overhead_support)
+																document.getElementById('qos_overhead_tr').style.display = "";
+															else
+																document.getElementById('qos_overhead_tr').style.display = "none";
 
 														 },
 														 function() {
@@ -467,6 +478,7 @@ function showqos_bw_rulelist(){
 															document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 															document.form.qos_default.parentNode.parentNode.style.display = "none";
 															document.getElementById('qos_sched_tr').style.display = "none";
+															document.getElementById('qos_overhead_tr').style.display = "none";
 
 														 },
 														 {
