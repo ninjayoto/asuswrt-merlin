@@ -977,12 +977,16 @@ int start_tqos(void)
 	sprintf(qsched, "sfq perturb 10 %s", sfq_limit);
 #endif
 
+#ifdef RTCONFIG_BCMARM
 	overhead = nvram_get_int("qos_overhead");
 
 	if (overhead > 0)
 		snprintf(overheadstr, sizeof(overheadstr),"overhead %d linklayer atm", overhead);
 	else
 		strcpy(overheadstr, "");
+#else
+	strcpy(overheadstr, "");
+#endif
 
 	/* WAN */
 	fprintf(f,
