@@ -1,4 +1,14 @@
-﻿/* Internet Explorer lacks this array method */
+﻿/* String splice function */
+String.prototype.splice = function( idx, rem, s ) {
+	return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
+};
+
+/* String repeat function */
+String.prototype.repeat = function(times) {
+	return (new Array(times + 1)).join(this);
+};
+
+/* Internet Explorer lacks this array method */
 if (!('indexOf' in Array.prototype)) {
 	Array.prototype.indexOf= function(find, i /*opt*/) {
 		if (i===undefined) i= 0;
@@ -8,6 +18,15 @@ if (!('indexOf' in Array.prototype)) {
 			if (i in this && this[i]===find)
 				return i;
 		return -1;
+	};
+}
+
+/* add Array.prototype.forEach() in IE8 */
+if(typeof Array.prototype.forEach != 'function'){
+	Array.prototype.forEach = function(callback){
+		for(var i = 0; i < this.length; i++){
+			callback.apply(this, [this[i], i, this]);
+		}
 	};
 }
 
