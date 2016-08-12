@@ -132,9 +132,9 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_gateway, 0);		
 		$("ipv6_lan_setting").style.display="";
 		inputCtrl(document.form.ipv6_prefix, 0);		
-		inputCtrl(document.form.ipv6_prefix_length, 0);
+		inputCtrl(document.form.ipv6_prefix_length, 1);
 		$("ipv6_prefix_r").style.display = "";
-		$("ipv6_prefix_length_r").style.display="";
+		$("ipv6_prefix_length_r").style.display="none";
 		
 		inputCtrl(document.form.ipv6_autoconf_type[0], 1);
 		inputCtrl(document.form.ipv6_autoconf_type[1], 1);
@@ -491,11 +491,11 @@ function showInputfield2(s, v){
 
 		if(v == "0"){
 				$("ipv6_ipaddr_r").style.display = "none";
-				$("ipv6_prefix_length_span").innerHTML = "64";
+				//$("ipv6_prefix_length_span").innerHTML = "64";
 				
 		}else{
 				$("ipv6_ipaddr_r").style.display = "";
-				$("ipv6_prefix_length_span").innerHTML = "";								
+				//$("ipv6_prefix_length_span").innerHTML = "";								
 		}
 		
 		if(document.form.ipv6_autoconf_type[0].checked == true){
