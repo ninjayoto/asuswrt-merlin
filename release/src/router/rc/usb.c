@@ -2369,7 +2369,7 @@ void start_dms(void)
 				"serial=%s\n"
 				"model_number=%s\n",
 				serial,
-				nvram_get("productid"));
+				get_productid());
 
 			append_custom_config(MEDIA_SERVER_APP".conf",f);
 

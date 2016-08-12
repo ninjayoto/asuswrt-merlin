@@ -3154,7 +3154,7 @@ void start_upnp(void)
 					nvram_get_int("upnp_secure") ? "yes" : "no",	// secure_mode (only forward to self)
 					nvram_get_int("upnp_ssdp_interval"),
 					get_productid(),
-					nvram_get("productid"),
+					get_productid(),
 					nvram_get("serial_no") ? : et0macaddr
 				);
 
