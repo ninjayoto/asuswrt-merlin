@@ -697,7 +697,7 @@ function validForm(){
 		
 				if(document.form.ipv6_service.value=="other"){
 							if(!ipv6_valid(document.form.ipv6_ipaddr) || 
-									!validate_range(document.form.ipv6_prefix_len_wan, 3, 64) ||
+									!validate_range(document.form.ipv6_prefix_len_wan, 3, 126) ||
 									!ipv6_valid(document.form.ipv6_gateway)){
 										
 										return false;
@@ -705,7 +705,7 @@ function validForm(){
 				}
 		
 				//!ipv6_valid(document.form.ipv6_prefix) || Viz rm 2013.05
-				if(	!validate_range(document.form.ipv6_prefix_length, 3, 64) ||
+				if(	!validate_range(document.form.ipv6_prefix_length, 3, 126) ||
 						!ipv6_valid(document.form.ipv6_rtr_addr)){
 						return false;
 				}
@@ -795,13 +795,13 @@ function validForm(){
 	if(document.form.ipv6_service.value=="6in4"){
 			if(!validate_iprange(document.form.ipv6_tun_v4end, "")) return false;  //6in4 tun endpoint	
 			if(!ipv6_valid(document.form.ipv6_tun_addr)) return false;  //6in4 Client IPv6 Address			
-			if(!validate_range(document.form.ipv6_tun_addrlen, 3, 64))  return false;
+			if(!validate_range(document.form.ipv6_tun_addrlen, 3, 126))  return false;
 			if(document.form.ipv6_tun_peer.value != "" && !ipv6_valid(document.form.ipv6_tun_peer)) return false; //Remap from 376
 	}	
 	
 	if(document.form.ipv6_service.value=="6rd" && document.form.ipv6_6rd_dhcp[1].checked){
 			if(!ipv6_valid(document.form.ipv6_6rd_prefix) ||
-					!validate_range(document.form.ipv6_6rd_prefixlen, 3, 64)){
+					!validate_range(document.form.ipv6_6rd_prefixlen, 3, 126)){
 					return false;
 			}
 			if(!validate_iprange(document.form.ipv6_6rd_router, "")) return false;  //6rd ip4 router
@@ -819,7 +819,7 @@ function applyRule(){
 				if(document.form.ipv6_dhcp_pd[1].checked){
 					
 					document.form.ipv6_prefix_length.disabled = false;
-					document.form.ipv6_prefix_length.value = "64";
+					//document.form.ipv6_prefix_length.value = "64";
 					document.form.ipv6_prefix.disabled = false;
 					//document.form.ipv6_prefix.value = GetIPv6_split(document.form.ipv6_rtr_addr.value)+"::";	  //rc calculate it.
 				}
@@ -1058,7 +1058,7 @@ function showInfo(){
 					<tr style="display:none;">
 						<th><#IPv6_Prefix_Length#></th>
 		     		<td>
-							<input type="text" maxlength="2" class="input_3_table" name="ipv6_6rd_prefixlen" value="<% nvram_get("ipv6_6rd_prefixlen"); %>">
+							<input type="text" maxlength="3" class="input_3_table" name="ipv6_6rd_prefixlen" value="<% nvram_get("ipv6_6rd_prefixlen"); %>">
 		     		</td>
 		     	</tr>
 					<tr style="display:none;">
@@ -1083,7 +1083,7 @@ function showInfo(){
 					<tr style="display:none;">
 						<th><#IPv6_Prefix_Length#></th>
 		     		<td>
-							<input type="text" maxlength="2" class="input_3_table" name="ipv6_tun_addrlen" value="<% nvram_get("ipv6_tun_addrlen"); %>">
+							<input type="text" maxlength="3" class="input_3_table" name="ipv6_tun_addrlen" value="<% nvram_get("ipv6_tun_addrlen"); %>">
 		     		</td>
 		     	</tr>
 
@@ -1168,7 +1168,7 @@ function showInfo(){
 					<tr>
 						<th><#Prefix_lan_Length#></th>
 						<td>
-								<input type="text" maxlength="2" class="input_3_table" name="ipv6_prefix_length" value="<% nvram_get("ipv6_prefix_length"); %>">
+								<input type="text" maxlength="3" class="input_3_table" name="ipv6_prefix_length" value="<% nvram_get("ipv6_prefix_length"); %>">
 		     		</td>
 		     	</tr>
 					<tr id="ipv6_prefix_length_r">
