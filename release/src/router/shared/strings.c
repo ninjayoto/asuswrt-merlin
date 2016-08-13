@@ -150,3 +150,15 @@ int remove_word(char *buffer, const char *word)
 
 	return 1;
 }
+
+int remove_char(char *str, const char *c)
+{
+	char *pr = str, *pw = str;
+	while (*pr) {
+		*pw = *pr++;
+		pw += (*pw != c);
+	}
+	*pw = '\0';
+
+	return 1;
+}
