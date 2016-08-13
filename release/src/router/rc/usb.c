@@ -2306,9 +2306,13 @@ void start_dms(void)
 			nvram_set("dms_dbcwd", dbdir);
 
 			strcpy(serial, nvram_safe_get("lan_hwaddr"));
-			if (strlen(serial))
+			if (strlen(serial)) {
 				for (i = 0; i < strlen(serial); i++)
 					serial[i] = tolower(serial[i]);
+				remove_char(serial, ':'); //remove colons from mac for serial
+			}
+			else
+				strcpy(serial, "554e4b4e4f57"); //default if no hwaddr
 
 			fprintf(f,
 				"network_interface=%s\n"
@@ -2367,9 +2371,13 @@ void start_dms(void)
 
 			fprintf(f,
 				"serial=%s\n"
-				"model_number=%s\n",
+				"model_number=%s\n"
+				//add explicit uuid based on mac(serial)
+				//since some recent change has resulted in a changing uuid at boot
+				"uuid=4d696e69-444c-164e-9d41-%s\n",
 				serial,
-				get_productid());
+				get_productid(),
+				serial);
 
 			append_custom_config(MEDIA_SERVER_APP".conf",f);
 
