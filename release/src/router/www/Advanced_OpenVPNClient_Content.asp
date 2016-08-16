@@ -220,6 +220,10 @@ function initial()
 	// Remove CR characters in custom config
 	document.form.vpn_client_custom.value = document.form.vpn_client_custom.value.replace(/[\r]/g, '');
 
+	//disable policy based routing option for tap connections
+	update_rgw_options();
+	document.form.vpn_client_rgw.value = policy_orig;
+
 	// Decode into editable format
 	openvpn_decodeKeys(0);
 	update_visibility();
@@ -245,6 +249,22 @@ function openvpn_decodeKeys(entities){
 	document.getElementById('edit_vpn_crt_client2_crt').value = document.getElementById('edit_vpn_crt_client2_crt').value.replace(expr,"\r\n");
 	document.getElementById('edit_vpn_crt_client2_crl').value = document.getElementById('edit_vpn_crt_client2_crl').value.replace(expr,"\r\n");
 
+}
+
+function update_rgw_options(){
+	currentpolicy = document.form.vpn_client_rgw.value;
+	iface = document.form.vpn_client_if_x.value;
+
+	if ((iface == "tap") && (currentpolicy == 2)) {
+		currentpolicy = 1;
+		document.form.vpn_client_rgw.value = 1;
+	}
+
+	free_options(document.form.vpn_client_rgw);
+	add_option(document.form.vpn_client_rgw, "No","0",(currentpolicy == 0));
+	add_option(document.form.vpn_client_rgw, "All","1",(currentpolicy == 1));
+	if (iface == "tun")
+		add_option(document.form.vpn_client_rgw, "Policy Rules","2",(currentpolicy == 2));
 }
 
 function update_visibility(){
@@ -867,7 +887,7 @@ function pullLANIPList(obj){
 					<tr>
 						<th>Interface Type</th>
 			        		<td>
-			       				<select name="vpn_client_if_x"  onclick="update_visibility();" class="input_option">
+							<select name="vpn_client_if_x"  onclick="update_rgw_options();update_visibility();" class="input_option">
 							</select>
 			   			</td>
 					</tr>
@@ -1065,9 +1085,6 @@ function pullLANIPList(obj){
 						<th>Redirect Internet traffic</th>
 						<td colspan="2">
 							<select name="vpn_client_rgw" class="input_option" onChange="update_visibility();">
-								<option value="0" <% nvram_match("vpn_client_rgw","0","selected"); %>>No</option>
-								<option value="1" <% nvram_match("vpn_client_rgw","1","selected"); %>>All traffic</option>
-								<option value="2" <% nvram_match("vpn_client_rgw","2","selected"); %>>Policy rules</option>
 							</select>
 							<label style="padding-left:3em;" id="client_gateway_label">Gateway:</label><input type="text" maxlength="15" class="input_15_table" id="vpn_client_gw" name="vpn_client_gw" onkeypress="return validate_ipaddr_final(this, event);" value="<% nvram_get("vpn_client_gw"); %>">
 						</td>
