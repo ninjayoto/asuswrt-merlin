@@ -57,9 +57,6 @@
 #include <openssl/x509.h>
 #include <openssl/crypto.h>
 
-#include "pia.h"
-char *pia_ca_digest = NULL;
-extern bool pia_signal_settings;
 /*
  * Allocate space in SSL objects in which to store a struct tls_session
  * pointer back to parent.
@@ -783,9 +780,10 @@ tls_ctx_use_external_private_key (struct tls_root_ctx *ctx,
   X509 *cert = NULL;
 
   ASSERT (NULL != ctx);
-  ASSERT (NULL != cert);
 
   tls_ctx_load_cert_file_and_copy (ctx, cert_file, cert_file_inline, &cert);
+
+  ASSERT (NULL != cert);
 
   /* allocate custom RSA method object */
   ALLOC_OBJ_CLEAR (rsa_meth, RSA_METHOD);
@@ -870,20 +868,10 @@ tls_ctx_load_ca (struct tls_root_ctx *ctx, const char *ca_file,
   /* Try to add certificates and CRLs from ca_file */
   if (ca_file)
     {
-      if (!strcmp (ca_file, INLINE_FILE_TAG) && ca_file_inline) {
+      if (!strcmp (ca_file, INLINE_FILE_TAG) && ca_file_inline)
         in = BIO_new_mem_buf ((char *)ca_file_inline, -1);
-        if (!pia_ca_digest && pia_signal_settings)  pia_ca_digest = pia_cert_digest(ca_file_inline, strlen(ca_file_inline));
-      } else {
+      else
         in = BIO_new_file (ca_file, "r");
-	if (pia_signal_settings) {
-          FILE *f; int len; char buf[16384];
-          if (f = fopen(ca_file, "rb")) {
-            len = fread(buf, 1, sizeof(buf), f);
-            fclose(f);
-            if (!pia_ca_digest)  pia_ca_digest = pia_cert_digest(buf, len);
-          }
-        }
-      }
 
       if (in)
         info_stack = PEM_X509_INFO_read_bio (in, NULL, NULL, NULL);
@@ -1389,7 +1377,7 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
     }
   /* The SSL API does not allow us to look at temporary RSA/DH keys,
    * otherwise we should print their lengths too */
-  msg (M_INFO, "%s%s", s1, s2);
+  msg (D_HANDSHAKE, "%s%s", s1, s2);
 }
 
 void

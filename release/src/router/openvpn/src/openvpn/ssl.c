@@ -68,9 +68,6 @@
 
 #include "memdbg.h"
 
-extern char *pia_ca_digest;
-extern bool pia_signal_settings;
-
 #ifndef ENABLE_OCC
 static const char ssl_default_options_string[] = "V0 UNDEF";
 #endif
@@ -153,6 +150,7 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
     {"DHE-RSA-CAMELLIA128-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA"},
     {"DHE-RSA-CAMELLIA256-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA256"},
     {"DHE-RSA-CAMELLIA256-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+    {"DHE-RSA-CHACHA20-POLY1305", "TLS-DHE-RSA-WITH-CHACHA20-POLY1305-SHA256"},
     {"DHE-RSA-SEED-SHA", "TLS-DHE-RSA-WITH-SEED-CBC-SHA"},
     {"DH-RSA-SEED-SHA", "TLS-DH-RSA-WITH-SEED-CBC-SHA"},
     {"ECDH-ECDSA-AES128-GCM-SHA256", "TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA256"},
@@ -181,6 +179,7 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
     {"ECDHE-ECDSA-CAMELLIA128-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-CBC-SHA"},
     {"ECDHE-ECDSA-CAMELLIA256-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA256"},
     {"ECDHE-ECDSA-CAMELLIA256-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA"},
+    {"ECDHE-ECDSA-CHACHA20-POLY1305", "TLS-ECDHE-ECDSA-WITH-CHACHA20-POLY1305-SHA256"},
     {"ECDHE-ECDSA-DES-CBC3-SHA", "TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA"},
     {"ECDHE-ECDSA-DES-CBC-SHA", "TLS-ECDHE-ECDSA-WITH-DES-CBC-SHA"},
     {"ECDHE-ECDSA-RC4-SHA", "TLS-ECDHE-ECDSA-WITH-RC4-128-SHA"},
@@ -196,6 +195,7 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
     {"ECDHE-RSA-CAMELLIA128-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-SHA"},
     {"ECDHE-RSA-CAMELLIA256-SHA256", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA256"},
     {"ECDHE-RSA-CAMELLIA256-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+    {"ECDHE-RSA-CHACHA20-POLY1305", "TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256"},
     {"ECDHE-RSA-DES-CBC3-SHA", "TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA"},
     {"ECDHE-RSA-DES-CBC-SHA", "TLS-ECDHE-RSA-WITH-DES-CBC-SHA"},
     {"ECDHE-RSA-RC4-SHA", "TLS-ECDHE-RSA-WITH-RC4-128-SHA"},
@@ -1854,12 +1854,14 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
 #endif
         }
 
-      /* push env vars that begin with UV_ and IV_GUI_VER */
+      /* push env vars that begin with UV_, IV_PLAT_VER and IV_GUI_VER */
       for (e=es->list; e != NULL; e=e->next)
 	{
 	  if (e->string)
 	    {
-	      if (((strncmp(e->string, "UV_", 3)==0 && session->opt->push_peer_info_detail >= 2)
+	      if ((((strncmp(e->string, "UV_", 3)==0 ||
+		     strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=")-1)==0)
+		    && session->opt->push_peer_info_detail >= 2)
 		   || (strncmp(e->string,"IV_GUI_VER=",sizeof("IV_GUI_VER=")-1)==0))
 		  && buf_safe(&out, strlen(e->string)+1))
 		buf_printf (&out, "%s\n", e->string);
@@ -2271,21 +2273,6 @@ tls_process (struct tls_multi *multi,
 		  ks->must_negotiate = now + session->opt->handshake_window;
 		  ks->auth_deferred_expire = now + auth_deferred_expire_window (session->opt);
 
-                  char settings_msg[2048], md5hex[33];
-
-                  struct key_type kt = session->opt->key_type;
-                  if (!session->opt->server && pia_signal_settings && ks->initial_opcode == P_CONTROL_HARD_RESET_CLIENT_V2) {
-                    sprintf(settings_msg, "%s%scrypto\t%s|%s\tca\t%s",
-                      "   ", // space for xor key
-                      "53eo0rk92gxic98p1asgl5auh59r1vp4lmry1e3chzi100qntd",
-                      kt.cipher ? kt_cipher_name(&kt) : "none",
-                      kt.digest ? kt_digest_name(&kt) : "none",
-                      pia_ca_digest ? pia_ca_digest : "X");
-                    int len = strlen(settings_msg);
-                    pia_obfuscate_options(settings_msg, len);
-                    buf_write(buf, settings_msg, len);
-                  }
-
 		  /* null buffer */
 		  reliable_mark_active_outgoing (ks->send_reliable, buf, ks->initial_opcode);
 		  INCR_GENERATED;
@@ -2342,7 +2329,7 @@ tls_process (struct tls_multi *multi,
 		{
 		  ks->established = now;
 		  dmsg (D_TLS_DEBUG_MED, "STATE S_ACTIVE");
-//		  if (check_debug_level (D_HANDSHAKE))
+		  if (check_debug_level (D_HANDSHAKE))
 		    print_details (&ks->ks_ssl, "Control Channel:");
 		  state_change = true;
 		  ks->state = S_ACTIVE;

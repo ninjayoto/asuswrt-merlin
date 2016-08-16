@@ -60,8 +60,6 @@
 
 #include "memdbg.h"
 
-bool pia_signal_settings = 0;
-
 const char title_string[] =
   PACKAGE_STRING
   " " TARGET_ALIAS
@@ -4230,10 +4228,6 @@ add_option (struct options *options,
       VERIFY_PERMISSION (OPT_P_GENERAL);
       usage_version ();
     }
-  else if (streq (p[0], "pia-signal-settings"))
-    {
-      pia_signal_settings = 1;
-    }
   else if (streq (p[0], "config") && p[1])
     {
       VERIFY_PERMISSION (OPT_P_CONFIG);
@@ -6452,7 +6446,7 @@ add_option (struct options *options,
   else if (streq (p[0], "auth"))
     {
       VERIFY_PERMISSION (OPT_P_CRYPTO);
-      options->authname_defined = true;
+      msg (M_WARN, "WARNING: Using --auth without alg is deprecated.");
     }
   else if (streq (p[0], "cipher") && p[1])
     {
@@ -6468,7 +6462,7 @@ add_option (struct options *options,
   else if (streq (p[0], "cipher"))
     {
       VERIFY_PERMISSION (OPT_P_CRYPTO);
-      options->ciphername_defined = true;
+      msg (M_WARN, "WARNING: Using --cipher without alg is deprecated.");
     }
   else if (streq (p[0], "prng") && p[1])
     {
