@@ -883,6 +883,15 @@ void handle_wan_line(int wan_unit, int action){
 		memset(cmd, 0, 32);
 		sprintf(cmd, "restart_wan_if %d", wan_unit);
 		notify_rc_and_wait(cmd);
+#if RTCONFIG_MULTICAST_IPTV
+		if (nvram_get_int("switch_stb_x") > 6) {
+			int unit;
+			for (unit = WAN_UNIT_IPTV; unit < WAN_UNIT_MULTICAST_IPTV_MAX; unit++) {
+				snprintf(cmd, sizeof(cmd), "restart_wan_if %d", unit); 
+				notify_rc_and_wait(cmd);
+			}
+		}
+#endif
 	}
 }
 
