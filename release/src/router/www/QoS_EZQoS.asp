@@ -518,7 +518,7 @@ function showqos_bw_rulelist(){
 													<option value="8" <% nvram_match("qos_overhead", "8","selected"); %>>8-PPPoE RFC2684/RFC1483 Routed VC-Mux (Modem authentication)</option>
 													<option value="16" <% nvram_match("qos_overhead", "16","selected"); %>>16-PPPoE RFC2684/RFC1483 Routed LLC/Snap (Modem authentication)</option>
 													<option value="24" <% nvram_match("qos_overhead", "24","selected"); %>>24-DHCP RFC2684/RFC1483 Bridged VC-Mux</option>
-													<option value="32" <% nvram_match("qos_overhead", "32","selected"); %>>32-DHCP RFC2684/RFC1483 Bridged LLC/Snap</option>
+													<option value="132" <% nvram_match("qos_overhead", "132","selected"); %>>32-DHCP RFC2684/RFC1483 Bridged LLC/Snap</option>
 												</select>
 											</td>
 										</tr>

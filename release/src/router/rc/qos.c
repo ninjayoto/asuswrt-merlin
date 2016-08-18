@@ -978,7 +978,7 @@ int start_tqos(void)
 #endif
 
 #ifdef RTCONFIG_BCMARM
-	overhead = nvram_get_int("qos_overhead");
+	overhead = nvram_get_int("qos_overhead")%100;
 
 	if (overhead > 0)
 		snprintf(overheadstr, sizeof(overheadstr),"overhead %d linklayer atm", overhead);
