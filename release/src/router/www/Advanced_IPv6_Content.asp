@@ -142,10 +142,12 @@ function showInputfield(v){
 		
 		if(v != ipv6_proto_orig){
 				document.form.ipv6_prefix.value = "";
-				document.form.ipv6_prefix_length.value = "";
+				//document.form.ipv6_prefix_length.value = "";
+				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
 				document.form.ipv6_rtr_addr.value = "";
 				$("ipv6_prefix_span").innerHTML = "";
-				$("ipv6_prefix_length_span").innerHTML = "";
+				//$("ipv6_prefix_length_span").innerHTML = "";
+				$("ipv6_prefix_length_span").innerHTML = "<% nvram_get("ipv6_prefix_length"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "";
 				document.form.enable_mtu_ckb.checked = true;
 		}else{
