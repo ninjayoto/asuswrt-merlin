@@ -13,7 +13,7 @@ create_client_list(){
 
 	for ENTRY in $VPN_IP_LIST
 	do
-		if [ "$ENTRY" = "" ]
+		if [ "$ENTRY" == "" ]
 		then
 			continue
 		fi
@@ -129,12 +129,12 @@ export VPN_GW VPN_IP VPN_TBL VPN_FORCE
 
 
 # webui reports that vpn_force changed while vpn client was down
-if [ $script_type = "rmupdate" ]
+if [ $script_type = 'rmupdate' ]
 then
 	logger -t "openvpn-routing" "Refreshing policy rules for client $VPN_INSTANCE"
 	purge_client_list
 
-	if [ $VPN_FORCE == "1" -a $VPN_REDIR == "2" ]
+	if [ "$VPN_FORCE" == "1" -a "$VPN_REDIR" == "2" ]
 	then
 		init_table
 		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
@@ -149,7 +149,7 @@ then
 	exit 0
 fi
 
-if [ $script_type == "route-up" -a $VPN_REDIR != "2" ]
+if [ $script_type == 'route-up' -a "$VPN_REDIR" != "2" ]
 then
 	logger -t "openvpn-routing" "Skipping, client $VPN_INSTANCE not in routing policy mode"
 	run_custom_script
@@ -158,11 +158,11 @@ fi
 
 logger -t "openvpn-routing" "Configuring policy rules for client $VPN_INSTANCE"
 
-if [ $script_type == "route-pre-down" ]
+if [ $script_type == 'route-pre-down' ]
 then
 	purge_client_list
 
-	if [ $VPN_FORCE == "1" -a $VPN_REDIR == "2" ]
+	if [ "$VPN_FORCE" == "1" -a "$VPN_REDIR" == "2" ]
 	then
 		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
 		ip route change prohibit default table $VPN_TBL
@@ -175,7 +175,7 @@ fi	# End route down
 
 
 
-if [ $script_type == "route-up" ]
+if [ $script_type == 'route-up' ]
 then
 	init_table
 

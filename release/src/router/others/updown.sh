@@ -6,21 +6,17 @@ resolvfile=$filebase\.resolv
 dnsscript=$(echo /etc/openvpn/fw/$(echo $dev)-dns\.sh | sed 's/\(tun\|tap\)1/client/;s/\(tun\|tap\)2/server/')
 fileexists=
 instance=$(echo $dev | sed "s/tun1//;s/tun2*/0/")
-vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
-if [ "$(nvram get ipv6_service)" == "disabled" ]
-then
-	ipv6_enabled=0
-else
-	ipv6_enabled=1
-fi
 lan_if=$(nvram get lan_ifname)
+vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
+vpn_allow_ipv6=$(nvram get vpn_allow_ipv6); if [ "$vpn_allow_ipv6" == "" ]; then vpn_allow_ipv6=0; fi
+if [ "$(nvram get ipv6_service)" == "disabled" ]; then ipv6_enabled=0; else ipv6_enabled=1; fi
 
 # Set up VPN server
 if [ $(nvram get dhcpd_dns_router) == 1 ]
 then
 	VPNserver=$(nvram get lan_ipaddr)
 else
-	VPNserver=$server
+	VPNserver=
 fi
 
 # Set up ISP server
@@ -33,6 +29,10 @@ fi
 
 create_client_list(){
 	server=$1
+	if [ "$VPNserver" = "" ]
+	then
+		VPNserver=$server
+	fi
 	VPN_IP_LIST=$(nvram get vpn_client$(echo $instance)_clientlist)
 
 	OLDIFS=$IFS
@@ -40,7 +40,7 @@ create_client_list(){
 
 	for ENTRY in $VPN_IP_LIST
 	do
-		if [ "$ENTRY" = "" ]
+		if [ "$ENTRY" == "" ]
 		then
 			continue
 		fi
@@ -52,10 +52,10 @@ create_client_list(){
 			if [ "$TARGET_ROUTE" = "VPN" ]
 			then
 				echo iptables -t nat -A DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $VPNserver >> $dnsscript
-				logger -t "openvpn-updown" "Forcing $VPN_IP to use DNS server $server `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
+				logger -t "openvpn-updown" "Setting $VPN_IP to use VPN DNS servers `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
 			else
 				echo iptables -t nat -I DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
-				logger -t "openvpn-updown" "Excluding $VPN_IP from forced DNS routing"
+				logger -t "openvpn-updown" "Setting $VPN_IP to use ISP DNS server"
 			fi
 		fi
 	done
@@ -103,7 +103,7 @@ then
 	then
 		echo iptables -t nat -A PREROUTING -i $lan_if -p udp -m udp --dport 53 -j DNSVPN$instance >> $dnsscript
 		echo iptables -t nat -A PREROUTING -i $lan_if -p tcp -m tcp --dport 53 -j DNSVPN$instance >> $dnsscript
-		if [ $ipv6_enabled == 1 ]
+		if [ $ipv6_enabled == 1 -a $vpn_allow_ipv6 != 1 ]
 		then
 			if [ $(nvram get ipv6_dns_router) == 1 ]
 			then
