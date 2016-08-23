@@ -837,7 +837,7 @@ void start_dnsmasq(int force)
 
 #ifdef RTCONFIG_DNSSEC
 	if (nvram_match("dnssec_enable", "1")) {
-		fprintf(fp, "conf-file=/etc/dnssec-trust-anchors\n"
+		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
 		            "dnssec\n");
 
 		/* Force checking of unsigned replies */
