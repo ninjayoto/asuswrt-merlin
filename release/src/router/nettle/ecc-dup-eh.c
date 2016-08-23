@@ -46,7 +46,7 @@ ecc_dup_eh (const struct ecc_curve *ecc,
      http://www.hyperelliptic.org/EFD/g1p/auto-edwards-projective.html#doubling-dbl-2007-bl):
 
      Computation	Operation	Live variables
-
+     
      b = (x+y)^2	sqr		b
      c = x^2		sqr		b, c
      d = y^2		sqr		b, c, d
@@ -69,7 +69,7 @@ ecc_dup_eh (const struct ecc_curve *ecc,
    ! y' = e*(c+d)	mul		e, j
      z' = e*j		mul
   */
-#define b scratch
+#define b scratch 
 #define c (scratch  + ecc->p.size)
 #define d (scratch  + 2*ecc->p.size)
 #define e (scratch  + 3*ecc->p.size)

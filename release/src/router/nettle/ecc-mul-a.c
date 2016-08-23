@@ -64,7 +64,7 @@ ecc_mul_a (const struct ecc_curve *ecc,
 
   ecc_a_to_j (ecc, pj, p);
   mpn_zero (r, 3*ecc->p.size);
-
+  
   for (i = ecc->p.size, is_zero = 1; i-- > 0; )
     {
       mp_limb_t w = np[i];
@@ -112,7 +112,7 @@ table_init (const struct ecc_curve *ecc,
     {
       ecc_dup_jj (ecc, TABLE(j), TABLE(j/2), scratch);
       ecc_add_jja (ecc, TABLE(j+1), TABLE(j), TABLE(1), scratch);
-    }
+    }  
 }
 
 void
@@ -176,7 +176,7 @@ ecc_mul_a (const struct ecc_curve *ecc,
       ecc_add_jjj (ecc, tp, tp, r, scratch_out);
 
       /* Use the sum when valid. ecc_add_jja produced garbage if
-	 is_zero != 0 or bits == 0, . */
+	 is_zero != 0 or bits == 0, . */	  
       cnd_copy (bits & (is_zero - 1), r, tp, 3*ecc->p.size);
       is_zero &= (bits == 0);
     }

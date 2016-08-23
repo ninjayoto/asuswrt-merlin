@@ -95,7 +95,7 @@ void
 print_hex(size_t length, const uint8_t *data)
 {
   size_t i;
-
+  
   for (i = 0; i < length; i++)
     {
       switch (i % 16)
@@ -201,7 +201,7 @@ test_cipher_cbc(const struct nettle_cipher *cipher,
   ASSERT (key->length == cipher->key_size);
   ASSERT (iiv->length == cipher->block_size);
 
-  data = xalloc(length);
+  data = xalloc(length);  
   cipher->set_encrypt_key(ctx, key->data);
   memcpy(iv, iiv->data, cipher->block_size);
 
@@ -275,7 +275,7 @@ test_cipher_ctr(const struct nettle_cipher *cipher,
   if (low >= 0x100)
     INCREMENT (cipher->block_size - 1, octr);
 
-  data = xalloc(length);
+  data = xalloc(length);  
 
   cipher->set_encrypt_key(ctx, key->data);
   memcpy(ctr, ictr->data, cipher->block_size);
@@ -332,7 +332,7 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 		   const struct tstring *ciphertext)
 {
   size_t block;
-
+  
   void *ctx = xalloc(cipher->context_size);
   uint8_t *data;
   size_t length;
@@ -357,7 +357,7 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 
       cipher->encrypt(ctx, length - i, data + i, cleartext->data + i);
       ASSERT (data[length] == 0x17);
-
+      
       if (!MEMEQ(length, data, ciphertext->data))
 	{
 	  fprintf(stderr, "Encrypt failed, block size %lu\nInput:",
@@ -368,10 +368,10 @@ test_cipher_stream(const struct nettle_cipher *cipher,
 	  fprintf(stderr, "\nExpected:");
 	  tstring_print_hex(ciphertext);
 	  fprintf(stderr, "\n");
-	  FAIL();
+	  FAIL();	    
 	}
     }
-
+  
   cipher->set_decrypt_key(ctx, key->length, key->data);
   cipher->decrypt(ctx, length, data, data);
 
@@ -386,7 +386,7 @@ test_cipher_stream(const struct nettle_cipher *cipher,
       fprintf(stderr, "\nExpected:");
       tstring_print_hex(cleartext);
       fprintf(stderr, "\n");
-      FAIL();
+      FAIL();	    
     }
 
   free(ctx);
@@ -416,7 +416,7 @@ test_aead(const struct nettle_aead *aead,
   ASSERT (digest->length <= aead->digest_size);
 
   data = xalloc(length);
-
+  
   /* encryption */
   memset(buffer, 0, aead->digest_size);
   aead->set_encrypt_key(ctx, key->data);
@@ -431,7 +431,7 @@ test_aead(const struct nettle_aead *aead,
 
   if (authtext->length)
     aead->update(ctx, authtext->length, authtext->data);
-
+    
   if (length)
     aead->encrypt(ctx, length, data, cleartext->data);
 
@@ -455,7 +455,7 @@ test_aead(const struct nettle_aead *aead,
 
   if (authtext->length)
     aead->update(ctx, authtext->length, authtext->data);
-
+    
   if (length)
     aead->decrypt(ctx, length, data, data);
 
@@ -517,7 +517,7 @@ test_hash(const struct nettle_hash *hash,
 	  fprintf(stdout, "\nExpected:\n");
 	  print_hex(hash->digest_size, digest->data);
 	  abort();
-	}
+	}      
     }
   free(ctx);
   free(buffer);
@@ -547,7 +547,7 @@ test_hash_large(const struct nettle_hash *hash,
 	fprintf (stderr, ".");
     }
   fprintf (stderr, "\n");
-
+  
   hash->digest(ctx, hash->digest_size, buffer);
 
   print_hex(hash->digest_size, buffer);
@@ -575,12 +575,12 @@ test_armor(const struct nettle_armor *armor,
   ASSERT(ascii_length
 	 <= (armor->encode_length(data_length) + armor->encode_final_length));
   ASSERT(data_length <= armor->decode_length(ascii_length));
-
+  
   memset(buffer, 0x33, 1 + ascii_length);
   memset(check, 0x55, 1 + data_length);
 
   armor->encode_init(encode);
-
+  
   done = armor->encode_update(encode, buffer, data_length, data);
   done += armor->encode_final(encode, buffer + done);
   ASSERT(done == ascii_length);
@@ -594,7 +594,7 @@ test_armor(const struct nettle_armor *armor,
   ASSERT(armor->decode_update(decode, &done, check, ascii_length, buffer));
   ASSERT(done == data_length);
   ASSERT(armor->decode_final(decode));
-
+  
   ASSERT (MEMEQ(data_length, check, data));
   ASSERT (0x55 == check[data_length]);
 
@@ -663,9 +663,33 @@ xalloc_limbs (mp_size_t n)
   return xalloc (n * sizeof (mp_limb_t));
 }
 
-#define SIGN(key, hash, msg, signature) do {		\
-  hash##_update(&hash, LDATA(msg));		\
-  ASSERT(rsa_##hash##_sign(key, &hash, signature));	\
+/* Expects local variables pub, key, rstate, digest, signature */
+#define SIGN(hash, msg, expected) do { \
+  hash##_update(&hash, LDATA(msg));					\
+  ASSERT(rsa_##hash##_sign(key, &hash, signature));			\
+  if (verbose)								\
+    {									\
+      fprintf(stderr, "rsa-%s signature: ", #hash);			\
+      mpz_out_str(stderr, 16, signature);				\
+      fprintf(stderr, "\n");						\
+    }									\
+  ASSERT(mpz_cmp (signature, expected) == 0);				\
+									\
+  hash##_update(&hash, LDATA(msg));					\
+  ASSERT(rsa_##hash##_sign_tr(pub, key, &rstate,			\
+			      (nettle_random_func *) knuth_lfib_random,	\
+			      &hash, signature));			\
+  ASSERT(mpz_cmp (signature, expected) == 0);				\
+									\
+  hash##_update(&hash, LDATA(msg));					\
+  hash##_digest(&hash, sizeof(digest), digest);				\
+  ASSERT(rsa_##hash##_sign_digest(key, digest, signature));		\
+  ASSERT(mpz_cmp (signature, expected) == 0);				\
+									\
+  ASSERT(rsa_##hash##_sign_digest_tr(pub, key, &rstate,			\
+				     (nettle_random_func *)knuth_lfib_random, \
+				     digest, signature));		\
+  ASSERT(mpz_cmp (signature, expected) == 0);				\
 } while(0)
 
 #define VERIFY(key, hash, msg, signature) (	\
@@ -682,7 +706,7 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
    *
    *   lsh-keygen -a rsa -l 1000 -f advanced-hex
    *
-   * (private-key (rsa-pkcs1
+   * (private-key (rsa-pkcs1 
    *        (n #69abd505285af665 36ddc7c8f027e6f0 ed435d6748b16088
    *            4fd60842b3a8d7fb bd8a3c98f0cc50ae 4f6a9f7dd73122cc
    *            ec8afa3f77134406 f53721973115fc2d 8cfbba23b145f28d
@@ -712,7 +736,7 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
    *            e2df9607cee95fa8 daec7a389a7d9afc 8dd21fef9d83805a
    *            40d46f49676a2f6b 2926f70c572c00#)))
    */
-
+  
   mpz_set_str(pub->n,
 	      "69abd505285af665" "36ddc7c8f027e6f0" "ed435d6748b16088"
 	      "4fd60842b3a8d7fb" "bd8a3c98f0cc50ae" "4f6a9f7dd73122cc"
@@ -723,9 +747,9 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
   mpz_set_str(pub->e, "0db2ad57", 16);
 
   ASSERT (rsa_public_key_prepare(pub));
-
+  
   /* d is not used */
-#if 0
+#if 0  
   mpz_set_str(key->d,
 	      "3240a56f4cd0dcc2" "4a413eb4ea545259" "5c83d771a1c2ba7b"
 	      "ec47c5b43eb4b374" "09bd2aa1e236dd86" "481eb1768811412f"
@@ -734,7 +758,7 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
 	      "bd09f1c47efb4c8d" "c631e07698d362aa" "4a83fd304e66d6c5"
 	      "468863c307", 16);
 #endif
-
+  
   mpz_set_str(key->p,
 	      "0a66399919be4b4d" "e5a78c5ea5c85bf9" "aba8c013cb4a8732"
 	      "14557a12bd67711e" "bb4073fd39ad9a86" "f4e80253ad809e5b"
@@ -744,17 +768,17 @@ test_rsa_set_key_1(struct rsa_public_key *pub,
 	      "0a294f069f118625" "f5eae2538db9338c" "776a298eae953329"
 	      "9fd1eed4eba04e82" "b2593bc98ba8db27" "de034da7daaea795"
 	      "2d55b07b5f9a5875" "d1ca5f6dcab897", 16);
-
+  
   mpz_set_str(key->a,
 	      "011b6c48eb592eee" "e85d1bb35cfb6e07" "344ea0b5e5f03a28"
 	      "5b405396cbc78c5c" "868e961db160ba8d" "4b984250930cf79a"
 	      "1bf8a9f28963de53" "128aa7d690eb87", 16);
-
+  
   mpz_set_str(key->b,
 	      "0409ecf3d2557c88" "214f1af5e1f17853" "d8b2d63782fa5628"
 	      "60cf579b0833b7ff" "5c0529f2a97c6452" "2fa1a8878a9635ab"
 	      "ce56debf431bdec2" "70b308fa5bf387", 16);
-
+  
   mpz_set_str(key->c,
 	      "04e103ee925cb5e6" "6653949fa5e1a462" "c9e65e1adcd60058"
 	      "e2df9607cee95fa8" "daec7a389a7d9afc" "8dd21fef9d83805a"
@@ -770,21 +794,15 @@ test_rsa_md5(struct rsa_public_key *pub,
 	     mpz_t expected)
 {
   struct md5_ctx md5;
+  struct knuth_lfib_ctx rstate;
+  uint8_t digest[MD5_DIGEST_SIZE];
   mpz_t signature;
 
   md5_init(&md5);
   mpz_init(signature);
+  knuth_lfib_init (&rstate, 15);
 
-  SIGN(key, md5, "The magic words are squeamish ossifrage", signature);
-
-  if (verbose)
-    {
-      fprintf(stderr, "rsa-md5 signature: ");
-      mpz_out_str(stderr, 16, signature);
-      fprintf(stderr, "\n");
-    }
-
-  ASSERT (mpz_cmp(signature, expected) == 0);
+  SIGN(md5, "The magic words are squeamish ossifrage", expected);
 
   /* Try bad data */
   ASSERT (!VERIFY(pub, md5,
@@ -808,21 +826,15 @@ test_rsa_sha1(struct rsa_public_key *pub,
 	      mpz_t expected)
 {
   struct sha1_ctx sha1;
+  struct knuth_lfib_ctx rstate;
+  uint8_t digest[SHA1_DIGEST_SIZE];
   mpz_t signature;
 
   sha1_init(&sha1);
   mpz_init(signature);
+  knuth_lfib_init (&rstate, 16);
 
-  SIGN(key, sha1, "The magic words are squeamish ossifrage", signature);
-
-  if (verbose)
-    {
-      fprintf(stderr, "rsa-sha1 signature: ");
-      mpz_out_str(stderr, 16, signature);
-      fprintf(stderr, "\n");
-    }
-
-  ASSERT (mpz_cmp(signature, expected) == 0);
+  SIGN(sha1, "The magic words are squeamish ossifrage", expected);
 
   /* Try bad data */
   ASSERT (!VERIFY(pub, sha1,
@@ -846,21 +858,15 @@ test_rsa_sha256(struct rsa_public_key *pub,
 		mpz_t expected)
 {
   struct sha256_ctx sha256;
+  struct knuth_lfib_ctx rstate;
+  uint8_t digest[SHA256_DIGEST_SIZE];
   mpz_t signature;
 
   sha256_init(&sha256);
   mpz_init(signature);
+  knuth_lfib_init (&rstate, 17);
 
-  SIGN(key, sha256, "The magic words are squeamish ossifrage", signature);
-
-  if (verbose)
-    {
-      fprintf(stderr, "rsa-sha256 signature: ");
-      mpz_out_str(stderr, 16, signature);
-      fprintf(stderr, "\n");
-    }
-
-  ASSERT (mpz_cmp(signature, expected) == 0);
+  SIGN(sha256, "The magic words are squeamish ossifrage", expected);
 
   /* Try bad data */
   ASSERT (!VERIFY(pub, sha256,
@@ -884,21 +890,15 @@ test_rsa_sha512(struct rsa_public_key *pub,
 		mpz_t expected)
 {
   struct sha512_ctx sha512;
+  struct knuth_lfib_ctx rstate;
+  uint8_t digest[SHA512_DIGEST_SIZE];
   mpz_t signature;
 
   sha512_init(&sha512);
   mpz_init(signature);
+  knuth_lfib_init (&rstate, 18);
 
-  SIGN(key, sha512, "The magic words are squeamish ossifrage", signature);
-
-  if (verbose)
-    {
-      fprintf(stderr, "rsa-sha512 signature: ");
-      mpz_out_str(stderr, 16, signature);
-      fprintf(stderr, "\n");
-    }
-
-  ASSERT (mpz_cmp(signature, expected) == 0);
+  SIGN(sha512, "The magic words are squeamish ossifrage", expected);
 
   /* Try bad data */
   ASSERT (!VERIFY(pub, sha512,
@@ -925,9 +925,9 @@ test_rsa_key(struct rsa_public_key *pub,
 {
   mpz_t tmp;
   mpz_t phi;
-
+  
   mpz_init(tmp); mpz_init(phi);
-
+  
   if (verbose)
     {
       /* FIXME: Use gmp_printf */
@@ -975,13 +975,13 @@ test_rsa_key(struct rsa_public_key *pub,
   mpz_mul(tmp, pub->e, key->a);
   mpz_fdiv_r(tmp, tmp, phi);
   ASSERT (mpz_cmp_ui(tmp, 1) == 0);
-
+  
   /* Check b e = 1 (mod (q-1) ) */
   mpz_sub_ui(phi, key->q, 1);
   mpz_mul(tmp, pub->e, key->b);
   mpz_fdiv_r(tmp, tmp, phi);
   ASSERT (mpz_cmp_ui(tmp, 1) == 0);
-
+  
   mpz_clear(tmp); mpz_clear(phi);
 }
 
@@ -998,11 +998,11 @@ test_dsa160(const struct dsa_public_key *pub,
   struct sha1_ctx sha1;
   struct dsa_signature signature;
   struct knuth_lfib_ctx lfib;
-
+  
   sha1_init(&sha1);
   dsa_signature_init(&signature);
   knuth_lfib_init(&lfib, 1111);
-
+  
   sha1_update(&sha1, LDATA("The magic words are squeamish ossifrage"));
   ASSERT (dsa_sha1_sign(pub, key,
 			&lfib, (nettle_random_func *) knuth_lfib_random,
@@ -1020,7 +1020,7 @@ test_dsa160(const struct dsa_public_key *pub,
   if (expected)
     ASSERT (mpz_cmp (signature.r, expected->r) == 0
 	    && mpz_cmp (signature.s, expected->s) == 0);
-
+  
   /* Try bad data */
   ASSERT (!DSA_VERIFY(pub, sha1,
 		      "The magick words are squeamish ossifrage",
@@ -1048,16 +1048,16 @@ test_dsa256(const struct dsa_public_key *pub,
   struct sha256_ctx sha256;
   struct dsa_signature signature;
   struct knuth_lfib_ctx lfib;
-
+  
   sha256_init(&sha256);
   dsa_signature_init(&signature);
   knuth_lfib_init(&lfib, 1111);
-
+  
   sha256_update(&sha256, LDATA("The magic words are squeamish ossifrage"));
   ASSERT (dsa_sha256_sign(pub, key,
 			&lfib, (nettle_random_func *) knuth_lfib_random,
 			&sha256, &signature));
-
+  
   if (verbose)
     {
       fprintf(stderr, "dsa256 signature: ");
@@ -1070,7 +1070,7 @@ test_dsa256(const struct dsa_public_key *pub,
   if (expected)
     ASSERT (mpz_cmp (signature.r, expected->r) == 0
 	    && mpz_cmp (signature.s, expected->s) == 0);
-
+  
   /* Try bad data */
   ASSERT (!DSA_VERIFY(pub, sha256,
 		      "The magick words are squeamish ossifrage",
@@ -1102,18 +1102,18 @@ test_dsa_sign(const struct dsa_public_key *pub,
   uint8_t *bad_digest = xalloc (hash->digest_size);
   struct dsa_signature signature;
   struct knuth_lfib_ctx lfib;
-
+  
   dsa_signature_init(&signature);
   knuth_lfib_init(&lfib, 1111);
 
   hash->init(ctx);
-
+  
   hash->update(ctx, LDATA("The magic words are squeamish ossifrage"));
   hash->digest(ctx, hash->digest_size, digest);
   ASSERT (dsa_sign(pub, key,
 		   &lfib, (nettle_random_func *) knuth_lfib_random,
 		   hash->digest_size, digest, &signature));
-
+  
   if (verbose)
     {
       fprintf(stderr, "dsa-%s signature: ", hash->name);
@@ -1126,14 +1126,14 @@ test_dsa_sign(const struct dsa_public_key *pub,
   if (expected)
     ASSERT (mpz_cmp (signature.r, expected->r) == 0
 	    && mpz_cmp (signature.s, expected->s) == 0);
-
+  
   /* Try correct data */
   ASSERT (dsa_verify(pub, hash->digest_size, digest,
 		     &signature));
   /* Try bad data */
   hash->update(ctx, LDATA("The magick words are squeamish ossifrage"));
   hash->digest(ctx, hash->digest_size, bad_digest);
-
+  
   ASSERT (!dsa_verify(pub, hash->digest_size, bad_digest,
 		      &signature));
 
@@ -1163,7 +1163,7 @@ test_dsa_verify(const struct dsa_params *params,
   dsa_signature_init (&signature);
 
   hash->init(ctx);
-
+  
   hash->update (ctx, msg->length, msg->data);
   hash->digest (ctx, hash->digest_size, digest);
 
@@ -1179,7 +1179,7 @@ test_dsa_verify(const struct dsa_params *params,
   ASSERT (!dsa_verify (params, pub,
 		       hash->digest_size, digest,
 		       &signature));
-
+  
   /* Try bad data */
   digest[hash->digest_size / 2-1] ^= 8;
   ASSERT (!dsa_verify (params, pub,
@@ -1188,7 +1188,7 @@ test_dsa_verify(const struct dsa_params *params,
 
   free (ctx);
   free (digest);
-  dsa_signature_clear(&signature);
+  dsa_signature_clear(&signature);  
 }
 
 void
@@ -1203,7 +1203,7 @@ test_dsa_key(const struct dsa_params *params,
 
   ASSERT(mpz_sizeinbase(params->q, 2) == q_size);
   ASSERT(mpz_sizeinbase(params->p, 2) >= DSA_SHA1_MIN_P_BITS);
-
+  
   ASSERT(mpz_probab_prime_p(params->p, 10));
 
   ASSERT(mpz_probab_prime_p(params->q, 10));
@@ -1213,10 +1213,10 @@ test_dsa_key(const struct dsa_params *params,
   ASSERT(0 == mpz_cmp_ui(t, 1));
 
   ASSERT(mpz_cmp_ui(params->g, 1) > 0);
-
+  
   mpz_powm(t, params->g, params->q, params->p);
   ASSERT(0 == mpz_cmp_ui(t, 1));
-
+  
   mpz_powm(t, params->g, key, params->p);
   ASSERT(0 == mpz_cmp(t, pub));
 
@@ -1242,7 +1242,7 @@ test_mpn (const char *ref, const mp_limb_t *xp, mp_size_t n)
   mpz_init_set_str (r, ref, 16);
   while (n > 0 && xp[n-1] == 0)
     n--;
-
+  
   res = (mpz_limbs_cmp (r, xp, n) == 0);
   mpz_clear (r);
   return res;
@@ -1404,3 +1404,4 @@ test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p)
 }
 
 #endif /* WITH_HOGWEED */
+

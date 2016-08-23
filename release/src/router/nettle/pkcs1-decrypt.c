@@ -70,7 +70,7 @@ pkcs1_decrypt (size_t key_size,
       ret = 0;
       goto cleanup;
     }
-
+  
   padding = terminator - (em + 2);
   if (padding < 8)
     {
@@ -85,7 +85,7 @@ pkcs1_decrypt (size_t key_size,
       ret = 0;
       goto cleanup;
     }
-
+  
   memcpy(message, terminator + 1, message_length);
   *length = message_length;
 
@@ -94,3 +94,4 @@ cleanup:
   TMP_GMP_FREE(em);
   return ret;
 }
+	       

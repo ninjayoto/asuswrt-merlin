@@ -41,7 +41,7 @@
 #define ENCODE(alphabet,x) ((alphabet)[0x3F & (x)])
 
 static void
-encode_raw(const char *alphabet,
+encode_raw(const uint8_t *alphabet,
 	   uint8_t *dst, size_t length, const uint8_t *src)
 {
   const uint8_t *in = src + length;
@@ -59,7 +59,7 @@ encode_raw(const char *alphabet,
 	  *--out = '=';
 	  *--out = ENCODE(alphabet, (in[0] << 4));
 	  break;
-
+	  
 	case 2:
 	  *--out = ENCODE(alphabet, (in[1] << 2));
 	  *--out = ENCODE(alphabet, ((in[0] << 4) | (in[1] >> 4)));
@@ -70,7 +70,7 @@ encode_raw(const char *alphabet,
 	}
       *--out = ENCODE(alphabet, (in[0] >> 2));
     }
-
+  
   while (in > src)
     {
       in -= 3;
@@ -119,7 +119,7 @@ base64_encode_single(struct base64_encode_ctx *ctx,
   unsigned done = 0;
   unsigned word = ctx->word << 8 | src;
   unsigned bits = ctx->bits + 8;
-
+  
   while (bits >= 6)
     {
       bits -= 6;
@@ -130,7 +130,7 @@ base64_encode_single(struct base64_encode_ctx *ctx,
   ctx->word = word;
 
   assert(done <= 2);
-
+  
   return done;
 }
 
@@ -146,20 +146,20 @@ base64_encode_update(struct base64_encode_ctx *ctx,
   size_t left = length;
   unsigned left_over;
   size_t bulk;
-
+  
   while (ctx->bits && left)
     {
       left--;
       done += base64_encode_single(ctx, dst + done, *src++);
     }
-
+  
   left_over = left % 3;
   bulk = left - left_over;
-
+  
   if (bulk)
     {
       assert(!(bulk % 3));
-
+      
       encode_raw(ctx->alphabet, dst + done, bulk, src);
       done += BASE64_ENCODE_RAW_LENGTH(bulk);
       src += bulk;
@@ -185,7 +185,7 @@ base64_encode_final(struct base64_encode_ctx *ctx,
 {
   unsigned done = 0;
   unsigned bits = ctx->bits;
-
+  
   if (bits)
     {
       dst[done++] = ENCODE(ctx->alphabet, (ctx->word << (6 - ctx->bits)));

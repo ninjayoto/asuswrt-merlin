@@ -102,7 +102,7 @@ define(<SBOX0>, <
 
 define(<SBOX1>, <
 	mov	$1, $6	C y1  = x0 | x3
-	or	$4, $6
+	or	$4, $6 
 	mov	$3, $7	C y2  = x2 ^ x3
 	xor	$4, $7
 	mov	$2, $5	C y0  = ~x1
@@ -266,7 +266,7 @@ define(<SBOX7>, <
 	or	$5, $8	C t04
 	xor	$3, $8
 	mov	$4, $6
-	not	$6	C t02
+	not	$6	C t02	
 	and	$1, $6
 	xor	$6, $8
 	mov	$3, $6
@@ -314,7 +314,7 @@ C Parallel operation on four blocks at a time.
 
 C pnot instruction is missing. For lack of a spare register, XOR with
 C constant in memory.
-
+	
 define(<PNOT>, <
 	pxor	MINUS1, $1
 >)
@@ -348,7 +348,7 @@ define(<WSBOX0>, <
 
 define(<WSBOX1>, <
 	movdqa	$1, $6	C y1  = x0 | x3
-	por	$4, $6
+	por	$4, $6 
 	movdqa	$3, $7	C y2  = x2 ^ x3
 	pxor	$4, $7
 	movdqa	$2, $5	C y0  = ~x1
@@ -557,8 +557,8 @@ define(<WLT>, <
 >)
 
 	.file "serpent-encrypt.asm"
-
-	C serpent_encrypt(struct serpent_context *ctx,
+	
+	C serpent_encrypt(struct serpent_context *ctx, 
 	C	          size_t length, uint8_t *dst,
 	C	          const uint8_t *src)
 	.text
@@ -656,7 +656,7 @@ C loop in serpent-encrypt.c.
 C FIXME: Should use non-sse2 code only if we have a single block left.
 C With two or three blocks, it should be better to do them in
 C parallell.
-
+	
 .Lblock_loop:
 	movl	(SRC, N), x0
 	movl	4(SRC, N), x1
@@ -665,7 +665,7 @@ C parallell.
 
 	mov	$-512, CNT
 	jmp	.Lround_start
-
+	
 	ALIGN(16)
 .Lround_loop:
 	LT(x0,x1,x2,x3)
@@ -676,7 +676,7 @@ C parallell.
 	xor	12(CTX, CNT), x3
 	SBOX0(x0,x1,x2,x3, y0,y1,y2,y3)
 	LT(y0,y1,y2,y3)
-
+	
 	xor	16(CTX, CNT), y0
 	xor	20(CTX, CNT), y1
 	xor	24(CTX, CNT), y2

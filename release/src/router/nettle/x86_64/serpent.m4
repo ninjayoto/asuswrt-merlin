@@ -29,7 +29,7 @@ ifelse(<
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 >)
-
+	
 C WROL(count, w)
 define(<WROL>, <
 	movdqa	$2, T0
@@ -40,7 +40,7 @@ define(<WROL>, <
 
 C Note: Diagrams use little-endian representation, with least
 C significant word to the left.
-
+	
 C Transpose values from:
 C     +----+----+----+----+
 C x0: | a0 | a1 | a2 | a3 |
@@ -62,7 +62,7 @@ define(<WTRANSPOSE>, <
 	punpckhqdq	$3, $1			C |a2 a3 c2 c3|
 	pshufd		<$>0xd8, T0, T0		C |a0 c0 a1 c1|
 	pshufd		<$>0xd8, $1, T1		C |a2 c2 a3 c3|
-
+	
 	movdqa		$2, T2
 	punpcklqdq	$4, T2			C |b0 b1 d0 11|
 	punpckhqdq	$4, $2			C |b2 b3 d2 d3|

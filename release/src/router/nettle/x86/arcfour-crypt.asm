@@ -68,14 +68,14 @@ C Register usage:
 	lea	(%edx, %esi), %esi
 	negl	%edx
 	jnc	.Lend
-
+	
 	movzbl  ARCFOUR_I (%ebp), %eax	C  i
 	movzbl  ARCFOUR_J (%ebp), %ebx	C  j
 
 	incb	%al
 	sarl	$1, %edx
 	jc	.Lloop_odd
-
+	
 	ALIGN(16)
 .Lloop:
 	movb	(%ebp, %eax), %cl	C  si.

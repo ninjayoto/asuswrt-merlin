@@ -30,7 +30,7 @@
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 */
-
+ 
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -59,7 +59,7 @@ base16_encode_update(uint8_t *dst,
 		     const uint8_t *src)
 {
   size_t i;
-
+  
   for (i = 0; i<length; i++, dst += 2)
     base16_encode_single(dst, src[i]);
 }

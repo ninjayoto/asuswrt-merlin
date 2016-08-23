@@ -8,7 +8,7 @@ define(<AES_LOAD>, <
 	movl	4($5),$2
 	movl	8($5),$3
 	movl	12($5),$4
-
+	
 	xorl	($6),$1
 	xorl	4($6),$2
 	xorl	8($6),$3

@@ -63,7 +63,7 @@ rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
     = { "n", "e", "d", "p", "q", "a", "b", "c" };
   struct sexp_iterator values[8];
   unsigned nvalues = priv ? 8 : 2;
-
+  
   if (!sexp_iterator_assoc(i, nvalues, names, values))
     return 0;
 
@@ -88,14 +88,14 @@ rsa_keypair_from_sexp_alist(struct rsa_public_key *pub,
       if (!rsa_public_key_prepare(pub))
 	return 0;
     }
-
+  
   return 1;
 }
 
 int
 rsa_keypair_from_sexp(struct rsa_public_key *pub,
 		      struct rsa_private_key *priv,
-		      unsigned limit,
+		      unsigned limit, 
 		      size_t length, const uint8_t *expr)
 {
   struct sexp_iterator i;
@@ -104,7 +104,7 @@ rsa_keypair_from_sexp(struct rsa_public_key *pub,
 
   if (!sexp_iterator_first(&i, length, expr))
     return 0;
-
+  
   if (!sexp_iterator_check_type(&i, priv ? "private-key" : "public-key"))
     return 0;
 

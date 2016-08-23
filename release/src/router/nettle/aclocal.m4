@@ -127,7 +127,7 @@ AC_MSG_RESULT([Searching for libraries])
 for d in $1 ; do
   LSH_RPATH_ADD($d)
 done
-])
+])    
 
 dnl Try to execute a main program, and if it fails, try adding some
 dnl -R flag.
@@ -137,7 +137,7 @@ AC_DEFUN([LSH_RPATH_FIX],
   ac_success=no
   AC_TRY_RUN([int main(int argc, char **argv) { return 0; }],
     ac_success=yes, ac_success=no, :)
-
+  
   if test $ac_success = no ; then
     AC_MSG_CHECKING([Running simple test program failed. Trying -R flags])
 dnl echo RPATH_CANDIDATE_DIRS = $RPATH_CANDIDATE_DIRS
@@ -145,17 +145,17 @@ dnl echo RPATH_CANDIDATE_DIRS = $RPATH_CANDIDATE_DIRS
     ac_rpath_save_LDFLAGS="$LDFLAGS"
     for d in $RPATH_CANDIDATE_DIRS ; do
       if test $ac_success = yes ; then
-	ac_remaining_dirs="$ac_remaining_dirs $d"
+  	ac_remaining_dirs="$ac_remaining_dirs $d"
       else
-	LDFLAGS="$RPATHFLAG$d $LDFLAGS"
+  	LDFLAGS="$RPATHFLAG$d $LDFLAGS"
 dnl echo LDFLAGS = $LDFLAGS
-	AC_TRY_RUN([int main(int argc, char **argv) { return 0; }],
-	  [ac_success=yes
-	  ac_rpath_save_LDFLAGS="$LDFLAGS"
-	  AC_MSG_RESULT([adding $RPATHFLAG$d])
-	  ],
-	  [ac_remaining_dirs="$ac_remaining_dirs $d"], :)
-	LDFLAGS="$ac_rpath_save_LDFLAGS"
+  	AC_TRY_RUN([int main(int argc, char **argv) { return 0; }],
+  	  [ac_success=yes
+  	  ac_rpath_save_LDFLAGS="$LDFLAGS"
+  	  AC_MSG_RESULT([adding $RPATHFLAG$d])
+  	  ],
+  	  [ac_remaining_dirs="$ac_remaining_dirs $d"], :)
+  	LDFLAGS="$ac_rpath_save_LDFLAGS"
       fi
     done
     RPATH_CANDIDATE_DIRS=$ac_remaining_dirs
@@ -174,7 +174,7 @@ AC_DEFUN([LSH_CHECK_KRB_LIB],
 [AC_CHECK_LIB([$1], [$2],
   ifelse([$3], ,
       [[ac_tr_lib=HAVE_LIB`echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
-	    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+     	    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
         AC_DEFINE_UNQUOTED($ac_tr_lib)
         KRB_LIBS="-l$1 $KRB_LIBS"
       ]], [$3]),
@@ -212,7 +212,7 @@ static error_t
 child_parser(int key, char *arg, struct argp_state *state)
 {
   struct child_state *input = (struct child_state *) state->input;
-
+  
   switch(key)
     {
     default:
@@ -253,7 +253,7 @@ main_parser(int key, char *arg, struct argp_state *state)
     case ARGP_KEY_END:
       if (!input->m)
 	input->m = input->child.n;
-
+      
       break;
     }
   return 0;
@@ -268,7 +268,7 @@ main_children[] =
 
 static const struct argp
 main_argp =
-{ options, main_parser,
+{ options, main_parser, 
   NULL,
   NULL,
   main_children,
@@ -303,7 +303,7 @@ int main(int argc, char **argv)
     ifelse([$1],, true, [$1])
   else
     ifelse([$2],, true, [$2])
-  fi
+  fi   
 ])
 
 dnl LSH_GCC_ATTRIBUTES
@@ -417,7 +417,7 @@ AC_DEFUN([LSH_MAKE_CONDITIONAL],
 else
   IF_$1='# '
   UNLESS_$1=''
-fi
+fi 
 AC_SUBST(IF_$1)
 AC_SUBST(UNLESS_$1)])
 
@@ -514,7 +514,7 @@ elif test -n "$HOST_CC"; then
     [AC_MSG_ERROR([Specified HOST_CC doesn't seem to work])])
 else
   if test $cross_compiling = no ; then
-    CC_FOR_BUILD="$CC"
+    CC_FOR_BUILD="$CC"  
   else
     for i in gcc cc c89 c99; do
       GMP_PROG_CC_FOR_BUILD_WORKS($i,
@@ -675,23 +675,23 @@ int foo (int x) __attribute__ ((ifunc("foo_resolv")));
 AH_TEMPLATE([HAVE_LINK_IFUNC], [Define if compiler and linker supports __attribute__ ifunc])
 if test "x$nettle_cv_link_ifunc" = xyes ; then
   AC_DEFINE(HAVE_LINK_IFUNC)
-fi
+fi 
 ])
 
 dnl @synopsis AX_CREATE_STDINT_H [( HEADER-TO-GENERATE [, HEADERS-TO-CHECK])]
 dnl
 dnl the "ISO C9X: 7.18 Integer types <stdint.h>" section requires the
-dnl existence of an include file <stdint.h> that defines a set of
+dnl existence of an include file <stdint.h> that defines a set of 
 dnl typedefs, especially uint8_t,int32_t,uintptr_t.
 dnl Many older installations will not provide this file, but some will
 dnl have the very same definitions in <inttypes.h>. In other enviroments
 dnl we can use the inet-types in <sys/types.h> which would define the
 dnl typedefs int8_t and u_int8_t respectivly.
 dnl
-dnl This macros will create a local "_stdint.h" or the headerfile given as
-dnl an argument. In many cases that file will just "#include <stdint.h>"
-dnl or "#include <inttypes.h>", while in other environments it will provide
-dnl the set of basic 'stdint's definitions/typedefs:
+dnl This macros will create a local "_stdint.h" or the headerfile given as 
+dnl an argument. In many cases that file will just "#include <stdint.h>" 
+dnl or "#include <inttypes.h>", while in other environments it will provide 
+dnl the set of basic 'stdint's definitions/typedefs: 
 dnl   int8_t,uint8_t,int16_t,uint16_t,int32_t,uint32_t,intptr_t,uintptr_t
 dnl   int_least32_t.. int_fast32_t.. intmax_t
 dnl which may or may not rely on the definitions of other files,
@@ -701,7 +701,7 @@ dnl
 dnl if your header files require the stdint-types you will want to create an
 dnl installable file mylib-int.h that all your other installable header
 dnl may include. So if you have a library package named "mylib", just use
-dnl      AX_CREATE_STDINT_H(mylib-int.h)
+dnl      AX_CREATE_STDINT_H(mylib-int.h) 
 dnl in configure.ac and go to install that very header file in Makefile.am
 dnl along with the other headers (mylib.h) - and the mylib-specific headers
 dnl can simply use "#include <mylib-int.h>" to obtain the stdint-types.
@@ -710,7 +710,7 @@ dnl Remember, if the system already had a valid <stdint.h>, the generated
 dnl file will include it directly. No need for fuzzy HAVE_STDINT_H things...
 dnl
 dnl @, (status: used on new platforms) (see http://ac-archive.sf.net/gstdint/)
-dnl @author  Guido Draheim <guidod@gmx.de>
+dnl @author  Guido Draheim <guidod@gmx.de> 
 
 AC_DEFUN([AX_CREATE_STDINT_H],
 [# ------ AX CREATE STDINT H -------------------------------------
@@ -755,7 +755,7 @@ AC_CACHE_CHECK([for stdint uintptr_t], [ac_cv_header_stdint_x],[
  ac_cv_header_stdint_x="" # the 1997 typedefs (inttypes.h)
   AC_MSG_RESULT([(..)])
   for i in stdint.h inttypes.h sys/inttypes.h $inttype_headers ; do
-   unset ac_cv_type_uintptr_t
+   unset ac_cv_type_uintptr_t 
    unset ac_cv_type_uint64_t
    _AC_CHECK_TYPE_NEW(uintptr_t,[ac_cv_header_stdint_x=$i],dnl
      continue,[#include <$i>])
@@ -822,13 +822,13 @@ if test "_$ac_cv_header_stdint_x" = "_" ; then
    case "$ac_cv_stdint_char_model/$ac_cv_stdint_long_model" in
     122/242)     name="$name,  IP16 (standard 16bit machine)" ;;
     122/244)     name="$name,  LP32 (standard 32bit mac/win)" ;;
-    122/*)       name="$name        (unusual int16 model)" ;;
+    122/*)       name="$name        (unusual int16 model)" ;; 
     124/444)     name="$name, ILP32 (standard 32bit unixish)" ;;
     124/488)     name="$name,  LP64 (standard 64bit unixish)" ;;
     124/448)     name="$name, LLP64 (unusual  64bit unixish)" ;;
-    124/*)       name="$name        (unusual int32 model)" ;;
+    124/*)       name="$name        (unusual int32 model)" ;; 
     128/888)     name="$name, ILP64 (unusual  64bit numeric)" ;;
-    128/*)       name="$name        (unusual int64 model)" ;;
+    128/*)       name="$name        (unusual int64 model)" ;; 
     222/*|444/*) name="$name        (unusual dsptype)" ;;
      *)          name="$name        (very unusal model)" ;;
    esac
@@ -857,7 +857,7 @@ AC_CHECK_TYPE(intmax_t,,,[#include <$ac_cv_header_stdint>])
 fi # shortcircut to system "stdint.h"
 # ------------------ PREPARE VARIABLES ------------------------------
 if test "$GCC" = "yes" ; then
-ac_cv_stdint_message="using gnu compiler "`$CC --version | head -1`
+ac_cv_stdint_message="using gnu compiler "`$CC --version | head -1` 
 else
 ac_cv_stdint_message="using $CC"
 fi
@@ -875,7 +875,7 @@ echo "#define" $_ac_stdint_h "1" >>$ac_stdint
 echo "#ifndef" _GENERATED_STDINT_H >>$ac_stdint
 echo "#define" _GENERATED_STDINT_H '"'$PACKAGE $VERSION'"' >>$ac_stdint
 echo "/* generated $ac_cv_stdint_message */" >>$ac_stdint
-if test "_$ac_cv_header_stdint_t" != "_" ; then
+if test "_$ac_cv_header_stdint_t" != "_" ; then 
 echo "#define _STDINT_HAVE_STDINT_H" "1" >>$ac_stdint
 fi
 
@@ -1167,14 +1167,14 @@ typedef uint64_t  uint_least64_t;
 #endif
 
 #if defined _STDINT_NEED_INT_FAST_T
-typedef  int8_t    int_fast8_t;
+typedef  int8_t    int_fast8_t; 
 typedef  int       int_fast16_t;
 typedef  int32_t   int_fast32_t;
 #ifdef _HAVE_UINT64_T
 typedef  int64_t   int_fast64_t;
 #endif
 
-typedef uint8_t   uint_fast8_t;
+typedef uint8_t   uint_fast8_t; 
 typedef unsigned  uint_fast16_t;
 typedef uint32_t  uint_fast32_t;
 #ifdef _HAVE_UINT64_T

@@ -44,7 +44,7 @@ _nettle_write_le64(size_t length, uint8_t *dst,
   size_t i;
   size_t words;
   unsigned leftover;
-
+  
   words = length / 8;
   leftover = length % 8;
 
@@ -54,7 +54,7 @@ _nettle_write_le64(size_t length, uint8_t *dst,
   if (leftover)
     {
       uint64_t word;
-
+      
       word = src[i];
 
       do

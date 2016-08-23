@@ -42,3 +42,4 @@ test_main(void)
   rsa_public_key_clear(&pub);
   rsa_private_key_clear(&priv);
 }
+

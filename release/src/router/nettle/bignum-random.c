@@ -55,7 +55,7 @@ nettle_mpz_random_size(mpz_t x,
 
   if (bits % 8)
     mpz_fdiv_r_2exp(x, x, bits);
-
+  
   TMP_GMP_FREE(data);
 }
 
@@ -79,7 +79,7 @@ nettle_mpz_random(mpz_t x,
    * PGP. Using 16 extra bits (i.e. generating a 176 bit random number
    * and reducing it modulo q) will defeat even this theoretical
    * attack.
-   *
+   * 
    * More generally log_2(q)/8 extra bits are enough to defeat my
    * attack. NIST also plans to update the standard.
    */
@@ -88,9 +88,9 @@ nettle_mpz_random(mpz_t x,
    * operation. NIST FIPS 186-3 specifies 64 extra bits, for use with
    * DSA. */
 
-  nettle_mpz_random_size(x,
+  nettle_mpz_random_size(x, 
 			 ctx, random,
 			 mpz_sizeinbase(n, 2) + 64);
-
+  
   mpz_fdiv_r(x, x, n);
 }

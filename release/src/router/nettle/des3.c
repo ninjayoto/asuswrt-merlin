@@ -47,7 +47,7 @@ des3_set_key(struct des3_ctx *ctx, const uint8_t *key)
 {
   unsigned i;
   int is_good = 1;
-
+  
   for (i = 0; i<3; i++, key += DES_KEY_SIZE)
     if (!des_set_key(&ctx->des[i], key))
       is_good = 0;
@@ -79,4 +79,4 @@ des3_decrypt(const struct des3_ctx *ctx,
 	      length, dst, dst);
   des_decrypt(&ctx->des[0],
 	      length, dst, dst);
-}
+} 

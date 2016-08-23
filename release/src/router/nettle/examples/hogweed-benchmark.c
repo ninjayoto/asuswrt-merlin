@@ -139,7 +139,7 @@ time_function(void (*f)(void *arg), void *arg)
   return elapsed / ncalls;
 }
 
-static void
+static void 
 bench_alg (const struct alg *alg)
 {
   double sign;
@@ -173,7 +173,7 @@ struct rsa_ctx
 static void *
 bench_rsa_init (unsigned size)
 {
-  char rsa1024[] =
+  char rsa1024[] = 
     "{KDExOnByaXZhdGUta2V5KDE0OnJzYS1wa2NzMS1zaGExKDE6bjEyOToA90+K5EmjbFJBeJD"
     " xP2KD2Df+0Twc9425uB+vhqTrVijtd2PnwEQDfR2VoducgkKcXJzYYyCNILQJbFAi2Km/sD"
     " jImERBqDtaI217Ze+tOKEmImexYTAgFuqEptp2F3M4DqgRQ7s/3nJQ/bPE5Hfi1OZhJSShu"
@@ -187,7 +187,7 @@ bench_rsa_init (unsigned size)
     " kcktUpKDE6YjY1OgCR+cRtY3RWY+f6/TWK9gwPndv03xpasLWrMm71ky1aSbT9pasS9+opR"
     " tAiGzthfSbFsBiLQgb3VOr+AeIybT+XKSgxOmM2NDojigqARWN5u1CVDVuD2L2ManpoGiM6"
     " kQ6FaJjqRjxeRRKFrQxGJa9tM1hqStxokC1oJidgaOLGnn60iwzToug9KSkp}";
-
+    
   char rsa2048[] =
     "{KDExOnByaXZhdGUta2V5KDE0OnJzYS1wa2NzMS1zaGExKDE6bjI1NzoAtxWXiglIdunDK48"
     " 8I0vW0wTqnh/riW9pLk8n1F8MUPBFdhvkkl0bDQqSJPUvSHy+w4fLVwcEzeI4qFyo3b2Avz"
@@ -242,7 +242,7 @@ bench_rsa_init (unsigned size)
   ctx->digest = hash_string (&nettle_sha256, 3, "foo");
 
   rsa_sha256_sign_digest (&ctx->key, ctx->digest, ctx->s);
-
+  
   return ctx;
 }
 
@@ -273,7 +273,7 @@ bench_rsa_clear (void *p)
   rsa_public_key_clear (&ctx->pub);
   rsa_private_key_clear (&ctx->key);
   mpz_clear (ctx->s);
-
+  
   free (ctx->digest);
   free (ctx);
 }
@@ -292,7 +292,7 @@ static void *
 bench_dsa_init (unsigned size)
 {
   struct dsa_ctx *ctx;
-  struct sexp_iterator i;
+  struct sexp_iterator i;  
 
   char dsa1024[] =
     "{KDExOnByaXZhdGUta2V5KDM6ZHNhKDE6cDEyOToA2q4hOXEClLMXXMOl9xaPcGC/GeGmCMv"
@@ -316,7 +316,7 @@ bench_dsa_init (unsigned size)
 
   if (size != 1024)
     die ("Internal error.\n");
-
+  
   if (! (sexp_transport_iterator_first (&i, sizeof(dsa1024) - 1, dsa1024)
 	 && sexp_iterator_check_type (&i, "private-key")
 	 && sexp_iterator_check_type (&i, "dsa")
@@ -375,7 +375,7 @@ struct ecdsa_ctx
   uint8_t *digest;
   struct dsa_signature s;
 };
-
+  
 static void *
 bench_ecdsa_init (unsigned size)
 {
@@ -386,10 +386,10 @@ bench_ecdsa_init (unsigned size)
   const char *ys;
   const char *zs;
   mpz_t x, y, z;
-
+  
   ctx = xalloc (sizeof(*ctx));
 
-  dsa_signature_init (&ctx->s);
+  dsa_signature_init (&ctx->s);  
   knuth_lfib_init (&ctx->rctx, 17);
 
   switch (size)
@@ -489,10 +489,10 @@ static void
 bench_ecdsa_verify (void *p)
 {
   struct ecdsa_ctx *ctx = p;
-  if (! ecdsa_verify (&ctx->pub,
+  if (! ecdsa_verify (&ctx->pub, 
 		      ctx->digest_size, ctx->digest,
 		      &ctx->s))
-    die ("Internal error, _ecdsa_verify failed.\n");
+    die ("Internal error, _ecdsa_verify failed.\n");    
 }
 
 static void
@@ -553,7 +553,7 @@ bench_openssl_rsa_verify (void *p)
   const struct openssl_rsa_ctx *ctx = p;
   if (! RSA_verify (NID_sha1, ctx->digest, SHA1_DIGEST_SIZE,
 		    ctx->ref, ctx->siglen, ctx->key))
-    die ("OpenSSL RSA_verify failed.\n");
+    die ("OpenSSL RSA_verify failed.\n");    
 }
 
 static void
@@ -617,9 +617,9 @@ bench_openssl_ecdsa_init (unsigned size)
 
   if (!EC_KEY_generate_key( ctx->key))
     die ("Openssl EC_KEY_generate_key failed.\n");
-
+  
   ctx->signature = ECDSA_do_sign (ctx->digest, ctx->digest_length, ctx->key);
-
+  
   return ctx;
 }
 
@@ -637,7 +637,7 @@ bench_openssl_ecdsa_verify (void *p)
   const struct openssl_ecdsa_ctx *ctx = p;
   if (ECDSA_do_verify (ctx->digest, ctx->digest_length,
 			 ctx->signature, ctx->key) != 1)
-    die ("Openssl ECDSA_do_verify failed.\n");
+    die ("Openssl ECDSA_do_verify failed.\n");      
 }
 static void
 bench_openssl_ecdsa_clear (void *p)

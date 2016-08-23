@@ -1,5 +1,5 @@
 /* nettle-benchmark.c
-
+   
    Tests the performance of the various algorithms.
 
    Copyright (C) 2001, 2010, 2014 Niels Möller
@@ -122,7 +122,7 @@ die(const char *format, ...)
   exit(EXIT_FAILURE);
 }
 
-static double overhead = 0.0;
+static double overhead = 0.0; 
 
 /* Returns second per function call */
 static double
@@ -208,9 +208,9 @@ struct bench_cbc_info
 {
   void *ctx;
   nettle_cipher_func *crypt;
-
+ 
   uint8_t *data;
-
+  
   unsigned block_size;
   uint8_t *iv;
 };
@@ -299,8 +299,8 @@ static void
 header(void)
 {
   printf("%18s %11s Mbyte/s%s\n",
-	 "Algorithm", "mode",
-	 frequency > 0.0 ? " cycles/byte cycles/block" : "");
+	 "Algorithm", "mode", 
+	 frequency > 0.0 ? " cycles/byte cycles/block" : "");  
 }
 
 static void
@@ -336,7 +336,7 @@ time_overhead(void)
   printf("benchmark call overhead: %7f us", overhead * 1e6);
   if (frequency > 0.0)
     printf("%7.2f cycles\n", overhead * frequency);
-  printf("\n");
+  printf("\n");  
 }
 
 
@@ -371,7 +371,7 @@ time_memxor(void)
 	   time_function(bench_memxor3, &info));
   info.other = (const char *) other + 2;
   display ("memxor3", "unaligned12", sizeof(unsigned long),
-	   time_function(bench_memxor3, &info));
+	   time_function(bench_memxor3, &info));  
 }
 
 static void
@@ -380,7 +380,7 @@ time_hash(const struct nettle_hash *hash)
   static uint8_t data[BENCH_BLOCK];
   struct bench_hash_info info;
 
-  info.ctx = xalloc(hash->context_size);
+  info.ctx = xalloc(hash->context_size); 
   info.update = hash->update;
   info.data = data;
 
@@ -402,7 +402,7 @@ time_umac(void)
   struct umac64_ctx ctx64;
   struct umac96_ctx ctx96;
   struct umac128_ctx ctx128;
-
+  
   uint8_t key[16];
 
   umac32_set_key (&ctx32, key);
@@ -481,7 +481,7 @@ time_cipher(const struct nettle_cipher *cipher)
   static uint8_t data[BENCH_BLOCK];
 
   printf("\n");
-
+  
   init_data(data);
 
   {
@@ -490,20 +490,20 @@ time_cipher(const struct nettle_cipher *cipher)
     info.ctx = ctx;
     info.crypt = cipher->encrypt;
     info.data = data;
-
+    
     init_key(cipher->key_size, key);
     cipher->set_encrypt_key(ctx, key);
 
     display(cipher->name, "ECB encrypt", cipher->block_size,
 	    time_function(bench_cipher, &info));
   }
-
+  
   {
     struct bench_cipher_info info;
     info.ctx = ctx;
     info.crypt = cipher->decrypt;
     info.data = data;
-
+    
     init_key(cipher->key_size, key);
     cipher->set_decrypt_key(ctx, key);
 
@@ -514,7 +514,7 @@ time_cipher(const struct nettle_cipher *cipher)
   if (block_cipher_p(cipher))
     {
       uint8_t *iv = xalloc(cipher->block_size);
-
+      
       /* Do CBC mode */
       {
         struct bench_cbc_info info;
@@ -523,9 +523,9 @@ time_cipher(const struct nettle_cipher *cipher)
 	info.data = data;
 	info.block_size = cipher->block_size;
 	info.iv = iv;
-
+    
         memset(iv, 0, cipher->block_size);
-
+    
         cipher->set_encrypt_key(ctx, key);
 
 	display(cipher->name, "CBC encrypt", cipher->block_size,
@@ -539,7 +539,7 @@ time_cipher(const struct nettle_cipher *cipher)
 	info.data = data;
 	info.block_size = cipher->block_size;
 	info.iv = iv;
-
+    
         memset(iv, 0, cipher->block_size);
 
         cipher->set_decrypt_key(ctx, key);
@@ -556,15 +556,15 @@ time_cipher(const struct nettle_cipher *cipher)
 	info.data = data;
 	info.block_size = cipher->block_size;
 	info.iv = iv;
-
+    
         memset(iv, 0, cipher->block_size);
-
+    
         cipher->set_encrypt_key(ctx, key);
 
 	display(cipher->name, "CTR", cipher->block_size,
-		time_function(bench_ctr, &info));
+		time_function(bench_ctr, &info));	
       }
-
+      
       free(iv);
     }
   free(ctx);
@@ -580,7 +580,7 @@ time_aead(const struct nettle_aead *aead)
   static uint8_t data[BENCH_BLOCK];
 
   printf("\n");
-
+  
   init_data(data);
   if (aead->set_nonce)
     init_nonce (aead->nonce_size, nonce);
@@ -591,7 +591,7 @@ time_aead(const struct nettle_aead *aead)
     info.ctx = ctx;
     info.crypt = aead->encrypt;
     info.data = data;
-
+    
     init_key(aead->key_size, key);
     aead->set_encrypt_key(ctx, key);
     if (aead->set_nonce)
@@ -600,13 +600,13 @@ time_aead(const struct nettle_aead *aead)
     display(aead->name, "encrypt", aead->block_size,
 	    time_function(bench_aead_crypt, &info));
   }
-
+  
   {
     struct bench_aead_info info;
     info.ctx = ctx;
     info.crypt = aead->decrypt;
     info.data = data;
-
+    
     init_key(aead->key_size, key);
     aead->set_decrypt_key(ctx, key);
     if (aead->set_nonce)
@@ -627,7 +627,7 @@ time_aead(const struct nettle_aead *aead)
 
       if (aead->set_nonce)
 	aead->set_nonce (ctx, nonce);
-
+    
       display(aead->name, "update", aead->block_size,
 	      time_function(bench_aead_update, &info));
     }
@@ -682,7 +682,7 @@ bench_sha1_compress(void)
 
   TIME_CYCLES (t, _nettle_sha1_compress(state, data));
 
-  printf("sha1_compress: %.2f cycles\n", t);
+  printf("sha1_compress: %.2f cycles\n", t);  
 }
 
 static void
@@ -692,7 +692,7 @@ bench_salsa20_core(void)
   double t;
 
   TIME_CYCLES (t, _nettle_salsa20_core(state, state, 20));
-  printf("salsa20_core: %.2f cycles\n", t);
+  printf("salsa20_core: %.2f cycles\n", t);  
 }
 
 static void
@@ -777,7 +777,7 @@ main(int argc, char **argv)
       { "clock-frequency", required_argument, NULL, 'f' },
       { NULL, 0, NULL, 0 }
     };
-
+  
   while ( (c = getopt_long(argc, argv, "f:", options, NULL)) != -1)
     switch (c)
       {
@@ -813,7 +813,7 @@ main(int argc, char **argv)
       time_memxor();
       printf("\n");
     }
-
+  
   for (i = 0; hashes[i]; i++)
     if (!alg || strstr(hashes[i]->name, alg))
       time_hash(hashes[i]);

@@ -51,7 +51,7 @@ sha1_init(struct sha1_ctx *ctx)
 {
   /* FIXME: Put the buffer last in the struct, and arrange so that we
      can initialize with a single memcpy. */
-  static const uint32_t iv[_SHA1_DIGEST_LENGTH] =
+  static const uint32_t iv[_SHA1_DIGEST_LENGTH] = 
     {
       /* SHA initial values, first 4 identical to md5's. */
       0x67452301L,
@@ -63,7 +63,7 @@ sha1_init(struct sha1_ctx *ctx)
 
   memcpy(ctx->state, iv, sizeof(ctx->state));
   ctx->count = 0;
-
+  
   /* Initialize buffer */
   ctx->index = 0;
 }
@@ -76,7 +76,7 @@ sha1_update(struct sha1_ctx *ctx,
 {
   MD_UPDATE (ctx, length, data, COMPRESS, ctx->count++);
 }
-
+	  
 void
 sha1_digest(struct sha1_ctx *ctx,
 	    size_t length,

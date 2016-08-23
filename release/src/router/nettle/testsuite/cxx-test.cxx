@@ -24,9 +24,9 @@ test_main(void)
   struct rsa_private_key key;
 
   mpz_t expected;
-
+  
   mpz_init(expected);
-
+  
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
 
@@ -50,17 +50,17 @@ test_main(void)
 	      "0a294f069f118625" "f5eae2538db9338c" "776a298eae953329"
 	      "9fd1eed4eba04e82" "b2593bc98ba8db27" "de034da7daaea795"
 	      "2d55b07b5f9a5875" "d1ca5f6dcab897", 16);
-
+  
   mpz_set_str(key.a,
 	      "011b6c48eb592eee" "e85d1bb35cfb6e07" "344ea0b5e5f03a28"
 	      "5b405396cbc78c5c" "868e961db160ba8d" "4b984250930cf79a"
 	      "1bf8a9f28963de53" "128aa7d690eb87", 16);
-
+  
   mpz_set_str(key.b,
 	      "0409ecf3d2557c88" "214f1af5e1f17853" "d8b2d63782fa5628"
 	      "60cf579b0833b7ff" "5c0529f2a97c6452" "2fa1a8878a9635ab"
 	      "ce56debf431bdec2" "70b308fa5bf387", 16);
-
+  
   mpz_set_str(key.c,
 	      "04e103ee925cb5e6" "6653949fa5e1a462" "c9e65e1adcd60058"
 	      "e2df9607cee95fa8" "daec7a389a7d9afc" "8dd21fef9d83805a"
@@ -69,7 +69,7 @@ test_main(void)
   ASSERT (rsa_private_key_prepare(&key));
 
   ASSERT (pub.size == key.size);
-
+  
   mpz_set_str(expected,
 	      "53bf517009fa956e" "3daa6adc95e8663d" "3759002f488bbbad"
 	      "e49f62792d85dbcc" "293f68e2b68ef89a" "c5bd42d98f845325"
@@ -95,6 +95,6 @@ test_main(void)
   md5_update (&md5, 39, reinterpret_cast<const uint8_t *>
 	      ("The magik words are squeamish ossifrage"));
   ASSERT (!rsa_md5_verify (&pub, &md5, signature));
-
+  
 #endif /* WITH_PUBLIC_KEY */
 }

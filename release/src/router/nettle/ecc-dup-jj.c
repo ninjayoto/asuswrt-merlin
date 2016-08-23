@@ -66,11 +66,11 @@ ecc_dup_jj (const struct ecc_curve *ecc,
 #define g2    (scratch + 3*ecc->p.size)
 #define sum   (scratch + 4*ecc->p.size)
 #define alpha  scratch /* Overlap delta */
-
+  
 #define xp p
 #define yp (p + ecc->p.size)
 #define zp (p + 2*ecc->p.size)
-
+  
   /* delta */
   ecc_modp_sqr (ecc, delta, zp);
 
@@ -82,7 +82,7 @@ ecc_dup_jj (const struct ecc_curve *ecc,
   ecc_modp_sqr (ecc, beta, r + 2*ecc->p.size);
   ecc_modp_sub (ecc, beta, beta, gamma);
   ecc_modp_sub (ecc, r + 2*ecc->p.size, beta, delta);
-
+  
   /* alpha. Can use beta area as scratch, and overwrite delta. */
   ecc_modp_add (ecc, sum, xp, delta);
   ecc_modp_sub (ecc, delta, xp, delta);
@@ -96,7 +96,7 @@ ecc_dup_jj (const struct ecc_curve *ecc,
      then use the old area at gamma as scratch. */
   ecc_modp_sqr (ecc, g2, gamma);
   ecc_modp_mul_1 (ecc, sum, beta, 4);
-
+  
   /* x' */
   ecc_modp_sqr (ecc, gamma, alpha);   /* Overwrites gamma and beta */
   ecc_modp_submul_1 (ecc, gamma, sum, 2);

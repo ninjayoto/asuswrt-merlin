@@ -52,7 +52,7 @@ curve25519_mul_g (uint8_t *r, const uint8_t *n)
 #define ng scratch
 #define x (scratch + 3*ecc->p.size)
 #define scratch_out (scratch + 4*ecc->p.size)
-
+  
   memcpy (t, n, sizeof(t));
   t[0] &= ~7;
   t[CURVE25519_SIZE-1] = (t[CURVE25519_SIZE-1] & 0x3f) | 0x40;

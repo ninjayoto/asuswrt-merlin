@@ -83,7 +83,7 @@ void
 chacha_set_nonce96(struct chacha_ctx *ctx, const uint8_t *nonce);
 
 void
-chacha_crypt(struct chacha_ctx *ctx, size_t length,
+chacha_crypt(struct chacha_ctx *ctx, size_t length, 
              uint8_t *dst, const uint8_t *src);
 
 void

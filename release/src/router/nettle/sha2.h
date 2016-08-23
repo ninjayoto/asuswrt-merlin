@@ -30,7 +30,7 @@
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 */
-
+ 
 #ifndef NETTLE_SHA2_H_INCLUDED
 #define NETTLE_SHA2_H_INCLUDED
 
@@ -168,7 +168,7 @@ sha384_digest(struct sha512_ctx *ctx,
 	      uint8_t *digest);
 
 
-/* SHA512_224 and SHA512_256, two truncated versions of SHA512
+/* SHA512_224 and SHA512_256, two truncated versions of SHA512 
    with different initial states. */
 
 #define SHA512_224_DIGEST_SIZE 28
@@ -198,7 +198,7 @@ void
 sha512_256_digest(struct sha512_256_ctx *ctx,
                   size_t length,
                   uint8_t *digest);
-
+  
 #ifdef __cplusplus
 }
 #endif

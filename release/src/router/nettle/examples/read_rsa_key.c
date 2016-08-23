@@ -49,7 +49,7 @@ read_rsa_key(const char *name,
   unsigned length;
   char *buffer;
   int res;
-
+  
   length = read_file(name, 0, &buffer);
   if (!length)
     return 0;

@@ -50,7 +50,7 @@ ecc_mod_add (const struct ecc_modulo *m, mp_limb_t *rp,
   cy = mpn_add_n (rp, ap, bp, m->size);
   cy = cnd_add_n (cy, rp, m->B, m->size);
   cy = cnd_add_n (cy, rp, m->B, m->size);
-  assert (cy == 0);
+  assert (cy == 0);  
 }
 
 void
@@ -61,7 +61,7 @@ ecc_mod_sub (const struct ecc_modulo *m, mp_limb_t *rp,
   cy = mpn_sub_n (rp, ap, bp, m->size);
   cy = cnd_sub_n (cy, rp, m->B, m->size);
   cy = cnd_sub_n (cy, rp, m->B, m->size);
-  assert (cy == 0);
+  assert (cy == 0);  
 }
 
 void
@@ -93,7 +93,7 @@ ecc_mod_addmul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
   /* Sufficient roughly if b < B^size / p */
   assert (hi == 0);
 }
-
+  
 void
 ecc_mod_submul_1 (const struct ecc_modulo *m, mp_limb_t *rp,
 		  const mp_limb_t *ap, mp_limb_t b)

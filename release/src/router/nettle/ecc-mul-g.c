@@ -59,9 +59,9 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
   c = ecc->pippenger_c;
 
   bit_rows = (ecc->p.bit_size + k - 1) / k;
-
+  
   mpn_zero (r, 3*ecc->p.size);
-
+  
   for (i = k, is_zero = 1; i-- > 0; )
     {
       ecc_dup_jj (ecc, r, r, scratch);
@@ -71,14 +71,14 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 	  /* Avoid the mp_bitcnt_t type for compatibility with older GMP
 	     versions. */
 	  unsigned bit_index;
-
+	  
 	  /* Extract c bits from n, stride k, starting at i + kcj,
 	     ending at i + k (cj + c - 1)*/
 	  for (bits = 0, bit_index = i + k*(c*j+c); bit_index > i + k*c*j; )
 	    {
 	      mp_size_t limb_index;
 	      unsigned shift;
-
+	      
 	      bit_index -= k;
 
 	      limb_index = bit_index / GMP_NUMB_BITS;
@@ -94,10 +94,10 @@ ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 			 1<<c, bits);
 	  cnd_copy (is_zero, r, tp, 2*ecc->p.size);
 	  cnd_copy (is_zero, r + 2*ecc->p.size, ecc->unit, ecc->p.size);
-
+	  
 	  ecc_add_jja (ecc, tp, r, tp, scratch_out);
 	  /* Use the sum when valid. ecc_add_jja produced garbage if
-	     is_zero != 0 or bits == 0, . */
+	     is_zero != 0 or bits == 0, . */	  
 	  cnd_copy (bits & (is_zero - 1), r, tp, 3*ecc->p.size);
 	  is_zero &= (bits == 0);
 	}

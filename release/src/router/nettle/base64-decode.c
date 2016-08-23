@@ -48,7 +48,7 @@ base64_decode_init(struct base64_decode_ctx *ctx)
   static const signed char base64_decode_table[0x100] =
     {
       /* White space is HT, VT, FF, CR, LF and SPC */
-      -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -1, -1, 
       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
       52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -3, -1, -1,
@@ -84,7 +84,7 @@ base64_decode_single(struct base64_decode_ctx *ctx,
 
       if (ctx->padding)
 	return -1;
-
+      
       ctx->word = ctx->word << 6 | data;
       ctx->bits += 6;
 
@@ -101,12 +101,12 @@ base64_decode_single(struct base64_decode_ctx *ctx,
 
     case TABLE_SPACE:
       return 0;
-
+      
     case TABLE_END:
       /* There can be at most two padding characters. */
       if (!ctx->bits || ctx->padding > 2)
 	return -1;
-
+      
       if (ctx->word & ( (1<<ctx->bits) - 1))
 	/* We shouldn't have any leftover bits */
 	return -1;
@@ -140,7 +140,7 @@ base64_decode_update(struct base64_decode_ctx *ctx,
       default:
 	abort();
       }
-
+  
   assert(done <= BASE64_DECODE_LENGTH(src_length));
 
   *dst_length = done;

@@ -32,7 +32,7 @@ ifelse(<
 
 C Input argument
 C cpuid input: %edi
-C output pointer: %rsi
+C output pointer: %rsi 	
 
 	.file "cpuid.asm"
 
@@ -43,7 +43,7 @@ C output pointer: %rsi
 PROLOGUE(_nettle_cpuid)
 	W64_ENTRY(2)
 	push	%rbx
-
+	
 	movl	%edi, %eax
 	cpuid
 	mov	%eax, (%rsi)
@@ -55,3 +55,4 @@ PROLOGUE(_nettle_cpuid)
 	W64_EXIT(2)
 	ret
 EPILOGUE(_nettle_cpuid)
+

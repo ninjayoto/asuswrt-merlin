@@ -46,7 +46,7 @@ arcfour_set_key(struct arcfour_ctx *ctx,
 		size_t length, const uint8_t *key)
 {
   unsigned i, j, k;
-
+  
   assert(length >= ARCFOUR_MIN_KEY_SIZE);
   assert(length <= ARCFOUR_MAX_KEY_SIZE);
 

@@ -87,7 +87,7 @@ nettle_mpz_to_octets(size_t length, uint8_t *s,
   uint8_t *dst = s + length - 1;
   size_t size = mpz_size(x);
   size_t i;
-
+  
   for (i = 0; i<size; i++)
     {
       mp_limb_t limb = mpz_getlimbn(x, i);
@@ -100,7 +100,7 @@ nettle_mpz_to_octets(size_t length, uint8_t *s,
           length--;
 	}
     }
-
+  
   if (length)
     memset(s, sign, length);
 }
@@ -180,7 +180,7 @@ nettle_mpz_set_str_256_s(mpz_t x,
       mpz_set_ui(x, 0);
       return;
     }
-
+  
   nettle_mpz_from_octets(x, length, s);
 
   if (s[0] & 0x80)

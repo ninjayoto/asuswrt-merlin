@@ -53,7 +53,7 @@ define(<ALIGN>,
 
 dnl Struct defining macros
 
-dnl STRUCTURE(prefix)
+dnl STRUCTURE(prefix) 
 define(<STRUCTURE>, <define(<SOFFSET>, 0)define(<SPREFIX>, <$1>)>)dnl
 
 dnl STRUCT(name, size)

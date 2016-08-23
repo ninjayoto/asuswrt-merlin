@@ -69,7 +69,7 @@ int
 rsa_private_key_prepare(struct rsa_private_key *key)
 {
   mpz_t n;
-
+  
   /* The size of the product is the sum of the sizes of the factors,
    * or sometimes one less. It's possible but tricky to compute the
    * size without computing the full product. */
@@ -80,7 +80,7 @@ rsa_private_key_prepare(struct rsa_private_key *key)
   key->size = _rsa_check_size(n);
 
   mpz_clear(n);
-
+  
   return (key->size > 0);
 }
 
@@ -92,7 +92,7 @@ rsa_compute_root(const struct rsa_private_key *key,
   mpz_t xp; /* modulo p */
   mpz_t xq; /* modulo q */
 
-  mpz_init(xp); mpz_init(xq);
+  mpz_init(xp); mpz_init(xq);    
 
   /* Compute xq = m^d % q = (m%q)^b % q */
   mpz_fdiv_r(xq, m, key->q);

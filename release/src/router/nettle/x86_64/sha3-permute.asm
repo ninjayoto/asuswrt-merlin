@@ -40,7 +40,7 @@ define(<A0304>, <%xmm1>)
 define(<A05>,  <%rcx>)
 define(<A0607>, <%xmm2>)
 define(<A0809>, <%xmm3>)
-
+	
 define(<A10>,  <%rdx>)
 define(<A1112>, <%xmm4>)
 define(<A1314>, <%xmm5>)
@@ -48,7 +48,7 @@ define(<A1314>, <%xmm5>)
 define(<A15>,  <%rbp>)
 define(<A1617>, <%xmm6>)
 define(<A1819>, <%xmm7>)
-
+	
 define(<A20>,  <%r9>)
 define(<A2122>, <%xmm8>)
 define(<A2324>, <%xmm9>)
@@ -104,7 +104,7 @@ define(<ROTL64>, <
 >)
 
 	.file "sha3-permute.asm"
-
+	
 	C sha3_permute(struct sha3_state *ctx)
 	.text
 	ALIGN(16)
@@ -128,7 +128,7 @@ PROLOGUE(nettle_sha3_permute)
 	movdqa	A0304, C34
 	movups	STATE(8), A0809
 	xorq	A05, C0
-
+	
 	movq	STATE(10), A10
 	pxor	A0607, C12
 	movups	STATE(11), A1112
@@ -151,7 +151,7 @@ PROLOGUE(nettle_sha3_permute)
 	xorq	A20, C0
 	pxor	A2122, C12
 	pxor	A2324, C34
-
+	
 	ALIGN(16)
 .Loop:
 	C The theta step. Combine parity bits, then xor to state.
@@ -163,7 +163,7 @@ PROLOGUE(nettle_sha3_permute)
 
 	C Shift the words around, putting (C0, C1) in D12, (C2, C3) in
 	C   D34, and (C4, C0) in C34.
-
+	
 	C Notes on "unpack" instructions:
 	C   punpckhqdq 01, 23 gives 31
 	C   punpcklqdq 01, 23 gives 20
@@ -186,7 +186,7 @@ PROLOGUE(nettle_sha3_permute)
 	psrlq	$63, W1
 	pxor	W0, D12
 	pxor	W1, D12		C Done D12
-
+	
 	movdqa	C34, C12
 	psrlq	$63, C34
 	psllq	$1, C12
@@ -213,7 +213,7 @@ PROLOGUE(nettle_sha3_permute)
 
 	C rho and pi steps. When doing the permutations, also
 	C transpose the matrix.
-
+	
 	C The combined permutation + transpose gives the following
 	C cycles (rotation counts in parenthesis)
 	C   0 <- 0(0)
@@ -247,7 +247,7 @@ PROLOGUE(nettle_sha3_permute)
 	psllq	$27, A0304
 	psrlq	$37, W1
 	por	W1, A0304	C rotl 27 (A04)
-
+	
 	punpcklqdq	W0, A0102
 	punpckhqdq	W2, A0304
 
@@ -257,7 +257,7 @@ PROLOGUE(nettle_sha3_permute)
 	C  _ L'  ` L_    __`
 	C |5|    |6|7|  |8|9|
 	C   `-_________-^`-^
-
+	
 	rolq	$36, A05
 	MOVQ(A05, W0)
 	MOVQ(A0607, A05)
@@ -278,7 +278,7 @@ PROLOGUE(nettle_sha3_permute)
         C      _____   ___
 	C  __L'   __`_L_  `_____
 	C |10|   |11|12|  |13|14|
-	C   `-___-^`-______-^
+	C   `-___-^`-______-^ 
 	C
 
 	rolq	$42, A10		C 42 + 25 = 3 (mod 64)
@@ -295,8 +295,8 @@ PROLOGUE(nettle_sha3_permute)
 	ROTL64(10, W0, A1314)
 	por	W0, A1314
 	punpckhqdq	W2, A1314	C Done A1314
-
-
+	
+	
 	C   15 <- 18(21) <- 17(15) <- 19(8) <- 15(41)
 	C   16 <- 16(45)
 	C      _____________
@@ -320,7 +320,7 @@ PROLOGUE(nettle_sha3_permute)
 	ROTL64(15, A1819, W2)
 	por	W2, A1819
 	punpcklqdq	W1, A1819	C Done A1819
-
+	
 	C   20 <- 24(14) <- 21(2) <- 22(61) <- 20(18)
 	C   23 <- 23(56)
 	C      _______________
@@ -337,7 +337,7 @@ PROLOGUE(nettle_sha3_permute)
 	rolq	$14, A20		C Done A20
 	ROTL64(56, A2324, W1)
 	por	W1, A2324
-
+	
 	movdqa	A2122, W2
 	ROTL64(2, W2, W1)
 	por	W1, W2
@@ -408,7 +408,7 @@ PROLOGUE(nettle_sha3_permute)
 	C Transpose.
 	C Swap (A05, A10) <->  A0102, and (A15, A20) <->  A0304,
 	C and also copy to C12 and C34 while at it.
-
+	
 	MOVQ(A05, C12)
 	MOVQ(A15, C34)
 	MOVQ(A10, W0)
@@ -474,15 +474,15 @@ PROLOGUE(nettle_sha3_permute)
 	movq	A05, STATE(5)
 	movups	A0607, STATE(6)
 	movups	A0809, STATE(8)
-
+		               
 	movq	A10, STATE(10)
 	movups	A1112, STATE(11)
 	movups	A1314, STATE(13)
-
+		               
 	movq	A15, STATE(15)
 	movups	A1617, STATE(16)
 	movups	A1819, STATE(18)
-
+		               
 	movq	A20, STATE(20)
 	movups	A2122, STATE(21)
 	movups	A2324, STATE(23)

@@ -106,7 +106,7 @@ mpz_srcptr
 mpz_roinit_n (mpz_ptr x, const mp_limb_t *xp, mp_size_t xs)
 {
   mp_size_t xn = ABS (xs);
-
+  
   MPN_NORMALIZE (xp, xn);
 
   x->_mp_size = xs < 0 ? -xn : xn;
@@ -185,7 +185,7 @@ mpz_limbs_read_n (mpz_ptr x, mp_size_t n)
 {
   mp_size_t xn = mpz_size (x);
   mp_ptr xp;
-
+  
   assert (xn <= n);
 
   xp = mpz_limbs_modify (x, n);

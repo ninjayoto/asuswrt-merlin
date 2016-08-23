@@ -45,19 +45,19 @@ struct sexp_output
   FILE *f;
 
   unsigned line_width;
-
+  
   const struct nettle_armor *coding;
   unsigned coding_indent;
 
   int prefer_hex;
-
+  
   const struct nettle_hash *hash;
   void *ctx;
-
+  
   /* NOTE: There's no context for hex encoding, the state argument to
      encode_update is ignored */
   struct base64_decode_ctx base64;
-
+  
   unsigned pos;
   int soft_newline;
 };
@@ -70,7 +70,7 @@ void
 sexp_output_hash_init(struct sexp_output *output,
 		      const struct nettle_hash *hash, void *ctx);
 
-void
+void 
 sexp_put_newline(struct sexp_output *output,
 		 unsigned indent);
 

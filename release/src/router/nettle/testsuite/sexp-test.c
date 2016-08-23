@@ -6,7 +6,7 @@ test_main(void)
 {
   struct sexp_iterator i;
   uint32_t x;
-
+  
   ASSERT(sexp_iterator_first(&i, LDATA("")));
   ASSERT(i.type == SEXP_END);
 
@@ -47,7 +47,7 @@ test_main(void)
 	 && i.atom_length == 12 && MEMEQ(12, "xxxxxxxxxxxx", i.atom)
 
 	 && sexp_iterator_next(&i) && i.type == SEXP_END);
-
+  
   /* Same data, transport encoded. */
 
   {
@@ -72,7 +72,7 @@ test_main(void)
   {
     static const uint8_t *keys[2] = { "n", "e" };
     struct sexp_iterator v[2];
-
+    
     ASSERT(sexp_iterator_first(&i, LDATA("((1:n2:xx3:foo)0:(1:y)(1:e))")));
     ASSERT(sexp_iterator_enter_list(&i)
 	   && sexp_iterator_assoc(&i, 2, keys, v));
@@ -95,6 +95,6 @@ test_main(void)
 
     ASSERT(sexp_iterator_first(&i, LDATA("((1:n)(1:n3:foo))")));
     ASSERT(sexp_iterator_enter_list(&i)
-	   && !sexp_iterator_assoc(&i, 2, keys, v));
+	   && !sexp_iterator_assoc(&i, 2, keys, v));    
   }
 }

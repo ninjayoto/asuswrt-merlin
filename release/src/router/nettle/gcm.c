@@ -8,7 +8,7 @@
 
    Copyright (C) 2011, 2013 Niels Möller
    Copyright (C) 2011 Katholieke Universiteit Leuven
-
+   
    Contributed by Nikos Mavrogiannopoulos
 
    This file is part of GNU Nettle.
@@ -63,7 +63,7 @@ gcm_gf_add (union nettle_block16 *r,
 #if SIZEOF_LONG == 4
   r->w[2] = x->w[2] ^ y->w[2];
   r->w[3] = x->w[3] ^ y->w[3];
-#endif
+#endif      
 }
 /* Multiplication by 010...0; a big-endian shift right. If the bit
    shifted out is one, the defining polynomial is added to cancel it
@@ -80,7 +80,7 @@ gcm_gf_shift (union nettle_block16 *r, const union nettle_block16 *x)
   r->w[3] = (x->w[3] >> 1) | ((x->w[2] & 1) << 31);
   r->w[2] = (x->w[2] >> 1) | ((x->w[1] & 1) << 31);
   r->w[1] = (x->w[1] >> 1) | ((x->w[0] & 1) << 31);
-  r->w[0] = (x->w[0] >> 1) ^ (mask & (GHASH_POLYNOMIAL << 24));
+  r->w[0] = (x->w[0] >> 1) ^ (mask & (GHASH_POLYNOMIAL << 24)); 
 # elif SIZEOF_LONG == 8
   mask = - (x->w[1] & 1);
   r->w[1] = (x->w[1] >> 1) | ((x->w[0] & 1) << 63);
@@ -134,7 +134,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *y)
 	{
 	  if (b & 0x80)
 	    gcm_gf_add(&Z, &Z, &V);
-
+	  
 	  gcm_gf_shift(&V, &V);
 	}
     }
@@ -319,7 +319,7 @@ gcm_gf_mul (union nettle_block16 *x, const union nettle_block16 *table)
 }
 #  endif /* ! HAVE_NATIVE_gcm_hash8 */
 # else /* GCM_TABLE_BITS != 8 */
-#  error Unsupported table size.
+#  error Unsupported table size. 
 # endif /* GCM_TABLE_BITS != 8 */
 
 #undef W
@@ -342,10 +342,10 @@ gcm_set_key(struct gcm_key *key,
      element */
   unsigned i = (1<<GCM_TABLE_BITS)/2;
 
-  /* H */
+  /* H */  
   memset(key->h[0].b, 0, GCM_BLOCK_SIZE);
   f (cipher, GCM_BLOCK_SIZE, key->h[i].b, key->h[0].b);
-
+  
 #if GCM_TABLE_BITS
   /* Algorithm 3 from the gcm paper. First do powers of two, then do
      the rest by adding. */

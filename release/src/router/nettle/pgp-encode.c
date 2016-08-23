@@ -52,7 +52,7 @@ pgp_put_uint32(struct nettle_buffer *buffer, uint32_t i)
   uint8_t *p = nettle_buffer_space(buffer, 4);
   if (!p)
     return 0;
-
+  
   WRITE_UINT32(p, i);
   return 1;
 }
@@ -63,7 +63,7 @@ pgp_put_uint16(struct nettle_buffer *buffer, unsigned i)
   uint8_t *p = nettle_buffer_space(buffer, 2);
   if (!p)
     return 0;
-
+  
   WRITE_UINT16(p, i);
   return 1;
 }
@@ -79,12 +79,12 @@ pgp_put_mpi(struct nettle_buffer *buffer, const mpz_t x)
   /* FIXME: What's the correct representation of zero? */
   if (!pgp_put_uint16(buffer, bits))
     return 0;
-
+  
   p = nettle_buffer_space(buffer, octets);
 
   if (!p)
     return 0;
-
+  
   nettle_mpz_get_str_256(octets, p, x);
 
   return 1;
@@ -111,7 +111,7 @@ length_field(unsigned length)
 #endif
 
 /*   bodyLen = ((1st_octet - 192) << 8) + (2nd_octet) + 192
- *   ==> bodyLen - 192 + 192 << 8 = (1st_octet << 8) + (2nd_octet)
+ *   ==> bodyLen - 192 + 192 << 8 = (1st_octet << 8) + (2nd_octet) 
  */
 
 #define LENGTH_TWO_OFFSET (192 * 255)
@@ -137,7 +137,7 @@ pgp_put_header(struct nettle_buffer *buffer,
   assert(tag < 0x40);
 
   return (NETTLE_BUFFER_PUTC(buffer, 0xC0 | tag)
-	  && pgp_put_length(buffer, length));
+	  && pgp_put_length(buffer, length));  
 }
 
 /* FIXME: Should we abort or return error if the length and the field
@@ -201,7 +201,7 @@ void
 pgp_sub_packet_end(struct nettle_buffer *buffer, unsigned start)
 {
   unsigned length;
-
+  
   assert(start >= 2);
   assert(start <= buffer->size);
 
@@ -227,11 +227,11 @@ pgp_put_public_rsa_key(struct nettle_buffer *buffer,
     return 0;
 
   start = buffer->size;
-
+  
   if (! (pgp_put_header(buffer, PGP_TAG_PUBLIC_KEY,
 			/* Assume that we need two octets */
 			PGP_LENGTH_TWO_OCTETS)
-	 && pgp_put_uint32(buffer, 4)        /* Version */
+	 && pgp_put_uint32(buffer, 4)        /* Version */  
 	 && pgp_put_uint32(buffer, timestamp)/* Time stamp */
 	 && pgp_put_uint32(buffer, PGP_RSA)  /* Algorithm */
 	 && pgp_put_mpi(buffer, pub->n)
@@ -255,7 +255,7 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
   unsigned sub_packet_start;
   uint8_t trailer[6];
   mpz_t s;
-
+  
   /* Signature packet. The packet could reasonably be both smaller and
    * larger than 192, so for simplicity we use the 4 octet header
    * form. */
@@ -285,7 +285,7 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
     uint8_t *p = nettle_buffer_space(buffer, 2);
     if (!p)
       return 0;
-
+    
     sha1_digest(&hcopy, 2, p);
   }
 
@@ -299,7 +299,7 @@ pgp_put_rsa_sha1_signature(struct nettle_buffer *buffer,
       pgp_sub_packet_end(buffer, sub_packet_start);
       return 0;
     }
-
+    
   mpz_init(s);
   if (!(rsa_sha1_sign(key, hash, s)
 	&& pgp_put_mpi(buffer, s)))
@@ -352,11 +352,11 @@ pgp_armor(struct nettle_buffer *buffer,
 	  const uint8_t *data)
 {
   struct base64_encode_ctx ctx;
-
+  
   unsigned crc = pgp_crc24(length, data);
 
   base64_encode_init(&ctx);
-
+  
   if (! (WRITE(buffer, "BEGIN PGP ")
 	 && WRITE(buffer, tag)
 	 && WRITE(buffer, "\nComment: Nettle\n\n")))
@@ -369,7 +369,7 @@ pgp_armor(struct nettle_buffer *buffer,
       unsigned done;
       uint8_t *p
 	= nettle_buffer_space(buffer, TEXT_PER_LINE);
-
+      
       if (!p)
 	return 0;
 
@@ -378,7 +378,7 @@ pgp_armor(struct nettle_buffer *buffer,
 
       /* FIXME: Create some official way to do this */
       buffer->size -= (TEXT_PER_LINE - done);
-
+      
       if (!NETTLE_BUFFER_PUTC(buffer, '\n'))
 	return 0;
     }
@@ -388,7 +388,7 @@ pgp_armor(struct nettle_buffer *buffer,
       unsigned text_size = BASE64_ENCODE_LENGTH(length)
 	+ BASE64_ENCODE_FINAL_LENGTH;
       unsigned done;
-
+      
       uint8_t *p
 	= nettle_buffer_space(buffer, text_size);
       if (!p)
@@ -399,7 +399,7 @@ pgp_armor(struct nettle_buffer *buffer,
 
       /* FIXME: Create some official way to do this */
       buffer->size -= (text_size - done);
-
+      
       if (!NETTLE_BUFFER_PUTC(buffer, '\n'))
 	return 0;
     }
@@ -413,7 +413,7 @@ pgp_armor(struct nettle_buffer *buffer,
       return 0;
     base64_encode_group(p, crc);
   }
-
+  
   return (WRITE(buffer, "\nBEGIN PGP ")
 	  && WRITE(buffer, tag)
 	  && NETTLE_BUFFER_PUTC(buffer, '\n'));

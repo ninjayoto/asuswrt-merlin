@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "umac-nh.asm"
 	.fpu	neon
@@ -60,11 +60,11 @@ C FIXME: Try permuting subkeys using vld4, vzip or similar.
 
 	.text
 	.align	3
-
+	
 PROLOGUE(_nettle_umac_nh_n)
 	ldr	MSG, [sp]
 	str	lr, [sp, #-4]!
-
+	
 	C Setup for 64-bit aligned reads
 	ands	SHIFT, MSG, #7
 	and	MSG, MSG, #-8
@@ -80,7 +80,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	vmov.i32 D0REG(QRIGHT)[0], SHIFT
 	vmov.32	 D1REG(QRIGHT), D0REG(QRIGHT)
 	add	SHIFT, SHIFT, #64
-
+	
 	vmov.i32 D0REG(QLEFT)[0], SHIFT
 	vmov.32	 D1REG(QLEFT), D0REG(QLEFT)
 	cmp	r1, #3
@@ -89,8 +89,8 @@ PROLOGUE(_nettle_umac_nh_n)
 	vshl.u64 DM, DM, D0REG(QRIGHT)
 	bcc	.Lnh2
 	beq	.Lnh3
-
-.Lnh4:
+	
+.Lnh4:	
 	C Permute key words, so we in each iteration have them in order
 	C
 	C P0: [0, 4,1, 5] P1: [ 2, 6, 3, 7] P2: [ 4, 8, 5, 9] P3: [ 6,10, 7,11]
@@ -102,12 +102,12 @@ PROLOGUE(_nettle_umac_nh_n)
 	C
 	C Then, accumulate Y0 (first two "iters") using
 	C
-	C Y0 += (M0+P0) * (M2+P2) + (M1+P1) * (M3+P3)
+	C Y0 += (M0+P0) * (M2+P2) + (M1+P1) * (M3+P3) 
 	C Y1 += (M0+P4) * (M2+P6) + (M1+P5) * (M3+P7)
 	C
 	C Next iteration is then
 	C
-	C Y0 += (M4+P4) * (M6+P6) + (M5+P5) * (M7 + P7)
+	C Y0 += (M4+P4) * (M6+P6) + (M5+P5) * (M7 + P7) 
 	C Y1 += (M4+P6) * (M6+P8) + (M5+P7) * (M7 + P11)
 	C
 	C So we can reuse P4, P5, P6, P7 from the previous iteration.
@@ -117,13 +117,13 @@ PROLOGUE(_nettle_umac_nh_n)
 	C for the message (QA and QB, more if we want to expand only
 	C once). For the Y0 update, we can let the factors overwrite
 	C P0-P3, and for the Y1 update, we can overwrite M0-M3.
-
+	
 	vpush	{q4,q5,q6}
 	vld1.32 {QK0,QK1}, [KEY]!
 	vld1.32 {QK2}, [KEY]!
 	vmov	QT0, QK1
 	vmov	QT1, QK2
-
+	
 	C Permute keys. QK2 us untouched, permuted subkeys put in QK0,QK1,QT0,QT1
 	vtrn.32	QK0, QK1		C Gives us [0, 4, 2, 6] and [1, 5, 3, 7]
 	vswp D1REG(QK0), D0REG(QK1)	C Gives us [0, 4, 1, 5] and [2, 6, 3, 7]
@@ -163,7 +163,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	vmlal.u32 QY0, D1REG(QK0), D1REG(QT0)
 	vmlal.u32 QY0, D0REG(QK1), D0REG(QT1)
 	vmlal.u32 QY0, D1REG(QK1), D1REG(QT1)
-
+	
 	C Next 4 subkeys
 	vld1.32	{QT0,QT1}, [KEY]!
 	vmov	QK0, QK2
@@ -189,9 +189,9 @@ PROLOGUE(_nettle_umac_nh_n)
 	bhi	.Loop4
 
 	vst1.64	{QY0, QY1}, [OUT]
-
+	
 	vpop	{q4,q5,q6}
-
+	
 	ldr	pc, [sp], #+4
 
 .Lnh3:
@@ -210,7 +210,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	veor	D0REG(QB), D0REG(QB), D1REG(QT0)
 	veor	D1REG(QB), D1REG(QB), D0REG(QT1)
 	vmov	DM, D1REG(QT1)
-
+	
 	vld1.32	{QK2}, [KEY]!
 	C Construct factors, with low half corresponding to first iteration,
 	C and high half corresponding to the second iteration.
@@ -224,7 +224,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	vmov	QK0, QK2		C Save for next iteration
 	vtrn.32	QK1, QK2		C Gives us [4, 8, 2, 1] and [1, 5, 3, 7]
 	vswp	D1REG(QK1), D0REG(QK2)	C Gives us [4, 8, 1, 5] and [2, 1, 3, 7]
-
+	
 	vdup.32	D0REG(QT2), D0REG(QB)[0]
 	vdup.32	D1REG(QT2), D0REG(QB)[1]
 	vadd.i32 QK1, QK1, QT2
@@ -251,11 +251,11 @@ PROLOGUE(_nettle_umac_nh_n)
 
 	vadd.i64 D0REG(QY1), D0REG(QY1), D1REG(QY1)
 	vst1.64	{D0REG(QY0), D1REG(QY0), D0REG(QY1)}, [OUT]
-
+	
 	vpop	{q4}
-
+	
 	ldr	pc, [sp], #+4
-
+	
 .Lnh2:
 	vld1.32 {QK0}, [KEY]!
 .Loop2:
@@ -270,7 +270,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	veor	D0REG(QB), D0REG(QB), D1REG(QT0)
 	veor	D1REG(QB), D1REG(QB), D0REG(QT1)
 	vmov	DM, D1REG(QT1)
-
+	
 	vld1.32	{QK1,QK2}, [KEY]!
 	C Construct factors, with low half corresponding to first iteration,
 	C and high half corresponding to the second iteration.
@@ -284,7 +284,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	vmov	QK0, QK2		C Save for next iteration
 	vtrn.32	QK1, QK2		C Gives us [4, 8, 6, 10] and [5,  9, 7, 11]
 	vswp	D1REG(QK1), D0REG(QK2)	C Gives us [4, 8, 5,  9] and [6, 10, 7, 11]
-
+	
 	vdup.32	D0REG(QT2), D0REG(QB)[0]
 	vdup.32	D1REG(QT2), D0REG(QB)[1]
 	vadd.i32 QK1, QK1, QT2
@@ -299,10 +299,10 @@ PROLOGUE(_nettle_umac_nh_n)
 	vadd.i32	QK2, QK2, QT1
 
 	subs	LENGTH, LENGTH, #32
-
+	
 	vmlal.u32 QY0, D0REG(QT0), D0REG(QK2)
 	vmlal.u32 QY0, D1REG(QT0), D1REG(QK2)
-
+	
 	bhi	.Loop2
 	vst1.64	{QY0}, [OUT]
 

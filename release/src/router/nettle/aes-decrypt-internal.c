@@ -51,7 +51,7 @@ _nettle_aes_decrypt(unsigned rounds, const uint32_t *keys,
       uint32_t w0, w1, w2, w3;		/* working ciphertext */
       uint32_t t0, t1, t2, t3;
       unsigned i;
-
+      
       /* Get clear text, using little-endian byte order.
        * Also XOR with the first subkey. */
 

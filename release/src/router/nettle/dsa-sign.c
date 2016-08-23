@@ -55,7 +55,7 @@ dsa_sign(const struct dsa_params *params,
   mpz_t h;
   mpz_t tmp;
   int res;
-
+  
   /* Select k, 0<k<q, randomly */
   mpz_init_set(tmp, params->q);
   mpz_sub_ui(tmp, tmp, 1);

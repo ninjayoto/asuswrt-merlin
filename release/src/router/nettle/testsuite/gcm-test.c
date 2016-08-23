@@ -51,12 +51,12 @@ nettle_gcm_unified_aes128 = {
   (nettle_crypt_func *) gcm_aes_decrypt,
   (nettle_hash_digest_func *) gcm_aes_digest
 };
-
+    
 
 void
 test_main(void)
 {
-  /*
+  /* 
    * GCM-AES Test Vectors from
    * http://www.cryptobarn.com/papers/gcm-spec.pdf
    */
@@ -64,7 +64,7 @@ test_main(void)
   /* Test case 1 */
   test_aead(&nettle_gcm_aes128, NULL,
 	    SHEX("00000000000000000000000000000000"),	/* key */
-	    SHEX(""),					/* auth data */
+	    SHEX(""),					/* auth data */ 
 	    SHEX(""),					/* plaintext */
 	    SHEX(""),					/* ciphertext*/
 	    SHEX("000000000000000000000000"),		/* IV */
@@ -353,7 +353,7 @@ test_main(void)
 
 
 
-  /*
+  /* 
    * GCM-Camellia Test Vectors obtained from the authors
    */
 
@@ -361,7 +361,7 @@ test_main(void)
   test_aead(&nettle_gcm_camellia128,
 	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
 	    SHEX("00000000000000000000000000000000"),	/* key */
-	    SHEX(""),					/* auth data */
+	    SHEX(""),					/* auth data */ 
 	    SHEX(""),					/* plaintext */
 	    SHEX(""),					/* ciphertext*/
 	    SHEX("000000000000000000000000"),		/* IV */
@@ -371,7 +371,7 @@ test_main(void)
   test_aead(&nettle_gcm_camellia128,
 	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
-	    SHEX(""),					/* auth data */
+	    SHEX(""),					/* auth data */ 
 	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
 	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255"),					/* plaintext */
 	    SHEX("d0d94a13b632f337a0cc9955b94fa020c815f903aab12f1efaf2fe9d90f729a6"
@@ -383,7 +383,7 @@ test_main(void)
   test_aead(&nettle_gcm_camellia128,
 	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
-	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */
+	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */ 
 	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
 	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39"),					/* plaintext */
 	    SHEX("d0d94a13b632f337a0cc9955b94fa020c815f903aab12f1efaf2fe9d90f729a6"
@@ -395,7 +395,7 @@ test_main(void)
   test_aead(&nettle_gcm_camellia128,
 	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
-	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */
+	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */ 
 	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
 	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39"),					/* plaintext */
 	    SHEX("28fd7434d5cd424a5353818fc21a982460d20cf632eb1e6c4fbfca17d5abcf6a"
@@ -407,7 +407,7 @@ test_main(void)
   test_aead(&nettle_gcm_camellia128,
 	    (nettle_hash_update_func *) gcm_camellia128_set_iv,
 	    SHEX("feffe9928665731c6d6a8f9467308308"),	/* key */
-	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */
+	    SHEX("feedfacedeadbeeffeedfacedeadbeefabaddad2"),					/* auth data */ 
 	    SHEX("d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a72"
 	         "1c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39"),					/* plaintext */
 	    SHEX("2e582b8417c93f2ff4f6f7ee3c361e4496e710ee12433baa964987d02f42953e"
@@ -520,36 +520,37 @@ test_main(void)
 		 SHEX("1521c9a442bbf63b 2293a21d4874a5fd"));
   test_gcm_hash (SDATA("ab"),
 		 SHEX("afb4592d2c7c1687 37f27271ee30412a"));
-  test_gcm_hash (SDATA("abc"),
+  test_gcm_hash (SDATA("abc"), 
 		 SHEX("9543ca3e1662ba03 9a921ec2a20769be"));
   test_gcm_hash (SDATA("abcd"),
 		 SHEX("8f041cc12bcb7e1b 0257a6da22ee1185"));
   test_gcm_hash (SDATA("abcde"),
 		 SHEX("0b2376e5fed58ffb 717b520c27cd5c35"));
-  test_gcm_hash (SDATA("abcdef"),
+  test_gcm_hash (SDATA("abcdef"), 
 		 SHEX("9679497a1eafa161 4942963380c1a76f"));
   test_gcm_hash (SDATA("abcdefg"),
 		 SHEX("83862e40339536bc 723d9817f7df8282"));
-  test_gcm_hash (SDATA("abcdefgh"),
+  test_gcm_hash (SDATA("abcdefgh"), 
 		 SHEX("b73bcc4d6815c4dc d7424a04e61b87c5"));
-  test_gcm_hash (SDATA("abcdefghi"),
+  test_gcm_hash (SDATA("abcdefghi"), 
 		 SHEX("8e7846a383f0b3b2 07b01160a5ef993d"));
   test_gcm_hash (SDATA("abcdefghij"),
 		 SHEX("37651643b6f8ecac 4ea1b320e6ea308c"));
-  test_gcm_hash (SDATA("abcdefghijk"),
+  test_gcm_hash (SDATA("abcdefghijk"), 
 		 SHEX("c1ce10106ee23286 f00513f55e2226b0"));
   test_gcm_hash (SDATA("abcdefghijkl"),
 		 SHEX("c6a3e32a90196cdf b2c7a415d637e6ca"));
-  test_gcm_hash (SDATA("abcdefghijklm"),
+  test_gcm_hash (SDATA("abcdefghijklm"), 
 		 SHEX("6cca29389d4444fa 3d20e65497088fd8"));
   test_gcm_hash (SDATA("abcdefghijklmn"),
 		 SHEX("19476a997ec0a824 2022db0f0e8455ce"));
-  test_gcm_hash (SDATA("abcdefghijklmno"),
+  test_gcm_hash (SDATA("abcdefghijklmno"), 
 		 SHEX("f66931cee7eadcbb d42753c3ac3c4c16"));
   test_gcm_hash (SDATA("abcdefghijklmnop"),
 		 SHEX("a79699ce8bed61f9 b8b1b4c5abb1712e"));
-  test_gcm_hash (SDATA("abcdefghijklmnopq"),
+  test_gcm_hash (SDATA("abcdefghijklmnopq"), 
 		 SHEX("65f8245330febf15 6fd95e324304c258"));
   test_gcm_hash (SDATA("abcdefghijklmnopqr"),
 		 SHEX("d07259e85d4fc998 5a662eed41c8ed1d"));
 }
+

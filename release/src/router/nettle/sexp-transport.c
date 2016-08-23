@@ -62,12 +62,12 @@ sexp_transport_iterator_first(struct sexp_iterator *iterator,
       case '\r':
 	in++;
 	break;
-
+	  
       case ';':  /* Comments */
 	while (++in < length && input[in] != '\n')
 	  ;
 	break;
-
+	  
       case '{':
 	{
 	  /* Found transport encoding */
@@ -80,19 +80,19 @@ sexp_transport_iterator_first(struct sexp_iterator *iterator,
 
 	  if (end == length)
 	    return 0;
-
+	    
 	  base64_decode_init(&ctx);
-
+	  
 	  if (base64_decode_update(&ctx, &coded_length, input + out,
 				   end - in, input + in)
 	      && base64_decode_final(&ctx))
-	    {
+	    {	  
 	      out += coded_length;
 	      in = end + 1;
 	    }
 	  else
 	    return 0;
-
+	  
 	  break;
 	}
       default:
@@ -100,7 +100,7 @@ sexp_transport_iterator_first(struct sexp_iterator *iterator,
 	 * should be in canonical encoding. */
 	goto transport_done;
       }
-
+  
  transport_done:
 
   /* Here, we have two, possibly empty, input parts in canonical

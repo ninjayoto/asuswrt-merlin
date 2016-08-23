@@ -126,7 +126,7 @@ static const uint32_t mtable[0x100] =
     _nk ^= ROTL32(24, _t);	\
     (key) = _nk;		\
   } while(0)
-
+  
 
 #define SWAP(a, b) \
 do { uint32_t t_swap = (a); (a) = (b); (b) = t_swap; } while(0)

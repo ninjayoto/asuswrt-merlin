@@ -48,7 +48,7 @@ sha3_absorb (struct sha3_state *state, unsigned length, const uint8_t *data)
 {
   assert ( (length & 7) == 0);
 #if WORDS_BIGENDIAN
-  {
+  {    
     uint64_t *p;
     for (p = state->a; length > 0; p++, length -= 8, data += 8)
       *p ^= LE_READ_UINT64 (data);
@@ -94,10 +94,10 @@ _sha3_pad (struct sha3_state *state,
 	   unsigned block_size, uint8_t *block, unsigned pos)
 {
   assert (pos < block_size);
-  block[pos++] = 1;
+  block[pos++] = 6;
 
   memset (block + pos, 0, block_size - pos);
   block[block_size - 1] |= 0x80;
 
-  sha3_absorb (state, block_size, block);
+  sha3_absorb (state, block_size, block);  
 }

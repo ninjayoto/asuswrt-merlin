@@ -199,7 +199,7 @@ struct ecc_curve
      The following entries differ by powers of 2^{kc},
 
        T[i] = 2^{kc} T[i-2^c]
-  */
+  */  
   const mp_limb_t *pippenger_table;
 };
 
@@ -306,7 +306,7 @@ ecc_dup_jj (const struct ecc_curve *ecc,
 
      P = Q != 0                       Duplication of non-zero point
      P = 0, Q != 0 or P != 0, Q = 0   One input zero
-
+   
      Correctly gives R = 0 if P = Q = 0 or P = -Q. */
 void
 ecc_add_jja (const struct ecc_curve *ecc,
@@ -339,7 +339,7 @@ ecc_add_ehh (const struct ecc_curve *ecc,
 /* Computes N * the group generator. N is an array of ecc_size()
    limbs. It must be in the range 0 < N < group order, then R != 0,
    and the algorithm can work without any intermediate values getting
-   to zero. */
+   to zero. */ 
 void
 ecc_mul_g (const struct ecc_curve *ecc, mp_limb_t *r,
 	   const mp_limb_t *np, mp_limb_t *scratch);

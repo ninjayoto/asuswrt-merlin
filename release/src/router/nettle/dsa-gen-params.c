@@ -75,7 +75,7 @@ dsa_generate_params(struct dsa_params *params,
       mpz_init (p0q);
 
       p0_bits = (p_bits + 3)/2;
-
+  
       nettle_random_prime (p0, p0_bits, 0,
 			   random_ctx, random,
 			   progress_ctx, progress);
@@ -107,7 +107,7 @@ dsa_generate_params(struct dsa_params *params,
     }
 
   mpz_clear (r);
-
+  
   if (progress)
     progress (progress_ctx, 'g');
 

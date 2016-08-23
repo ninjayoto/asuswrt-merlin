@@ -19,11 +19,11 @@ test_main(void)
     ASSERT(sexp_format(&buffer, "(%0s(%0s%0s))",
 		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
-
+    
     ASSERT(sexp_format(NULL, "(%0s(%0s%0s))",
 		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
-
+    
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
@@ -35,11 +35,11 @@ test_main(void)
     ASSERT(sexp_transport_format(&buffer, "(%0s(%0s%0s))",
 		       "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
-
+    
     ASSERT(sexp_transport_format(NULL, "(%0s(%0s%0s))",
 				 "foo", "bar", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
-
+    
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
@@ -47,11 +47,11 @@ test_main(void)
   {
     const uint8_t e[] = "1:\0""1:a2:bc3:def4:ghij5:\x00\xDE\xAD\xBE\xEF";
 
-    nettle_buffer_init(&buffer);
+    nettle_buffer_init(&buffer);  
     ASSERT(sexp_format(&buffer, "%i%i%i%i%i%i",
 		       0, 0x61, 0x6263, 0x646566, 0x6768696a, 0xDEADBEEF)
 	   == LLENGTH(e));
-
+    
     ASSERT(buffer.size == LLENGTH(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
@@ -59,12 +59,12 @@ test_main(void)
 
   {
     const uint8_t e[] = "(3:foo(4:bar))";
-
-    nettle_buffer_init(&buffer);
+    
+    nettle_buffer_init(&buffer);  
     ASSERT(sexp_format(&buffer, "(%0s%l)",
 		       "foo", (size_t) 7, "(4:bar)")
 	   == strlen(e));
-
+    
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
@@ -90,11 +90,11 @@ test_main(void)
     ASSERT(sexp_format(&buffer, "(%0s(bar%0s))",
 		       "foo", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
-
+    
     ASSERT(sexp_format(NULL, "(%0s(bar %0s))",
 		       "foo", "xxxxxxxxxxxxxxxxx")
 	   == strlen(e));
-
+    
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
@@ -106,11 +106,11 @@ test_main(void)
     ASSERT(sexp_format(&buffer, "(%0s(bar xxxxxxxxxxxxxxxxx))",
 		       "foo")
 	   == strlen(e));
-
+    
     ASSERT(sexp_format(NULL, "(%0s(bar xxxxxxxxxxxxxxxxx))",
 		       "foo")
 	   == strlen(e));
-
+    
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
@@ -123,21 +123,21 @@ test_main(void)
     nettle_buffer_init(&buffer);
     ASSERT(sexp_format(&buffer, "%)foo%(%s", (size_t) 3, "bar")
 	   == strlen(e));
-
+    
     ASSERT(sexp_format(NULL, "%)foo%(%s", (size_t) 3, "bar")
 	   == strlen(e));
-
+    
     ASSERT(buffer.size == strlen(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
     nettle_buffer_clear(&buffer);
   }
-
+  
 #if WITH_HOGWEED
   {
     mpz_t x;
     mpz_t y;
     mpz_t z;
-
+    
     const uint8_t e[] =
       "(3:foo(3:bar1:\xff""11:abcdefghijk13:\0\x81""abcdefghijk))";
 
@@ -153,7 +153,7 @@ test_main(void)
     ASSERT(sexp_format(NULL, "(%0s(%0s%b%b%b))",
 		     "foo", "bar", x, y, z)
 	   == LLENGTH(e));
-
+    
     ASSERT(buffer.size == LLENGTH(e));
     ASSERT(MEMEQ(buffer.size, buffer.contents, e));
 

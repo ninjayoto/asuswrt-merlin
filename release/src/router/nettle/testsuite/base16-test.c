@@ -13,7 +13,7 @@ test_main(void)
   ASSERT(BASE16_DECODE_LENGTH(2) == 1);
   ASSERT(BASE16_DECODE_LENGTH(3) == 2);
   ASSERT(BASE16_DECODE_LENGTH(4) == 2);
-
+  
   test_armor(&nettle_base16, 0, "", "");
   test_armor(&nettle_base16, 1, "H", "48");
   test_armor(&nettle_base16, 2, "He", "4865");
@@ -22,3 +22,4 @@ test_main(void)
   test_armor(&nettle_base16, 5, "Hello", "48656c6c6f");
   test_armor(&nettle_base16, 6, "Hello", "48656c6c6f00");
 }
+  

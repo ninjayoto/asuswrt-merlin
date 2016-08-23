@@ -101,7 +101,7 @@
 /* FIXME: Arrange for some overlap between inputs and outputs? */
 /* S1: 15 12  2  7  9  0  5 10  1 11 14  8  6 13  3  4 */
 /* Original single-assignment form:
-
+   
      t01 = x0  | x3;
      t02 = x2  ^ x3;
      t03 =     ~ x1;
@@ -167,7 +167,7 @@
 
 /* S3:  0 15 11  8 12  9  6  3 13  1  2  4 10  7  5 14 */
 /* Original single-assignment form:
-
+   
      t01 = x0  ^ x2;
      t02 = x0  | x3;
      t03 = x0  & x3;
@@ -445,7 +445,7 @@ serpent_encrypt (const struct serpent_ctx *ctx,
 		 size_t length, uint8_t * dst, const uint8_t * src)
 {
   assert( !(length % SERPENT_BLOCK_SIZE));
-
+  
 #if HAVE_NATIVE_64_BIT
   if (length & SERPENT_BLOCK_SIZE)
 #else
@@ -478,7 +478,7 @@ serpent_encrypt (const struct serpent_ctx *ctx,
       KEYXOR (y0,y1,y2,y3, ctx->keys[31]);
       SBOX7 (y0,y1,y2,y3, x0,x1,x2,x3);
       KEYXOR (x0,x1,x2,x3, ctx->keys[32]);
-
+    
       LE_WRITE_UINT32 (dst, x0);
       LE_WRITE_UINT32 (dst + 4, x1);
       LE_WRITE_UINT32 (dst + 8, x2);
@@ -522,7 +522,7 @@ serpent_encrypt (const struct serpent_ctx *ctx,
       KEYXOR64 (y0,y1,y2,y3, ctx->keys[31]);
       SBOX7 (y0,y1,y2,y3, x0,x1,x2,x3);
       KEYXOR64 (x0,x1,x2,x3, ctx->keys[32]);
-
+    
       LE_WRITE_UINT32 (dst + 16, x0);
       LE_WRITE_UINT32 (dst + 20, x1);
       LE_WRITE_UINT32 (dst + 24, x2);

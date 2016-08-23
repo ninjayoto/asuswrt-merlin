@@ -56,7 +56,7 @@ _umac_nh_n (uint64_t *out, unsigned n, const uint32_t *key,
   assert (length % 32 == 0);
 
   memset(out, 0, n*sizeof(*out));
-
+  
   for (;length > 0; length -= 32, msg += 32, key += 8)
     {
       uint32_t a0, a1, b0, b1;
@@ -74,6 +74,6 @@ _umac_nh_n (uint64_t *out, unsigned n, const uint32_t *key,
       b1 = LE_READ_UINT32 (msg + 28);
       for (i = 0; i < n; i++)
 	out[i] += (uint64_t) (a0 + key[2+4*i]) * (b0 + key[6+4*i])
-	  + (uint64_t) (a1 + key[3+4*i]) * (b1 + key[7+4*i]);
+	  + (uint64_t) (a1 + key[3+4*i]) * (b1 + key[7+4*i]);      
     }
 }

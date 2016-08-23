@@ -28,7 +28,7 @@
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 */
-
+   
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -62,7 +62,7 @@ rsa_session_set_encrypt_key(struct rsa_session *ctx,
   const uint8_t *aes_key = SESSION_AES_KEY(key);
   const uint8_t *iv = SESSION_IV(key);
   const uint8_t *hmac_key = SESSION_HMAC_KEY(key);
-
+  
   aes_set_encrypt_key(&ctx->aes.ctx, AES_KEY_SIZE, aes_key);
   CBC_SET_IV(&ctx->aes, iv);
   hmac_sha1_set_key(&ctx->hmac, SHA1_DIGEST_SIZE, hmac_key);
@@ -89,10 +89,10 @@ write_bignum(FILE *f, mpz_t x)
   unsigned size = nettle_mpz_sizeinbase_256_u(x);
   uint8_t *p;
   int res;
-
+  
   if (!write_uint32(f, size))
     return 0;
-
+  
   p = xalloc(size);
   nettle_mpz_get_str_256(size, p, x);
 
@@ -124,12 +124,12 @@ process_file(struct rsa_session *ctx,
 	      werror("Reading input failed: %s\n", strerror(errno));
 	      return 0;
 	    }
-
+	  
 	  leftover = size % AES_BLOCK_SIZE;
 	  padding = AES_BLOCK_SIZE - leftover;
 
 	  assert (size + padding <= BLOCK_SIZE);
-
+	  
 	  if (padding > 1)
 	    yarrow256_random(&ctx->yarrow, padding - 1, buffer + size);
 
@@ -166,7 +166,7 @@ usage (FILE *out)
   fprintf (out, "Usage: rsa-encrypt [OPTIONS] PUBLIC-KEY < cleartext\n"
 	   "Options:\n"
 	   "   -r, --random=FILE   seed file for randomness generator\n"
-	   "       --help          display this help\n");
+	   "       --help          display this help\n");  
 }
 
 int
@@ -174,15 +174,15 @@ main(int argc, char **argv)
 {
   struct rsa_session ctx;
   struct rsa_session_info info;
-
+  
   struct rsa_public_key key;
   mpz_t x;
-
+  
   int c;
   const char *random_name = NULL;
 
   enum { OPT_HELP = 300 };
-
+  
   static const struct option options[] =
     {
       /* Name, args, flag, val */
@@ -190,14 +190,14 @@ main(int argc, char **argv)
       { "random", required_argument, NULL, 'r' },
       { NULL, 0, NULL, 0}
     };
-
+  
   while ( (c = getopt_long(argc, argv, "o:r:", options, NULL)) != -1)
     switch (c)
       {
       case 'r':
 	random_name = optarg;
 	break;
-
+	
       case '?':
 	return EXIT_FAILURE;
 
@@ -218,7 +218,7 @@ main(int argc, char **argv)
     }
 
   rsa_public_key_init(&key);
-
+  
   if (!read_rsa_key(argv[0], &key, NULL))
     {
       werror("Invalid key\n");
@@ -227,7 +227,7 @@ main(int argc, char **argv)
 
   /* NOTE: No sources */
   yarrow256_init(&ctx.yarrow, 0, NULL);
-
+  
   /* Read some data to seed the generator */
   if (!simple_random(&ctx.yarrow, random_name))
     {
@@ -236,23 +236,23 @@ main(int argc, char **argv)
     }
 
   WRITE_UINT32(SESSION_VERSION(&info), RSA_VERSION);
-
+  
   yarrow256_random(&ctx.yarrow, sizeof(info.key) - 4, info.key + 4);
 
   rsa_session_set_encrypt_key(&ctx, &info);
-
+  
 #ifdef WIN32
   _setmode(0, O_BINARY);
   _setmode(1, O_BINARY);
 #endif
 
   write_version(stdout);
-
+  
   mpz_init(x);
 
   if (!rsa_encrypt(&key,
 		   &ctx.yarrow, (nettle_random_func *) yarrow256_random,
-		   sizeof(info.key), info.key,
+		   sizeof(info.key), info.key, 
 		   x))
     {
       werror("RSA encryption failed.\n");

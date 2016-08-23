@@ -63,7 +63,7 @@ main(int argc, char **argv)
   mpz_t p;
   struct yarrow256_ctx yarrow;
 
-  int verbose = 0;
+  int verbose = 0;  
   const char *random_file = NULL;
 
   int c;
@@ -71,7 +71,7 @@ main(int argc, char **argv)
 
   clock_t start;
   clock_t end;
-
+  
   enum { OPT_HELP = 300 };
   static const struct option options[] =
     {
@@ -131,7 +131,7 @@ main(int argc, char **argv)
       werror("Initialization of randomness generator failed.\n");
       return EXIT_FAILURE;
     }
-
+  
   mpz_init(p);
 
   start = clock();

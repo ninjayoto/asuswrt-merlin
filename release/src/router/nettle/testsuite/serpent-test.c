@@ -251,7 +251,7 @@ test_main(void)
 		   "3606caa84a220b1b f6f43ff80a831203"
 		   "8c6c8d2793dc10b3 904d30e194f086a6"
 		   "b2f3e932b9b3f8d1 d4d074f7bd1ff7a3"));
-
+	      
   test_cipher(&nettle_serpent128,
 	      SHEX("e87450aa0fd87293fd0371483a459bd2"),
 	      SHEX("a78a7a8d392f629d bd13674c8dce6fa2"
@@ -290,7 +290,7 @@ test_main(void)
 		   "30ac8c52697102ae 3b725dba79ceb250"
 		   "d308b83478e86dbb 629f18736cca042f"
 		   "006b89e494469adf 0ee78c60684dff86"));
-
+    
   test_cipher(&nettle_serpent128,
 	      SHEX("e87450aa0fd87293fd0371483a459bd2"),
 	      SHEX("a78a7a8d392f629d bd13674c8dce6fa2"

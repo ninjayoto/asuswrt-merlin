@@ -20,7 +20,7 @@ test_main (void)
 	  /* Zero point has x = 0, y = 1, z = 1 */
 	  mpn_zero (z, 3*ecc->p.size);
 	  z[ecc->p.size] = z[2*ecc->p.size] = 1;
-
+	  
 	  ecc_a_to_j (ecc, g, ecc->g);
 
 	  ecc_add_ehh (ecc, p, z, z, scratch);

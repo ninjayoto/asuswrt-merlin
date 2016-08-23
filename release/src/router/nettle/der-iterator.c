@@ -66,7 +66,7 @@
    final byte having the most significant bit set. The tag must be
    represented with as few bytes as possible. High tag numbers are
    currently *not* supported.
-
+   
    Next, the length, either a single byte with the most significant bit clear, or
 
      7 6 5 4 3 2 1 0
@@ -111,7 +111,7 @@ enum asn1_iterator_result
 asn1_der_iterator_next(struct asn1_der_iterator *i)
 {
   uint8_t tag;
-
+  
   if (!LEFT(i))
     return ASN1_ITERATOR_END;
 
@@ -131,7 +131,7 @@ asn1_der_iterator_next(struct asn1_der_iterator *i)
       unsigned k = i->length & 0x7f;
       unsigned j;
       const uint8_t *data = i->buffer + i->pos;
-
+      
       if (k == 0)
 	/* Indefinite encoding. Not supported. */
 	return ASN1_ITERATOR_ERROR;

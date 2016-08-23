@@ -9,7 +9,7 @@ test_main(void)
   struct rsa_private_key priv;
 
   struct nettle_buffer buffer;
-
+  
   rsa_public_key_init(&pub);
   rsa_private_key_init(&priv);
 
@@ -20,7 +20,7 @@ test_main(void)
   mpz_set_str(pub.e, "36ad4b1d", 16);
 
   ASSERT(rsa_public_key_prepare(&pub));
-
+  
   mpz_set_str(priv.d,
 	      "06ee6d4ff3c239e408150daf8117abfa36a40ad4455d9059"
 	      "a86d52f33a2de07418a0a699594588c64810248c9412d554"
@@ -47,16 +47,16 @@ test_main(void)
 	      "62679ea1a8282e", 16);
 
   ASSERT(rsa_private_key_prepare(&priv));
-
+  
   nettle_buffer_init(&buffer);
   ASSERT(rsa_keypair_to_sexp(&buffer, "rsa", &pub, &priv));
 
   if (verbose)
     {
       printf("private:");
-      print_hex(buffer.size, buffer.contents);
+      print_hex(buffer.size, buffer.contents);  
     }
-
+  
   ASSERT(MEMEQ(buffer.size, buffer.contents,
 	       H("2831313a707269766174652d6b657928"
 		 "333a72736128313a6e36333a085c3408"
@@ -89,7 +89,7 @@ test_main(void)
   if (verbose)
     {
       printf("public:");
-      print_hex(buffer.size, buffer.contents);
+      print_hex(buffer.size, buffer.contents);  
     }
   ASSERT(MEMEQ(buffer.size, buffer.contents,
 	       H("2831303a7075626c69632d6b65792839"

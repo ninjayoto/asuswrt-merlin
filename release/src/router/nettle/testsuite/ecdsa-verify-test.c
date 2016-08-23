@@ -50,7 +50,7 @@ test_ecdsa (const struct ecc_curve *ecc,
       goto fail;
     }
   mpz_combit (signature.r, ecc->p.bit_size / 3);
-
+  
   mpz_combit (signature.s, 4*ecc->p.bit_size / 5);
   if (ecdsa_verify (&pub, h->length, h->data, &signature))
     {
@@ -75,7 +75,7 @@ test_ecdsa (const struct ecc_curve *ecc,
   ecc_point_clear (&pub);
   dsa_signature_clear (&signature);
   mpz_clear (x);
-  mpz_clear (y);
+  mpz_clear (y);  
 }
 
 void
@@ -91,7 +91,7 @@ test_main (void)
 
 	      SHEX("BA7816BF 8F01CFEA 414140DE 5DAE2223"
 		   "B00361A3 96177A9C B410FF61 F20015AD"),  /* h */
-
+	      
 	      "CB28E099 9B9C7715 FD0A80D8 E47A7707"
 	      "9716CBBF 917DD72E 97566EA1 C066957C",  /* r */
 	      "86FA3BB4 E26CAD5B F90B7F81 899256CE"
@@ -130,19 +130,19 @@ test_main (void)
 	      "4E1BA64D 1C077577 DA3F4286 C58F0AEA"
 	      "E643", /* y */
 
-	      SHEX("DDAF35A1 93617ABA CC417349 AE204131"
+	      SHEX("DDAF35A1 93617ABA CC417349 AE204131" 
 		   "12E6FA4E 89A97EA2 0A9EEEE6 4B55D39A"
-		   "2192992A 274FC1A8 36BA3C23 A3FEEBBD"
+		   "2192992A 274FC1A8 36BA3C23 A3FEEBBD" 
 		   "454D4423 643CE80E 2A9AC94F A54CA49F"), /* h */
 
-	      "0154FD38 36AF92D0 DCA57DD5 341D3053"
+	      "0154FD38 36AF92D0 DCA57DD5 341D3053" 
 	      "988534FD E8318FC6 AAAAB68E 2E6F4339"
-	      "B19F2F28 1A7E0B22 C269D93C F8794A92"
+	      "B19F2F28 1A7E0B22 C269D93C F8794A92" 
 	      "78880ED7 DBB8D936 2CAEACEE 54432055"
 	      "2251", /* r */
 	      "017705A7 030290D1 CEB605A9 A1BB03FF"
 	      "9CDD521E 87A696EC 926C8C10 C8362DF4"
-	      "97536710 1F67D1CF 9BCCBF2F 3D239534"
+	      "97536710 1F67D1CF 9BCCBF2F 3D239534" 
 	      "FA509E70 AAC851AE 01AAC68D 62F86647"
 	      "2660"); /* s */
 

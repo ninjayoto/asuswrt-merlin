@@ -77,7 +77,7 @@ md5_digest(struct md5_ctx *ctx,
 	   uint8_t *digest)
 {
   uint64_t bit_count;
-
+  
   assert(length <= MD5_DIGEST_SIZE);
 
   MD_PAD(ctx, 8, COMPRESS);

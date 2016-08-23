@@ -21,7 +21,7 @@ test_invert(const struct tstring *key,
 
       camellia128_set_encrypt_key (&encrypt, key->data);
       camellia128_crypt (&encrypt, length, data, cleartext->data);
-
+  
       if (!MEMEQ(length, data, ciphertext->data))
 	{
 	fail_encrypt:
@@ -50,7 +50,7 @@ test_invert(const struct tstring *key,
 	abort ();
 
       camellia256_crypt (&encrypt, length, data, cleartext->data);
-
+  
       if (!MEMEQ(length, data, ciphertext->data))
 	goto fail_encrypt;
 
@@ -83,14 +83,14 @@ test_main(void)
 	      SHEX("67 67 31 38 54 96 69 73 08 57 06 56 48 ea be 43"));
 
   /* 192 bit keys */
-  test_cipher(&nettle_camellia192,
+  test_cipher(&nettle_camellia192, 
 	      SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"
 		   "00 11 22 33 44 55 66 77"),
 	      SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"),
 	      SHEX("b4 99 34 01 b3 e9 96 f8 4e e5 ce e7 d7 9b 09 b9"));
 
   /* 256 bit keys */
-  test_cipher(&nettle_camellia256,
+  test_cipher(&nettle_camellia256, 
 	      SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"
 		   "00 11 22 33 44 55 66 77 88 99 aa bb cc dd ee ff"),
 	      SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"),
@@ -100,7 +100,7 @@ test_main(void)
   test_invert(SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"),
 	      SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"),
 	      SHEX("67 67 31 38 54 96 69 73 08 57 06 56 48 ea be 43"));
-
+  
   test_invert(SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"
 		   "00 11 22 33 44 55 66 77"),
 	      SHEX("01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10"),

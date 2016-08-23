@@ -51,10 +51,10 @@ rsa_sha1_verify(const struct rsa_public_key *key,
   mpz_t m;
 
   mpz_init(m);
-
+  
   res = (pkcs1_rsa_sha1_encode(m, key->size, hash)
 	 && _rsa_verify(key, m, s));
-
+  
   mpz_clear(m);
 
   return res;
@@ -69,10 +69,10 @@ rsa_sha1_verify_digest(const struct rsa_public_key *key,
   mpz_t m;
 
   mpz_init(m);
-
+  
   res = (pkcs1_rsa_sha1_encode_digest(m, key->size, digest)
 	 && _rsa_verify(key, m, s));
-
+  
   mpz_clear(m);
 
   return res;

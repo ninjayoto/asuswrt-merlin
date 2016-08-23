@@ -48,7 +48,7 @@ main(int argc, char **argv)
   struct rsa_private_key key;
   struct sha1_ctx hash;
   mpz_t s;
-
+  
   if (argc != 2)
     {
       werror("Usage: rsa-sign PRIVATE-KEY < file\n");
@@ -56,7 +56,7 @@ main(int argc, char **argv)
     }
 
   rsa_private_key_init(&key);
-
+  
   if (!read_rsa_key(argv[1], NULL, &key))
     {
       werror("Invalid key\n");
@@ -86,7 +86,7 @@ main(int argc, char **argv)
     }
 
   putchar('\n');
-
+  
   mpz_clear(s);
   rsa_private_key_clear(&key);
 

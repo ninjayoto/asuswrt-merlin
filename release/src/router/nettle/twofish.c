@@ -274,7 +274,7 @@ h(int k, uint8_t x, uint32_t l0, uint32_t l1, uint32_t l2, uint32_t l3)
 /* Set up internal tables required for twofish encryption and decryption.
  *
  * The key size is specified in bytes.  Key sizes up to 32 bytes are
- * supported.  Larger key sizes are silently truncated.
+ * supported.  Larger key sizes are silently truncated.  
  */
 
 void
@@ -296,7 +296,7 @@ twofish_set_key(struct twofish_ctx *context,
 
   for (i = 0; i<8; i++)
     m[i] = LE_READ_UINT32(key_copy + i*4);
-
+  
   if (keysize <= 16)
     k = 2;
   else if (keysize <= 24)
@@ -350,7 +350,7 @@ twofish256_set_key(struct twofish_ctx *context, const uint8_t *key)
  *
  * Before this function can be used, twofish_set_key() must be used in order to
  * set up various tables required for the encryption algorithm.
- *
+ * 
  * This function always encrypts 16 bytes of plaintext to 16 bytes of
  * ciphertext.  The memory areas of the plaintext and the ciphertext can
  * overlap.
@@ -367,7 +367,7 @@ twofish_encrypt(const struct twofish_ctx *context,
 
   assert( !(length % TWOFISH_BLOCK_SIZE) );
   for ( ; length; length -= TWOFISH_BLOCK_SIZE)
-    {
+    {  
       uint32_t words[4];
       uint32_t r0, r1, r2, r3, t0, t1;
       int i;
@@ -379,7 +379,7 @@ twofish_encrypt(const struct twofish_ctx *context,
       r1 = words[1] ^ keys[1];
       r2 = words[2] ^ keys[2];
       r3 = words[3] ^ keys[3];
-
+  
       for (i = 0; i < 8; i++) {
 	t1 = (  s_box[1][r1 & 0xFF]
 		^ s_box[2][(r1 >> 8) & 0xFF]
@@ -420,7 +420,7 @@ twofish_encrypt(const struct twofish_ctx *context,
  *
  * Before this function can be used, twofish_set_key() must be used in order to
  * set up various tables required for the decryption algorithm.
- *
+ * 
  * This function always decrypts 16 bytes of ciphertext to 16 bytes of
  * plaintext.  The memory areas of the plaintext and the ciphertext can
  * overlap.
@@ -438,7 +438,7 @@ twofish_decrypt(const struct twofish_ctx *context,
 
   assert( !(length % TWOFISH_BLOCK_SIZE) );
   for ( ; length; length -= TWOFISH_BLOCK_SIZE)
-    {
+    {  
       uint32_t words[4];
       uint32_t r0, r1, r2, r3, t0, t1;
       int i;

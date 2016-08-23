@@ -31,7 +31,7 @@ test_fuzz_once(struct base64_encode_ctx *encode,
   ASSERT (out_len == size);
   ASSERT (decoded[-1] == 0x56);
   ASSERT (decoded[size] == 0x78);
-
+  
   ASSERT(MEMEQ(size, input, decoded));
   free (base64 - 1);
   free (decoded - 1);
@@ -83,7 +83,7 @@ test_main(void)
   ASSERT(BASE64_DECODE_LENGTH(2) == 2); /* At most 18 bits */
   ASSERT(BASE64_DECODE_LENGTH(3) == 3); /* At most 24 bits */
   ASSERT(BASE64_DECODE_LENGTH(4) == 3); /* At most 30 bits */
-
+  
   test_armor(&nettle_base64, 0, "", "");
   test_armor(&nettle_base64, 1, "H", "SA==");
   test_armor(&nettle_base64, 2, "He", "SGU=");
@@ -109,7 +109,7 @@ test_main(void)
     uint8_t buffer[] = "Helloxxxx";
     struct base64_decode_ctx ctx;
     size_t dst_length;
-
+    
     ASSERT(BASE64_ENCODE_RAW_LENGTH(5) == 8);
     base64_encode_raw(buffer, 5, buffer);
     ASSERT(MEMEQ(9, buffer, "SGVsbG8=x"));
@@ -118,7 +118,7 @@ test_main(void)
     dst_length = 0; /* Output parameter only. */
     ASSERT(base64_decode_update(&ctx, &dst_length, buffer, 8, buffer));
     ASSERT(dst_length == 5);
-
+    
     ASSERT(MEMEQ(9, buffer, "HelloG8=x"));
   }
   test_fuzz ();

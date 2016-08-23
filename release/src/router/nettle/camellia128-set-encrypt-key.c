@@ -35,7 +35,7 @@
 */
 
 /*
- * Algorithm Specification
+ * Algorithm Specification 
  *  http://info.isl.ntt.co.jp/crypt/eng/camellia/specifications.html
  */
 
@@ -64,7 +64,7 @@ camellia128_set_encrypt_key (struct camellia128_ctx *ctx,
 
   k0 = READ_UINT64(key);
   k1 = READ_UINT64(key +  8);
-
+  
   /**
    * generate KL dependent subkeys
    */

@@ -91,7 +91,7 @@ define(<ROUND>, <
 	ror	<$>16, $1
 
 	C 76543210
-
+	
 	xorl	XREG(IL), XREG(IR)
 	rorl	<$>8, XREG(IL)
 	xorl	XREG(IR), XREG(IL)
@@ -125,12 +125,12 @@ define(<FLINV>, <
 	andl	$2 + 4(KEY), XREG(TMP)
 	roll	<$>1, XREG(TMP)
 C	xorl	XREG(TMP), XREG($1)
-	xor	TMP, $1
+	xor	TMP, $1	
 >)
 
 	.file "camellia-crypt-internal.asm"
-
-	C _camellia_crypt(unsigned nkeys, const uint64_t *keys,
+	
+	C _camellia_crypt(unsigned nkeys, const uint64_t *keys, 
 	C	          const struct camellia_table *T,
 	C	          size_t length, uint8_t *dst,
 	C	          uint8_t *src)
@@ -157,7 +157,7 @@ PROLOGUE(_nettle_camellia_crypt)
 	mov	XREG(NKEYS), XREG(CNT)
 	mov	KEYS, KEY
 
-	C 	Whitening using first subkey
+	C 	Whitening using first subkey 
 	xor	(KEY), I0
 	add	$8, KEY
 
@@ -165,9 +165,9 @@ PROLOGUE(_nettle_camellia_crypt)
 	ROUND(I1, I0, 8)
 	ROUND(I0, I1, 16)
 	ROUND(I1, I0, 24)
-	ROUND(I0, I1, 32)
+	ROUND(I0, I1, 32) 
 	ROUND(I1, I0, 40)
-
+	
 .Lround_loop:
 	add	$64, KEY
 	FL(I0, -16)
@@ -176,10 +176,10 @@ PROLOGUE(_nettle_camellia_crypt)
 	ROUND(I1, I0, 8)
 	ROUND(I0, I1, 16)
 	ROUND(I1, I0, 24)
-	ROUND(I0, I1, 32)
+	ROUND(I0, I1, 32) 
 	ROUND(I1, I0, 40)
 
-	sub 	$8, CNT
+	sub 	$8, CNT	
 	ja	.Lround_loop
 
 	bswap	I0

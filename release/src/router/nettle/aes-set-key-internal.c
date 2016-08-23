@@ -1,5 +1,5 @@
 /* aes-set-key-internal.c
-
+ 
    Key setup for the aes/rijndael block cipher.
 
    Copyright (C) 2000, 2001, 2002 Rafael R. Sevilla, Niels Möller
@@ -53,7 +53,7 @@ _aes_set_key(unsigned nr, unsigned nk,
   uint32_t t;
 
   lastkey = (AES_BLOCK_SIZE/4) * (nr + 1);
-
+  
   for (i=0, rp = rcon; i<nk; i++)
     subkeys[i] = LE_READ_UINT32(key + i*4);
 
@@ -67,5 +67,5 @@ _aes_set_key(unsigned nr, unsigned nk,
 	t = SUBBYTE(t, aes_sbox);
 
       subkeys[i] = subkeys[i-nk] ^ t;
-    }
+    }  
 }

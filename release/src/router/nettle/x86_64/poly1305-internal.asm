@@ -40,7 +40,7 @@ define(<T2>, <%r8>)
 define(<H0>, <%r9>)
 define(<H1>, <%r10>)
 define(<H2>, <%r11>)
-
+	
 	C poly1305_set_key(struct poly1305_ctx *ctx, const uint8_t key[16])
 	.text
 	C Registers:
@@ -65,7 +65,7 @@ PROLOGUE(nettle_poly1305_set_key)
 	mov	%rax, P1305_H0 (CTX)
 	mov	%rax, P1305_H1 (CTX)
 	mov	XREG(%rax), P1305_H2 (CTX)
-
+	
 	W64_EXIT(2,0)
 	ret
 
@@ -74,7 +74,7 @@ EPILOGUE(nettle_poly1305_set_key)
 C 64-bit multiplication mod 2^130 - 5
 C
 C (x_0 + B x_1 + B^2 x_2) * (r_0 + B r_1) =
-C     1   B B^2 B^3
+C     1   B B^2 B^3 
 C   x_0 r_0
 C       x_0 r_1
 C	x_1 r_0
@@ -86,7 +86,7 @@ C and  r_1 B^3 = 5/4 B r_1
 C So we get
 C
 C  x_0 r_0 + x_1 (5/4 r_1) + B (x_0 r_1 + x_1 r_0 + x_2 5/4 r_1 + B x_2 r_0)
-C     1   B B^2 B^3
+C     1   B B^2 B^3 
 C   x_0 r_0
 C   x_1 r'_1
 C       x_0 r_1
@@ -95,7 +95,7 @@ C       x_2 r'_1
 C           x_2 r_0
 
 	C _poly1305_block (struct poly1305_ctx *ctx, const uint8_t m[16], unsigned hi)
-
+	
 PROLOGUE(_nettle_poly1305_block)
 	W64_ENTRY(3, 0)
 	mov	(%rsi), T0
@@ -146,7 +146,7 @@ EPILOGUE(_nettle_poly1305_block)
 	C Registers:
 	C   %rdi: ctx
 	C   %rsi: s
-
+	
 PROLOGUE(nettle_poly1305_digest)
 	W64_ENTRY(2, 0)
 
@@ -182,3 +182,4 @@ define(<T1>, <%rax>)
 	mov	XREG(%rax), P1305_H2 (CTX)
 	W64_EXIT(2, 0)
 	ret
+

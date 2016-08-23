@@ -206,7 +206,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 
   if (mpz_cmp_ui(y, 1) == 0 || mpz_cmp(y, nm1) == 0)
     goto passed_miller_rabin;
-
+    
   for (j = 1; j < k; j++)
     {
       mpz_powm_ui (y, y, 2, n);
@@ -219,7 +219,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 	passed_miller_rabin:
 	  /* We know that a^{n-1} = 1 (mod n)
 
-	     Remains to check that gcd(a^{(n-1)/q} - 1, n) == 1 */
+	     Remains to check that gcd(a^{(n-1)/q} - 1, n) == 1 */      
 	  VERBOSE("x");
 
 	  mpz_powm(y, a, nm1dq, n);
@@ -262,7 +262,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
 
    * Variant, slightly stronger than Fact 4.59, HAC:
 
-   Assume n = 1 + 2rq, q an odd prime, r <= 2q, and
+   Assume n = 1 + 2rq, q an odd prime, r <= 2q, and 
 
      a^{n-1} = 1 (mod n)
      gcd(a^{(n-1)/q} - 1, n) = 1
@@ -286,7 +286,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
      a^{n-1} = 1 (mod n)
      gcd(a^{(n-1)/q} - 1, n) = 1
 
-   Also let x = floor(r / 2q), y = r mod 2q,
+   Also let x = floor(r / 2q), y = r mod 2q, 
 
    If y^2 - 4x is not a square, then n is prime.
 
@@ -295,7 +295,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
    Assume n is composite. There are at most two factors, both odd,
 
      n = (1+2m_1 q)(1+2m_2 q) = 1 + 4 m_1 m_2 q^2 + 2 (m_1 + m_2) q
-
+     
    where we can assume m_1 >= m_2. Then the bound n <= 8 q^3 implies m_1
    m_2 < 2q, restricting (m_1, m_2) to the domain 0 < m_2 <
    sqrt(2q), 0 < m_1 < 2q / m_2.
@@ -308,7 +308,7 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
    > 8q^3. So in fact, m_1 + m_2 < 2q.
 
    Next, write r = (n-1)/2q = 2 m_1 m_2 q + m_1 + m_2.
-
+   
    If follows that m_1 + m_2 = y and m_1 m_2 = x. m_1 and m_2 are
    thus the roots of the equation
 
@@ -328,8 +328,8 @@ miller_rabin_pocklington(mpz_t n, mpz_t nm1, mpz_t nm1dq, mpz_t a)
    returns r = (p-1)/p0q. */
 void
 _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
-				    unsigned bits, int top_bits_set,
-				    void *ctx, nettle_random_func *random,
+				    unsigned bits, int top_bits_set, 
+				    void *ctx, nettle_random_func *random, 
 				    const mpz_t p0,
 				    const mpz_t q,
 				    const mpz_t p0q)
@@ -403,7 +403,7 @@ _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 	continue;
 
       random(ctx, sizeof(buf), buf);
-
+	  
       mpz_set_ui (a, buf[0] + 2);
 
       if (q)
@@ -432,7 +432,7 @@ _nettle_generate_pocklington_prime (mpz_t p, mpz_t r,
 
 		 Then y^2 - 4x is a square iff y'^2 - 16 x is a
 		 square. */
-
+		 
 	      mpz_mul (y, y, y);
 	      mpz_submul_ui (y, x, 16);
 	      if (mpz_perfect_square_p (y))
@@ -479,7 +479,7 @@ nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
 
       first = prime_by_size[bits-3];
       choices = prime_by_size[bits-2] - first;
-
+      
       mpz_set_ui (p, primes[first + buf % choices]);
     }
   else if (bits <= 20)
@@ -488,7 +488,7 @@ nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
       uint8_t buf[3];
       unsigned long x;
       unsigned j;
-
+      
       assert (!top_bits_set);
 
       highbit = 1L << (bits - 1);
@@ -523,7 +523,7 @@ nettle_random_prime(mpz_t p, unsigned bits, int top_bits_set,
       _nettle_generate_pocklington_prime (p, r, bits, top_bits_set,
 					  random_ctx, random,
 					  q, NULL, q);
-
+      
       if (progress)
 	progress (progress_ctx, 'x');
 

@@ -32,5 +32,5 @@ ifelse(<
 >)
 
 define(<fat_transform>, <_$1_sse2>)
-define(<USE_SSE2>, <yes>)
+define(<USE_SSE2>, <yes>)	
 include_src(<x86_64/memxor.asm>)

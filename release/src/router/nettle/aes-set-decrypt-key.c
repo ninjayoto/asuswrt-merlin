@@ -55,3 +55,4 @@ aes_set_decrypt_key(struct aes_ctx *ctx,
   aes_set_encrypt_key(ctx, keysize, key);
   aes_invert_key(ctx, ctx);
 }
+

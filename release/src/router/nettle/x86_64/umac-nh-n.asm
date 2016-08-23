@@ -58,7 +58,7 @@ C FIXME: Would be nice if we could force the key array to be 16-byte
 C aligned.
 
 	.file "umac-nh-n.asm"
-
+	
 	C umac_nh_n(uint64_t *out, unsigned n, const uint32_t *key,
 	C	    unsigned length, const uint8_t *msg)
 	.text
@@ -73,12 +73,12 @@ PROLOGUE(_nettle_umac_nh_n)
 .Lnh4:
 	movups	(KEY), XK0
 	movups	16(KEY), XT2
-	movups	32(KEY), XK2
+	movups	32(KEY), XK2	
 	lea	48(KEY), KEY
 	C Leave XK2 untouched, and put permuted keys in XK0, XK1, XT2, XT3
 	movaps	XK0, XT0
 	movaps	XK0, XK1
-
+	
 	punpcklqdq XT2, XK0	C [0,1,4,5]
 	punpckhqdq XT2, XK1	C [2,3,6,7]
 	movaps	XT2, XT3
@@ -86,7 +86,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	punpckhqdq XK2, XT3	C [6,7,10,11]
 
 	movaps	XY0, XY1
-
+	
 .Loop4:
 	movups	(MSG), XT0
 	movups	16(MSG), XT1
@@ -155,7 +155,7 @@ PROLOGUE(_nettle_umac_nh_n)
 
 	W64_EXIT(5, 14)
 	ret
-
+	
 .Lnh3:
 	movups	(KEY), XK0
 	movups	16(KEY), XK1
@@ -200,7 +200,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	pmuludq XT0, XT1
 	paddq	XM2, XY0
 	paddq	XT1, XY0
-
+	
 	HI2LO	XM1, XT0
 	HI2LO	XM3, XT1
 	pmuludq XM1, XM3
@@ -221,7 +221,7 @@ PROLOGUE(_nettle_umac_nh_n)
 
 	W64_EXIT(5, 14)
 	ret
-
+	
 .Lnh2:
 	C Explode message as [0,1,0,1] [2,3,2,3] [4,5,4,5] [6,7, 6, 7]
 	C Interleave keys as [0,1,4,5] [2,3,6,7] [4,5,8,9] [7,8,10,11]
@@ -255,7 +255,7 @@ PROLOGUE(_nettle_umac_nh_n)
 	pmuludq XT0, XT1
 	paddq	XM2, XY0
 	paddq	XT1, XY0
-
+	
 	HI2LO	XM1, XT0
 	HI2LO	XM3, XT1
 	pmuludq XM1, XM3

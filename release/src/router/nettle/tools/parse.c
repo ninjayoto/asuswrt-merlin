@@ -125,7 +125,7 @@ sexp_parse(struct sexp_parser *parser,
 	      parser->transport = 0;
 	    }
 	  return;
-
+    
 	case SEXP_EOF:
 	  if (parser->level > 1)
 	    die("Unexpected end of file.\n");
@@ -164,7 +164,7 @@ sexp_parse(struct sexp_parser *parser,
 
 	case SEXP_CODING_END:
 	  die("Unexpected end of transport encoding.\n");
-
+	  
 	default:
 	  /* Internal error. */
 	  abort();

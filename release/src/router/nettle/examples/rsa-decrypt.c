@@ -62,7 +62,7 @@ rsa_session_set_decrypt_key(struct rsa_session *ctx,
   const uint8_t *aes_key = SESSION_AES_KEY(key);
   const uint8_t *iv = SESSION_IV(key);
   const uint8_t *hmac_key = SESSION_HMAC_KEY(key);
-
+  
   aes_set_decrypt_key(&ctx->aes.ctx, AES_KEY_SIZE, aes_key);
   CBC_SET_IV(&ctx->aes, iv);
   hmac_sha1_set_key(&ctx->hmac, SHA1_DIGEST_SIZE, hmac_key);
@@ -194,7 +194,7 @@ process_file(struct rsa_session *ctx,
       werror("Decryption failed: Invalid mac.\n");
       return 0;
     }
-
+  
   return 1;
 }
 
@@ -209,7 +209,7 @@ main(int argc, char **argv)
   mpz_t x;
 
   mpz_init(x);
-
+  
   if (argc != 2)
     {
       werror("Usage: rsa-decrypt PRIVATE-KEY < ciphertext\n");
@@ -217,7 +217,7 @@ main(int argc, char **argv)
     }
 
   rsa_private_key_init(&key);
-
+  
   if (!read_rsa_key(argv[1], NULL, &key))
     {
       werror("Invalid key\n");
@@ -245,16 +245,16 @@ main(int argc, char **argv)
   if (!rsa_decrypt(&key, &length, session.key, x) || length != sizeof(session.key))
     {
       werror("Failed to decrypt rsa header in input file.\n");
-      return EXIT_FAILURE;
+      return EXIT_FAILURE;      
     }
   mpz_clear(x);
-
+  
   rsa_session_set_decrypt_key(&ctx, &session);
 
   if (!process_file(&ctx,
 		    stdin, stdout))
     return EXIT_FAILURE;
-
+  
   rsa_private_key_clear(&key);
 
   return EXIT_SUCCESS;

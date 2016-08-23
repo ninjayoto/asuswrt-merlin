@@ -32,7 +32,7 @@ ifelse(<
 
 C	Define to YES, to enable the complex code to special case SRC
 C	and DST with compatible alignment.
-
+	
 define(<WITH_ALIGN>, <YES>)
 
 C	Registers
@@ -70,7 +70,7 @@ define(<ARCFOUR_BYTE>, <
 	stb	SJ, [CTX + $1]
 	ldub	[CTX + SI], $3
 >)dnl
-
+			
 define(<FRAME_SIZE>, 192)
 
 	.file "arcfour-crypt.asm"
@@ -82,14 +82,14 @@ define(<FRAME_SIZE>, 192)
 	.section	".text"
 	.align 16
 	.proc	020
-
+	
 PROLOGUE(nettle_arcfour_crypt)
 
 	save	%sp, -FRAME_SIZE, %sp
 	cmp	LENGTH, 0
 	be	.Lend
 	nop
-
+	
 	C	Load both I and J
 	lduh	[CTX + ARCFOUR_I], I1
 	and	I1, 0xff, J
@@ -115,7 +115,7 @@ PROLOGUE(nettle_arcfour_crypt)
 
 	cmp	LENGTH, 2
 	blu	.Lfinal1
-	C	Harmless delay slot instruction
+	C	Harmless delay slot instruction	
 	andcc	DST, 2, %g0
 	beq	.Laligned4
 	nop
@@ -125,7 +125,7 @@ PROLOGUE(nettle_arcfour_crypt)
 	ldub	[SRC + 1], TMP2
 	add	SRC, 2, SRC
 	xor	DATA, TMP, DATA
-	sll	DATA, 8, DATA
+	sll	DATA, 8, DATA	
 
 	ARCFOUR_BYTE(I2, I1, TMP)
 	xor	TMP2, TMP, TMP
@@ -135,16 +135,16 @@ PROLOGUE(nettle_arcfour_crypt)
 	sth	DATA, [DST]
 	beq	.Ldone
 	add	DST, 2, DST
-
+	
 .Laligned4:
 	cmp	LENGTH, 4
 	blu	.Lfinal2
 	C	Harmless delay slot instruction
 	srl	LENGTH, 2, N
-
+	
 .Loop:
 	C	Main loop, with aligned writes
-
+	
 	C	FIXME: Could check if SRC is aligned, and
 	C	use 32-bit reads in that case.
 
@@ -174,7 +174,7 @@ PROLOGUE(nettle_arcfour_crypt)
 	st	DATA, [DST]
 	bne	.Loop
 	add	DST, 4, DST
-
+	
 	andcc	LENGTH, 3, LENGTH
 	beq	.Ldone
 	nop
@@ -190,7 +190,7 @@ PROLOGUE(nettle_arcfour_crypt)
 	ldub	[SRC + 1], TMP2
 	add	SRC, 2, SRC
 	xor	DATA, TMP, DATA
-	sll	DATA, 8, DATA
+	sll	DATA, 8, DATA	
 
 	ARCFOUR_BYTE(I2, I1, TMP)
 	xor	TMP2, TMP, TMP

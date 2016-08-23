@@ -88,7 +88,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 
   if (n_size < RSA_MINIMUM_N_BITS)
     return 0;
-
+  
   mpz_init(p1); mpz_init(q1); mpz_init(phi); mpz_init(tmp);
 
   /* Generate primes */
@@ -102,22 +102,22 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 			      progress_ctx, progress);
 
 	  mpz_sub_ui(p1, key->p, 1);
-
+      
 	  /* If e was given, we must chose p such that p-1 has no factors in
 	   * common with e. */
 	  if (e_size)
 	    break;
-
+	  
 	  mpz_gcd(tmp, pub->e, p1);
 
 	  if (mpz_cmp_ui(tmp, 1) == 0)
 	    break;
 	  else if (progress) progress(progress_ctx, 'c');
-	}
+	} 
 
       if (progress)
 	progress(progress_ctx, '\n');
-
+      
       /* Generate q, such that gcd(q-1, e) = 1 */
       for (;;)
 	{
@@ -130,12 +130,12 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 	    continue;
 
 	  mpz_sub_ui(q1, key->q, 1);
-
+      
 	  /* If e was given, we must chose q such that q-1 has no factors in
 	   * common with e. */
 	  if (e_size)
 	    break;
-
+	  
 	  mpz_gcd(tmp, pub->e, q1);
 
 	  if (mpz_cmp_ui(tmp, 1) == 0)
@@ -160,7 +160,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
     }
 
   mpz_mul(phi, p1, q1);
-
+  
   /* If we didn't have a given e, generate one now. */
   if (e_size)
     {
@@ -170,7 +170,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 	  nettle_mpz_random_size(pub->e,
 				 random_ctx, random,
 				 e_size);
-
+	
 	  /* Make sure it's odd and that the most significant bit is
 	   * set */
 	  mpz_setbit(pub->e, 0);
@@ -184,7 +184,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 	  retried = 1;
 	}
       if (retried && progress)
-	progress(progress_ctx, '\n');
+	progress(progress_ctx, '\n');	
     }
   else
     {
@@ -205,7 +205,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 
   pub->size = key->size = (n_size + 7) / 8;
   assert(pub->size >= RSA_MINIMUM_N_OCTETS);
-
+  
   mpz_clear(p1); mpz_clear(q1); mpz_clear(phi); mpz_clear(tmp);
 
   return 1;

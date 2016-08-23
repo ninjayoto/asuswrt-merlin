@@ -378,7 +378,7 @@ test_main(void)
 		       "eba9f863171f3f56484625bf39d883427349b8671d9bb7d3"
 		       "96180694e5b546ae"),
 		  &signature);
-
+  
   /* L=2048, N=256, SHA-1 */
   mpz_set_str(pub.p,
 	      "c1a59d215573949e0b20a974c2edf2e3137ff2463062f75f"
@@ -488,7 +488,7 @@ test_main(void)
 		       "8e34d5906e298302472637b879de91c1a6f9f331a5cf98a5"
 		       "af29132990d27416"),
 		  &signature);
-
+  
   /* L=2048, N=256, SHA-256 */
   mpz_set_str(pub.p,
 	      "a8adb6c0b4cf9588012e5deff1a871d383e0e2a85b5e8e03"
@@ -543,7 +543,7 @@ test_main(void)
 		       "7dcf3ba8bf1ff304b102b1ec3f1497dddf09712cf323f561"
 		       "0a9d10c3d9132659"),
 		  &signature);
-
+  
   /* L=2048, N=256, SHA-384 */
   mpz_set_str(pub.p,
 	      "a6167c16fff74e29342b8586aed3cd896f7b1635a2286ff1"
@@ -877,7 +877,7 @@ test_main(void)
 		       "bb7441c122f1dc2f9d0b0bc07f26ba29a35cdf0da846a9d8"
 		       "eab405cbf8c8e77f"),
 		  &signature);
-
+  
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
   dsa_signature_clear(&signature);

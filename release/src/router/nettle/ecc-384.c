@@ -80,16 +80,16 @@ ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
   assert (bw <= cy);
   cy -= bw;
 
-  assert (cy <= 2);
+  assert (cy <= 2);  
   rp[16] = cy;
 
   /* Reduce from 17 to 12 limbs */
   cy = mpn_add_n (rp, rp, rp + 12, 5);
   cy = sec_add_1 (rp + 5, rp + 5, 3, cy);
-
+  
   bw = mpn_sub_n (rp + 1, rp + 1, rp + 12, 5);
   bw = sec_sub_1 (rp + 6, rp + 6, 6, bw);
-
+  
   cy += mpn_add_n (rp + 3, rp + 3, rp + 12, 5);
   cy = sec_add_1 (rp + 8, rp + 8, 1, cy);
 
@@ -141,17 +141,17 @@ ecc_384_modp (const struct ecc_modulo *p, mp_limb_t *rp)
   assert (cy <= 1);
 
   cy = cnd_add_n (cy, rp, p->B, ECC_LIMB_SIZE);
-  assert (cy == 0);
+  assert (cy == 0);  
 }
 #else
 #define ecc_384_modp ecc_mod
 #endif
-
+  
 const struct ecc_curve nettle_secp_384r1 =
 {
   {
     384,
-    ECC_LIMB_SIZE,
+    ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
@@ -170,7 +170,7 @@ const struct ecc_curve nettle_secp_384r1 =
   },
   {
     384,
-    ECC_LIMB_SIZE,
+    ECC_LIMB_SIZE,    
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),

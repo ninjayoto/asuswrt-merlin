@@ -33,7 +33,7 @@
 */
 
 /*
- * Algorithm Specification
+ * Algorithm Specification 
  *  http://info.isl.ntt.co.jp/crypt/eng/camellia/specifications.html
  */
 
@@ -148,7 +148,7 @@ _camellia_crypt(unsigned nkeys,
 
       i0 = READ_UINT64(src);
       i1 = READ_UINT64(src +  8);
-
+      
       /* pre whitening but absorb kw2*/
       i0 ^= keys[0];
 
@@ -160,12 +160,12 @@ _camellia_crypt(unsigned nkeys,
       CAMELLIA_ROUNDSM(T, i1, keys[4], i0);
       CAMELLIA_ROUNDSM(T, i0, keys[5], i1);
       CAMELLIA_ROUNDSM(T, i1, keys[6], i0);
-
+      
       for (i = 0; i < nkeys - 8; i+= 8)
 	{
 	  CAMELLIA_FL(i0, keys[i+7]);
 	  CAMELLIA_FLINV(i1, keys[i+8]);
-
+	  
 	  CAMELLIA_ROUNDSM(T, i0, keys[i+9], i1);
 	  CAMELLIA_ROUNDSM(T, i1, keys[i+10], i0);
 	  CAMELLIA_ROUNDSM(T, i0, keys[i+11], i1);

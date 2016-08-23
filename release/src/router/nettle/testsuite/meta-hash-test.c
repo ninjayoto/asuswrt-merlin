@@ -33,3 +33,4 @@ test_main(void)
   for (j = 0; NULL != nettle_hashes[j]; j++)
     ASSERT(nettle_hashes[j]->digest_size <= NETTLE_MAX_HASH_DIGEST_SIZE);
 }
+  

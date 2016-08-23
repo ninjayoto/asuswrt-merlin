@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "sha256-compress.asm"
 	.arch armv6
@@ -88,7 +88,7 @@ C S1(E) = E<<<26 ^ E<<<21 ^ E<<<7
 C S0(A) = A<<<30 ^ A<<<19 ^ A<<<10
 C Choice (E, F, G) = G^(E&(F^G))
 C Majority (A,B,C) = (A&B) + (C&(A^B))
-
+	
 define(<ROUND>, <
 	ror	T0, $5, #6
 	eor	T0, T0, $5, ror #11
@@ -126,7 +126,7 @@ define(<NOEXPN>, <
 PROLOGUE(_nettle_sha256_compress)
 	push	{r4,r5,r6,r7,r8,r10,r11,r14}
 	sub	sp, sp, #68
-	str	STATE, [sp, +#64]
+	str	STATE, [sp, #+64]
 
 	C Load data up front, since we don't have enough registers
 	C to load and shift on-the-fly
@@ -158,9 +158,9 @@ PROLOGUE(_nettle_sha256_compress)
 	rev	I3, I3
 	subs	ILEFT, ILEFT, #1
 	stm	DST!, {I0,I1,I2,I3}
-	mov	I0, I4
+	mov	I0, I4	
 	bne	.Lcopy
-
+	
 	ldm	STATE, {SA,SB,SC,SD,SE,SF,SG,SH}
 
 	mov	COUNT,#0
@@ -179,7 +179,7 @@ PROLOGUE(_nettle_sha256_compress)
 
 	mov	COUNT, #3
 .Loop2:
-
+	
 	EXPN( 0) ROUND(SA,SB,SC,SD,SE,SF,SG,SH)
 	EXPN( 1) ROUND(SH,SA,SB,SC,SD,SE,SF,SG)
 	EXPN( 2) ROUND(SG,SH,SA,SB,SC,SD,SE,SF)
@@ -199,7 +199,7 @@ PROLOGUE(_nettle_sha256_compress)
 	EXPN(15) ROUND(SB,SC,SD,SE,SF,SG,SH,SA)
 	bne	.Loop2
 
-	ldr	STATE, [sp, +#64]
+	ldr	STATE, [sp, #+64]
 	C No longer needed registers
 	ldm	STATE, {r1,r2,r12,r14}
 	add	SA, SA, r1

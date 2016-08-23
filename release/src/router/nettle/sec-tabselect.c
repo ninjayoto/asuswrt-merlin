@@ -50,7 +50,7 @@ sec_tabselect (mp_limb_t *rp, mp_size_t rn,
   const mp_limb_t *end = table + tn * rn;
   const mp_limb_t *p;
   mp_size_t i;
-
+  
   assert (k < tn);
   mpn_zero (rp, rn);
   for (p = table; p < end; p += rn, k--)

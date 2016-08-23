@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "sha512-compress.asm"
 	.fpu	neon
@@ -52,7 +52,7 @@ define(<QSCD>, <q1>)
 define(<QSEF>, <q2>)
 define(<QSGH>, <q3>)
 
-C d8-d15 are callee-save
+C d8-d15 are callee-save	
 define(<DT0>, <d8>)
 define(<DT1>, <d9>)
 define(<QT01>, <q4>)
@@ -190,7 +190,7 @@ define(<ROUND>, <
 
 PROLOGUE(_nettle_sha512_compress)
 	vpush	{d8,d9,d10,d11,d12,d13}
-
+	
 	ands	SHIFT, INPUT, #7
 	and	INPUT, INPUT, #-8
 	vld1.8	{DT5}, [INPUT :64]

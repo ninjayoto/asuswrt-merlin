@@ -16,7 +16,7 @@ test_bignum(const char *hex, const struct tstring *base256)
   mpz_t a;
   mpz_t b;
   uint8_t *buf;
-
+  
   mpz_init_set_str(a, hex, 16);
   nettle_mpz_init_set_str_256_s(b, base256->length, base256->data);
 
@@ -86,7 +86,7 @@ test_main(void)
   test_bignum("-7fff", SHEX(  "8001"));
   test_bignum("-8000", SHEX(  "8000"));
   test_bignum("-8001", SHEX("ff7fff"));
-
+  
 #else /* !WITH_HOGWEED */
   SKIP();
 #endif /* !WITH_HOGWEED */

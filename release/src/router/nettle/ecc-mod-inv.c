@@ -74,7 +74,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
 
   mp_size_t n = m->size;
   /* Avoid the mp_bitcnt_t type for compatibility with older GMP
-     versions. */
+     versions. */  
   unsigned i;
 
   /* Maintain
@@ -99,7 +99,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
   for (i = m->bit_size + GMP_NUMB_BITS * n; i-- > 0; )
     {
       mp_limb_t odd, swap, cy;
-
+      
       /* Always maintain b odd. The logic of the iteration is as
 	 follows. For a, b:
 
@@ -110,7 +110,7 @@ ecc_mod_inv (const struct ecc_modulo *m,
 	       b += a, assigns old a
 	       a = B^n-a
 	     }
-
+	   
 	   a /= 2
 
 	 For u, v:

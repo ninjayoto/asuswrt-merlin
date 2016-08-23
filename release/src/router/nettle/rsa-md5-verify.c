@@ -69,7 +69,7 @@ rsa_md5_verify_digest(const struct rsa_public_key *key,
   mpz_t m;
 
   mpz_init(m);
-
+  
   res = (pkcs1_rsa_md5_encode_digest(m, key->size, digest)
 	 && _rsa_verify(key, m, s));
 

@@ -44,7 +44,7 @@ void
 _dsa_hash (mpz_t h, unsigned bit_size,
 	   size_t length, const uint8_t *digest)
 {
-
+  
   if (length > (bit_size + 7) / 8)
     length = (bit_size + 7) / 8;
 

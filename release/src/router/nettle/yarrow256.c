@@ -89,13 +89,13 @@ yarrow256_init(struct yarrow256_ctx *ctx,
 
   sha256_init(&ctx->pools[0]);
   sha256_init(&ctx->pools[1]);
-
+  
   ctx->seeded = 0;
 
   /* Not strictly necessary, but it makes it easier to see if the
    * values are sane. */
   memset(ctx->counter, 0, sizeof(ctx->counter));
-
+  
   ctx->nsources = n;
   ctx->sources = s;
 
@@ -147,16 +147,16 @@ yarrow_iterate(uint8_t *digest)
 {
   uint8_t v0[SHA256_DIGEST_SIZE];
   unsigned i;
-
+  
   memcpy(v0, digest, SHA256_DIGEST_SIZE);
-
+  
   /* When hashed inside the loop, i should run from 1 to
    * YARROW_RESEED_ITERATIONS */
   for (i = 0; ++i < YARROW_RESEED_ITERATIONS; )
     {
       uint8_t count[4];
       struct sha256_ctx hash;
-
+  
       sha256_init(&hash);
 
       /* Hash v_i | v_0 | i */
@@ -177,22 +177,22 @@ yarrow256_fast_reseed(struct yarrow256_ctx *ctx)
 {
   uint8_t digest[SHA256_DIGEST_SIZE];
   unsigned i;
-
+  
 #if YARROW_DEBUG
   fprintf(stderr, "yarrow256_fast_reseed\n");
 #endif
-
+  
   /* We feed two block of output using the current key into the pool
    * before emptying it. */
   if (ctx->seeded)
     {
       uint8_t blocks[AES_BLOCK_SIZE * 2];
-
+      
       yarrow_generate_block(ctx, blocks);
       yarrow_generate_block(ctx, blocks + AES_BLOCK_SIZE);
       sha256_update(&ctx->pools[YARROW_FAST], sizeof(blocks), blocks);
     }
-
+  
   sha256_digest(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
 
   /* Iterate */
@@ -204,7 +204,7 @@ yarrow256_fast_reseed(struct yarrow256_ctx *ctx)
   /* Derive new counter value */
   memset(ctx->counter, 0, sizeof(ctx->counter));
   aes256_encrypt(&ctx->key, sizeof(ctx->counter), ctx->counter, ctx->counter);
-
+  
   /* Reset estimates. */
   for (i = 0; i<ctx->nsources; i++)
     ctx->sources[i].estimate[YARROW_FAST] = 0;
@@ -227,7 +227,7 @@ yarrow256_slow_reseed(struct yarrow256_ctx *ctx)
   sha256_update(&ctx->pools[YARROW_FAST], sizeof(digest), digest);
 
   yarrow256_fast_reseed(ctx);
-
+  
   /* Reset estimates. */
   for (i = 0; i<ctx->nsources; i++)
     ctx->sources[i].estimate[YARROW_SLOW] = 0;
@@ -240,7 +240,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
 {
   enum yarrow_pool_id current;
   struct yarrow_source *source;
-
+  
   assert(source_index < ctx->nsources);
 
   if (!length)
@@ -248,7 +248,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
     return 0;
 
   source = &ctx->sources[source_index];
-
+  
   if (!ctx->seeded)
     /* While seeding, use the slow pool */
     current = YARROW_SLOW;
@@ -259,7 +259,7 @@ yarrow256_update(struct yarrow256_ctx *ctx,
     }
 
   sha256_update(&ctx->pools[current], length, data);
-
+ 
   /* NOTE: We should be careful to avoid overflows in the estimates. */
   if (source->estimate[current] < YARROW_MAX_ENTROPY)
     {
@@ -336,7 +336,7 @@ yarrow256_random(struct yarrow256_ctx *ctx, size_t length, uint8_t *dst)
   if (length)
     {
       uint8_t buffer[AES_BLOCK_SIZE];
-
+      
       assert(length < AES_BLOCK_SIZE);
       yarrow_generate_block(ctx, buffer);
       memcpy(dst, buffer, length);
@@ -369,6 +369,6 @@ yarrow256_needed_sources(struct yarrow256_ctx *ctx)
           "     number of sources above threshold = %d\n",
           source_index, source->estimate[YARROW_SLOW], k);
 #endif
-
+  
   return (k < YARROW_SLOW_K) ? (YARROW_SLOW_K - k) : 0;
 }

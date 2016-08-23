@@ -51,8 +51,8 @@
  *   id-sha1 OBJECT IDENTIFIER ::=
  *     {iso(1) identified-organization(3) oiw(14) secsig(3)
  *   	 algorithms(2) 26}
- *
- *   The default hash function is SHA-1:
+ *   
+ *   The default hash function is SHA-1: 
  *   sha1Identifier ::= AlgorithmIdentifier {id-sha1, NULL}
  */
 
@@ -63,7 +63,7 @@ sha1_prefix[] =
   0x30,       33, /* SEQUENCE */
     0x30,      9, /* SEQUENCE */
       0x06,    5, /* OBJECT IDENTIFIER */
-	  0x2b, 0x0e, 0x03, 0x02, 0x1a,
+  	  0x2b, 0x0e, 0x03, 0x02, 0x1a,
       0x05,    0, /* NULL */
     0x04,     20  /* OCTET STRING */
       /* Here comes the raw hash value */

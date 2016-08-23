@@ -43,7 +43,7 @@ int
 rsa_pkcs1_sign(const struct rsa_private_key *key,
 	       size_t length, const uint8_t *digest_info,
 	       mpz_t s)
-{
+{  
   if (pkcs1_rsa_digest_encode (s, key->size, length, digest_info))
     {
       rsa_compute_root(key, s, s);
@@ -53,5 +53,5 @@ rsa_pkcs1_sign(const struct rsa_private_key *key,
     {
       mpz_set_ui(s, 0);
       return 0;
-    }
+    }    
 }

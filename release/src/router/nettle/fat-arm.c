@@ -222,7 +222,7 @@ fat_init (void)
       _nettle_umac_nh_n_vec = _nettle_umac_nh_n_c;
     }
 }
-
+  
 DEFINE_FAT_FUNC(_nettle_aes_encrypt, void,
 		(unsigned rounds, const uint32_t *keys,
 		 const struct aes_table *T,
@@ -264,3 +264,4 @@ DEFINE_FAT_FUNC(_nettle_umac_nh_n, void,
 		(uint64_t *out, unsigned n, const uint32_t *key,
 		 unsigned length, const uint8_t *msg),
 		(out, n, key, length, msg))
+

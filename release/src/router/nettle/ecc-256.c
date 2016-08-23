@@ -55,7 +55,7 @@
 void
 ecc_256_redc (const struct ecc_modulo *p, mp_limb_t *rp);
 #else /* !HAVE_NATIVE_ecc_256_redc */
-# if ECC_REDC_SIZE > 0
+# if ECC_REDC_SIZE > 0 
 #   define ecc_256_redc ecc_pp1_redc
 # elif ECC_REDC_SIZE == 0
 #   define ecc_256_redc NULL
@@ -113,8 +113,19 @@ ecc_256_modp (const struct ecc_modulo *p, mp_limb_t *rp)
 
       assert (q2 < 2);
 
-      /* We multiply by two low limbs of p, 2^96 - 1, so we could use
-	 shifts rather than mul. */
+      /*
+	 n-1 n-2 n-3 n-4
+        +---+---+---+---+
+        | u1| u0| u low |
+        +---+---+---+---+
+          - | q1(2^96-1)|
+            +-------+---+
+            |q2(2^.)|
+            +-------+
+
+	 We multiply by two low limbs of p, 2^96 - 1, so we could use
+	 shifts rather than mul.
+      */
       t = mpn_submul_1 (rp + n - 4, p->m, 2, q1);
       t += cnd_sub_n (q2, rp + n - 3, p->m, 1);
       t += (-q2) & 0xffffffff;
@@ -124,7 +135,10 @@ ecc_256_modp (const struct ecc_modulo *p, mp_limb_t *rp)
       u0 -= t;
       t = (u1 < cy);
       u1 -= cy;
-      u1 += cnd_add_n (t, rp + n - 4, p->m, 3);
+
+      cy = cnd_add_n (t, rp + n - 4, p->m, 2);
+      u0 += cy;
+      u1 += (u0 < cy);
       u1 -= (-t) & 0xffffffff;
     }
   rp[2] = u0;
@@ -147,7 +161,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       mp_limb_t q2, q1, q0, t, c1, c0;
 
       u0 = rp[n-2];
-
+      
       /* <q2, q1, q0> = v * u2 + <u2,u1>, same method as above.
 
 	   +---+---+
@@ -182,7 +196,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
        --+-+-+-+---+
            | u2| u1|
 	   +---+---+
-      */
+      */	 
       u2 = u1 + q2 - q1;
       u1 = u0 + q1;
       u2 += (u1 < q1);
@@ -201,7 +215,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
       t = mpn_submul_1 (rp + n - 4, q->m, 2, q1);
       c0 += t;
       c1 = c0 < t;
-
+      
       /* Construct underflow condition. */
       c1 += (u1 < c0);
       t = - (mp_limb_t) (u2 < c1);
@@ -211,7 +225,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
 
       /* Conditional add of p */
       u1 += t;
-      u2 += (t<<32) + (u0 < t);
+      u2 += (t<<32) + (u1 < t);
 
       t = cnd_add_n (t, rp + n - 4, q->m, 2);
       u1 += t;
@@ -220,7 +234,7 @@ ecc_256_modq (const struct ecc_modulo *q, mp_limb_t *rp)
   rp[2] = u1;
   rp[3] = u2;
 }
-
+      
 #else
 #error Unsupported parameters
 #endif
@@ -229,7 +243,7 @@ const struct ecc_curve nettle_secp_256r1 =
 {
   {
     256,
-    ECC_LIMB_SIZE,
+    ECC_LIMB_SIZE,    
     ECC_BMODP_SIZE,
     ECC_REDC_SIZE,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),
@@ -248,7 +262,7 @@ const struct ecc_curve nettle_secp_256r1 =
   },
   {
     256,
-    ECC_LIMB_SIZE,
+    ECC_LIMB_SIZE,    
     ECC_BMODQ_SIZE,
     0,
     ECC_MOD_INV_ITCH (ECC_LIMB_SIZE),

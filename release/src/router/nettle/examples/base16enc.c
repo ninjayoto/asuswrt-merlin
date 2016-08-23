@@ -62,7 +62,7 @@ main(int argc UNUSED, char **argv UNUSED)
 #ifdef WIN32
   _setmode(0, O_BINARY);
 #endif
-
+  
   /* There is no context to initialize. */
 
   for (;;)
@@ -73,14 +73,14 @@ main(int argc UNUSED, char **argv UNUSED)
       uint8_t result[ENCODED_SIZE + 1];
       unsigned nbytes; /* Number of bytes read from stdin */
       int encoded_bytes; /* Total number of bytes encoded per iteration */
-
+      
       nbytes = fread(buffer,1,CHUNK_SIZE,stdin);
 
       /* We overwrite result with more data */
       base16_encode_update(result, nbytes, buffer);
       encoded_bytes = BASE16_ENCODE_LENGTH(nbytes);
       result[encoded_bytes++] = '\n';
-
+      
       if (nbytes < CHUNK_SIZE)
 	{
 	  if (ferror(stdin))
@@ -104,3 +104,4 @@ main(int argc UNUSED, char **argv UNUSED)
 	}
     }
 }
+

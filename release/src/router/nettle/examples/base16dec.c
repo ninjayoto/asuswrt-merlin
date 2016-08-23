@@ -85,7 +85,7 @@ main(int argc UNUSED, char **argv UNUSED)
 	  werror ("Error reading file: %s\n", strerror(errno));
 	  return EXIT_FAILURE;
 	}
-
+      
       /* Decodes one chunk: */
       if (!base16_decode_update(&b16_ctx, &decoded_bytes, result, nbytes, buffer))
 	{
@@ -121,3 +121,4 @@ main(int argc UNUSED, char **argv UNUSED)
 
   return EXIT_SUCCESS;
 }
+

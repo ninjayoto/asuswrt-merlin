@@ -20,14 +20,14 @@ get_event(FILE *f, struct sha256_ctx *hash,
 {
   static int t = 0;
   uint8_t buf[1];
-
+  
   int c = getc(f);
   if (c == EOF)
     return 0;
 
   buf[0] = c;
   sha256_update(hash, sizeof(buf), buf);
-
+    
   *key = c;
 
   t += (knuth_lfib_get(&lfib) % 10000);
@@ -62,7 +62,7 @@ void
 test_main(void)
 {
   FILE *input;
-
+  
   struct yarrow256_ctx yarrow;
   struct yarrow_key_event_ctx estimator;
 
@@ -85,18 +85,18 @@ test_main(void)
   const uint8_t *expected_seed_file
     = H("b03518f32b1084dd 983e6a445d47bb6f"
 	"13bb7b998740d570 503d6aaa62e28901");
-
+  
   unsigned c; unsigned t;
 
   unsigned processed = 0;
   unsigned output = 0;
 
   unsigned i;
-
+  
   static const char zeroes[100];
 
   yarrow256_init(&yarrow, 2, sources);
-
+  
   yarrow_key_event_init(&estimator);
   sha256_init(&input_hash);
   sha256_init(&output_hash);
@@ -109,7 +109,7 @@ test_main(void)
   if (verbose)
     printf("source 0 entropy: %d\n",
 	   sources[0].estimate[YARROW_SLOW]);
-
+  
   ASSERT(!yarrow256_is_seeded(&yarrow));
 
   input = open_file("gold-bug.txt");
@@ -120,13 +120,13 @@ test_main(void)
               errno);
       FAIL();
     }
-
+  
   while (get_event(input, &input_hash, &c, &t))
     {
       uint8_t buf[8];
 
       processed++;
-
+      
       WRITE_UINT32(buf, c);
       WRITE_UINT32(buf + 4, t);
       yarrow256_update(&yarrow, 1,
@@ -137,13 +137,13 @@ test_main(void)
         {
           static const unsigned sizes[4] = { 1, 16, 500, 37 };
           unsigned size = sizes[processed % 4];
-
+          
           uint8_t buf[500];
 
           if (verbose && !output)
             printf("Generator was seeded after %d events\n",
 		   processed);
-
+          
           yarrow256_random(&yarrow, size, buf);
 
           sha256_update(&output_hash, size, buf);
@@ -163,13 +163,13 @@ test_main(void)
   if (verbose)
     {
       printf("\n");
-
+      
       for (i = 0; i<2; i++)
 	printf("source %d, (fast, slow) entropy: (%d, %d)\n",
 	       i,
 	       sources[i].estimate[YARROW_FAST],
-	       sources[i].estimate[YARROW_SLOW]);
-
+	       sources[i].estimate[YARROW_SLOW]); 
+      
       printf("Processed input: %d octets\n", processed);
       printf("         sha256:");
     }
@@ -181,7 +181,7 @@ test_main(void)
       print_hex(sizeof(digest), digest);
       printf("\n");
     }
-
+  
   ASSERT (memcmp(digest, expected_input, sizeof(digest)) == 0);
 
   yarrow256_random(&yarrow, sizeof(seed_file), seed_file);
@@ -193,13 +193,13 @@ test_main(void)
     }
 
   ASSERT (memcmp(seed_file, expected_seed_file, sizeof(seed_file)) == 0);
-
+  
   if (verbose)
     {
       printf("Generated output: %d octets\n", output);
       printf("          sha256:");
     }
-
+  
   sha256_digest(&output_hash, sizeof(digest), digest);
 
   if (verbose)
@@ -207,6 +207,6 @@ test_main(void)
       print_hex(sizeof(digest), digest);
       printf("\n");
     }
-
+  
   ASSERT (memcmp(digest, expected_output, sizeof(digest)) == 0);
 }

@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "sha1-compress.asm"
 	.arch armv6
@@ -102,7 +102,7 @@ define(<ROUND3>, <
 	add	$5, $5, T0
 >)
 	C void _nettle_sha1_compress(uint32_t *state, const uint8_t *input)
-
+	
 	.text
 	.align 2
 .LK1:
@@ -117,7 +117,7 @@ PROLOGUE(_nettle_sha1_compress)
 	sub	sp, sp, #64
 
 	C Sets SHIFT to 8*low bits of input pointer. Sets up GE flags
-	C as follows, corresponding to bytes to be used from WPREV
+	C as follows, corresponding to bytes to be used from WPREV	
 	C   SHIFT	0	8	16	24
 	C CPSR.GE	0000	1110	1100	1000
 	ands	SHIFT, INPUT, #3
@@ -129,10 +129,10 @@ PROLOGUE(_nettle_sha1_compress)
 	movne	T0, #-1
 	lsl	W, T0, SHIFT
 	uadd8	T0, T0, W		C Sets APSR.GE bits
-
+	
 	ldr	K, .LK1
 	ldm	STATE, {SA,SB,SC,SD,SE}
-
+	
 	LOAD( 0) ROUND1(SA, SB, SC, SD, SE)
 	LOAD( 1) ROUND1(SE, SA, SB, SC, SD)
 	LOAD( 2) ROUND1(SD, SE, SA, SB, SC)
@@ -232,7 +232,7 @@ PROLOGUE(_nettle_sha1_compress)
 	EXPN(14) ROUND2(SC, SD, SE, SA, SB)
 	EXPN(15) ROUND2(SB, SC, SD, SE, SA)
 
-	C Use registers we no longer need.
+	C Use registers we no longer need. 
 	ldm	STATE, {INPUT,T0,SHIFT,W,K}
 	add	SA, SA, INPUT
 	add	SB, SB, T0
@@ -241,7 +241,7 @@ PROLOGUE(_nettle_sha1_compress)
 	add	SE, SE, K
 	add	sp, sp, #64
 	stm	STATE, {SA,SB,SC,SD,SE}
-	pop	{r4,r5,r6,r7,r8,r10,pc}
+	pop	{r4,r5,r6,r7,r8,r10,pc}	
 EPILOGUE(_nettle_sha1_compress)
 
 .LK4:

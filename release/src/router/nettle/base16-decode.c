@@ -30,7 +30,7 @@
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 */
-
+ 
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -51,7 +51,7 @@ enum { HEX_INVALID = -1, HEX_SPACE=-2 };
 static const signed char
 hex_decode_table[0x80] =
   {
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -1, -1, -2, -1, -1, 
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
@@ -122,7 +122,7 @@ base16_decode_update(struct base16_decode_ctx *ctx,
       default:
 	abort();
       }
-
+  
   assert(done <= BASE16_DECODE_LENGTH(src_length));
 
   *dst_length = done;

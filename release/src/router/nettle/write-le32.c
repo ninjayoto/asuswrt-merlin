@@ -46,7 +46,7 @@ _nettle_write_le32(size_t length, uint8_t *dst,
   size_t i;
   size_t words;
   unsigned leftover;
-
+  
   words = length / 4;
   leftover = length % 4;
 
@@ -56,7 +56,7 @@ _nettle_write_le32(size_t length, uint8_t *dst,
   if (leftover)
     {
       uint32_t word;
-
+      
       word = src[i];
 
       do

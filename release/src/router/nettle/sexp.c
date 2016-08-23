@@ -70,7 +70,7 @@ sexp_iterator_simple(struct sexp_iterator *iterator,
 {
   unsigned length = 0;
   uint8_t c;
-
+  
   if (EMPTY(iterator)) return 0;
   c = NEXT(iterator);
   if (EMPTY(iterator)) return 0;
@@ -90,7 +90,7 @@ sexp_iterator_simple(struct sexp_iterator *iterator,
   else if (c == '0')
     /* There can be only one */
     c = NEXT(iterator);
-  else
+  else 
     return 0;
 
   if (c != ':')
@@ -112,12 +112,12 @@ static int
 sexp_iterator_parse(struct sexp_iterator *iterator)
 {
   iterator->start = iterator->pos;
-
+  
   if (EMPTY(iterator))
     {
       if (iterator->level)
 	return 0;
-
+      
       iterator->type = SEXP_END;
       return 1;
     }
@@ -130,11 +130,11 @@ sexp_iterator_parse(struct sexp_iterator *iterator)
     case ')':
       if (!iterator->level)
 	return 0;
-
+      
       iterator->pos++;
-      iterator->type = SEXP_END;
+      iterator->type = SEXP_END;      
       return 1;
-
+      
     case '[': /* Atom with display type */
       iterator->pos++;
       if (!sexp_iterator_simple(iterator,
@@ -156,7 +156,7 @@ sexp_iterator_parse(struct sexp_iterator *iterator)
     }
 
   iterator->type = SEXP_ATOM;
-
+      
   return sexp_iterator_simple(iterator,
 			      &iterator->atom_length,
 			      &iterator->atom);
@@ -216,7 +216,7 @@ sexp_iterator_exit_list(struct sexp_iterator *iterator)
   while(iterator->type != SEXP_END)
     if (!sexp_iterator_next(iterator))
       return 0;
-
+      
   iterator->level--;
 
   return sexp_iterator_parse(iterator);
@@ -339,7 +339,7 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
     found[i] = 0;
 
   nfound = 0;
-
+  
   for (;;)
     {
       switch (iterator->type)
@@ -348,7 +348,7 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 
 	  if (!sexp_iterator_enter_list(iterator))
 	    return 0;
-
+	  
 	  if (iterator->type == SEXP_ATOM
 	      && !iterator->display)
 	    {
@@ -371,10 +371,10 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 
 		      found[i] = 1;
 		      nfound++;
-
+		      
 		      /* Record this position. */
 		      values[i] = *iterator;
-
+		      
 		      break;
 		    }
 		}
@@ -387,7 +387,7 @@ sexp_iterator_assoc(struct sexp_iterator *iterator,
 	  if (!sexp_iterator_next(iterator))
 	    return 0;
 	  break;
-
+	  
 	case SEXP_END:
 	  return sexp_iterator_exit_list(iterator)
 	    && (nfound == nkeys);

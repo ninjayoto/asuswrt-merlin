@@ -51,7 +51,7 @@ _nettle_aes_encrypt(unsigned rounds, const uint32_t *keys,
       uint32_t w0, w1, w2, w3;		/* working ciphertext */
       uint32_t t0, t1, t2, t3;
       unsigned i;
-
+      
       /* Get clear text, using little-endian byte order.
        * Also XOR with the first subkey. */
 
@@ -103,7 +103,7 @@ _nettle_aes_encrypt(unsigned rounds, const uint32_t *keys,
    E. Also put t in four scalar variables.
 
        P4 2.2 GHz         AMD Duron 1.4GHz
-
+       
        MB/s  code size
    A   35.9  0x202        17 MB/s
    B   37.3  0x334

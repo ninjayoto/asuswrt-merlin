@@ -46,3 +46,4 @@ const struct nettle_hash nettle_sha512_224 =
     (nettle_hash_update_func *) sha512_224_update,
     (nettle_hash_digest_func *) sha512_224_digest
   };
+

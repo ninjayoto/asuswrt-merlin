@@ -59,7 +59,7 @@ rsa_public_key_from_der_iterator(struct rsa_public_key *pub,
 
   return (i->type == ASN1_SEQUENCE
 	  && asn1_der_decode_constructed_last(i) == ASN1_ITERATOR_PRIMITIVE
-	  && asn1_der_get_bignum(i, pub->n, limit)
+	  && asn1_der_get_bignum(i, pub->n, limit) 
 	  && mpz_sgn(pub->n) > 0
 	  && GET(i, pub->e, limit)
 	  && asn1_der_iterator_next(i) == ASN1_ITERATOR_END
@@ -87,7 +87,7 @@ rsa_private_key_from_der_iterator(struct rsa_public_key *pub,
   */
 
   uint32_t version;
-
+  
   if (i->type != ASN1_SEQUENCE)
     return 0;
 
@@ -116,14 +116,14 @@ rsa_private_key_from_der_iterator(struct rsa_public_key *pub,
 
       return (asn1_der_iterator_next(i) == ASN1_ITERATOR_END);
     }
-
+  
   return 0;
 }
 
 int
 rsa_keypair_from_der(struct rsa_public_key *pub,
 		     struct rsa_private_key *priv,
-		     unsigned limit,
+		     unsigned limit, 
 		     size_t length, const uint8_t *data)
 {
   struct asn1_der_iterator i;
@@ -137,5 +137,5 @@ rsa_keypair_from_der(struct rsa_public_key *pub,
   if (priv)
     return rsa_private_key_from_der_iterator(pub, priv, limit, &i);
   else
-    return rsa_public_key_from_der_iterator(pub, limit, &i);
+    return rsa_public_key_from_der_iterator(pub, limit, &i);    
 }

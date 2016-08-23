@@ -43,3 +43,4 @@ if [ -s ../libhogweed.a ] ; then
 fi
 
 exit 0
+

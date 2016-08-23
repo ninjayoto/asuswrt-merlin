@@ -50,22 +50,22 @@ define(<COUNT>, <%rax>)
 include_src(<x86_64/salsa20.m4>)
 
 C Possible improvements:
-C
+C 
 C Do two blocks (or more) at a time in parallel, to avoid limitations
 C due to data dependencies.
-C
+C 
 C Avoid redoing the permutation of the input for each block (all but
 C the two counter words are constant). Could also keep the input in
 C registers.
 
 	.file "salsa20-crypt.asm"
-
+	
 	C salsa20_crypt(struct salsa20_ctx *ctx, size_t length,
 	C		uint8_t *dst, const uint8_t *src)
 	.text
 	ALIGN(16)
 PROLOGUE(nettle_salsa20_crypt)
-	W64_ENTRY(4, 9)
+	W64_ENTRY(4, 9)	
 
 	test	LENGTH, LENGTH
 	jz	.Lend
@@ -76,7 +76,7 @@ PROLOGUE(nettle_salsa20_crypt)
 	pshufd	$0x09, M0101, M0011	C 01 01 00 00
 	pshufd	$0x41, M0101, M0110	C 01 00 00 01
 	pshufd	$0x22, M0101, M0101	C 01 00 01 00
-
+	
 .Lblock_loop:
 	movups	(CTX), X0
 	movups	16(CTX), X1
@@ -97,24 +97,24 @@ PROLOGUE(nettle_salsa20_crypt)
 	C	 4  9 14  3	K B K K
 	C	 8 13  2  7	B K K I
 	C	12  1  6 11	K K I K
-	C
+	C 
 	C The original rows are now diagonals.
 	SWAP(X0, X1, M0101)
 	SWAP(X2, X3, M0101)
 	SWAP(X1, X3, M0110)
-	SWAP(X0, X2, M0011)
+	SWAP(X0, X2, M0011)	
 
 	movl	$10, XREG(COUNT)
 	ALIGN(16)
 .Loop:
 	QROUND(X0, X1, X2, X3)
 	C For the row operations, we first rotate the rows, to get
-	C
+	C	
 	C	0 5 10 15
 	C	3 4  9 14
 	C	2 7  8 13
 	C	1 6 11 12
-	C
+	C 
 	C Now the original rows are turned into into columns. (This
 	C SIMD hack described in djb's papers).
 
@@ -132,7 +132,7 @@ PROLOGUE(nettle_salsa20_crypt)
 	decl	XREG(COUNT)
 	jnz	.Loop
 
-	SWAP(X0, X2, M0011)
+	SWAP(X0, X2, M0011)	
 	SWAP(X1, X3, M0110)
 	SWAP(X0, X1, M0101)
 	SWAP(X2, X3, M0101)
@@ -164,7 +164,7 @@ PROLOGUE(nettle_salsa20_crypt)
 	pxor	T1, X1
 	movups	X1, 16(DST)
 .Lxor1:
-	movups	(SRC), T0
+	movups	(SRC), T0	
 	pxor	T0, X0
 	movups	X0, (DST)
 

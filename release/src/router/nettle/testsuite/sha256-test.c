@@ -56,7 +56,7 @@ test_main(void)
    the values for A, B, C, D, E, F, G, H after the i:th round. The row
    i = -1 gives the initial values, and i = 99 gives the output
    values.
-
+   
 -1: 6a09e667 bb67ae85 3c6ef372 a54ff53a 510e527f 9b05688c 1f83d9ab 5be0cd19
  0: 6a09e667 bb67ae85 3c6ef372 fa2a4622 510e527f 9b05688c 1f83d9ab 5d6aebcd
  1: 6a09e667 bb67ae85 78ce7989 fa2a4622 510e527f 9b05688c 5a6ad9ad 5d6aebcd

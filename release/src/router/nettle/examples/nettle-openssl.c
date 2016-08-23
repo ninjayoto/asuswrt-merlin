@@ -182,7 +182,7 @@ nettle_openssl_arcfour128 = {
   NULL, NULL,
   openssl_arcfour_crypt,
   openssl_arcfour_crypt,
-  NULL,
+  NULL,  
 };
 
 /* Blowfish */
@@ -406,5 +406,5 @@ nettle_openssl_sha1 = {
   openssl_sha1_update,
   openssl_sha1_digest
 };
-
+  
 #endif /* WITH_OPENSSL */

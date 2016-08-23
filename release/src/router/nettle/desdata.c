@@ -69,7 +69,7 @@ main(int argc, char **argv)
 
 	switch ( argv[1][0] ) {
 
-default:
+default: 
 	return 1;
 	/*
 	 * <<< make the key parity table >>>

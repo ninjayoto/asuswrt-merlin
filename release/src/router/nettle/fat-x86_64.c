@@ -80,13 +80,13 @@ get_x86_features (struct x86_features *features)
 	      features->vendor = X86_INTEL;
 	    else if (MATCH(s, length, "amd", 3))
 	      features->vendor = X86_AMD;
-
+	    
 	  }
 	else if (MATCH (s, length, "aesni", 5))
 	  features->have_aesni = 1;
 	if (!sep)
 	  break;
-	s = sep + 1;
+	s = sep + 1;	
       }
   else
     {
@@ -99,7 +99,7 @@ get_x86_features (struct x86_features *features)
 
       _nettle_cpuid (1, cpuid_data);
       if (cpuid_data[2] & 0x02000000)
-	features->have_aesni = 1;
+	features->have_aesni = 1;      
     }
 }
 

@@ -24,7 +24,7 @@ test_main(void)
 		  "abcdefghijklmnopqrstuvwxyz0123456789"),
 	    SHEX("b0e20b6e3116640286ed3a87a5713079b21f5189"));
 
-  test_hash(&nettle_ripemd160,
+  test_hash(&nettle_ripemd160,  
 	    SDATA("1234567890123456789012345678901234567890"
 		  "1234567890123456789012345678901234567890"),
 	    SHEX("9b752e45573d4b39f4dbd3323cab82bf63326bfb"));

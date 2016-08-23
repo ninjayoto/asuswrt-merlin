@@ -39,13 +39,13 @@ define(<SE>,<%ebp>)
 define(<DATA>,<%esp>)
 define(<T1>,<%edi>)
 define(<T2>,<%esi>)
-
+	
 C Constants
 define(<K1VALUE>, <0x5A827999>)		C  Rounds  0-19
 define(<K2VALUE>, <0x6ED9EBA1>)		C  Rounds 20-39
 define(<K3VALUE>, <0x8F1BBCDC>)		C  Rounds 40-59
 define(<K4VALUE>, <0xCA62C1D6>)		C  Rounds 60-79
-
+	
 C Reads the input via T2 into register, byteswaps it, and stores it in the DATA array.
 C SWAP(index, register)
 define(<SWAP>, <
@@ -141,7 +141,7 @@ define(<ROUND_F3>, <
 	mov	T1, OFFSET(eval($6 % 16)) (DATA)
 	mov	$4, T2
 	and	$3, T2
-	lea	K3VALUE (T1, $5), $5
+ 	lea	K3VALUE (T1, $5), $5
 	mov	$4, T1
 	xor	$3, T1
 	and	$2, T1
@@ -156,7 +156,7 @@ define(<ROUND_F3>, <
 	.file "sha1-compress.asm"
 
 	C _nettle_sha1_compress(uint32_t *state, uint8_t *data)
-
+	
 	.text
 
 PROLOGUE(_nettle_sha1_compress)
@@ -1416,12 +1416,12 @@ ALIGN(32)
 
 C 	C Load and byteswap data
 C 	movl	88(%esp), T2
-C
+C 
 C 	SWAP( 0, %eax) SWAP( 1, %ebx) SWAP( 2, %ecx) SWAP( 3, %edx)
 C 	SWAP( 4, %eax) SWAP( 5, %ebx) SWAP( 6, %ecx) SWAP( 7, %edx)
 C 	SWAP( 8, %eax) SWAP( 9, %ebx) SWAP(10, %ecx) SWAP(11, %edx)
 C 	SWAP(12, %eax) SWAP(13, %ebx) SWAP(14, %ecx) SWAP(15, %edx)
-C
+C 
 C 	C load the state vector
 C 	movl	84(%esp),T1
 C 	movl	(T1),   SA
@@ -1429,97 +1429,97 @@ C 	movl	4(T1),  SB
 C 	movl	8(T1),  SC
 C 	movl	12(T1), SD
 C 	movl	16(T1), SE
-C
+C 
 C 	ROUND_F1_NOEXP(SA, SB, SC, SD, SE,  0)
 C 	ROUND_F1_NOEXP(SE, SA, SB, SC, SD,  1)
 C 	ROUND_F1_NOEXP(SD, SE, SA, SB, SC,  2)
 C 	ROUND_F1_NOEXP(SC, SD, SE, SA, SB,  3)
 C 	ROUND_F1_NOEXP(SB, SC, SD, SE, SA,  4)
-C
+C 
 C 	ROUND_F1_NOEXP(SA, SB, SC, SD, SE,  5)
 C 	ROUND_F1_NOEXP(SE, SA, SB, SC, SD,  6)
 C 	ROUND_F1_NOEXP(SD, SE, SA, SB, SC,  7)
 C 	ROUND_F1_NOEXP(SC, SD, SE, SA, SB,  8)
 C 	ROUND_F1_NOEXP(SB, SC, SD, SE, SA,  9)
-C
+C 
 C 	ROUND_F1_NOEXP(SA, SB, SC, SD, SE, 10)
 C 	ROUND_F1_NOEXP(SE, SA, SB, SC, SD, 11)
 C 	ROUND_F1_NOEXP(SD, SE, SA, SB, SC, 12)
 C 	ROUND_F1_NOEXP(SC, SD, SE, SA, SB, 13)
 C 	ROUND_F1_NOEXP(SB, SC, SD, SE, SA, 14)
-C
+C 
 C 	ROUND_F1_NOEXP(SA, SB, SC, SD, SE, 15)
 C 	ROUND_F1(SE, SA, SB, SC, SD, 16)
 C 	ROUND_F1(SD, SE, SA, SB, SC, 17)
 C 	ROUND_F1(SC, SD, SE, SA, SB, 18)
 C 	ROUND_F1(SB, SC, SD, SE, SA, 19)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 20, K2VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 21, K2VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 22, K2VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 23, K2VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 24, K2VALUE)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 25, K2VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 26, K2VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 27, K2VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 28, K2VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 29, K2VALUE)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 30, K2VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 31, K2VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 32, K2VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 33, K2VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 34, K2VALUE)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 35, K2VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 36, K2VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 37, K2VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 38, K2VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 39, K2VALUE)
-C
+C 
 C 	ROUND_F3(SA, SB, SC, SD, SE, 40)
 C 	ROUND_F3(SE, SA, SB, SC, SD, 41)
 C 	ROUND_F3(SD, SE, SA, SB, SC, 42)
 C 	ROUND_F3(SC, SD, SE, SA, SB, 43)
 C 	ROUND_F3(SB, SC, SD, SE, SA, 44)
-C
+C 
 C 	ROUND_F3(SA, SB, SC, SD, SE, 45)
 C 	ROUND_F3(SE, SA, SB, SC, SD, 46)
 C 	ROUND_F3(SD, SE, SA, SB, SC, 47)
 C 	ROUND_F3(SC, SD, SE, SA, SB, 48)
 C 	ROUND_F3(SB, SC, SD, SE, SA, 49)
-C
+C 
 C 	ROUND_F3(SA, SB, SC, SD, SE, 50)
 C 	ROUND_F3(SE, SA, SB, SC, SD, 51)
 C 	ROUND_F3(SD, SE, SA, SB, SC, 52)
 C 	ROUND_F3(SC, SD, SE, SA, SB, 53)
 C 	ROUND_F3(SB, SC, SD, SE, SA, 54)
-C
+C 
 C 	ROUND_F3(SA, SB, SC, SD, SE, 55)
 C 	ROUND_F3(SE, SA, SB, SC, SD, 56)
 C 	ROUND_F3(SD, SE, SA, SB, SC, 57)
 C 	ROUND_F3(SC, SD, SE, SA, SB, 58)
 C 	ROUND_F3(SB, SC, SD, SE, SA, 59)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 60, K4VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 61, K4VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 62, K4VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 63, K4VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 64, K4VALUE)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 65, K4VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 66, K4VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 67, K4VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 68, K4VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 69, K4VALUE)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 70, K4VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 71, K4VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 72, K4VALUE)
 C 	ROUND_F2(SC, SD, SE, SA, SB, 73, K4VALUE)
 C 	ROUND_F2(SB, SC, SD, SE, SA, 74, K4VALUE)
-C
+C 
 C 	ROUND_F2(SA, SB, SC, SD, SE, 75, K4VALUE)
 C 	ROUND_F2(SE, SA, SB, SC, SD, 76, K4VALUE)
 C 	ROUND_F2(SD, SE, SA, SB, SC, 77, K4VALUE)
@@ -1528,10 +1528,10 @@ C 	ROUND_F2(SB, SC, SD, SE, SA, 79, K4VALUE)
 
 	C Update the state vector
 	movl	84(%esp),T1
-	addl	SA, (T1)
-	addl	SB, 4(T1)
-	addl	SC, 8(T1)
-	addl	SD, 12(T1)
+	addl	SA, (T1) 
+	addl	SB, 4(T1) 
+	addl	SC, 8(T1) 
+	addl	SD, 12(T1) 
 	addl	SE, 16(T1)
 
 	addl	$64, %esp

@@ -7,7 +7,7 @@ test_main(void)
 	    SHEX("cb00753f45a35e8b b5a03d699ac65007"
 		 "272c32ab0eded163 1a8b605a43ff5bed"
 		 "8086072ba1e7cc23 58baeca134c825a7"));
-
+  
   test_hash(&nettle_sha384,
 	    SDATA("abcdefghbcdefghicdefghijdefg"
 		  "hijkefghijklfghijklmghijklmn"

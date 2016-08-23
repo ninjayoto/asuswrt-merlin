@@ -4,7 +4,7 @@
    Knuth, TAoCP, 3.6
 
    Copyright (C) 2002 Niels Möller
-
+ 
    This file is part of GNU Nettle.
 
    GNU Nettle is free software: you can redistribute it and/or
@@ -109,7 +109,7 @@ knuth_lfib_init(struct knuth_lfib_ctx *ctx, uint32_t seed)
     ctx->x[j-LL] = x[j];
 
   ctx->index = 0;
-}
+}     
 
 /* Get's a single number in the range 0 ... 2^30-1 */
 uint32_t
@@ -117,15 +117,15 @@ knuth_lfib_get(struct knuth_lfib_ctx *ctx)
 {
   uint32_t value;
   assert(ctx->index < KK);
-
+  
   value = ctx->x[ctx->index];
   ctx->x[ctx->index] -= ctx->x[(ctx->index + KK - LL) % KK];
   ctx->x[ctx->index] &= (MM-1);
-
+  
   ctx->index = (ctx->index + 1) % KK;
 
   return value;
-}
+} 
 
 /* NOTE: Not at all optimized. */
 void
@@ -133,7 +133,7 @@ knuth_lfib_get_array(struct knuth_lfib_ctx *ctx,
 		     size_t n, uint32_t *a)
 {
   unsigned i;
-
+  
   for (i = 0; i<n; i++)
     a[i] = knuth_lfib_get(ctx);
 }
@@ -145,7 +145,7 @@ knuth_lfib_random(struct knuth_lfib_ctx *ctx,
 {
   /* Use 24 bits from each number, xoring together some of the
      bits. */
-
+  
   for (; n >= 3; n-=3, dst += 3)
     {
       uint32_t value = knuth_lfib_get(ctx);

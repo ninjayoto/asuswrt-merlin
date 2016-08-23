@@ -7,14 +7,14 @@ test_main(void)
   struct rsa_private_key key;
 
   mpz_t expected;
-
+  
   mpz_init(expected);
-
+  
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
 
   test_rsa_set_key_1(&pub, &key);
-
+  
   /* Test md5 signatures */
   mpz_set_str(expected,
 	      "53bf517009fa956e" "3daa6adc95e8663d" "3759002f488bbbad"
@@ -62,7 +62,7 @@ test_main(void)
    *   lsh-keygen -a rsa -l 777 -f advanced-hex
    *
    * Interesting because the size of n doesn't equal the sum of the
-   * sizes of p and q.
+   * sizes of p and q. 
    *
    * (private-key (rsa-pkcs1
    *        (n #013b04440e3eef25 d51c738d508a7fa8 b3445180c342af0f
@@ -92,38 +92,38 @@ test_main(void)
    *            05e1831619db2f10 bb9b6a8fd5c95df2 eb78f303ea0c0cc8
    *            06#)))
    */
-
+  
   mpz_set_str(pub.n,
 	      "013b04440e3eef25" "d51c738d508a7fa8" "b3445180c342af0f"
 	      "4cb5a789047300e2" "cfc5c5450974cfc2" "448aeaaa7f43c374"
 	      "c9a3b038b181f2d1" "0f1a2327fd2c087b" "a49bf1086969fd2c"
 	      "d1df3fd69f81fa4b" "162cc8bbb363fc95" "b7b24b9c53d0c67e"
 	      "f52b", 16);
-
+  
   mpz_set_str(pub.e, "3f1a012d", 16);
 
   ASSERT (rsa_public_key_prepare(&pub));
-
+  
   mpz_set_str(key.p,
 	      "0b73c990eeda0a2a" "2c26416052c85560" "0c5c0f5ce86a8326"
 	      "166acea91786237a" "7ff884e66dbfdd3a" "ab9d9801414c1506"
 	      "8b", 16);
-
+  
   mpz_set_str(key.q,
 	      "1b81c19a62802a41" "9c99283331b0badb" "08eb0c25ffce0fbf"
 	      "50017850036f32f3" "2132a845b91a5236" "61f7b451d587383f"
 	      "e1", 16);
-
+  
   mpz_set_str(key.a,
 	      "0a912fc93a6cca6b" "3521725a3065b3be" "3c9745e29c93303d"
 	      "7d29316c6cafa4a2" "89945f964fcdea59" "1f9d248b0b6734be"
 	      "c9", 16);
-
+  
   mpz_set_str(key.b,
 	      "1658eca933251813" "1eb19c77aba13d73" "e0b8f4ce986d7615"
 	      "764c6b0b03c18146" "46b7f332c43e05c5" "351e09006979ca5b"
 	      "05", 16);
-
+  
   mpz_set_str(key.c,
 	      "0114720dace7b27f" "2bf2850c1804869f" "79a0aad0ec02e6b4"
 	      "05e1831619db2f10" "bb9b6a8fd5c95df2" "eb78f303ea0c0cc8"

@@ -73,11 +73,11 @@ ecc_add_eh (const struct ecc_curve *ecc,
 #define C (scratch)
 #define D (scratch + 1*ecc->p.size)
 #define T (scratch + 2*ecc->p.size)
-#define E (scratch + 3*ecc->p.size)
+#define E (scratch + 3*ecc->p.size) 
 #define B (scratch + 4*ecc->p.size)
 #define F D
 #define G E
-
+  
   ecc_modp_mul (ecc, C, x1, x2);
   ecc_modp_mul (ecc, D, y1, y2);
   ecc_modp_add (ecc, x3, x1, y1);
@@ -91,7 +91,7 @@ ecc_add_eh (const struct ecc_curve *ecc,
   ecc_modp_add (ecc, C, D, C); /* ! */
   ecc_modp_sqr (ecc, B, z1);
   ecc_modp_sub (ecc, F, B, E);
-  ecc_modp_add (ecc, G, B, E);
+  ecc_modp_add (ecc, G, B, E);  
 
   /* x3 */
   ecc_modp_mul (ecc, B, G, T); /* ! */

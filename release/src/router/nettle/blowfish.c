@@ -397,7 +397,7 @@ blowfish_set_key (struct blowfish_ctx *ctx,
       ctx->p[i] = datal;
       ctx->p[i + 1] = datar;
     }
-
+  
   for (j = 0; j < 4; j++)
     for (i = 0; i < 256; i += 2)
       {

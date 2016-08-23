@@ -42,7 +42,7 @@ set_align(uint8_t *buf, unsigned align)
   else if (offset > align)
     buf += (align + ALIGN_SIZE - offset);
 
-  return buf;
+  return buf;  
 }
 
 static void
@@ -69,7 +69,7 @@ test_memxor (const uint8_t *a, const uint8_t *b, const uint8_t *c,
 
   memxor (dst, src, size);
   ASSERT (MEMEQ (size, dst, c));
-
+  
   test_unmark(src_buf, sizeof (src_buf));
   test_unmark(dst_buf, sizeof (src_buf));
   ASSERT (dst[-1] == 17);
@@ -172,7 +172,7 @@ test_main(void)
     17, 23, 24, 25, 30, 31, 32, 33, 34, 35, 36, 37,
     250, 251, 252, 253,254, 255, 256, -1
   };
-
+  
   unsigned i, align_dst, align_a, align_b;
   for (i = 0; size[i] >= 0; i++)
     for (align_dst = 0; align_dst < ALIGN_SIZE; align_dst++)

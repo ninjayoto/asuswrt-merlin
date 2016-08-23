@@ -22,7 +22,7 @@ main(int argc, char **argv)
   struct sha1_ctx ctx;
   uint8_t buffer[BUF_SIZE];
   uint8_t digest[SHA1_DIGEST_SIZE];
-
+  
   sha1_init(&ctx);
   for (;;)
   {
@@ -37,5 +37,5 @@ main(int argc, char **argv)
   sha1_digest(&ctx, SHA1_DIGEST_SIZE, digest);
 
   display_hex(SHA1_DIGEST_SIZE, digest);
-  return EXIT_SUCCESS;
+  return EXIT_SUCCESS;  
 }

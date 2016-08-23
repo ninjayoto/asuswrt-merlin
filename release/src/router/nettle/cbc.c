@@ -90,10 +90,10 @@ cbc_decrypt(const void *ctx, nettle_cipher_func *f,
       /* For in-place CBC, we decrypt into a temporary buffer of size
        * at most CBC_BUFFER_LIMIT, and process that amount of data at
        * a time. */
-
+      
       /* NOTE: We assume that block_size <= CBC_BUFFER_LIMIT, and we
 	 depend on memxor3 working from the end of the area, allowing
-	 certain overlapping operands. */
+	 certain overlapping operands. */ 
 
       TMP_DECL(buffer, uint8_t, CBC_BUFFER_LIMIT);
       TMP_DECL(initial_iv, uint8_t, NETTLE_MAX_CIPHER_BLOCK_SIZE);
@@ -141,12 +141,12 @@ static void foo(void)
   struct CBC_CTX(struct twofish_ctx, TWOFISH_BLOCK_SIZE) ctx;
   uint8_t src[TWOFISH_BLOCK_SIZE];
   uint8_t dst[TWOFISH_BLOCK_SIZE];
-
+  
   CBC_ENCRYPT(&ctx, twofish_encrypt, TWOFISH_BLOCK_SIZE, dst, src);
 
   /* Should result in a warning */
   CBC_ENCRYPT(&ctx, aes_encrypt, TWOFISH_BLOCK_SIZE, dst, src);
-
+  
 }
 
 static void foo2(void)
@@ -155,7 +155,7 @@ static void foo2(void)
   uint8_t iv[TWOFISH_BLOCK_SIZE];
   uint8_t src[TWOFISH_BLOCK_SIZE];
   uint8_t dst[TWOFISH_BLOCK_SIZE];
-
+  
   CBC_ENCRYPT2(&ctx, twofish_encrypt, TWOFISH_BLOCK_SIZE, iv, TWOFISH_BLOCK_SIZE, dst, src);
   /* Should result in a warning */
   CBC_ENCRYPT2(&ctx, aes_encrypt, TWOFISH_BLOCK_SIZE, iv, TWOFISH_BLOCK_SIZE, dst, src);

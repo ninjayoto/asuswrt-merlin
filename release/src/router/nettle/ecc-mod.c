@@ -78,7 +78,7 @@ ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp)
 
 	  for (i = 0; i < sn; i++)
 	    rp[rn+i] = mpn_addmul_1 (rp + rn - mn + i, m->B, bn, rp[rn+i]);
-
+				     
 	  hi = mpn_add_n (rp + rn - sn, rp + rn - sn, rp + rn, sn);
 	  hi = cnd_add_n (hi, rp + rn - mn, m->B, mn);
 	  assert (hi == 0);
@@ -89,7 +89,7 @@ ecc_mod (const struct ecc_modulo *m, mp_limb_t *rp)
     {
     final_limbs:
       sn = rn - mn;
-
+      
       for (i = 0; i < sn; i++)
 	rp[mn+i] = mpn_addmul_1 (rp + i, m->B, bn, rp[mn+i]);
 

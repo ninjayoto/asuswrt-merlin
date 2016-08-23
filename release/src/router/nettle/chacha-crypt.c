@@ -61,7 +61,7 @@ chacha_crypt(struct chacha_ctx *ctx,
 {
   if (!length)
     return;
-
+  
   for (;;)
     {
       uint32_t x[_CHACHA_STATE_LENGTH];
@@ -71,7 +71,7 @@ chacha_crypt(struct chacha_ctx *ctx,
       ctx->state[13] += (++ctx->state[12] == 0);
 
       /* stopping at 2^70 length per nonce is user's responsibility */
-
+      
       if (length <= CHACHA_BLOCK_SIZE)
 	{
 	  memxor3 (c, m, x, length);

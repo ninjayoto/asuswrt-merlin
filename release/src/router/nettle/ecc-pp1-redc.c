@@ -48,7 +48,7 @@ ecc_pp1_redc (const struct ecc_modulo *m, mp_limb_t *rp)
   mp_limb_t hi, cy;
   unsigned shift = m->size * GMP_NUMB_BITS - m->bit_size;
   mp_size_t k = m->redc_size;
-
+  
   for (i = 0; i < m->size; i++)
     rp[i] = mpn_addmul_1 (rp + i + k,
 			  m->redc_mpm1, m->size - k, rp[i]);
@@ -59,11 +59,11 @@ ecc_pp1_redc (const struct ecc_modulo *m, mp_limb_t *rp)
       rp[m->size - 1] = (rp[m->size - 1]
 			   & (((mp_limb_t) 1 << (GMP_NUMB_BITS - shift)) - 1))
 	+ mpn_addmul_1 (rp, m->B_shifted, m->size-1, hi);
-
+	  
     }
   else
     {
       cy = cnd_sub_n (hi, rp, m->m, m->size);
-      assert (cy == hi);
+      assert (cy == hi);      
     }
 }

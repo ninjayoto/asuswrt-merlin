@@ -96,7 +96,7 @@ sexp_convert_item(struct sexp_parser *parser,
 	unsigned item;
 
 	sexp_put_char(output, '(');
-
+  
 	for (item = 0;
 	     sexp_parse(parser, token), token->type != SEXP_LIST_END;
 	     item++)
@@ -115,7 +115,7 @@ sexp_convert_item(struct sexp_parser *parser,
 			item++;
 		      }
 		    break;
-
+		    
 		  case  1:
 		    sexp_put_char(output, ' ');
 		    indent = output->pos;
@@ -132,8 +132,8 @@ sexp_convert_item(struct sexp_parser *parser,
 	sexp_put_char(output, ')');
 
 	break;
-      }
-
+      }      
+      
     case SEXP_STRING:
       sexp_put_string(output, mode_out, &token->string);
       break;
@@ -142,7 +142,7 @@ sexp_convert_item(struct sexp_parser *parser,
       sexp_put_char(output, '[');
       sexp_put_string(output, mode_out, &token->display);
       sexp_put_char(output, ']');
-      sexp_put_string(output, mode_out, &token->string);
+      sexp_put_string(output, mode_out, &token->string);      
       break;
 
     case SEXP_COMMENT:
@@ -170,8 +170,8 @@ sexp_convert_item(struct sexp_parser *parser,
  *             <PUBLIC-KEY
  * Reads an s-expression on stdin, and outputs the same s-expression on stdout,
  * possibly using a different encoding. By default, output uses the advanced
- * encoding.
- *
+ * encoding. 
+ * 
  *       --hash=Algorithm       Hash algorithm (default sha1).
  *       --once                 Process exactly one s-expression.
  *       --raw-hash             Output the hash for the canonical representation
@@ -187,18 +187,18 @@ sexp_convert_item(struct sexp_parser *parser,
  *   -q, --quiet                Suppress all warnings and diagnostic messages
  *       --trace                Detailed trace
  *   -v, --verbose              Verbose diagnostic messages
- *
+ * 
  *  Valid sexp-formats are transport, canonical, advanced, and international.
- *
+ * 
  *  Valid sexp-formats are transport, canonical, advanced, advanced-hex and
  *  international.
  *   -f, --output-format=format Variant of the s-expression syntax to generate.
  *   -i, --input-format=format  Variant of the s-expression syntax to accept.
- *
+ * 
  *   -?, --help                 Give this help list
  *       --usage                Give a short usage message
  *   -V, --version              Print program version
- */
+ */ 
 
 struct conv_options
 {
@@ -223,19 +223,19 @@ match_argument(const char *given, const char *name)
 static void
 parse_options(struct conv_options *o,
 	      int argc, char **argv)
-{
+{  
   o->mode = SEXP_ADVANCED;
   o->prefer_hex = 0;
   o->once = 0;
   o->lock = 0;
   o->hash = NULL;
   o->width = 72;
-
+  
   for (;;)
     {
       static const struct nettle_hash *hashes[] =
 	{ &nettle_md5, &nettle_sha1, &nettle_sha256, NULL };
-
+  
       static const struct option options[] =
 	{
 	  /* Name, args, flag, val */
@@ -260,14 +260,14 @@ parse_options(struct conv_options *o,
       int c;
       int option_index = 0;
       unsigned i;
-
+     
       c = getopt_long(argc, argv, "Vs:w:", options, &option_index);
 
       switch (c)
 	{
 	default:
 	  abort();
-
+	  
 	case -1:
 	  if (optind != argc)
 	    die("sexp-conv: Command line takes no arguments, only options.\n");
@@ -275,7 +275,7 @@ parse_options(struct conv_options *o,
 
 	case '?':
 	  exit(EXIT_FAILURE);
-
+	  
 	case 'w':
 	  {
 	    char *end;
@@ -307,7 +307,7 @@ parse_options(struct conv_options *o,
 	case OPT_ONCE:
 	  o->once = 1;
 	  break;
-
+	
 	case OPT_HASH:
 	  o->mode = SEXP_CANONICAL;
 	  if (!optarg)
@@ -318,7 +318,7 @@ parse_options(struct conv_options *o,
 		if (!hashes[i])
 		  die("sexp_conv: Unknown hash algorithm `%s'\n",
 		      optarg);
-
+	      
 		if (match_argument(optarg, hashes[i]->name))
 		  {
 		    o->hash = hashes[i];
@@ -387,13 +387,13 @@ main(int argc, char **argv)
   if (options.lock)
     {
       struct flock fl;
-
+  
       memset(&fl, 0, sizeof(fl));
       fl.l_type = F_WRLCK;
       fl.l_whence = SEEK_SET;
       fl.l_start = 0;
       fl.l_len = 0; /* Means entire file. */
-
+      
       if (fcntl(STDOUT_FILENO, F_SETLKW, &fl) == -1)
 	die("Locking output file failed: %s\n", strerror(errno));
     }
@@ -404,19 +404,19 @@ main(int argc, char **argv)
       void *ctx = xalloc(options.hash->context_size);
       sexp_output_hash_init(&output, options.hash, ctx);
     }
-
+  
   sexp_get_char(&input);
-
+  
   sexp_parse(&parser, &token);
-
+  
   if (token.type == SEXP_EOF)
     {
       if (options.once)
 	die("sexp-conv: No input expression.\n");
       return EXIT_SUCCESS;
     }
-
-  do
+  
+  do 
     {
       sexp_convert_item(&parser, &token, &output, options.mode, 0);
       if (options.hash)
@@ -426,15 +426,15 @@ main(int argc, char **argv)
 	}
       else if (options.mode != SEXP_CANONICAL)
 	sexp_put_newline(&output, 0);
-
+	  
       sexp_parse(&parser, &token);
     }
   while (!options.once && token.type != SEXP_EOF);
 
   sexp_compound_token_clear(&token);
-
+  
   if (fflush(output.f) < 0)
     die("Final fflush failed: %s.\n", strerror(errno));
-
+  
   return EXIT_SUCCESS;
 }

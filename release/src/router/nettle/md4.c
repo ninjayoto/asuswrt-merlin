@@ -68,7 +68,7 @@ md4_init(struct md4_ctx *ctx)
       0x10325476,
     };
   memcpy(ctx->state, iv, sizeof(ctx->state));
-
+  
   ctx->count = 0;
   ctx->index = 0;
 }
@@ -96,7 +96,7 @@ md4_digest(struct md4_ctx *ctx,
   for (i = 0; i < MD4_DATA_LENGTH - 2; i++)
     data[i] = LE_READ_UINT32(ctx->block + 4*i);
 
-  /* There are 512 = 2^9 bits in one block
+  /* There are 512 = 2^9 bits in one block 
    * Little-endian order => Least significant word first */
   bit_count = (ctx->count << 9) | (ctx->index << 3);
   data[MD4_DATA_LENGTH-2] = bit_count;
@@ -116,7 +116,7 @@ md4_digest(struct md4_ctx *ctx,
 ( w += f(x, y, z) + data,  w = w<<s | w>>(32-s) )
 
 /* Perform the MD4 transformation on one full block of 16 32-bit words. */
-
+   
 static void
 md4_transform(uint32_t *digest, const uint32_t *data)
 {
@@ -188,7 +188,7 @@ md4_compress(struct md4_ctx *ctx, const uint8_t *block)
 {
   uint32_t data[MD4_DATA_LENGTH];
   unsigned i;
-
+  
   /* Endian independent conversion */
   for (i = 0; i<16; i++, block += 4)
     data[i] = LE_READ_UINT32(block);

@@ -89,7 +89,7 @@ nettle_arcfour128 = {
   NULL, NULL,
   (nettle_crypt_func *) arcfour_crypt,
   (nettle_crypt_func *) arcfour_crypt,
-  NULL,
+  NULL,  
 };
 
 const struct nettle_aead

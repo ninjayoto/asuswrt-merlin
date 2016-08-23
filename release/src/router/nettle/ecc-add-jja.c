@@ -58,7 +58,7 @@ ecc_add_jja (const struct ecc_curve *ecc,
      http://www.hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-2001-b):
 
      Computation		Operation	Live variables
-
+     
       ZZ = Z_1^2		sqr		ZZ
       H = X_2*ZZ - X_1		mul (djb: U_2)	ZZ, H
       HH = H^2			sqr		ZZ, H, HH
@@ -98,12 +98,12 @@ ecc_add_jja (const struct ecc_curve *ecc,
   ecc_modp_sqr (ecc, j, r + 2*ecc->p.size);
   ecc_modp_sub (ecc, j, j, zz);
   ecc_modp_sub (ecc, r + 2*ecc->p.size, j, hh);
-
+  
   /* w */
   ecc_modp_mul (ecc, j, y2, w);
   ecc_modp_sub (ecc, w, j, y1);
   ecc_modp_mul_1 (ecc, w, w, 2);
-
+  
   /* i replaces hh, j */
   ecc_modp_mul_1 (ecc, hh, hh, 4);
   ecc_modp_mul (ecc, j, hh, h);
@@ -111,7 +111,7 @@ ecc_add_jja (const struct ecc_curve *ecc,
   /* v */
   ecc_modp_mul (ecc, v, x1, hh);
 
-  /* x_3, use (h, hh) as sqratch */
+  /* x_3, use (h, hh) as sqratch */  
   ecc_modp_sqr (ecc, h, w);
   ecc_modp_sub (ecc, r, h, j);
   ecc_modp_submul_1 (ecc, r, v, 2);

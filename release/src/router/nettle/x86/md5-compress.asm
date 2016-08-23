@@ -63,7 +63,7 @@ define(<F4>,<
 	xorl	$2, TMP>)
 
 define(<REF>,<OFFSET($1)(INPUT)>)
-
+	
 C ROUND(f, w, x, y, z, k, data, s):
 C	w += f(x,y,z) + data + k
 C	w <<< s
@@ -79,7 +79,7 @@ define(<ROUND>,<
 	.file "md5-compress.asm"
 
 	C _nettle_md5_compress(uint32_t *state, uint8_t *data)
-
+	
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_md5_compress)
@@ -120,7 +120,7 @@ PROLOGUE(_nettle_md5_compress)
 	ROUND(<F1>, SD, SA, SB, SC, REF(13), $0xfd987193, 12)
 	ROUND(<F1>, SC, SD, SA, SB, REF(14), $0xa679438e, 17)
 	ROUND(<F1>, SB, SC, SD, SA, REF(15), $0x49b40821, 22)
-
+	
         ROUND(<F2>, SA, SB, SC, SD, REF( 1), $0xf61e2562, 5)
         ROUND(<F2>, SD, SA, SB, SC, REF( 6), $0xc040b340, 9)
         ROUND(<F2>, SC, SD, SA, SB, REF(11), $0x265e5a51, 14)
@@ -136,7 +136,7 @@ PROLOGUE(_nettle_md5_compress)
         ROUND(<F2>, SA, SB, SC, SD, REF(13), $0xa9e3e905, 5)
         ROUND(<F2>, SD, SA, SB, SC, REF( 2), $0xfcefa3f8, 9)
         ROUND(<F2>, SC, SD, SA, SB, REF( 7), $0x676f02d9, 14)
-        ROUND(<F2>, SB, SC, SD, SA, REF(12), $0x8d2a4c8a, 20)
+        ROUND(<F2>, SB, SC, SD, SA, REF(12), $0x8d2a4c8a, 20)        
 
         ROUND(<F3>, SA, SB, SC, SD, REF( 5), $0xfffa3942, 4)
         ROUND(<F3>, SD, SA, SB, SC, REF( 8), $0x8771f681, 11)
@@ -153,7 +153,7 @@ PROLOGUE(_nettle_md5_compress)
         ROUND(<F3>, SA, SB, SC, SD, REF( 9), $0xd9d4d039, 4)
         ROUND(<F3>, SD, SA, SB, SC, REF(12), $0xe6db99e5, 11)
         ROUND(<F3>, SC, SD, SA, SB, REF(15), $0x1fa27cf8, 16)
-        ROUND(<F3>, SB, SC, SD, SA, REF( 2), $0xc4ac5665, 23)
+        ROUND(<F3>, SB, SC, SD, SA, REF( 2), $0xc4ac5665, 23)        
 
         ROUND(<F4>, SA, SB, SC, SD, REF( 0), $0xf4292244, 6)
         ROUND(<F4>, SD, SA, SB, SC, REF( 7), $0x432aff97, 10)
@@ -171,13 +171,13 @@ PROLOGUE(_nettle_md5_compress)
         ROUND(<F4>, SD, SA, SB, SC, REF(11), $0xbd3af235, 10)
         ROUND(<F4>, SC, SD, SA, SB, REF( 2), $0x2ad7d2bb, 15)
         ROUND(<F4>, SB, SC, SD, SA, REF( 9), $0xeb86d391, 21)
-
+	
 	C Update the state vector
 	movl	20(%esp),TMP
-	addl	SA, (TMP)
-	addl	SB, 4(TMP)
-	addl	SC, 8(TMP)
-	addl	SD, 12(TMP)
+	addl	SA, (TMP) 
+	addl	SB, 4(TMP) 
+	addl	SC, 8(TMP) 
+	addl	SD, 12(TMP) 
 
 	popl	%edi
 	popl	%esi

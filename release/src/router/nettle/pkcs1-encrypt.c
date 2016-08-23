@@ -62,7 +62,7 @@ pkcs1_encrypt (size_t key_size,
    *
    * where padding should be at least 8 pseudorandomly generated
    * *non-zero* octets. */
-
+     
   if (length + 11 > key_size)
     /* Message too long for this key. */
     return 0;
@@ -70,7 +70,7 @@ pkcs1_encrypt (size_t key_size,
   /* At least 8 octets of random padding */
   padding = key_size - length - 3;
   assert(padding >= 8);
-
+  
   TMP_GMP_ALLOC(em, key_size - 1);
   em[0] = 2;
 

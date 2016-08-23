@@ -63,7 +63,7 @@ ecc_mul_a_eh (const struct ecc_curve *ecc,
   /* x = 0, y = 1, z = 1 */
   mpn_zero (r, 3*ecc->p.size);
   r[ecc->p.size] = r[2*ecc->p.size] = 1;
-
+  
   for (i = ecc->p.size; i-- > 0; )
     {
       mp_limb_t w = np[i];

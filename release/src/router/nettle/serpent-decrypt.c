@@ -507,7 +507,7 @@ serpent_decrypt (const struct serpent_ctx *ctx,
 	  ROUND_INVERSE (1, ctx->keys[k+1], x0,x1,x2,x3, y0,y1,y2,y3);
 	  ROUND_INVERSE (0, ctx->keys[k], y0,y1,y2,y3, x0,x1,x2,x3);
 	}
-
+      
       LE_WRITE_UINT32 (dst, x0);
       LE_WRITE_UINT32 (dst + 4, x1);
       LE_WRITE_UINT32 (dst + 8, x2);
@@ -553,7 +553,7 @@ serpent_decrypt (const struct serpent_ctx *ctx,
 	  ROUND64_INVERSE (1, ctx->keys[k+1], x0,x1,x2,x3, y0,y1,y2,y3);
 	  ROUND64_INVERSE (0, ctx->keys[k], y0,y1,y2,y3, x0,x1,x2,x3);
 	}
-
+    
       LE_WRITE_UINT32 (dst + 16, x0);
       LE_WRITE_UINT32 (dst + 20, x1);
       LE_WRITE_UINT32 (dst + 24, x2);
@@ -563,5 +563,5 @@ serpent_decrypt (const struct serpent_ctx *ctx,
       x2 >>= 32; LE_WRITE_UINT32 (dst + 8, x2);
       x3 >>= 32; LE_WRITE_UINT32 (dst + 12, x3);
     }
-#endif /* HAVE_NATIVE_64_BIT */
+#endif /* HAVE_NATIVE_64_BIT */  
 }

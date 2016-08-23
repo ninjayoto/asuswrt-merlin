@@ -7,7 +7,7 @@ display (const struct sha3_state *state)
 {
   unsigned x, y;
   for (x = 0; x < 5; x++)
-    {
+    {      
       for (y = 0; y < 5; y++)
 	/* Is there a simple and *portable* way to print uint64_t? */
 	printf ("%8lx%08lx ", (unsigned long) (state->a[x +5*y] >> 32), (unsigned long) (state->a[x+5*y] & 0xffffffff));
@@ -51,5 +51,5 @@ test_main(void)
       printf("Got:\n"); display (&state);
       printf("Ref:\n"); display (&s2);
       FAIL();
-    }
+    }  
 }

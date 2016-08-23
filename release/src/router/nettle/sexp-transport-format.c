@@ -55,7 +55,7 @@ sexp_transport_vformat(struct nettle_buffer *buffer,
 
       start = buffer->size;
     }
-
+  
   length = sexp_vformat(buffer, format, args);
 
   if (!length)
@@ -70,11 +70,11 @@ sexp_transport_vformat(struct nettle_buffer *buffer,
 
       base64_encode_raw(buffer->contents + start,
 			length, buffer->contents + start);
-
+      
       if (!NETTLE_BUFFER_PUTC(buffer, '}'))
 	return 0;
     }
-
+  
   return base64_length + 2;
 }
 
@@ -88,6 +88,6 @@ sexp_transport_format(struct nettle_buffer *buffer,
   va_start(args, format);
   done = sexp_transport_vformat(buffer, format, args);
   va_end(args);
-
+  
   return done;
 }

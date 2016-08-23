@@ -65,7 +65,7 @@ find_algorithm (const char *name)
 {
   const struct nettle_hash *alg;
   unsigned i;
-
+  
   for (i = 0; (alg = nettle_hashes[i]); i++)
     if (!strcmp(name, alg->name))
       return alg;
@@ -83,7 +83,7 @@ hash_file(const struct nettle_hash *hash, void *ctx, FILE *f)
       size_t res = fread(buffer, 1, sizeof(buffer), f);
       if (ferror(f))
 	return 0;
-
+      
       hash->update(ctx, res, buffer);
       if (feof(f))
 	return 1;
@@ -128,10 +128,23 @@ digest_file(const struct nettle_hash *alg,
       hex[BASE16_ENCODE_LENGTH(digest_length - i)] = 0;
       printf("%s %s\n", hex, alg->name);
     }
-
+  
   free(digest);
 
   return 1;
+}
+
+static void
+usage (FILE *f)
+{
+  fprintf(f, "Usage: nettle-hash -a ALGORITHM [OPTIONS] [FILE ...]\n"
+	  "Options:\n"
+	  "  --help              Show this help.\n"
+	  "  -V, --version       Show version information.\n"
+	  "  --list              List supported hash algorithms.\n"
+	  "  -a, --algorithm=ALG Hash algorithm to use.\n"
+	  "  -l, --length=LENGTH Desired digest length (octets)\n"
+	  "  --raw               Raw binary output.\n");
 }
 
 /* FIXME: Be more compatible with md5sum and sha1sum. Options -c
@@ -165,15 +178,11 @@ main (int argc, char **argv)
       {
       default:
 	abort();
+      case '?':
+	usage (stderr);
+	return EXIT_FAILURE;
       case OPT_HELP:
-	printf("nettle-hash -a ALGORITHM [OPTIONS] [FILE ...]\n"
-	       "Options:\n"
-	       "  --help              Show this help.\n"
-	       "  -V, --version       Show version information.\n"
-	       "  --list              List supported hash algorithms.\n"
-	       "  -a, --algorithm=ALG Hash algorithm to use.\n"
-	       "  -l, --length=LENGTH Desired digest length (octets)\n"
-	       "  --raw               Raw binary output.\n");
+	usage (stdout);
 	return EXIT_SUCCESS;
       case 'V':
 	printf("nettle-hash (" PACKAGE_STRING ")\n");
@@ -201,7 +210,7 @@ main (int argc, char **argv)
   if (!alg_name)
     die("Algorithm argument (-a option) is mandatory.\n"
 	"See nettle-hash --help for further information.\n");
-
+      
   alg = find_algorithm (alg_name);
   if (!alg)
     die("Hash algorithm `%s' not supported or .\n"
@@ -213,7 +222,7 @@ main (int argc, char **argv)
   else if (length > alg->digest_size)
     die ("Length argument %d too large for selected algorithm.\n",
 	 length);
-
+    
   argv += optind;
   argc -= optind;
 

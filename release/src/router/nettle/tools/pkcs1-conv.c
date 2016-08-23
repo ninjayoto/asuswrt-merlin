@@ -79,7 +79,7 @@ static int
 read_line(struct nettle_buffer *buffer, FILE *f)
 {
   int c;
-
+  
   while ((c = getc(f)) != EOF)
     {
       if (!NETTLE_BUFFER_PUTC(buffer, c))
@@ -93,8 +93,8 @@ read_line(struct nettle_buffer *buffer, FILE *f)
       werror("Read failed: %s\n", strerror(errno));
       return 0;
     }
-
-  else
+  
+  else 
     return -1;
 }
 
@@ -102,7 +102,7 @@ static int
 read_file(struct nettle_buffer *buffer, FILE *f)
 {
   int c;
-
+  
   while ((c = getc(f)) != EOF)
     if (!NETTLE_BUFFER_PUTC(buffer, c))
       return 0;
@@ -134,9 +134,9 @@ pem_ws[33] = {
   1 /* SPC */
 };
 
-#define PEM_IS_SPACE(c) ((c) < sizeof(pem_ws) && pem_ws[(c)])
+#define PEM_IS_SPACE(c) ((c) < sizeof(pem_ws) && pem_ws[(c)]) 
 
-/* Returns 1 on match, otherwise 0. */
+/* Returns 1 on match, otherwise 0. */ 
 static int
 match_pem_start(size_t length, const uint8_t *line,
 		size_t *marker_start,
@@ -160,7 +160,7 @@ match_pem_start(size_t length, const uint8_t *line,
 }
 
 /* Returns 1 on match, -1 if the line is of the right form except for
-   the marker, otherwise 0. */
+   the marker, otherwise 0. */ 
 static int
 match_pem_end(size_t length, const uint8_t *line,
 	      size_t marker_length,
@@ -182,7 +182,7 @@ match_pem_end(size_t length, const uint8_t *line,
 	return -1;
     }
   else
-    return 0;
+    return 0;  
 }
 
 struct pem_info
@@ -197,7 +197,7 @@ struct pem_info
 static int
 read_pem(struct nettle_buffer *buffer, FILE *f,
 	 struct pem_info *info)
-{
+{  
   /* Find start line */
   for (;;)
     {
@@ -237,7 +237,7 @@ read_pem(struct nettle_buffer *buffer, FILE *f,
 	  werror("PEM END line doesn't match BEGIN.\n");
 	  return 0;
 	case 1:
-	  /* Return base 64 data; let caller do the decoding */
+	  /* Return base 64 data; let caller do the decoding */ 
 	  info->data_length = line_start - info->data_start;
 	  return 1;
 	}
@@ -249,7 +249,7 @@ decode_base64(struct nettle_buffer *buffer,
 	      size_t start, size_t *length)
 {
   struct base64_decode_ctx ctx;
-
+  
   base64_decode_init(&ctx);
 
   /* Decode in place */
@@ -258,7 +258,7 @@ decode_base64(struct nettle_buffer *buffer,
 			   *length, buffer->contents + start)
       && base64_decode_final(&ctx))
     return 1;
-
+  
   else
     {
       werror("Invalid base64 date.\n");
@@ -271,7 +271,7 @@ convert_rsa_public_key(struct nettle_buffer *buffer, size_t length, const uint8_
 {
   struct rsa_public_key pub;
   int res;
-
+  
   rsa_public_key_init(&pub);
 
   if (rsa_keypair_from_der(&pub, NULL, 0,
@@ -296,7 +296,7 @@ convert_rsa_private_key(struct nettle_buffer *buffer, size_t length, const uint8
   struct rsa_public_key pub;
   struct rsa_private_key priv;
   int res;
-
+  
   rsa_public_key_init(&pub);
   rsa_private_key_init(&priv);
 
@@ -411,7 +411,7 @@ convert_public_key(struct nettle_buffer *buffer, size_t length, const uint8_t *d
 	  werror("SubjectPublicKeyInfo: Unsupported algorithm.\n");
 	  res = -1;
 	  break;
-
+	  
 	case 7:
 	  if (memcmp(j.data, id_dsa, 7) == 0)
 	    {
@@ -479,7 +479,7 @@ convert_type(struct nettle_buffer *buffer,
 	     size_t length, const uint8_t *data)
 {
   int res;
-
+  
   switch(type)
     {
     default:
@@ -519,7 +519,7 @@ convert_file(struct nettle_buffer *buffer,
       read_file(buffer, f);
       if (base64 && !decode_base64(buffer, 0, &buffer->size))
 	return 0;
-
+      
       if (convert_type(buffer, type,
 		       buffer->size, buffer->contents) != 1)
 	return 0;
@@ -533,7 +533,7 @@ convert_file(struct nettle_buffer *buffer,
 	{
 	  struct pem_info info;
 	  const uint8_t *marker;
-
+	  
 	  nettle_buffer_reset(buffer);
 	  switch (read_pem(buffer, f, &info))
 	    {
@@ -579,7 +579,7 @@ convert_file(struct nettle_buffer *buffer,
 		  break;
 		}
 	    }
-
+	  
 	  if (!type)
 	    werror("Ignoring unsupported object type `%s'.\n", marker);
 
@@ -606,7 +606,7 @@ main(int argc, char **argv)
     OPT_PRIVATE_DSA = DSA_PRIVATE_KEY,
     OPT_PUBLIC_KEY = GENERAL_PUBLIC_KEY,
   };
-
+  
   static const struct option options[] =
     {
       /* Name, args, flag, val */
@@ -651,7 +651,7 @@ main(int argc, char **argv)
 	}
     }
 
-  nettle_buffer_init_realloc(&buffer, NULL, nettle_xrealloc);
+  nettle_buffer_init_realloc(&buffer, NULL, nettle_xrealloc);  
 
   if (optind == argc)
     {
@@ -662,7 +662,7 @@ main(int argc, char **argv)
     {
       int i;
       const char *mode = (type || base64) ? "r" : "rb";
-
+      
       for (i = optind; i < argc; i++)
 	{
 	  FILE *f = fopen(argv[i], mode);

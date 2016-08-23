@@ -45,15 +45,15 @@ _rsa_verify(const struct rsa_public_key *key,
 	    const mpz_t s)
 {
   int res;
-
+  
   mpz_t m1;
-
+  
   if ( (mpz_sgn(s) <= 0)
        || (mpz_cmp(s, key->n) >= 0) )
     return 0;
-
+       
   mpz_init(m1);
-
+  
   mpz_powm(m1, s, key->e, key->n);
 
   res = !mpz_cmp(m, m1);

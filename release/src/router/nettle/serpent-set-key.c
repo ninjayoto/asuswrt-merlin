@@ -301,7 +301,7 @@ serpent_key_pad (const uint8_t *key, unsigned int key_length,
   unsigned int i;
 
   assert (key_length <= SERPENT_MAX_KEY_SIZE);
-
+  
   for (i = 0; key_length >= 4; key_length -=4, key += 4)
     w[i++] = LE_READ_UINT32(key);
 
@@ -310,7 +310,7 @@ serpent_key_pad (const uint8_t *key, unsigned int key_length,
       /* Key must be padded according to the Serpent specification.
          "aabbcc" -> "aabbcc0100...00" -> 0x01ccbbaa. */
       uint32_t pad = 0x01;
-
+      
       while (key_length > 0)
 	pad = pad << 8 | key[--key_length];
 
@@ -329,7 +329,7 @@ serpent_set_key (struct serpent_ctx *ctx,
   uint32_t w[8];
   uint32_t (*keys)[4];
   unsigned k;
-
+  
   serpent_key_pad (key, length, w);
 
   /* Derive the 33 subkeys from KEY and store them in SUBKEYS. We do

@@ -46,7 +46,7 @@ test_arctwo(unsigned ekb,
 
   ASSERT (cleartext->length == ciphertext->length);
   length = cleartext->length;
-
+  
   data = xalloc(length);
 
   arctwo_set_key_ekb(&ctx, key->length, key->data, ekb);

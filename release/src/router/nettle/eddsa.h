@@ -67,7 +67,7 @@ ed25519_sha512_public_key (uint8_t *pub, const uint8_t *priv);
 
 void
 ed25519_sha512_sign (const uint8_t *pub,
-		     const uint8_t *priv,
+		     const uint8_t *priv,		     
 		     size_t length, const uint8_t *msg,
 		     uint8_t *signature);
 
@@ -141,7 +141,7 @@ void
 _eddsa_public_key (const struct ecc_curve *ecc,
 		   const mp_limb_t *k, uint8_t *pub, mp_limb_t *scratch);
 
-
+			   
 #ifdef __cplusplus
 }
 #endif

@@ -46,20 +46,20 @@ nettle_buffer_grow(struct nettle_buffer *buffer,
 		   size_t length)
 {
   assert(buffer->size <= buffer->alloc);
-
+  
   if (buffer->size + length > buffer->alloc)
     {
       size_t alloc;
       uint8_t *p;
-
+      
       if (!buffer->realloc)
 	return 0;
-
+      
       alloc = buffer->alloc * 2 + length + 100;
       p = buffer->realloc(buffer->realloc_ctx, buffer->contents, alloc);
       if (!p)
 	return 0;
-
+      
       buffer->contents = p;
       buffer->alloc = alloc;
     }
@@ -119,7 +119,7 @@ nettle_buffer_space(struct nettle_buffer *buffer,
   buffer->size += length;
   return p;
 }
-
+     
 int
 nettle_buffer_write(struct nettle_buffer *buffer,
 		    size_t length, const uint8_t *data)

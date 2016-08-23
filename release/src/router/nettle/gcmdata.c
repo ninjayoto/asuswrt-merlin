@@ -58,7 +58,7 @@ main(int argc, char **argv)
 {
   unsigned i;
   printf("4-bit table:\n");
-
+  
   for (i = 0; i<16; i++)
     {
       unsigned x;

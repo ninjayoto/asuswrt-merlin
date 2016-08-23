@@ -55,7 +55,7 @@ pbkdf2 (void *mac_ctx,
 {
   TMP_DECL(U, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_DECL(T, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
-
+  
   unsigned i;
 
   assert (iterations > 0);
@@ -72,15 +72,15 @@ pbkdf2 (void *mac_ctx,
       uint8_t tmp[4];
       uint8_t *prev;
       unsigned u;
-
+      
       WRITE_UINT32 (tmp, i);
-
+      
       update (mac_ctx, salt_length, salt);
       update (mac_ctx, sizeof(tmp), tmp);
       digest (mac_ctx, digest_size, T);
 
       prev = T;
-
+      
       for (u = 1; u < iterations; u++, prev = U)
 	{
 	  update (mac_ctx, digest_size, prev);

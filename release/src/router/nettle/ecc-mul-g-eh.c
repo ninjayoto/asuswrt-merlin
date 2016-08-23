@@ -71,14 +71,14 @@ ecc_mul_g_eh (const struct ecc_curve *ecc, mp_limb_t *r,
 	  /* Avoid the mp_bitcnt_t type for compatibility with older GMP
 	     versions. */
 	  unsigned bit_index;
-
+	  
 	  /* Extract c bits from n, stride k, starting at i + kcj,
 	     ending at i + k (cj + c - 1)*/
 	  for (bits = 0, bit_index = i + k*(c*j+c); bit_index > i + k*c*j; )
 	    {
 	      mp_size_t limb_index;
 	      unsigned shift;
-
+	      
 	      bit_index -= k;
 
 	      limb_index = bit_index / GMP_NUMB_BITS;

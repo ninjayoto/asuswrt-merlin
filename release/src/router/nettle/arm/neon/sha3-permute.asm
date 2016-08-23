@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "sha3-permute.asm"
 	.fpu	neon
@@ -113,7 +113,7 @@ C sha3_permute(struct sha3_ctx *ctx)
 	.quad	0x8000000000008080
 	.quad	0x0000000080000001
 	.quad	0x8000000080008008
-
+	
 PROLOGUE(nettle_sha3_permute)
 	vpush	{d8-d15}
 
@@ -149,15 +149,15 @@ PROLOGUE(nettle_sha3_permute)
 
 	C 	D0 = C4 ^ (C1 <<< 1)
 	C 	NOTE: Using ROL macro (and vsli) is slightly slower.
-	vshl.i64	T0, C1, #1
-	vshr.u64	T1, C1, #63
+ 	vshl.i64	T0, C1, #1
+ 	vshr.u64	T1, C1, #63
 	veor	T0, T0, C4
 	veor	T0, T0, T1
 	vmov	T1, T0
 	veor	A0, A0, T0
 	veor	QREG(A5), QREG(A5), QREG(T0)
 	veor	QREG(A15), QREG(A15), QREG(T0)
-
+	
 	C 	D1 = C0 ^ (C2 <<< 1)
 	C 	D2 = C1 ^ (C3 <<< 1)
 	ROL(T0, C2, 1)
@@ -273,7 +273,7 @@ PROLOGUE(nettle_sha3_permute)
 	vstm	CTX!, {A16,A17,A18,A19}
 	vst1.64	{A20}, [CTX]!
 	vstm	CTX, {A21,A22,A23,A24}
-
+	
 	vpop	{d8-d15}
 	bx	lr
 EPILOGUE(nettle_sha3_permute)

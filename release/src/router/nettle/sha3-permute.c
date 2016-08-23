@@ -67,7 +67,7 @@ sha3_permute (struct sha3_state *state)
   };
 
   /* Original permutation:
-
+     
        0,10,20, 5,15,
       16, 1,11,21, 6,
        7,17, 2,12,22,

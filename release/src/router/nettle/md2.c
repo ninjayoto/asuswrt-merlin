@@ -41,13 +41,13 @@
    warranty of fitness for use or suitability for any purpose, express
    or implied. Use at your own risk or not at all.
    ===================================================================
-
+   
    Incorporating the code into commercial products is permitted; you do
    not have to make source available or contribute your changes back
    (though that would be nice).
-
+   
    --amk                                                    (www.amk.ca) */
-
+   
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -86,7 +86,7 @@ md2_transform(struct md2_ctx *ctx, const uint8_t *data)
 {
   unsigned i;
   uint8_t t;
-
+  
   memcpy(ctx->X + 16, data, MD2_BLOCK_SIZE);
 
   for (i = 0, t = ctx->C[15];
@@ -126,13 +126,13 @@ md2_digest(struct md2_ctx *ctx,
 	   uint8_t *digest)
 {
   unsigned left;
-
+  
   assert(length <= MD2_DIGEST_SIZE);
 
   left = MD2_BLOCK_SIZE - ctx->index;
   memset(ctx->block + ctx->index, left, left);
   md2_transform(ctx, ctx->block);
-
+  
   md2_transform(ctx, ctx->C);
   memcpy(digest, ctx->X, length);
   md2_init(ctx);

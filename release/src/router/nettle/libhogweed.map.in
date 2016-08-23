@@ -15,3 +15,4 @@ HOGWEED_@LIBHOGWEED_MAJOR@
   local:
     *;
 };
+

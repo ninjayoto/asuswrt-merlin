@@ -35,7 +35,7 @@
 */
 
 /*
- * Algorithm Specification
+ * Algorithm Specification 
  *  http://info.isl.ntt.co.jp/crypt/eng/camellia/specifications.html
  */
 
@@ -60,7 +60,7 @@ _camellia_absorb(unsigned nkeys, uint64_t *dst, uint64_t *subkey)
   uint64_t kw2, kw4;
   uint32_t dw, tl, tr;
   unsigned i;
-
+  
   /* At this point, the subkey array contains the subkeys as described
      in the spec, 26 for short keys and 34 for large keys. */
 
@@ -76,15 +76,15 @@ _camellia_absorb(unsigned nkeys, uint64_t *dst, uint64_t *subkey)
 	 and xor the result into the 32 high bits, but it still generates
 	 worse code than for explicit 32-bit operations. */
       kw2 ^= (kw2 & ~subkey[i+1]) << 32;
-      dw = (kw2 & subkey[i+1]) >> 32; kw2 ^= ROTL32(1, dw);
+      dw = (kw2 & subkey[i+1]) >> 32; kw2 ^= ROTL32(1, dw); 
 
       subkey[i+3] ^= kw2;
       subkey[i+5] ^= kw2;
       subkey[i+7] ^= kw2;
     }
   subkey[i] ^= kw2;
-
-  /* absorb kw4 to other subkeys */
+  
+  /* absorb kw4 to other subkeys */  
   kw4 = subkey[nkeys + 1];
 
   for (i = nkeys - 8; i > 0; i -= 8)
@@ -93,7 +93,7 @@ _camellia_absorb(unsigned nkeys, uint64_t *dst, uint64_t *subkey)
       subkey[i+4] ^= kw4;
       subkey[i+2] ^= kw4;
       kw4 ^= (kw4 & ~subkey[i]) << 32;
-      dw = (kw4 & subkey[i]) >> 32; kw4 ^= ROTL32(1, dw);
+      dw = (kw4 & subkey[i]) >> 32; kw4 ^= ROTL32(1, dw);      
     }
 
   subkey[6] ^= kw4;
@@ -145,5 +145,5 @@ _camellia_absorb(unsigned nkeys, uint64_t *dst, uint64_t *subkey)
       CAMELLIA_F_HALF_INV(dst[i+6]);
     }
 #endif
-
+  
 }

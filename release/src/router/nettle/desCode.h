@@ -75,7 +75,7 @@
 #define	LQ2(z)	0xFCFC & z
 #define	LQ3(z)	0xFCFC & z
 #define	SQ	16
-#define	MS0	 des_keymap
+#define	MS0	 des_keymap 
 #define	MS1	(des_keymap +  64)
 #define	MS2	(des_keymap + 128)
 #define	MS3	(des_keymap + 192)

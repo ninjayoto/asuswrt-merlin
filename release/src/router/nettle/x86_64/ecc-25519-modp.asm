@@ -56,7 +56,7 @@ PROLOGUE(nettle_ecc_25519_modp)
 
 	mov	40(RP), %rax	C Do this early as possible
 	mul	M
-
+	
 	add	U3, U3
 	adc	T0, T0
 	shr	U3		C Undo shift, clear high bit

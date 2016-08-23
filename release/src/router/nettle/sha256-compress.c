@@ -66,11 +66,11 @@
    this */
 
 /* #define Choice(x,y,z) ( ( (x) & (y) ) | ( ~(x) & (z) ) ) */
-#define Choice(x,y,z)   ( (z) ^ ( (x) & ( (y) ^ (z) ) ) )
+#define Choice(x,y,z)   ( (z) ^ ( (x) & ( (y) ^ (z) ) ) ) 
 /* #define Majority(x,y,z) ( ((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)) ) */
 #define Majority(x,y,z) ( ((x) & (y)) ^ ((z) & ((x) ^ (y))) )
 
-#define S0(x) (ROTL32(30,(x)) ^ ROTL32(19,(x)) ^ ROTL32(10,(x)))
+#define S0(x) (ROTL32(30,(x)) ^ ROTL32(19,(x)) ^ ROTL32(10,(x))) 
 #define S1(x) (ROTL32(26,(x)) ^ ROTL32(21,(x)) ^ ROTL32(7,(x)))
 
 #define s0(x) (ROTL32(25,(x)) ^ ROTL32(14,(x)) ^ ((x) >> 3))
@@ -145,7 +145,7 @@ _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k
   F = state[5];
   G = state[6];
   H = state[7];
-
+  
   /* Heavy mangling */
   /* First 16 subrounds that act on the original data */
 
@@ -161,7 +161,7 @@ _nettle_sha256_compress(uint32_t *state, const uint8_t *input, const uint32_t *k
       ROUND(C, D, E, F, G, H, A, B, k[6], d[6]); DEBUG(i+6);
       ROUND(B, C, D, E, F, G, H, A, k[7], d[7]); DEBUG(i+7);
     }
-
+  
   for (; i<64; i += 16, k+= 16)
     {
       ROUND(A, B, C, D, E, F, G, H, k[ 0], EXPAND(data,  0)); DEBUG(i);

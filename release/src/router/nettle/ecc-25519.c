@@ -150,8 +150,8 @@ ecc_mod_pow_252m3 (const struct ecc_modulo *m,
      = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(2^7-1)))
      = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^6-1))))
      = 1 + 4 (2^125+1)(1+2(2^62+1)(2^31+1)(7+8(2^14+1)(2^7+1)(1+2(2^3+1)*7)))
-  */
-
+  */ 
+     
   ecc_mod_pow_2kp1 (m, t0, ap, 1, t1);	/* a^3 */
   ecc_mod_sqr (m, rp, t0);		/* a^6 */
   ecc_mod_mul (m, a7, rp, ap);		/* a^7 */
@@ -164,7 +164,7 @@ ecc_mod_pow_252m3 (const struct ecc_modulo *m,
   ecc_mod_sqr (m, t1, t0);		/* a^{2^30-4} */
   ecc_mod_sqr (m, t0, t1);		/* a^{2^31-8} */
   ecc_mod_mul (m, rp, t0, a7);		/* a^{2^31-1} */
-  ecc_mod_pow_2kp1 (m, t0, rp, 31, t1);	/* a^{2^62-1} */
+  ecc_mod_pow_2kp1 (m, t0, rp, 31, t1);	/* a^{2^62-1} */  
   ecc_mod_pow_2kp1 (m, rp, t0, 62, t1);	/* a^{2^124-1}*/
   ecc_mod_sqr (m, t0, rp);		/* a^{2^125-2} */
   ecc_mod_mul (m, rp, t0, ap);		/* a^{2^125-1} */
@@ -320,7 +320,7 @@ const struct ecc_curve _nettle_curve25519 =
     0,
 
     ecc_q,
-    ecc_Bmodq,
+    ecc_Bmodq,  
     ecc_mBmodq_shifted, /* Use q - 2^{252} instead. */
     NULL,
     ecc_qp1h,

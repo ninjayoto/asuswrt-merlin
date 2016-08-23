@@ -39,7 +39,7 @@ define(<SE>,<%r9d>)dnl
 define(<DATA>,<%rsp>)dnl
 define(<T1>,<%r10d>)dnl
 define(<T2>,<%r11d>)dnl
-define(<KVALUE>, <%esi>)dnl
+define(<KVALUE>, <%esi>)dnl			
 
 C Arguments
 define(<STATE>,<%rdi>)dnl
@@ -50,7 +50,7 @@ define(<K1VALUE>, <<$>0x5A827999>)dnl		C  Rounds  0-19
 define(<K2VALUE>, <<$>0x6ED9EBA1>)dnl		C  Rounds 20-39
 define(<K3VALUE>, <<$>0x8F1BBCDC>)dnl		C  Rounds 40-59
 define(<K4VALUE>, <<$>0xCA62C1D6>)dnl		C  Rounds 60-79
-
+	
 C Reads the input into register, byteswaps it, and stores it in the DATA array.
 C SWAP(index, register)
 define(<SWAP>, <
@@ -157,7 +157,7 @@ define(<ROUND_F3>, <
 	movl	$4, T2
 	andl	$3, T2
 	addl	T1, $5
-	addl	KVALUE, $5
+ 	addl	KVALUE, $5
 	movl	$4, T1
 	xorl	$3, T1
 	andl	$2, T1
@@ -172,13 +172,13 @@ define(<ROUND_F3>, <
 	.file "sha1-compress.asm"
 
 	C _nettle_sha1_compress(uint32_t *state, uint8_t *input)
-
+	
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_sha1_compress)
 	C save all registers that need to be saved
 	W64_ENTRY(2, 0)
-
+	
 	sub	$64, %rsp	C  %rsp = W
 
 	C Load and byteswap data
@@ -225,19 +225,19 @@ PROLOGUE(_nettle_sha1_compress)
 	ROUND_F2(SD, SE, SA, SB, SC, 22)
 	ROUND_F2(SC, SD, SE, SA, SB, 23)
 	ROUND_F2(SB, SC, SD, SE, SA, 24)
-
+				     
 	ROUND_F2(SA, SB, SC, SD, SE, 25)
 	ROUND_F2(SE, SA, SB, SC, SD, 26)
 	ROUND_F2(SD, SE, SA, SB, SC, 27)
 	ROUND_F2(SC, SD, SE, SA, SB, 28)
 	ROUND_F2(SB, SC, SD, SE, SA, 29)
-
+				     
 	ROUND_F2(SA, SB, SC, SD, SE, 30)
 	ROUND_F2(SE, SA, SB, SC, SD, 31)
 	ROUND_F2(SD, SE, SA, SB, SC, 32)
 	ROUND_F2(SC, SD, SE, SA, SB, 33)
 	ROUND_F2(SB, SC, SD, SE, SA, 34)
-
+				     
 	ROUND_F2(SA, SB, SC, SD, SE, 35)
 	ROUND_F2(SE, SA, SB, SC, SD, 36)
 	ROUND_F2(SD, SE, SA, SB, SC, 37)
@@ -250,19 +250,19 @@ PROLOGUE(_nettle_sha1_compress)
 	ROUND_F3(SD, SE, SA, SB, SC, 42)
 	ROUND_F3(SC, SD, SE, SA, SB, 43)
 	ROUND_F3(SB, SC, SD, SE, SA, 44)
-
+				     
 	ROUND_F3(SA, SB, SC, SD, SE, 45)
 	ROUND_F3(SE, SA, SB, SC, SD, 46)
 	ROUND_F3(SD, SE, SA, SB, SC, 47)
 	ROUND_F3(SC, SD, SE, SA, SB, 48)
 	ROUND_F3(SB, SC, SD, SE, SA, 49)
-
+				     
 	ROUND_F3(SA, SB, SC, SD, SE, 50)
 	ROUND_F3(SE, SA, SB, SC, SD, 51)
 	ROUND_F3(SD, SE, SA, SB, SC, 52)
 	ROUND_F3(SC, SD, SE, SA, SB, 53)
 	ROUND_F3(SB, SC, SD, SE, SA, 54)
-
+				     
 	ROUND_F3(SA, SB, SC, SD, SE, 55)
 	ROUND_F3(SE, SA, SB, SC, SD, 56)
 	ROUND_F3(SD, SE, SA, SB, SC, 57)
@@ -275,19 +275,19 @@ PROLOGUE(_nettle_sha1_compress)
 	ROUND_F2(SD, SE, SA, SB, SC, 62)
 	ROUND_F2(SC, SD, SE, SA, SB, 63)
 	ROUND_F2(SB, SC, SD, SE, SA, 64)
-
+				     
 	ROUND_F2(SA, SB, SC, SD, SE, 65)
 	ROUND_F2(SE, SA, SB, SC, SD, 66)
 	ROUND_F2(SD, SE, SA, SB, SC, 67)
 	ROUND_F2(SC, SD, SE, SA, SB, 68)
 	ROUND_F2(SB, SC, SD, SE, SA, 69)
-
+				     
 	ROUND_F2(SA, SB, SC, SD, SE, 70)
 	ROUND_F2(SE, SA, SB, SC, SD, 71)
 	ROUND_F2(SD, SE, SA, SB, SC, 72)
 	ROUND_F2(SC, SD, SE, SA, SB, 73)
 	ROUND_F2(SB, SC, SD, SE, SA, 74)
-
+				     
 	ROUND_F2(SA, SB, SC, SD, SE, 75)
 	ROUND_F2(SE, SA, SB, SC, SD, 76)
 	ROUND_F2(SD, SE, SA, SB, SC, 77)
@@ -295,10 +295,10 @@ PROLOGUE(_nettle_sha1_compress)
 	ROUND_F2(SB, SC, SD, SE, SA, 79)
 
 	C Update the state vector
-	addl	SA,   (STATE)
-	addl	SB,  4(STATE)
-	addl	SC,  8(STATE)
-	addl	SD, 12(STATE)
+	addl	SA,   (STATE) 
+	addl	SB,  4(STATE) 
+	addl	SC,  8(STATE) 
+	addl	SD, 12(STATE) 
 	addl	SE, 16(STATE)
 
 	add	$64, %rsp

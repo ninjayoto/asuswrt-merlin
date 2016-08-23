@@ -118,3 +118,10 @@ _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
       dst[i] = LE_SWAP32 (t);
     }
 }
+
+
+
+
+
+
+

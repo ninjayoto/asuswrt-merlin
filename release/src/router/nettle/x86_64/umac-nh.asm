@@ -46,7 +46,7 @@ C FIXME: Would be nice if we could force the key array to be 16-byte
 C aligned.
 
 	.file "umac-nh.asm"
-
+	
 	C umac_nh(const uint32_t *key, unsigned length, const uint8_t *msg)
 	.text
 	ALIGN(16)
@@ -63,7 +63,7 @@ PROLOGUE(_nettle_umac_nh)
 	pshufd	$0x31, XA, XT0
 	pshufd	$0x31, XB, XT1
 	pmuludq	XT0, XT1
-	paddq	XT1, XY
+	paddq	XT1, XY	
 	pmuludq	XA, XB
 	paddq	XB, XY
 	C Length is only 32 bits

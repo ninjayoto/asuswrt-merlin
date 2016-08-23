@@ -51,12 +51,12 @@ static void
 sexp_get_raw_char(struct sexp_input *input)
 {
   int c = getc(input->f);
-
+  
   if (c < 0)
     {
       if (ferror(input->f))
 	die("Read error: %s\n", strerror(errno));
-
+      
       input->ctype = SEXP_EOF_CHAR;
     }
   else
@@ -92,7 +92,7 @@ sexp_get_char(struct sexp_input *input)
 					  &done, &input->c,
 					  1, &input->c))
 	  die("Invalid coded data.\n");
-
+	
 	if (done)
 	  return;
       }
@@ -115,7 +115,7 @@ sexp_push_char(struct sexp_input *input,
 	       struct nettle_buffer *string)
 {
   assert(input->ctype == SEXP_NORMAL_CHAR);
-
+    
   if (!NETTLE_BUFFER_PUTC(string, input->c))
     die("Virtual memory exhasuted.\n");
 }
@@ -126,7 +126,7 @@ sexp_input_start_coding(struct sexp_input *input,
 			uint8_t terminator)
 {
   assert(!input->coding);
-
+  
   input->coding = coding;
   input->coding->decode_init(&input->state);
   input->terminator = terminator;
@@ -139,7 +139,7 @@ sexp_input_end_coding(struct sexp_input *input)
 
   if (!input->coding->decode_final(&input->state))
     die("Invalid coded data.\n");
-
+  
   input->coding = NULL;
 }
 
@@ -158,7 +158,7 @@ sexp_get_quoted_char(struct sexp_input *input)
       return 0;
     case '\\':
       sexp_next_char(input);
-
+	
       switch (input->c)
 	{
 	case 'b': input->c = '\b'; return 1;
@@ -192,7 +192,7 @@ sexp_get_token_string(struct sexp_input *input,
 {
   assert(!input->coding);
   assert(input->ctype == SEXP_NORMAL_CHAR);
-
+  
   if (!TOKEN_CHAR(input->c))
     die("Invalid token.\n");
 
@@ -202,7 +202,7 @@ sexp_get_token_string(struct sexp_input *input,
       sexp_get_char(input);
     }
   while (input->ctype == SEXP_NORMAL_CHAR && TOKEN_CHAR(input->c));
-
+  
   assert (string->size);
 }
 
@@ -212,16 +212,16 @@ sexp_get_string(struct sexp_input *input,
 {
   nettle_buffer_reset(string);
   input->token = SEXP_STRING;
-
+  
   switch (input->c)
     {
     case '\"':
       while (sexp_get_quoted_char(input))
 	sexp_push_char(input, string);
-
+      
       sexp_get_char(input);
       break;
-
+      
     case '#':
       sexp_input_start_coding(input, &nettle_base16, '#');
       goto decode;
@@ -263,9 +263,9 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode,
 
   nettle_buffer_reset(string);
   input->token = SEXP_STRING;
-
+  
   length = input->c - '0';
-
+  
   if (!length)
     /* There must be no more digits */
     sexp_next_char(input);
@@ -277,10 +277,10 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode,
       for (;;)
 	{
 	  sexp_next_char(input);
-
+	  
 	  if (input->c < '0' || input->c > '9')
 	    break;
-
+	  
 	  /* FIXME: Check for overflow? */
 	  length = length * 10 + input->c - '0';
 	}
@@ -295,7 +295,7 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode,
 	  sexp_next_char(input);
 	  sexp_push_char(input, string);
 	}
-
+      
       break;
 
     case '"':
@@ -307,12 +307,12 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode,
 	  sexp_push_char(input, string);
 	else
 	  die("Unexpected end of string.\n");
-
+      
       if (sexp_get_quoted_char(input))
 	die("Quoted string longer than expected.\n");
 
       break;
-
+      
     case '#':
       sexp_input_start_coding(input, &nettle_base16, '#');
       goto decode;
@@ -331,15 +331,15 @@ sexp_get_string_length(struct sexp_input *input, enum sexp_mode mode,
 	die("Coded string too long.\n");
 
       sexp_input_end_coding(input);
-
+      
       break;
-
+      
     default:
       die("Invalid string.\n");
     }
 
   /* Skip the ending character. */
-  sexp_get_char(input);
+  sexp_get_char(input);  
 }
 
 static void
@@ -389,12 +389,12 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode,
 	  case '5': case '6': case '7': case '8': case '9':
 	    sexp_get_string_length(input, mode, string);
 	    return;
-
+	  
 	  case '(':
 	    input->token = SEXP_LIST_START;
 	    sexp_get_char(input);
 	    return;
-
+	  
 	  case ')':
 	    input->token = SEXP_LIST_END;
 	    sexp_get_char(input);
@@ -413,14 +413,14 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode,
 	  case '{':
 	    if (mode == SEXP_CANONICAL)
 	      die("Unexpected transport data in canonical mode.\n");
-
+	    
 	    sexp_input_start_coding(input, &nettle_base64, '}');
 	    sexp_get_char(input);
 
 	    input->token = SEXP_TRANSPORT_START;
-
+	    
 	    return;
-
+	  
 	  case ' ':  /* SPC, TAB, LF, CR */
 	  case '\t':
 	  case '\n':
@@ -437,7 +437,7 @@ sexp_get_token(struct sexp_input *input, enum sexp_mode mode,
 
 	    sexp_get_comment(input, string);
 	    return;
-
+	  
 	  default:
 	    /* Ought to be a string */
 	    if (mode != SEXP_ADVANCED)

@@ -58,7 +58,7 @@ salsa20r12_crypt(struct salsa20_ctx *ctx,
 
   if (!length)
     return;
-
+  
   for (;;)
     {
 
@@ -67,7 +67,7 @@ salsa20r12_crypt(struct salsa20_ctx *ctx,
       ctx->input[9] += (++ctx->input[8] == 0);
 
       /* stopping at 2^70 length per nonce is user's responsibility */
-
+      
       if (length <= SALSA20_BLOCK_SIZE)
 	{
 	  memxor3 (c, m, x, length);

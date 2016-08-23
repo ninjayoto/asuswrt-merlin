@@ -56,7 +56,7 @@ rsa_sha512_sign(const struct rsa_private_key *key,
     {
       mpz_set_ui(s, 0);
       return 0;
-    }
+    }  
 }
 
 int
@@ -73,5 +73,5 @@ rsa_sha512_sign_digest(const struct rsa_private_key *key,
     {
       mpz_set_ui(s, 0);
       return 0;
-    }
+    }  
 }

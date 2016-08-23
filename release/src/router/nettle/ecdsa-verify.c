@@ -62,7 +62,7 @@ ecdsa_verify (const struct ecc_point *pub,
   if (mpz_sgn (signature->r) <= 0 || mpz_size (signature->r) > size
       || mpz_sgn (signature->s) <= 0 || mpz_size (signature->s) > size)
     return 0;
-
+  
   mpz_limbs_copy (rp, signature->r, size);
   mpz_limbs_copy (sp, signature->s, size);
 

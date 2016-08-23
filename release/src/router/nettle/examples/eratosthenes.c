@@ -130,7 +130,7 @@ vector_clear_bits (unsigned long *vector, unsigned long step,
 
 static unsigned
 find_first_one (unsigned long x)
-{
+{  
   static const unsigned char table[0x101] =
     {
      15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -245,7 +245,7 @@ main (int argc, char **argv)
   unsigned long block_nbits = 64L << 13;
   unsigned long block_start_bit;
   unsigned long *block;
-
+  
   unsigned long bit;
   int silent = 0;
   int verbose = 0;
@@ -319,7 +319,7 @@ main (int argc, char **argv)
 
   if (verbose)
     fprintf(stderr, "Initial sieve using %lu bits.\n", sieve_nbits);
-
+      
   if (!silent)
     printf("2\n");
 
@@ -334,7 +334,7 @@ main (int argc, char **argv)
       /* First bit to clear corresponds to n^2, which is bit
 
 	 (n^2 - 3) / 2 = (n + 3) * bit + 3
-      */
+      */      
       unsigned long n2_bit = (n+3)*bit + 3;
 
       if (!silent)
@@ -368,7 +368,7 @@ main (int argc, char **argv)
   for (block_start_bit = bit; block_start_bit < limit_nbits; block_start_bit += block_nbits)
     {
       unsigned long block_start;
-
+      
       if (block_start_bit + block_nbits > limit_nbits)
 	block_nbits = limit_nbits - block_start_bit;
 
@@ -382,7 +382,7 @@ main (int argc, char **argv)
       /* Sieve */
       for (bit = 0; bit < sieve_nbits;
 	   bit = vector_find_next(sieve, bit + 1, sieve_nbits))
-	{
+	{	  
 	  unsigned long n = 3 + 2 * bit;
 	  unsigned long sieve_start_bit = (n + 3) * bit + 3;
 

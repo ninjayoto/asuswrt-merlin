@@ -69,7 +69,7 @@ test_eddsa_sign (const struct ecc_curve *ecc,
       abort ();
     }
   H->update (ctx, nbytes, k1);
-
+  
   _eddsa_sign (ecc, H, public->data, ctx, k2,
 	       msg->length, msg->data, signature, scratch);
 
@@ -83,7 +83,7 @@ test_eddsa_sign (const struct ecc_curve *ecc,
       fprintf (stderr, "\nk2:");
       mpn_out_str (stderr, 16, k2, ecc->p.size);
       fprintf (stderr, "\nMessage (length %u):", (unsigned) msg->length);
-      tstring_print_hex (msg);
+      tstring_print_hex (msg);      
       fprintf (stderr, "\ngot:");
       print_hex (2*nbytes, signature);
       fprintf (stderr, "\nref:");
@@ -91,7 +91,7 @@ test_eddsa_sign (const struct ecc_curve *ecc,
       fprintf (stderr, "\n");
       abort ();
     }
-
+  
   free (scratch);
   free (signature);
   free (ctx);

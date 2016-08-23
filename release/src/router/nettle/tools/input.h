@@ -56,7 +56,7 @@ struct sexp_input
    * SEXP_EOF_CHAR, and SEXP_END_CHAR. */
   enum sexp_char_type ctype;
   uint8_t c;
-
+  
   const struct nettle_armor *coding;
 
   union {
@@ -66,7 +66,7 @@ struct sexp_input
 
   /* Terminator for current coding */
   uint8_t terminator;
-
+  
   /* Type of current token */
   enum sexp_token token;
 };

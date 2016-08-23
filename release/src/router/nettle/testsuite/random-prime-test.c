@@ -16,7 +16,7 @@ test_main(void)
     {
       if (verbose)
 	fprintf(stderr, "bits = %d\n", bits);
-
+      
       nettle_random_prime(p, bits, 0,
 			  &lfib, (nettle_random_func *) knuth_lfib_random,
 			  NULL, NULL);

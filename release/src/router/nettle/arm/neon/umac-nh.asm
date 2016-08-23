@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "umac-nh.asm"
 	.fpu	neon
@@ -51,7 +51,7 @@ define(<QK1>, <q15>)
 
 	.text
 	.align	3
-
+	
 PROLOGUE(_nettle_umac_nh)
 	C Setup for 64-bit aligned reads
 	ands	SHIFT, MSG, #7
@@ -68,7 +68,7 @@ PROLOGUE(_nettle_umac_nh)
 	vmov.i32 D0REG(QRIGHT)[0], SHIFT
 	vmov.32	 D1REG(QRIGHT), D0REG(QRIGHT)
 	add	SHIFT, SHIFT, #64
-
+	
 	vmov.i32 D0REG(QLEFT)[0], SHIFT
 	vmov.32	 D1REG(QLEFT), D0REG(QLEFT)
 

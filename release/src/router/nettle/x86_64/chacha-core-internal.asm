@@ -74,7 +74,7 @@ define(<QROUND>, <
 	pslld	<$>8, X3
 	psrld	<$>24, T0
 	por	T0, X3
-
+		
 	paddd	X3, X2
 	pxor	X2, X1
 	movaps	X1, T0
@@ -82,7 +82,7 @@ define(<QROUND>, <
 	psrld	<$>25, T0
 	por	T0, X1
 >)
-
+	
 	C _chacha_core(uint32_t *dst, const uint32_t *src, unsigned rounds)
 	.text
 	ALIGN(16)

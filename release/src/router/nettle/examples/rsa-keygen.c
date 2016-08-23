@@ -71,7 +71,7 @@ uint_arg (char c, const char *arg)
       exit (EXIT_FAILURE);
     }
 
-  return val;
+  return val;      
 }
 
 int
@@ -85,7 +85,7 @@ main(int argc, char **argv)
   char *pub_name = NULL;
   const char *priv_name = NULL;
   const char *random_name = NULL;
-
+  
   struct nettle_buffer pub_buffer;
   struct nettle_buffer priv_buffer;
 
@@ -100,10 +100,10 @@ main(int argc, char **argv)
       { "random", required_argument, NULL, 'r' },
       { NULL, 0, NULL, 0}
     };
-
+  
   while ( (c = getopt_long(argc, argv, "o:r:e:s:", options, NULL)) != -1)
     switch (c)
-      {
+      {	
       case 'o':
 	priv_name = optarg;
 	break;
@@ -137,7 +137,7 @@ main(int argc, char **argv)
       return EXIT_FAILURE;
     }
 
-  pub_name = xalloc(strlen(priv_name) + 5);
+  pub_name = xalloc(strlen(priv_name) + 5);  
   sprintf(pub_name, "%s.pub", priv_name);
 
   /* NOTE: No sources */
@@ -168,7 +168,7 @@ main(int argc, char **argv)
 
   nettle_buffer_init(&priv_buffer);
   nettle_buffer_init(&pub_buffer);
-
+  
   if (!rsa_keypair_to_sexp(&pub_buffer, "rsa-pkcs1-sha1", &pub, NULL))
     {
       werror("Formatting public key failed.\n");
@@ -180,7 +180,7 @@ main(int argc, char **argv)
       werror("Formatting private key failed.\n");
       return EXIT_FAILURE;
     }
-
+  
   if (!write_file(pub_name, pub_buffer.size, pub_buffer.contents))
     {
       werror("Failed to write public key: %s\n",
@@ -202,6 +202,6 @@ main(int argc, char **argv)
   rsa_public_key_clear(&pub);
   rsa_private_key_clear(&priv);
   free (pub_name);
-
+  
   return EXIT_SUCCESS;
 }

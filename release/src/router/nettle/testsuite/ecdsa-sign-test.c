@@ -87,7 +87,7 @@ test_main (void)
 		   "4b979a1e543566fd5caa85c6"),  /* h */
 
 	      "2cc280778f3d067df6d3adbe3a6aad63"
-	      "bc75f08f5c5f915411902a99",  /* r */
+	      "bc75f08f5c5f915411902a99",  /* r */ 
 
 	      "d0f069fd0f108eb07b7bbc54c8d6c88d"
 	      "f2715c38a95c31a2b486995f"); /* s */
@@ -102,7 +102,7 @@ test_main (void)
 
 	      SHEX("BA7816BF 8F01CFEA 414140DE 5DAE2223"
 		   "B00361A3 96177A9C B410FF61 F20015AD"),  /* h */
-
+	      
 	      "CB28E099 9B9C7715 FD0A80D8 E47A7707"
 	      "9716CBBF 917DD72E 97566EA1 C066957C",  /* r */
 	      "86FA3BB4 E26CAD5B F90B7F81 899256CE"
@@ -134,7 +134,7 @@ test_main (void)
 	      "20597779 060A7FF9 D704ADF7 8B570FFA"
 	      "D6F062E9 5C7E0C5D 5481C5B1 53B48B37"
 	      "5FA1", /* z */
-
+	      
 	      "00C1C2B3 05419F5A 41344D7E 4359933D"
 	      "734096F5 56197A9B 244342B8 B62F46F9"
 	      "373778F9 DE6B6497 B1EF825F F24F42F9"

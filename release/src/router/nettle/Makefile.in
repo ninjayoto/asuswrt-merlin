@@ -133,6 +133,7 @@ nettle_SOURCES = aes-decrypt-internal.c aes-decrypt.c \
 		 umac-nh.c umac-nh-n.c umac-l2.c umac-l3.c \
 		 umac-poly64.c umac-poly128.c umac-set-key.c \
 		 umac32.c umac64.c umac96.c umac128.c \
+		 version.c \
 		 write-be32.c write-le32.c write-le64.c \
 		 yarrow256.c yarrow_key_event.c
 
@@ -143,12 +144,12 @@ hogweed_SOURCES = sexp.c sexp-format.c \
 		  pkcs1.c pkcs1-encrypt.c pkcs1-decrypt.c \
 		  pkcs1-rsa-digest.c pkcs1-rsa-md5.c pkcs1-rsa-sha1.c \
 		  pkcs1-rsa-sha256.c pkcs1-rsa-sha512.c \
-		  rsa.c rsa-sign.c rsa-verify.c \
+		  rsa.c rsa-sign.c rsa-sign-tr.c rsa-verify.c \
 		  rsa-pkcs1-sign.c rsa-pkcs1-sign-tr.c rsa-pkcs1-verify.c \
-		  rsa-md5-sign.c rsa-md5-verify.c \
-		  rsa-sha1-sign.c rsa-sha1-verify.c \
-		  rsa-sha256-sign.c rsa-sha256-verify.c \
-		  rsa-sha512-sign.c rsa-sha512-verify.c \
+		  rsa-md5-sign.c rsa-md5-sign-tr.c rsa-md5-verify.c \
+		  rsa-sha1-sign.c rsa-sha1-sign-tr.c rsa-sha1-verify.c \
+		  rsa-sha256-sign.c rsa-sha256-sign-tr.c rsa-sha256-verify.c \
+		  rsa-sha512-sign.c rsa-sha512-sign-tr.c rsa-sha512-verify.c \
 		  rsa-encrypt.c rsa-decrypt.c rsa-decrypt-tr.c \
 		  rsa-keygen.c rsa-blind.c \
 		  rsa2sexp.c sexp2rsa.c \
@@ -302,8 +303,8 @@ eccdata$(EXEEXT_FOR_BUILD): eccdata.c mini-gmp.c mini-gmp.h
 
 # desCore rules
 # It seems using $(srcdir)/ doesn't work with GNU make 3.79.1
-# des_headers = $(srcdir)/rotors.h $(srcdir)/keymap.h
-des_headers = rotors.h keymap.h
+# des_headers = $(srcdir)/rotors.h $(srcdir)/keymap.h 
+des_headers = rotors.h keymap.h 
 
 # Generate DES headers.
 $(des_headers): desdata.c
@@ -373,7 +374,7 @@ ecc-25519.$(OBJEXT): ecc-25519.h
 .asm.$(OBJEXT): $(srcdir)/asm.m4 machine.m4 config.m4
 	$(M4) $(srcdir)/asm.m4 machine.m4 config.m4 $< >$*.s
 	$(COMPILE) -c $*.s
-	@echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d
+	@echo "$@ : $< $(srcdir)/asm.m4 machine.m4 config.m4" >$@.d 
 
 # Texinfo rules
 .texinfo.info:
@@ -574,12 +575,12 @@ distdir: $(DISTFILES)
 	done
 
 dist: distdir
-	tar cf - $(distdir) | gzip -c >$(distdir).tar.gz
+	tar cf - $(distdir) | gzip -c >$(distdir).tar.gz	
 	rm -rf $(distdir)
 
 rm_distcheck = test ! -d distcheck-tmp \
 	    || { find distcheck-tmp -type d ! -perm -200 -exec chmod u+w {} ';' \
-                 && rm -fr distcheck-tmp; };
+                 && rm -fr distcheck-tmp; }; 
 
 distcheck: dist
 	$(rm_distcheck)
@@ -608,7 +609,7 @@ distcheck: dist
 	@test `cat distcheck-tmp/leftover-destdir-files | wc -l` -le 1  \
 	  || { echo "ERROR: destdir files left after uninstall:" ; \
 	       cat distcheck-tmp/leftover-destdir-files ; \
-	       exit 1; }
+	       exit 1; }	
 	cd distcheck-tmp/build && $(MAKE) dist
 	cd distcheck-tmp/build && rm *.gz
 	cd distcheck-tmp/build && $(MAKE) distclean
@@ -634,7 +635,7 @@ distclean-here: clean-here
 maintainer-clean-here:
 	-rm -f $(DOCTARGETS) *.dvi *.ps
 
-tags-here:
+tags-here:	
 	etags -o $(srcdir)/TAGS $(srcdir)/*.c $(srcdir)/*.h
 
 DEP_FILES = $(SOURCES:.c=.$(OBJEXT).d)

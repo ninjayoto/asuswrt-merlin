@@ -1,16 +1,19 @@
 #ifndef NETTLE_TESTUTILS_H_INCLUDED
 #define NETTLE_TESTUTILS_H_INCLUDED
 
+/* config.h should usually be first in each .c file. This is an
+   exception, include it here to reduce clutter in the test cases. */
 #if HAVE_CONFIG_H
 # include "config.h"
 #endif
-
-#include "nettle-types.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "nettle-types.h"
+#include "version.h"
 
 #if WITH_HOGWEED
 # include "rsa.h"
@@ -89,7 +92,7 @@ struct nettle_mac
 
   /* Suggested key size; other sizes are sometimes possible. */
   unsigned key_size;
-
+  
   nettle_set_key_func *set_key;
   nettle_hash_update_func *update;
   nettle_hash_digest_func *digest;
@@ -264,7 +267,7 @@ void
 test_ecc_mul_h (unsigned curve, unsigned n, const mp_limb_t *p);
 
 #endif /* WITH_HOGWEED */
-
+  
 /* LDATA needs to handle NUL characters. */
 #define LLENGTH(x) (sizeof(x) - 1)
 #define LDATA(x) LLENGTH(x), x

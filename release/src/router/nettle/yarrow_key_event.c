@@ -41,12 +41,12 @@ void
 yarrow_key_event_init(struct yarrow_key_event_ctx *ctx)
 {
   unsigned i;
-
+  
   ctx->index = 0;
   ctx->previous = 0;
-
+  
   for (i = 0; i < YARROW_KEY_EVENT_BUFFER; i++)
-    ctx->chars[i] = 0;
+    ctx->chars[i] = 0;  
 }
 
 unsigned
@@ -66,7 +66,7 @@ yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
 
   if (!key)
     return entropy;
-
+  
   for (i = 0; i < YARROW_KEY_EVENT_BUFFER; i++)
     if (key == ctx->chars[i])
       /* This is a recent character. Ignore it. */
@@ -76,11 +76,12 @@ yarrow_key_event_estimate(struct yarrow_key_event_ctx *ctx,
    * characters. */
   if (ctx->chars[ctx->index])
     entropy++;
-
+  
   /* Remember the character. */
-
+  
   ctx->chars[ctx->index] = key;
   ctx->index = (ctx->index + 1) % YARROW_KEY_EVENT_BUFFER;
 
   return entropy;
 }
+

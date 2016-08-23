@@ -44,7 +44,7 @@ set_point (struct ecc_point *p,
   mpz_clear (X);
   mpz_clear (Y);
 }
-
+  
 static void
 set_scalar (struct ecc_scalar *s,
 	    const char *x)
@@ -82,7 +82,7 @@ check_point (const char *name, const char *label,
       fprintf (stderr, "\nr_y = ");
       mpz_out_str (stderr, 10, ry);
       fprintf (stderr, " (expected)\n");
-      abort ();
+      abort ();      
     }
   mpz_clear (px);
   mpz_clear (py);
@@ -132,7 +132,7 @@ test_dh (const char *name, const struct ecc_curve *ecc,
   ecc_point_clear (&A);
   ecc_point_clear (&B);
   ecc_point_clear (&S);
-  ecc_point_clear (&T);
+  ecc_point_clear (&T);  
 }
 
 void
@@ -156,7 +156,7 @@ test_main(void)
 	   "373124771833407982305885866158843810218322878380632071540538232035",
 	   "24223309755162432227459925493224336241652868856405241018762887667883",
 	   "8330362698029245839097779050425944245826040430538860338085968752913",
-	   "24167244512472228715617822000878192535267113543393576038737592837010");
+	   "24167244512472228715617822000878192535267113543393576038737592837010");	   
 
   test_dh ("secp-256r1", &nettle_secp_256r1,
 	   "94731533361265297353914491124013058635674217345912524033267198103710636378786",

@@ -44,7 +44,7 @@
  *
  *   0x00 0x01 0xff ... 0xff 0x00 id ...digest...
  *
- * where the 0xff ... 0xff part consists of at least 8 octets. The
+ * where the 0xff ... 0xff part consists of at least 8 octets. The 
  * total size equals the octet size of n.
  */
 uint8_t *
@@ -55,7 +55,7 @@ _pkcs1_signature_prefix(unsigned key_size,
 			unsigned digest_size)
 {
   unsigned j;
-
+  
   if (key_size < 11 + id_size + digest_size)
     return NULL;
 

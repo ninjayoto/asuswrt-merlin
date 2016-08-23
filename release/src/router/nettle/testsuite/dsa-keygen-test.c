@@ -16,7 +16,7 @@ test_main(void)
   struct dsa_params *params;
 
   struct knuth_lfib_ctx lfib;
-
+  
   dsa_private_key_init(&key);
   dsa_public_key_init(&pub);
 
@@ -40,7 +40,7 @@ test_main(void)
 
   test_dsa_key(params, pub.y, key.x, 256);
   test_dsa256(&pub, &key, NULL);
-
+  
   ASSERT (dsa_compat_generate_keypair(&pub, &key,
 			       &lfib,
 			       (nettle_random_func *) knuth_lfib_random,
@@ -63,7 +63,7 @@ test_main(void)
 			(nettle_random_func *) knuth_lfib_random);
   test_dsa_key(params, pub.y, key.x, 768);
   test_dsa256(&pub, &key, NULL);
-
+  
   dsa_public_key_clear(&pub);
   dsa_private_key_clear(&key);
 }

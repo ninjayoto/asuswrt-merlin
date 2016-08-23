@@ -87,7 +87,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
   ecc_modp_mul (ecc, x3, AA, BB);
   ecc_modp_sub (ecc, E, AA, BB);
   ecc_modp_addmul_1 (ecc, AA, E, 121665);
-  ecc_modp_mul (ecc, z3, E, AA);
+  ecc_modp_mul (ecc, z3, E, AA);      
 
   for (i = 253; i >= 3; i--)
     {
@@ -130,7 +130,7 @@ curve25519_mul (uint8_t *q, const uint8_t *n, const uint8_t *p)
       ecc_modp_mul (ecc, x2, AA, BB);
       ecc_modp_sub (ecc, E, AA, BB);
       ecc_modp_addmul_1 (ecc, AA, E, 121665);
-      ecc_modp_mul (ecc, z2, E, AA);
+      ecc_modp_mul (ecc, z2, E, AA);      
     }
   ecc->p.invert (&ecc->p, x3, z2, z3 + ecc->p.size);
   ecc_modp_mul (ecc, z3, x2, x3);

@@ -48,7 +48,7 @@ ecc_pm1_redc (const struct ecc_modulo *m, mp_limb_t *rp)
   mp_limb_t hi, cy;
   unsigned shift = m->size * GMP_NUMB_BITS - m->bit_size;
   mp_size_t k = m->redc_size;
-
+  
   for (i = 0; i < m->size; i++)
     rp[i] = mpn_submul_1 (rp + i + k,
 			  m->redc_mpm1, m->size - k, rp[i]);

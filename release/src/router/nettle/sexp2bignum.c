@@ -46,13 +46,13 @@ nettle_mpz_set_sexp(mpz_t x, unsigned limit, struct sexp_iterator *i)
       /* Allow some extra here, for leading sign octets. */
       if (limit && (8 * i->atom_length > (16 + limit)))
 	return 0;
-
+      
       nettle_mpz_set_str_256_s(x, i->atom_length, i->atom);
 
       /* FIXME: How to interpret a limit for negative numbers? */
       if (limit && mpz_sizeinbase(x, 2) > limit)
 	return 0;
-
+      
       return sexp_iterator_next(i);
     }
   else

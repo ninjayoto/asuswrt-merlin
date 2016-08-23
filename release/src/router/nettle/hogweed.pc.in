@@ -16,3 +16,4 @@ Requires.private: @IF_SHARED@ nettle
 Libs: -L${libdir} -lhogweed @IF_NOT_SHARED@ @LIBS@
 Libs.private: @IF_SHARED@ @LIBS@
 Cflags: -I${includedir}
+

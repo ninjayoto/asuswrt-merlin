@@ -10,7 +10,7 @@ ref_modinv (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t m
   mpz_init (s);
   mpz_roinit_n (a, ap, mn);
   mpz_roinit_n (m, mp, mn);
-
+  
   mpz_gcdext (g, s, NULL, a, m);
   if (mpz_cmp_ui (g, 1) == 0)
     {
@@ -73,7 +73,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
       fprintf (stderr, " (bad)\n");
       abort ();
     }
-
+	  
   /* Check behaviour for a = m */
   memset (ai, 17, m->size * sizeof(*ai));
   m->invert (m, ai, m->m, scratch);
@@ -81,7 +81,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
     {
       fprintf (stderr, "%s->invert failed for a = p input (bit size %u):\n",
 	       name, m->bit_size);
-
+      
       fprintf (stderr, "p = ");
       mpn_out_str (stderr, 16, m->m, m->size);
       fprintf (stderr, "\nt = ");
@@ -89,7 +89,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
       fprintf (stderr, " (bad)\n");
       abort ();
     }
-
+	
   for (j = 0; j < COUNT; j++)
     {
       if (j & 1)
@@ -122,7 +122,7 @@ test_modulo (gmp_randstate_t rands, const char *name,
 
 	  abort ();
 	}
-
+	  
     }
   mpz_clear (r);
   free (a);

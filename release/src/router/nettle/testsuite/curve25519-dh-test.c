@@ -56,7 +56,7 @@ test_a (const uint8_t *s, const uint8_t *b, const uint8_t *r)
 {
   uint8_t p[CURVE25519_SIZE];
   curve25519_mul (p, s, b);
-
+    
   if (!MEMEQ (CURVE25519_SIZE, p, r))
     {
       printf ("curve25519_mul failure:\ns = ");

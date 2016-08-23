@@ -77,3 +77,4 @@
 #endif /* HAVE_NATIVE_64_BIT */
 
 #endif /* NETTLE_SERPENT_INTERNAL_H_INCLUDED */
+

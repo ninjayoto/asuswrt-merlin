@@ -79,7 +79,7 @@ chacha_poly1305_set_nonce (struct chacha_poly1305_ctx *ctx,
   chacha_set_nonce96 (&ctx->chacha, nonce);
   /* Generate authentication key */
   _chacha_core (u.x, ctx->chacha.state, CHACHA_ROUNDS);
-  poly1305_set_key (&ctx->poly1305, u.subkey);
+  poly1305_set_key (&ctx->poly1305, u.subkey);  
   /* For final poly1305 processing */
   memcpy (ctx->s.b, u.subkey + 16, 16);
   /* Increment block count */
@@ -113,7 +113,7 @@ void
 chacha_poly1305_update (struct chacha_poly1305_ctx *ctx,
 			size_t length, const uint8_t *data)
 {
-  assert (ctx->data_size == 0);
+  assert (ctx->data_size == 0);  
   poly1305_update (ctx, length, data);
   ctx->auth_size += length;
 }
@@ -133,7 +133,7 @@ chacha_poly1305_encrypt (struct chacha_poly1305_ctx *ctx,
   poly1305_update (ctx, length, dst);
   ctx->data_size += length;
 }
-
+			 
 void
 chacha_poly1305_decrypt (struct chacha_poly1305_ctx *ctx,
 			 size_t length, uint8_t *dst, const uint8_t *src)
@@ -148,7 +148,7 @@ chacha_poly1305_decrypt (struct chacha_poly1305_ctx *ctx,
   chacha_crypt (&ctx->chacha, length, dst, src);
   ctx->data_size += length;
 }
-
+			 
 void
 chacha_poly1305_digest (struct chacha_poly1305_ctx *ctx,
 			size_t length, uint8_t *digest)

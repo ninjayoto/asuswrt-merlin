@@ -47,7 +47,7 @@ compute_log(void)
   unsigned x = 1;
 
   memset(gf2_log, 0, 0x100);
-
+  
   for (i = 0; i < 0x100; i++, x = x ^ xtime(x))
     {
       gf2_exp[i] = x;
@@ -78,7 +78,7 @@ affine(unsigned x)
   return 0xff &
     (0x63^x^(x>>4)^(x<<4)^(x>>5)^(x<<3)^(x>>6)^(x<<2)^(x>>7)^(x<<1));
 }
-
+     
 static void
 compute_sbox(void)
 {
@@ -126,7 +126,7 @@ compute_itable(void)
 			| (mult(s, 0xd) << 16)
 			| (mult(s, 0x9) << 8)
 			| (mult(s, 0xe) ));
-
+      
       for (j = 0; j<4; j++, t = (t << 8) | (t >> 24))
 	itable[j][i] = t;
     }
@@ -144,7 +144,7 @@ compute_mtable(void)
 			| (mult(i, 0xd) << 16)
 			| (mult(i, 0x9) << 8)
 			| (mult(i, 0xe) ));
-
+      
       for (j = 0; j<4; j++, t = (t << 8) | (t >> 24))
 	mtable[j][i] = t;
     }
@@ -171,7 +171,7 @@ static void
 display_table(const char *name, unsigned long table[][0x100])
 {
   unsigned i, j, k;
-
+  
   printf("uint32_t %s[4][0x100] =\n{\n  ", name);
 
   for (k = 0; k<4; k++)
@@ -234,7 +234,7 @@ main(int argc, char **argv)
 	  if (u != 1)
 	    printf("invert(%x) = %x; product = %x\n",
 		   a, a1, u);
-
+	  
 	  for (b = 1; b<0x100; b++)
 	    {
 	      unsigned b1 = invert(b);
@@ -247,7 +247,7 @@ main(int argc, char **argv)
 	      if (u != b)
 		printf("%x x %x = %x, invert(%x) = %x, %x x %x = %x\n",
 		       a, b, c, a, a1, c, a1, u);
-
+	      
 	      u = mult(c, b1);
 	      if (u != a)
 		printf("%x x %x = %x, invert(%x) = %x, %x x %x = %x\n",
@@ -286,7 +286,7 @@ main(int argc, char **argv)
       /* Compute gcd(a, x^4+1) */
       unsigned d[4];
       unsigned u[4];
-
+      
       for (i = 0; i<4; i++)
 	a[i] = strtoul(argv[1+i], NULL, 16);
     }

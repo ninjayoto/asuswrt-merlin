@@ -34,7 +34,7 @@ test_main(void)
   HMAC_TEST(md5,
 	    SDATA("Jefe"),
 	    SDATA("what do ya want for nothing?"),
-	    SHEX("750c783e6ab0b503 eaa86e310a5db738"));
+	    SHEX("750c783e6ab0b503 eaa86e310a5db738"));	    
 
   /* md5 - 3 */
   HMAC_TEST(md5,
@@ -44,10 +44,10 @@ test_main(void)
 		 "dddddddddddddddd dddddddddddddddd"
 		 "dddd"),
 	    SHEX("56be34521d144c88 dbb8c733f0e8b3f6"));
-
+  
   /* md5 - 4 */
   HMAC_TEST(md5,
-	    SHEX("0102030405060708 090a0b0c0d0e0f10"
+	    SHEX("0102030405060708 090a0b0c0d0e0f10" 
 		 "1112131415161718 19"),
 	    SHEX("cdcdcdcdcdcdcdcd cdcdcdcdcdcdcdcd"
 		 "cdcdcdcdcdcdcdcd cdcdcdcdcdcdcdcd"
@@ -87,27 +87,27 @@ test_main(void)
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA(""),
 	    SHEX("e84db42a188813f30a15e611d64c7869"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("a"),
 	    SHEX("123662062e67c2aab371cc49db0df134"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("38"),
 	    SHEX("0a46cc10a49d4b7025c040c597bf5d76"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abc"),
 	    SHEX("d1f4d89f0e8b2b6ed0623c99ec298310"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("message digest"),
 	    SHEX("1627207b9bed5009a4f6e9ca8d2ca01e"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abcdefghijklmnopqrstuvwxyz"),
@@ -221,7 +221,7 @@ test_main(void)
 
   /* sha1 - 4 */
   HMAC_TEST(sha1,
-	    SHEX("0102030405060708 090a0b0c0d0e0f10"
+	    SHEX("0102030405060708 090a0b0c0d0e0f10" 
 		 "1112131415161718 19"),
 	    SHEX("cdcdcdcdcdcdcdcd cdcdcdcdcdcdcdcd"
 		 "cdcdcdcdcdcdcdcd cdcdcdcdcdcdcdcd"
@@ -261,27 +261,27 @@ test_main(void)
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA(""),
 	    SHEX("e84db42a188813f30a15e611d64c7869"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("a"),
 	    SHEX("123662062e67c2aab371cc49db0df134"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("38"),
 	    SHEX("0a46cc10a49d4b7025c040c597bf5d76"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abc"),
 	    SHEX("d1f4d89f0e8b2b6ed0623c99ec298310"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("message digest"),
 	    SHEX("1627207b9bed5009a4f6e9ca8d2ca01e"));
-
+  
   HMAC_TEST(md5,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abcdefghijklmnopqrstuvwxyz"),
@@ -373,31 +373,31 @@ test_main(void)
 	    SDATA(""),
 	    SHEX("d12a49ae38177ffeaa548b2148bb5238"
 		 "60849772d9391e675b103d89"));
-
+  
   HMAC_TEST(sha224,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("a"),
 	    SHEX("b04ff8522f904f553970bfa8ad3f0086"
 		 "bce1e8580affd8a12c94e31a"));
-
+  
   HMAC_TEST(sha224,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("38"),
 	    SHEX("afcfb5511f710334f9350f57faec3c08"
 		 "764b4bd126a6840f4347f116"));
-
+  
   HMAC_TEST(sha224,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abc"),
 	    SHEX("9df9907af127900c909376893565c6cf"
 		 "2d7db244fdc4277da1e0b679"));
-
+  
   HMAC_TEST(sha224,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("message digest"),
 	    SHEX("254ebf6b8ddd7a3271b3d9aca1699b0c"
 		 "0bfb7df61e8a114922c88d27"));
-
+  
   HMAC_TEST(sha224,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abcdefghijklmnopqrstuvwxyz"),
@@ -585,31 +585,31 @@ test_main(void)
 	    SDATA(""),
 	    SHEX("5c780648c90d121c50091c3a0c3afc1f"
 		 "4ab847528005d99d9821ad3f341b651a"));
-
+  
   HMAC_TEST(sha256,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("a"),
 	    SHEX("6142364c0646b0cfe426866f21d613e0"
 		 "55a136a7d9b45d85685e080a09cec463"));
-
+  
   HMAC_TEST(sha256,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("38"),
 	    SHEX("e49aa7839977e130ad87b63da9d4eb7b"
 		 "263cd5a27c54a7604b6044eb35901171"));
-
+  
   HMAC_TEST(sha256,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abc"),
 	    SHEX("e5ef49f545c7af933a9d18c7c562bc91"
 		 "08583fd5cf00d9e0db351d6d8f8e41bc"));
-
+  
   HMAC_TEST(sha256,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("message digest"),
 	    SHEX("373b04877180fea27a41a8fb8f88201c"
 		 "a6268411ee3c80b01a424483eb9156e1"));
-
+  
   HMAC_TEST(sha256,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abcdefghijklmnopqrstuvwxyz"),
@@ -794,7 +794,7 @@ test_main(void)
 		 "148b424533cf562bc1b365f530e21a31"
 		 "799fc51cef78060cc6f448a8e5d780c2"
 		 "6cdf20d4c3e6f27fe5ef576bbd05e855"));
-
+  
   HMAC_TEST(sha512,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("a"),
@@ -802,7 +802,7 @@ test_main(void)
 		 "b90d3298395c29873f1ded1e111b50fe"
 		 "c336ed24684bf19716efc309212f37aa"
 		 "715cfb9ecccf3af13691ded167b4b336"));
-
+  
   HMAC_TEST(sha512,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("38"),
@@ -810,7 +810,7 @@ test_main(void)
 		 "644c6dfd1269ed8580bbc39b92add364"
 		 "c2b2a2018cffb1915e8625e473b67d0f"
 		 "e54a50e475dfa0e2b1a97bac1383792c"));
-
+  
   HMAC_TEST(sha512,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abc"),
@@ -818,7 +818,7 @@ test_main(void)
 		 "4816baa9791ba39d3dc611210500b044"
 		 "873ee296bf1047dc06daa201a5767192"
 		 "5b73b4ea59c60114881c8287d0699c83"));
-
+  
   HMAC_TEST(sha512,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("message digest"),
@@ -826,7 +826,7 @@ test_main(void)
 		 "17ded4eee5c29375e0d93717669a4c3e"
 		 "eba7473e95f7c1a2a85afc24a0adbc4d"
 		 "6c2bdd6ca6cab8b18d19f82d4a6c51bc"));
-
+  
   HMAC_TEST(sha512,
 	    SDATA("monkey monkey monkey monkey"),
 	    SDATA("abcdefghijklmnopqrstuvwxyz"),
@@ -871,7 +871,7 @@ test_main(void)
 	    SDATA("JefeJefeJefeJefe"
 		  "JefeJefeJefeJefe"
 		  "JefeJefeJefeJefe"
-		  "JefeJefeJefeJefe"),
+		  "JefeJefeJefeJefe"),	    
 	    SDATA("what do ya want for nothing?"),
 	    SHEX("cb370917ae8a7ce28cfd1d8f4705d614"
 		 "1c173b2a9362c15df235dfb251b15454"

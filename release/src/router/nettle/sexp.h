@@ -29,7 +29,7 @@
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 */
-
+ 
 #ifndef NETTLE_SEXP_H_INCLUDED
 #define NETTLE_SEXP_H_INCLUDED
 
@@ -73,7 +73,7 @@ struct sexp_iterator
   unsigned level;
 
   enum sexp_type type;
-
+  
   size_t display_length;
   const uint8_t *display;
 
@@ -189,7 +189,7 @@ struct nettle_buffer;
  *        instead the string is NUL-terminated, and there's only one
  *        const uint8_t * argument.
  */
-
+ 
 size_t
 sexp_format(struct nettle_buffer *buffer,
 	    const char *format, ...);

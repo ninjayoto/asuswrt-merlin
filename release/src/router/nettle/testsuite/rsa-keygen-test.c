@@ -13,13 +13,13 @@ test_main(void)
 {
   struct rsa_public_key pub;
   struct rsa_private_key key;
-
+  
   struct knuth_lfib_ctx lfib;
 
   mpz_t expected;
-
+  
   mpz_init(expected);
-
+  
   rsa_private_key_init(&key);
   rsa_public_key_init(&pub);
 
@@ -70,7 +70,7 @@ test_main(void)
 	      "fd040793c487588d" "6218" , 16);
 
   test_rsa_sha1(&pub, &key, expected);
-
+  
   rsa_private_key_clear(&key);
   rsa_public_key_clear(&pub);
   mpz_clear(expected);

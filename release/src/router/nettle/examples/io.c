@@ -80,7 +80,7 @@ read_file(const char *name, unsigned max_size, char **contents)
   unsigned size, done;
   char *buffer;
   FILE *f;
-
+    
   f = fopen(name, "rb");
   if (!f)
     {
@@ -132,13 +132,13 @@ read_file(const char *name, unsigned max_size, char **contents)
       if (size == max_size)
 	break;
     }
-
+  
   fclose(f);
 
   /* NUL-terminate the data. */
   buffer[done] = '\0';
   *contents = buffer;
-
+  
   return done;
 }
 
@@ -155,7 +155,7 @@ write_file(const char *name, unsigned size, const char *buffer)
 {
   FILE *f = fopen(name, "wb");
   int res;
-
+  
   if (!f)
     return 0;
 
@@ -173,7 +173,7 @@ simple_random(struct yarrow256_ctx *ctx, const char *name)
     length = read_file(name, 0, &buffer);
   else
     length = read_file(RANDOM_DEVICE, 20, &buffer);
-
+  
   if (!length)
     return 0;
 
@@ -193,7 +193,7 @@ hash_file(const struct nettle_hash *hash, void *ctx, FILE *f)
       size_t res = fread(buffer, 1, sizeof(buffer), f);
       if (ferror(f))
 	return 0;
-
+      
       hash->update(ctx, res, buffer);
       if (feof(f))
 	return 1;

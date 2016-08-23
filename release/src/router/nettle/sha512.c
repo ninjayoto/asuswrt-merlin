@@ -138,7 +138,7 @@ sha512_init(struct sha512_ctx *ctx)
 
   /* Initialize bit count */
   ctx->count_low = ctx->count_high = 0;
-
+  
   /* Initialize buffer */
   ctx->index = 0;
 }
@@ -165,7 +165,7 @@ sha512_write_digest(struct sha512_ctx *ctx,
 
   MD_PAD(ctx, 16, COMPRESS);
 
-  /* There are 1024 = 2^10 bits in one block */
+  /* There are 1024 = 2^10 bits in one block */  
   high = (ctx->count_high << 10) | (ctx->count_low >> 54);
   low = (ctx->count_low << 10) | (ctx->index << 3);
 
@@ -230,7 +230,7 @@ sha384_init(struct sha512_ctx *ctx)
 
   /* Initialize bit count */
   ctx->count_low = ctx->count_high = 0;
-
+  
   /* Initialize buffer */
   ctx->index = 0;
 }
@@ -263,7 +263,7 @@ sha512_224_init(struct sha512_224_ctx *ctx)
 
   /* Initialize bit count */
   ctx->count_low = ctx->count_high = 0;
-
+  
   /* Initialize buffer */
   ctx->index = 0;
 }
@@ -286,9 +286,9 @@ sha512_256_init(struct sha512_256_ctx *ctx)
 {
   static const uint64_t H0[_SHA512_DIGEST_LENGTH] =
     {
-      0x22312194fc2bf72cULL, 0x9f555fa3c84c64c2ULL,
-      0x2393b86b6f53b151ULL, 0x963877195940eabdULL,
-      0x96283ee2a88effe3ULL, 0xbe5e1e2553863992ULL,
+      0x22312194fc2bf72cULL, 0x9f555fa3c84c64c2ULL, 
+      0x2393b86b6f53b151ULL, 0x963877195940eabdULL, 
+      0x96283ee2a88effe3ULL, 0xbe5e1e2553863992ULL, 
       0x2b0199fc2c85b8aaULL, 0x0eb72ddc81c52ca2ULL,
     };
 
@@ -296,7 +296,7 @@ sha512_256_init(struct sha512_256_ctx *ctx)
 
   /* Initialize bit count */
   ctx->count_low = ctx->count_high = 0;
-
+  
   /* Initialize buffer */
   ctx->index = 0;
 }

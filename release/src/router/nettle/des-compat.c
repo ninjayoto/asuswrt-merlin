@@ -44,7 +44,7 @@
 #include "macros.h"
 #include "memxor.h"
 
-struct des_compat_des3 { const struct des_ctx *keys[3]; };
+struct des_compat_des3 { const struct des_ctx *keys[3]; }; 
 
 static void
 des_compat_des3_encrypt(struct des_compat_des3 *ctx,
@@ -101,12 +101,12 @@ des_cbc_cksum(const uint8_t *src, des_cblock *dst,
       nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
 
       src += DES_BLOCK_SIZE;
-      length -= DES_BLOCK_SIZE;
+      length -= DES_BLOCK_SIZE;	  
     }
   if (length > 0)
     {
       memxor(block, src, length);
-      nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);
+      nettle_des_encrypt(ctx, DES_BLOCK_SIZE, block, block);	  
     }
   memcpy(*dst, block, DES_BLOCK_SIZE);
 
@@ -213,7 +213,7 @@ des_key_sched(const_des_cblock *key, des_key_schedule ctx)
   if (des_check_key && !des_check_parity (DES_KEY_SIZE, *key))
     /* Bad parity */
     return -1;
-
+  
   if (!nettle_des_set_key(ctx, *key) && des_check_key)
     /* Weak key */
     return -2;

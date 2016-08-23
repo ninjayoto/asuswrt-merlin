@@ -49,7 +49,7 @@ include_src(<x86_64/salsa20.m4>)
 	.text
 	ALIGN(16)
 PROLOGUE(_nettle_salsa20_core)
-	W64_ENTRY(3, 9)
+	W64_ENTRY(3, 9)	
 
 	C Load mask registers
 	mov	$-1, %eax
@@ -67,7 +67,7 @@ PROLOGUE(_nettle_salsa20_core)
 	SWAP(X0, X1, M0101)
 	SWAP(X2, X3, M0101)
 	SWAP(X1, X3, M0110)
-	SWAP(X0, X2, M0011)
+	SWAP(X0, X2, M0011)	
 
 	shrl	$1, XREG(COUNT)
 
@@ -88,7 +88,7 @@ PROLOGUE(_nettle_salsa20_core)
 	decl	XREG(COUNT)
 	jnz	.Loop
 
-	SWAP(X0, X2, M0011)
+	SWAP(X0, X2, M0011)	
 	SWAP(X1, X3, M0110)
 	SWAP(X0, X1, M0101)
 	SWAP(X2, X3, M0101)
@@ -105,7 +105,7 @@ PROLOGUE(_nettle_salsa20_core)
 	paddd	T1, X3
 	movups	X2,32(DST)
 	movups	X3,48(DST)
-
+	
 	W64_EXIT(3, 9)
 	ret
 EPILOGUE(_nettle_salsa20_core)

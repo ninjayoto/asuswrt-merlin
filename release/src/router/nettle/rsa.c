@@ -76,6 +76,6 @@ int
 rsa_public_key_prepare(struct rsa_public_key *key)
 {
   key->size = _rsa_check_size(key->n);
-
+  
   return (key->size > 0);
 }

@@ -78,7 +78,7 @@ dsa_verify(const struct dsa_params *params,
 
   /* The message digest */
   _dsa_hash (tmp, mpz_sizeinbase (params->q, 2), digest_size, digest);
-
+  
   /* v = g^{w * h (mod q)} (mod p)  */
   mpz_mul(tmp, tmp, w);
   mpz_fdiv_r(tmp, tmp, params->q);

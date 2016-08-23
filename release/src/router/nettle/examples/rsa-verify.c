@@ -47,7 +47,7 @@ read_signature(const char *name, mpz_t s)
   char *buffer;
   unsigned length;
   int res;
-
+  
   length = read_file(name, 0, &buffer);
   if (!length)
     return 0;
@@ -64,7 +64,7 @@ main(int argc, char **argv)
   struct rsa_public_key key;
   struct sha1_ctx hash;
   mpz_t s;
-
+  
   if (argc != 3)
     {
       werror("Usage: rsa-verify PUBLIC-KEY SIGNATURE-FILE < FILE\n");
@@ -72,7 +72,7 @@ main(int argc, char **argv)
     }
 
   rsa_public_key_init(&key);
-
+  
   if (!read_rsa_key(argv[1], &key, NULL))
     {
       werror("Invalid key\n");
@@ -87,7 +87,7 @@ main(int argc, char **argv)
 	      argv[2]);
       return EXIT_FAILURE;
     }
-
+  
   sha1_init(&hash);
   if (!hash_file(&nettle_sha1, &hash, stdin))
     {
@@ -101,7 +101,7 @@ main(int argc, char **argv)
       werror("Invalid signature!\n");
       return EXIT_FAILURE;
     }
-
+    
   mpz_clear(s);
   rsa_public_key_clear(&key);
 

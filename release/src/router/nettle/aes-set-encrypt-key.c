@@ -48,7 +48,7 @@ aes_set_encrypt_key(struct aes_ctx *ctx,
 
   assert(keysize >= AES_MIN_KEY_SIZE);
   assert(keysize <= AES_MAX_KEY_SIZE);
-
+  
   /* Truncate keysizes to the valid key sizes provided by Rijndael */
   if (keysize == AES256_KEY_SIZE) {
     nk = 8;

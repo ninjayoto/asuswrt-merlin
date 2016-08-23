@@ -9,16 +9,16 @@ test_main(void)
 
   test_hash(&nettle_md5, SDATA("a"),
 	    SHEX("0CC175B9C0F1B6A8 31C399E269772661"));
-
+	    
   test_hash(&nettle_md5, SDATA("abc"),
 	    SHEX("900150983cd24fb0 D6963F7D28E17F72"));
 
   test_hash(&nettle_md5, SDATA("message digest"),
 	    SHEX("F96B697D7CB7938D 525A2F31AAF161D0"));
-
+  
   test_hash(&nettle_md5, SDATA("abcdefghijklmnopqrstuvwxyz"),
 	    SHEX("C3FCD3D76192E400 7DFB496CCA67E13B"));
-
+  
   test_hash(&nettle_md5,
 	    SDATA("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		  "abcdefghijklmnopqrstuvwxyz"
@@ -79,9 +79,9 @@ test_main(void)
   /*                             ^^                               ^^ */
 
   /* Note: Also different from the checksum in the paper */
-
+  
 #define H1 "79054025 255fb1a2 6e4bc422 aef54eb4"
-
+  
   test_hash(&nettle_md5,
 	    SHEX(M0 N0), SHEX(H0));
 

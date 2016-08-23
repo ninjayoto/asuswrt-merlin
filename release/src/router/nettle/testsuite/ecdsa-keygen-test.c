@@ -24,7 +24,7 @@ ecc_valid_p (struct ecc_point *pub)
   mpz_roinit_n (y, pub->p + size, size);
 
   mpz_mul (lhs, y, y);
-
+  
   if (pub->ecc->p.bit_size == 255)
     {
       /* Check that
@@ -49,7 +49,7 @@ ecc_valid_p (struct ecc_point *pub)
       mpz_add (rhs, rhs, mpz_roinit_n (t, pub->ecc->b, size));
     }
   res = mpz_congruent_p (lhs, rhs, mpz_roinit_n (t, pub->ecc->p.m, size));
-
+  
   mpz_clear (lhs);
   mpz_clear (rhs);
 

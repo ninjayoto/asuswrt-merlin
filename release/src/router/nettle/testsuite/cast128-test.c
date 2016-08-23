@@ -56,7 +56,7 @@ test_main(void)
 		   "23 45 67 89 34 56 78 9A"),
 	      SHEX("01 23 45 67 89 AB CD EF"),
 	      SHEX("23 8B 4F E5 84 7E 44 B2"));
-
+  
   /* 80 bit key */
   test_cast5(SHEX("01 23 45 67 12 34 56 78 23 45"),
 	     SHEX("01 23 45 67 89 AB CD EF"),

@@ -187,7 +187,7 @@ _test_salsa20(salsa20_func *crypt,
 #define test_salsa20r12(key, iv, cleartext, ciphertext) \
   _test_salsa20 (salsa20r12_crypt, (key), (iv), (cleartext), (ciphertext))
 
-
+  
 void
 test_main(void)
 {

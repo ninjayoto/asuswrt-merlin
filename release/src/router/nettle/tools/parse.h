@@ -39,7 +39,7 @@ struct sexp_compound_token
 {
   enum sexp_token type;
   struct nettle_buffer display;
-  struct nettle_buffer string;
+  struct nettle_buffer string;  
 };
 
 void

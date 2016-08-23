@@ -30,7 +30,7 @@
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
 */
-
+ 
 #ifndef NETTLE_RSA_H_INCLUDED
 #define NETTLE_RSA_H_INCLUDED
 
@@ -56,25 +56,34 @@ extern "C" {
 #define rsa_pkcs1_sign nettle_rsa_pkcs1_sign
 #define rsa_pkcs1_sign_tr nettle_rsa_pkcs1_sign_tr
 #define rsa_md5_sign nettle_rsa_md5_sign
+#define rsa_md5_sign_tr nettle_rsa_md5_sign_tr
 #define rsa_md5_verify nettle_rsa_md5_verify
 #define rsa_sha1_sign nettle_rsa_sha1_sign
+#define rsa_sha1_sign_tr nettle_rsa_sha1_sign_tr
 #define rsa_sha1_verify nettle_rsa_sha1_verify
 #define rsa_sha256_sign nettle_rsa_sha256_sign
+#define rsa_sha256_sign_tr nettle_rsa_sha256_sign_tr
 #define rsa_sha256_verify nettle_rsa_sha256_verify
 #define rsa_sha512_sign nettle_rsa_sha512_sign
+#define rsa_sha512_sign_tr nettle_rsa_sha512_sign_tr
 #define rsa_sha512_verify nettle_rsa_sha512_verify
 #define rsa_md5_sign_digest nettle_rsa_md5_sign_digest
+#define rsa_md5_sign_digest_tr nettle_rsa_md5_sign_digest_tr
 #define rsa_md5_verify_digest nettle_rsa_md5_verify_digest
 #define rsa_sha1_sign_digest nettle_rsa_sha1_sign_digest
+#define rsa_sha1_sign_digest_tr nettle_rsa_sha1_sign_digest_tr
 #define rsa_sha1_verify_digest nettle_rsa_sha1_verify_digest
 #define rsa_sha256_sign_digest nettle_rsa_sha256_sign_digest
+#define rsa_sha256_sign_digest_tr nettle_rsa_sha256_sign_digest_tr
 #define rsa_sha256_verify_digest nettle_rsa_sha256_verify_digest
 #define rsa_sha512_sign_digest nettle_rsa_sha512_sign_digest
+#define rsa_sha512_sign_digest_tr nettle_rsa_sha512_sign_digest_tr
 #define rsa_sha512_verify_digest nettle_rsa_sha512_verify_digest
 #define rsa_encrypt nettle_rsa_encrypt
 #define rsa_decrypt nettle_rsa_decrypt
 #define rsa_decrypt_tr nettle_rsa_decrypt_tr
 #define rsa_compute_root nettle_rsa_compute_root
+#define rsa_compute_root_tr nettle_rsa_compute_root_tr
 #define rsa_generate_keypair nettle_rsa_generate_keypair
 #define rsa_keypair_to_sexp nettle_rsa_keypair_to_sexp
 #define rsa_keypair_from_sexp_alist nettle_rsa_keypair_from_sexp_alist
@@ -104,7 +113,7 @@ struct rsa_public_key
   /* Size of the modulo, in octets. This is also the size of all
    * signatures that are created or verified with this key. */
   size_t size;
-
+  
   /* Modulo */
   mpz_t n;
 
@@ -119,7 +128,7 @@ struct rsa_private_key
   /* d is filled in by the key generation function; otherwise it's
    * completely unused. */
   mpz_t d;
-
+  
   /* The two factors */
   mpz_t p; mpz_t q;
 
@@ -155,7 +164,7 @@ struct rsa_private_key
  * When done with the key and signature, don't forget to call
  * mpz_clear.
  */
-
+ 
 /* Calls mpz_init to initialize bignum storage. */
 void
 rsa_public_key_init(struct rsa_public_key *key);
@@ -187,10 +196,10 @@ rsa_pkcs1_sign(const struct rsa_private_key *key,
 
 int
 rsa_pkcs1_sign_tr(const struct rsa_public_key *pub,
-	          const struct rsa_private_key *key,
+  	          const struct rsa_private_key *key,
 	          void *random_ctx, nettle_random_func *random,
 	          size_t length, const uint8_t *digest_info,
-	          mpz_t s);
+   	          mpz_t s);
 int
 rsa_pkcs1_verify(const struct rsa_public_key *key,
 		 size_t length, const uint8_t *digest_info,
@@ -200,6 +209,12 @@ int
 rsa_md5_sign(const struct rsa_private_key *key,
              struct md5_ctx *hash,
              mpz_t signature);
+
+int
+rsa_md5_sign_tr(const struct rsa_public_key *pub,
+		const struct rsa_private_key *key,
+		void *random_ctx, nettle_random_func *random,
+		struct md5_ctx *hash, mpz_t s);
 
 
 int
@@ -213,6 +228,13 @@ rsa_sha1_sign(const struct rsa_private_key *key,
               mpz_t signature);
 
 int
+rsa_sha1_sign_tr(const struct rsa_public_key *pub,
+		 const struct rsa_private_key *key,
+		 void *random_ctx, nettle_random_func *random,
+		 struct sha1_ctx *hash,
+		 mpz_t s);
+
+int
 rsa_sha1_verify(const struct rsa_public_key *key,
                 struct sha1_ctx *hash,
 		const mpz_t signature);
@@ -223,6 +245,13 @@ rsa_sha256_sign(const struct rsa_private_key *key,
 		mpz_t signature);
 
 int
+rsa_sha256_sign_tr(const struct rsa_public_key *pub,
+		   const struct rsa_private_key *key,
+		   void *random_ctx, nettle_random_func *random,
+		   struct sha256_ctx *hash,
+		   mpz_t s);
+
+int
 rsa_sha256_verify(const struct rsa_public_key *key,
 		  struct sha256_ctx *hash,
 		  const mpz_t signature);
@@ -231,6 +260,13 @@ int
 rsa_sha512_sign(const struct rsa_private_key *key,
 		struct sha512_ctx *hash,
 		mpz_t signature);
+
+int
+rsa_sha512_sign_tr(const struct rsa_public_key *pub,
+		   const struct rsa_private_key *key,
+		   void *random_ctx, nettle_random_func *random,
+		   struct sha512_ctx *hash,
+		   mpz_t s);
 
 int
 rsa_sha512_verify(const struct rsa_public_key *key,
@@ -244,6 +280,12 @@ rsa_md5_sign_digest(const struct rsa_private_key *key,
 		    mpz_t s);
 
 int
+rsa_md5_sign_digest_tr(const struct rsa_public_key *pub,
+		       const struct rsa_private_key *key,
+		       void *random_ctx, nettle_random_func *random,
+		       const uint8_t *digest, mpz_t s);
+
+int
 rsa_md5_verify_digest(const struct rsa_public_key *key,
 		      const uint8_t *digest,
 		      const mpz_t signature);
@@ -252,6 +294,13 @@ int
 rsa_sha1_sign_digest(const struct rsa_private_key *key,
 		     const uint8_t *digest,
 		     mpz_t s);
+
+int
+rsa_sha1_sign_digest_tr(const struct rsa_public_key *pub,
+			const struct rsa_private_key *key,
+			void *random_ctx, nettle_random_func *random,
+			const uint8_t *digest,
+			mpz_t s);
 
 int
 rsa_sha1_verify_digest(const struct rsa_public_key *key,
@@ -264,6 +313,13 @@ rsa_sha256_sign_digest(const struct rsa_private_key *key,
 		       mpz_t s);
 
 int
+rsa_sha256_sign_digest_tr(const struct rsa_public_key *pub,
+			  const struct rsa_private_key *key,
+			  void *random_ctx, nettle_random_func *random,
+			  const uint8_t *digest,
+			  mpz_t s);
+
+int
 rsa_sha256_verify_digest(const struct rsa_public_key *key,
 			 const uint8_t *digest,
 			 const mpz_t signature);
@@ -272,6 +328,13 @@ int
 rsa_sha512_sign_digest(const struct rsa_private_key *key,
 		       const uint8_t *digest,
 		       mpz_t s);
+
+int
+rsa_sha512_sign_digest_tr(const struct rsa_public_key *pub,
+			  const struct rsa_private_key *key,
+			  void *random_ctx, nettle_random_func *random,
+			  const uint8_t *digest,
+			  mpz_t s);
 
 int
 rsa_sha512_verify_digest(const struct rsa_public_key *key,
@@ -306,7 +369,7 @@ rsa_decrypt(const struct rsa_private_key *key,
 int
 rsa_decrypt_tr(const struct rsa_public_key *pub,
 	       const struct rsa_private_key *key,
-	       void *random_ctx, nettle_random_func *random,
+	       void *random_ctx, nettle_random_func *random,	       
 	       size_t *length, uint8_t *message,
 	       const mpz_t gibberish);
 
@@ -315,6 +378,13 @@ void
 rsa_compute_root(const struct rsa_private_key *key,
 		 mpz_t x, const mpz_t m);
 
+/* Safer variant, using RSA blinding, and checking the result after
+   CRT. */
+int
+rsa_compute_root_tr(const struct rsa_public_key *pub,
+		    const struct rsa_private_key *key,
+		    void *random_ctx, nettle_random_func *random,
+		    mpz_t x, const mpz_t m);
 
 /* Key generation */
 
@@ -328,7 +398,7 @@ rsa_generate_keypair(struct rsa_public_key *pub,
 
 		     /* Desired size of modulo, in bits */
 		     unsigned n_size,
-
+		     
 		     /* Desired size of public exponent, in bits. If
 		      * zero, the passed in value pub->e is used. */
 		     unsigned e_size);
@@ -389,11 +459,11 @@ rsa_private_key_from_der_iterator(struct rsa_public_key *pub,
 				  unsigned limit,
 				  struct asn1_der_iterator *i);
 
-/* For public keys, use PRIV == NULL */
+/* For public keys, use PRIV == NULL */ 
 int
 rsa_keypair_from_der(struct rsa_public_key *pub,
 		     struct rsa_private_key *priv,
-		     unsigned limit,
+		     unsigned limit, 
 		     size_t length, const uint8_t *data);
 
 /* OpenPGP format. Experimental interface, subject to change. */
@@ -413,6 +483,8 @@ _rsa_verify(const struct rsa_public_key *key,
 size_t
 _rsa_check_size(mpz_t n);
 
+/* _rsa_blind and _rsa_unblind are deprecated, unused in the library,
+   and will likely be removed with the next ABI break. */
 void
 _rsa_blind (const struct rsa_public_key *pub,
 	    void *random_ctx, nettle_random_func *random,

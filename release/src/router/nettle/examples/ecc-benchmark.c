@@ -125,7 +125,7 @@ modinv_gcd (const struct ecc_curve *ecc,
   gn = mpn_gcdext (gp, sp, &sn, up, size, vp, size);
   if (gn != 1 || gp[0] != 1)
     return 0;
-
+  
   if (sn < 0)
     mpn_sub (sp, ecc->p.m, size, sp, -sn);
   else if (sn < size)
@@ -182,7 +182,7 @@ bench_modinv_gcd (void *p)
 {
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   mpn_copyi (ctx->rp + ctx->ecc->p.size, ctx->ap, ctx->ecc->p.size);
-  modinv_gcd (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->p.size, ctx->tp);
+  modinv_gcd (ctx->ecc, ctx->rp, ctx->rp + ctx->ecc->p.size, ctx->tp);  
 }
 #endif
 
@@ -193,7 +193,7 @@ bench_modinv_powm (void *p)
   struct ecc_ctx *ctx = (struct ecc_ctx *) p;
   const struct ecc_curve *ecc = ctx->ecc;
   mp_size_t size = ecc->p.size;
-
+  
   mpn_sub_1 (ctx->rp + size, ecc->p.m, size, 2);
   mpn_sec_powm (ctx->rp, ctx->ap, size,
 		ctx->rp + size, ecc->p.bit_size,
@@ -263,7 +263,7 @@ mpn_random (mp_limb_t *xp, mp_size_t n)
 static void
 bench_curve (const struct ecc_curve *ecc)
 {
-  struct ecc_ctx ctx;
+  struct ecc_ctx ctx;  
   double modp, reduce, modq, modinv, modinv_gcd, modinv_powm,
     dup_jj, add_jja, add_hhh,
     mul_g, mul_a;

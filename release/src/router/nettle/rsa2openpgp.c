@@ -73,13 +73,13 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
 
   unsigned key_start;
   unsigned userid_start;
-
+  
   struct sha1_ctx key_hash;
   struct sha1_ctx signature_hash;
   uint8_t fingerprint[SHA1_DIGEST_SIZE];
-
+  
   key_start = buffer->size;
-
+  
   if (!pgp_put_public_rsa_key(buffer, pub, now))
     return 0;
 
@@ -100,7 +100,7 @@ rsa_keypair_to_openpgp(struct nettle_buffer *buffer,
   sha1_update(&signature_hash,
 	      buffer->size - userid_start,
 	      buffer->contents + userid_start);
-
+  
   return pgp_put_rsa_sha1_signature(buffer,
 				    priv,
 				    fingerprint + SHA1_DIGEST_SIZE - 8,

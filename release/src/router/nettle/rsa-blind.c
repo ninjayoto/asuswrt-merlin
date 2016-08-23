@@ -53,7 +53,7 @@ _rsa_blind (const struct rsa_public_key *pub,
   /* c = c*(r^e)
    * ri = r^(-1)
    */
-  do
+  do 
     {
       nettle_mpz_random(r, random_ctx, random, pub->n);
       /* invert r */

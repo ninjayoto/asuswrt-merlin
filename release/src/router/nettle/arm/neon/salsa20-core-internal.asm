@@ -28,7 +28,7 @@ ifelse(<
    You should have received copies of the GNU General Public License and
    the GNU Lesser General Public License along with this program.  If
    not, see http://www.gnu.org/licenses/.
->)
+>) 
 
 	.file "salsa20-core-internal.asm"
 	.fpu	neon
@@ -49,7 +49,7 @@ define(<M0011>, <q12>)
 define(<S1>, <q13>)
 define(<S2>, <q14>)
 define(<S3>, <q15>)
-
+	
 define(<QROUND>, <
 	vadd.i32	T0, $1, $4
 	vshl.i32	T1, T0, #7
@@ -75,7 +75,7 @@ define(<QROUND>, <
 	veor		$1, $1, T0
 	veor		$1, $1, T1
 >)
-
+	
 	.text
 	.align 4
 .Lmasks:

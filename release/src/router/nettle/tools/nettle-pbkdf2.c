@@ -51,7 +51,7 @@
 static void
 usage (FILE *f)
 {
-  fprintf(f, "nettle-pbkdf2 [OPTIONS] SALT\n"
+  fprintf(f, "Usage: nettle-pbkdf2 [OPTIONS] SALT\n"
 	  "Options:\n"
 	  "  --help                 Show this help.\n"
 	  "  -V, --version          Show version information.\n"
@@ -97,6 +97,9 @@ main (int argc, char **argv)
       {
       default:
 	abort();
+      case '?':
+	usage (stderr);
+	return EXIT_FAILURE;
       case OPT_HELP:
 	usage (stdout);
 	return EXIT_SUCCESS;
@@ -140,7 +143,7 @@ main (int argc, char **argv)
 
   salt = strdup (argv[0]);
   salt_length = strlen(salt);
-
+  
   if (hex_salt)
     {
       struct base16_decode_ctx base16;
@@ -152,7 +155,7 @@ main (int argc, char **argv)
 	  || !base16_decode_final (&base16))
 	die ("Invalid salt (expecting hex encoding).\n");
     }
-
+  
   password_length = fread (password, 1, sizeof(password), stdin);
   if (password_length == sizeof(password))
     die ("Password input too long. Current limit is %d characters.\n",

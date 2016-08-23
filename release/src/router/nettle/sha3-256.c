@@ -1,5 +1,5 @@
 /* sha3-256.c
-
+   
    The sha3 hash function, 256 bit output.
 
    Copyright (C) 2012 Niels Möller

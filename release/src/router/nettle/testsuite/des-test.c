@@ -15,7 +15,7 @@ test_des(const struct tstring *key, int expected_parity,
   length = cleartext->length;
 
   ASSERT (key->length == DES_KEY_SIZE);
-
+  
   data = xalloc(length);
 
   ASSERT (des_check_parity(8, key->data) == expected_parity);
@@ -98,7 +98,7 @@ test_main(void)
   }
 
   /* The four weak keys */
-  test_weak(SHEX("01 01 01 01 01 01 01 01"));
+  test_weak(SHEX("01 01 01 01 01 01 01 01"));  
   test_weak(SHEX("FE FE FE FE FE FE FE FE"));
   test_weak(SHEX("1F 1F 1F 1F 0E 0E 0E 0E"));
   test_weak(SHEX("E0 E0 E0 E0 F1 F1 F1 F1"));

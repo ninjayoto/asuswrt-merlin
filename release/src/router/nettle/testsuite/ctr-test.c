@@ -18,7 +18,7 @@ test_main(void)
 		  SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
 		  SHEX(""), SHEX(""),
 		  SHEX("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"));
-
+  
   /* F.5.1  CTR-AES128.Encrypt */
   test_cipher_ctr(&nettle_aes128,
 		  SHEX("2b7e151628aed2a6abf7158809cf4f3c"),
@@ -84,7 +84,7 @@ test_main(void)
   Output Block   e89c399ff0f198c6d40a31db156cabfe
   Plaintext      f69f2445df4f9b17ad2b417be66c3710
   Ciphertext     1e031dda2fbe03d1792170a0f3009cee
-
+  
   F.5.2  CTR-AES128.Decrypt
   Key            2b7e151628aed2a6abf7158809cf4f3c
   Init. Counter f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
@@ -108,7 +108,7 @@ test_main(void)
   Output Block   e89c399ff0f198c6d40a31db156cabfe
   Ciphertext     1e031dda2fbe03d1792170a0f3009cee
   Plaintext      f69f2445df4f9b17ad2b417be66c3710
-
+  
   F.5.3  CTR-AES192.Encrypt
   Key            8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b
   Init. Counter f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
@@ -132,7 +132,7 @@ test_main(void)
   Output Block   b9e783b30dd7924ff7bc9b97beaa8740
   Plaintext      f69f2445df4f9b17ad2b417be66c3710
   Ciphertext     4f78a7f6d29809585a97daec58c6b050
-
+  
   F.5.4  CTR-AES192.Decrypt
   Key            8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b
   Init. Counter f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
@@ -156,7 +156,7 @@ test_main(void)
   Output Block   b9e783b30dd7924ff7bc9b97beaa8740
   Ciphertext     4f78a7f6d29809585a97daec58c6b050
   Plaintext      f69f2445df4f9b17ad2b417be66c3710
-
+  
   F.5.5  CTR-AES256.Encrypt
   Key            603deb1015ca71be2b73aef0857d7781
                  1f352c073b6108d72d9810a30914dff4
@@ -181,7 +181,7 @@ test_main(void)
   Output Block   2956e1c8693536b1bee99c73a31576b6
   Plaintext      f69f2445df4f9b17ad2b417be66c3710
   Ciphertext     dfc9c58db67aada613c2dd08457941a6
-
+  
   F.5.6  CTR-AES256.Decrypt
   Key            603deb1015ca71be2b73aef0857d7781
                  1f352c073b6108d72d9810a30914dff4

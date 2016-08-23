@@ -32,7 +32,7 @@
 */
 
 /* Here's the first paragraph of Peter Gutmann's posting,
- * <30ajo5$oe8@ccu2.auckland.ac.nz>:
+ * <30ajo5$oe8@ccu2.auckland.ac.nz>: 
  *
  * The following is my SHA (FIPS 180) code updated to allow use of the "fixed"
  * SHA, thanks to Jim Gillogly and an anonymous contributor for the information on

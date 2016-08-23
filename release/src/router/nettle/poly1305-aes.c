@@ -81,7 +81,7 @@ poly1305_aes_digest (struct poly1305_aes_ctx *ctx,
       _poly1305_block (&ctx->pctx, ctx->block, 0);
     }
   aes128_encrypt(&ctx->aes, POLY1305_BLOCK_SIZE, s.b, ctx->nonce);
-
+  
   poly1305_digest (&ctx->pctx, &s);
   memcpy (digest, s.b, length);
 

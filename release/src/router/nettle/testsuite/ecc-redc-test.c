@@ -17,7 +17,7 @@ ref_redc (mp_limb_t *rp, const mp_limb_t *ap, const mp_limb_t *mp, mp_size_t mn)
     an--;
 
   mpz_roinit_n (a, ap, an);
-
+  
   mpz_invert (t, t, m);
   mpz_mul (t, t, a);
   mpz_mod (t, t, m);
@@ -42,9 +42,9 @@ test_main (void)
   mpz_t r;
 
   gmp_randinit_default (rands);
-
+  
   mpz_init (r);
-
+  
   for (i = 0; ecc_curves[i]; i++)
     {
       const struct ecc_curve *ecc = ecc_curves[i];
@@ -83,7 +83,7 @@ test_main (void)
 		}
 	    }
 	  if (ecc->p.redc_size != 0)
-	    {
+	    {	  
 	      mpn_copyi (m, a, 2*ecc->p.size);
 	      if (ecc->p.m[0] == 1)
 		ecc_pm1_redc (&ecc->p, m);

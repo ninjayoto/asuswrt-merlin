@@ -66,5 +66,5 @@ ecc_scalar_set (struct ecc_scalar *s, const mpz_t z)
 void
 ecc_scalar_get (const struct ecc_scalar *s, mpz_t z)
 {
-  mpz_set_n (z, s->p, s->ecc->p.size);
+  mpz_set_n (z, s->p, s->ecc->p.size);  
 }

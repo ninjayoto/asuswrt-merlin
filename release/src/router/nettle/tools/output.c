@@ -41,7 +41,7 @@
 
 #include "output.h"
 
-/* For TMP_ALLOC */
+/* For TMP_ALLOC */ 
 #include "nettle-internal.h"
 
 void
@@ -54,7 +54,7 @@ sexp_output_init(struct sexp_output *output, FILE *f,
   output->prefer_hex = prefer_hex;
   output->hash = NULL;
   output->ctx = NULL;
-
+  
   output->pos = 0;
   output->soft_newline = 0;
 }
@@ -90,10 +90,10 @@ sexp_put_newline(struct sexp_output *output,
 
       sexp_put_raw_char(output, '\n');
       output->pos = 0;
-
+  
       for(i = 0; i < indent; i++)
 	sexp_put_raw_char(output, ' ');
-
+  
       output->pos = indent;
     }
 }
@@ -122,14 +122,14 @@ sexp_put_char(struct sexp_output *output, uint8_t c)
       done = output->coding->encode_update(&output->base64, encoded,
 					   1, &c);
       assert(done <= sizeof(encoded));
-
+      
       for (i = 0; i<done; i++)
 	{
 	  if (output->line_width
 	      && output->pos >= output->line_width
 	      && output->pos >= (output->coding_indent + 10))
 	    sexp_put_newline(output, output->coding_indent);
-
+	  
 	  sexp_put_raw_char(output, encoded[i]);
 	}
     }
@@ -150,7 +150,7 @@ sexp_put_data(struct sexp_output *output,
 }
 
 static void
-sexp_put_length(struct sexp_output *output,
+sexp_put_length(struct sexp_output *output, 
 		unsigned length)
 {
   unsigned digit = 1;
@@ -172,9 +172,9 @@ sexp_put_code_start(struct sexp_output *output,
 		    const struct nettle_armor *coding)
 {
   assert(!output->coding);
-
+  
   output->coding_indent = output->pos;
-
+  
   output->coding = coding;
   output->coding->encode_init(&output->base64);
 }
@@ -191,7 +191,7 @@ sexp_put_code_end(struct sexp_output *output)
   done = output->coding->encode_final(&output->base64, encoded);
 
   assert(done <= sizeof(encoded));
-
+  
   output->coding = NULL;
 
   sexp_put_data(output, done, encoded);
@@ -220,10 +220,10 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
       for (i = 0; i<string->size; i++)
 	{
 	  uint8_t c = string->contents[i];
-
+	  
 	  if (token & !TOKEN_CHAR(c))
 	    token = 0;
-
+	  
 	  if (quote_friendly)
 	    {
 	      if (c >= 0x7f)
@@ -232,7 +232,7 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 		quote_friendly = 0;
 	    }
 	}
-
+      
       if (token)
 	sexp_put_data(output, string->size, string->contents);
 
@@ -246,7 +246,7 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	      uint8_t c = string->contents[i];
 
 	      assert(c < 0x7f);
-
+	      
 	      if (c == '\\' || c == '"')
 		escape = 1;
 	      else if (c < CONTROL_SIZE)
@@ -260,14 +260,14 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 
 	      sexp_put_char(output, c);
 	    }
-
+	  
 	  sexp_put_char(output, '"');
 	}
-      else
+      else 
 	{
 	  uint8_t delimiter;
 	  const struct nettle_armor *coding;
-
+	  
 	  if (output->prefer_hex)
 	    {
 	      delimiter = '#';
@@ -278,7 +278,7 @@ sexp_put_string(struct sexp_output *output, enum sexp_mode mode,
 	      delimiter = '|';
 	      coding = &nettle_base64;
 	    }
-
+	  
 	  sexp_put_char(output, delimiter);
 	  sexp_put_code_start(output, coding);
 	  sexp_put_data(output, string->size, string->contents);
@@ -300,7 +300,7 @@ sexp_put_digest(struct sexp_output *output)
 {
   TMP_DECL(digest, uint8_t, NETTLE_MAX_HASH_DIGEST_SIZE);
   TMP_ALLOC(digest, output->hash->digest_size);
-
+  
   assert(output->hash);
 
   output->hash->digest(output->ctx, output->hash->digest_size, digest);
@@ -309,3 +309,4 @@ sexp_put_digest(struct sexp_output *output)
   sexp_put_data(output, output->hash->digest_size, digest);
   sexp_put_code_end(output);
 }
+

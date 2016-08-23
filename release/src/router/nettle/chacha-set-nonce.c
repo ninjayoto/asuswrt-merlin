@@ -35,7 +35,7 @@
 */
 
 /* Based on:
-   ChaCha specification (doc id: 4027b5256e17b9796842e6d0f68b0b5e) and reference
+   ChaCha specification (doc id: 4027b5256e17b9796842e6d0f68b0b5e) and reference 
    implementation dated 2008.01.20
    D. J. Bernstein
    Public domain.

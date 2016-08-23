@@ -76,10 +76,10 @@ ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
   cy = sec_add_1 (rp + 3, rp + 3, 2, cy);
   cy += mpn_add_n (rp + 2, rp + 2, rp + 6, 3);
   cy = sec_add_1 (rp + 5, rp + 5, 1, cy);
-
+  
   assert (cy <= 1);
   cy = cnd_add_n (cy, rp, ecc_Bmodp, 6);
-  assert (cy == 0);
+  assert (cy == 0);  
 }
 #elif GMP_NUMB_BITS == 64
 /* p is 3 limbs, p = B^3 - B - 1 */
@@ -103,9 +103,9 @@ ecc_192_modp (const struct ecc_modulo *m UNUSED, mp_limb_t *rp)
 
   assert (cy <= 1);
   cy = cnd_add_n (cy, rp, ecc_Bmodp, 3);
-  assert (cy == 0);
+  assert (cy == 0);  
 }
-
+  
 #else
 #define ecc_192_modp ecc_mod
 #endif
@@ -122,7 +122,7 @@ const struct ecc_curve nettle_secp_192r1 =
 
     ecc_p,
     ecc_Bmodp,
-    ecc_Bmodp_shifted,
+    ecc_Bmodp_shifted,    
     ecc_redc_ppm1,
     ecc_pp1h,
 
@@ -150,7 +150,7 @@ const struct ecc_curve nettle_secp_192r1 =
     ecc_mod_inv,
     NULL,
   },
-
+  
   USE_REDC,
   ECC_PIPPENGER_K,
   ECC_PIPPENGER_C,
@@ -171,3 +171,4 @@ const struct ecc_curve nettle_secp_192r1 =
   ecc_unit,
   ecc_table
 };
+

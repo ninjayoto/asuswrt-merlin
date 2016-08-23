@@ -45,7 +45,7 @@ rsa_keypair_to_sexp(struct nettle_buffer *buffer,
 {
   if (!algorithm_name)
     algorithm_name = "rsa-pkcs1";
-
+  
   if (priv)
     return sexp_format(buffer,
 		       "(private-key(%0s(n%b)(e%b)"

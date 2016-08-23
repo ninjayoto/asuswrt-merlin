@@ -70,10 +70,10 @@ _nettle_sha512_compress_c (uint64_t *state, const uint8_t *input, const uint64_t
    function f1, and the majority function is the same as the SHA1 f3
    function, and the same as for SHA256. */
 
-#define Choice(x,y,z)   ( (z) ^ ( (x) & ( (y) ^ (z) ) ) )
+#define Choice(x,y,z)   ( (z) ^ ( (x) & ( (y) ^ (z) ) ) ) 
 #define Majority(x,y,z) ( ((x) & (y)) ^ ((z) & ((x) ^ (y))) )
 
-#define S0(x) (ROTL64(36,(x)) ^ ROTL64(30,(x)) ^ ROTL64(25,(x)))
+#define S0(x) (ROTL64(36,(x)) ^ ROTL64(30,(x)) ^ ROTL64(25,(x))) 
 #define S1(x) (ROTL64(50,(x)) ^ ROTL64(46,(x)) ^ ROTL64(23,(x)))
 
 #define s0(x) (ROTL64(63,(x)) ^ ROTL64(56,(x)) ^ ((x) >> 7))
@@ -141,7 +141,7 @@ _nettle_sha512_compress(uint64_t *state, const uint8_t *input, const uint64_t *k
   F = state[5];
   G = state[6];
   H = state[7];
-
+  
   /* Heavy mangling */
   /* First 16 subrounds that act on the original data */
 
@@ -157,7 +157,7 @@ _nettle_sha512_compress(uint64_t *state, const uint8_t *input, const uint64_t *k
       ROUND(C, D, E, F, G, H, A, B, k[6], d[6]); DEBUG(i+6);
       ROUND(B, C, D, E, F, G, H, A, k[7], d[7]); DEBUG(i+7);
     }
-
+  
   for (; i<80; i += 16, k+= 16)
     {
       ROUND(A, B, C, D, E, F, G, H, k[ 0], EXPAND(data,  0)); DEBUG(i);

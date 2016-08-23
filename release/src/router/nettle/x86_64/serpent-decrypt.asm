@@ -530,8 +530,8 @@ define(<WLTI>, <
 >)
 
 	.file "serpent-decrypt.asm"
-
-	C serpent_decrypt(struct serpent_context *ctx,
+	
+	C serpent_decrypt(struct serpent_context *ctx, 
 	C	          size_t length, uint8_t *dst,
 	C	          const uint8_t *src)
 	.text
@@ -581,7 +581,7 @@ PROLOGUE(nettle_serpent_decrypt)
 	WLTI(Y0,Y1,Y2,Y3)
 	WSBOX6I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
 	WKEYXOR(96, X0,X1,X2,X3)
-
+	
 	WLTI(X0,X1,X2,X3)
 	WSBOX5I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
 	WKEYXOR(80, Y0,Y1,Y2,Y3)
@@ -589,7 +589,7 @@ PROLOGUE(nettle_serpent_decrypt)
 	WLTI(Y0,Y1,Y2,Y3)
 	WSBOX4I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
 	WKEYXOR(64, X0,X1,X2,X3)
-
+	
 	WLTI(X0,X1,X2,X3)
 	WSBOX3I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
 	WKEYXOR(48, Y0,Y1,Y2,Y3)
@@ -597,7 +597,7 @@ PROLOGUE(nettle_serpent_decrypt)
 	WLTI(Y0,Y1,Y2,Y3)
 	WSBOX2I(Y0,Y1,Y2,Y3, X0,X1,X2,X3)
 	WKEYXOR(32, X0,X1,X2,X3)
-
+	
 	WLTI(X0,X1,X2,X3)
 	WSBOX1I(X0,X1,X2,X3, Y0,Y1,Y2,Y3)
 	WKEYXOR(16, Y0,Y1,Y2,Y3)
@@ -704,7 +704,7 @@ PROLOGUE(nettle_serpent_decrypt)
 	movl	x3, 12(DST, N)
 	add	$16, N
 	jnc	.Lblock_loop
-
+	
 .Lend:
 	pop	%r14
 	pop	%r13
