@@ -1,12 +1,12 @@
-Package: timemachine
-Architecture: mipsel
+Package: AiStream
+Architecture: arm
 Priority: optional
-Section: net
-Version: 1.0.0.2
+Section: 
+Version: 1.0.0.3
 Maintainer: ASUS
 Source: 
 URL: http://192.168.1.1
-Description: Time Machine
+Description: AiStream
 Depends: 
 Suggests: 
 Conflicts: 
