@@ -189,7 +189,7 @@ function initial(){
 		add_option(document.form.wl_reg_mode, "802.11d", "d", (reg_mode == "d") ? 1 : 0);
 	} else {	// 5GHz
 		// EU region enforces 802.11h due to DFS
-		if ("<% nvram_get("wl1_country_code"); %>" != "EU"){
+		if (("<% nvram_get("wl1_country_code"); %>" != "EU") || ("<% nvram_get("allow_regmode"); %>" == "1")) {
 			add_option(document.form.wl_reg_mode, "Off", "off", (reg_mode == "off") ? 1 : 0);
 			add_option(document.form.wl_reg_mode, "802.11d", "d", (reg_mode == "d") ? 1 : 0);
 		} else {

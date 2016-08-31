@@ -4240,7 +4240,7 @@ void generate_wl_para(int unit, int subunit)
 				nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))
 			)
 			{
-				if (nvram_match(strcat_r(prefix, "reg_mode", tmp), "off") || nvram_match(strcat_r(prefix, "reg_mode", tmp), "d"))
+				if ((nvram_match(strcat_r(prefix, "reg_mode", tmp), "off") || nvram_match(strcat_r(prefix, "reg_mode", tmp), "d")) && nvram_match("allow_regmode", ""))
 					nvram_set(strcat_r(prefix, "reg_mode", tmp), "h");
 			}
 		}
