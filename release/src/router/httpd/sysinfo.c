@@ -288,16 +288,18 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 
 			if ((strlen(service)) && (num > 0) )
 			{
-				// Trigger OpenVPN to update the status file
 				snprintf(buf, sizeof(buf), "vpn%s%d", service, num);
 				if ((pid = pidof(buf)) > 0) {
-					kill(pid, SIGUSR2);
-
-					// Give it a chance to update the file
-					sleep(1);
 
 					// Read the status file and repeat it verbatim to the caller
 					sprintf(buf,"/etc/openvpn/%s%d/status", service, num);
+
+					// Give it some time if it doesn't exist yet
+					if (!check_if_file_exist(buf))
+					{
+						sleep(5);
+					}
+
 					char *buffer = read_whole_file(buf);
 					if (buffer)
 					{

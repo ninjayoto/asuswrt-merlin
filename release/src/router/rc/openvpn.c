@@ -334,7 +334,7 @@ void start_vpnclient(int clientNum)
 	}
 
 	fprintf(fp, "status-version 2\n");
-	fprintf(fp, "status status\n");
+	fprintf(fp, "status status 10\n"); //update status file every 10 sec
 	fprintf(fp, "\n# Custom Configuration\n");
 	sprintf(&buffer[0], "vpn_client%d_custom", clientNum);
 	fprintf(fp, "%s", nvram_safe_get(&buffer[0]));
@@ -1049,7 +1049,7 @@ void start_vpnserver(int serverNum)
 	}
 
 	fprintf(fp, "status-version 2\n");
-	fprintf(fp, "status status\n");
+	fprintf(fp, "status status 10\n"); //update status file every 10 sec
 	fprintf(fp, "\n# Custom Configuration\n");
 	sprintf(&buffer[0], "vpn_server%d_custom", serverNum);
 	fprintf(fp, "%s", nvram_safe_get(&buffer[0]));
