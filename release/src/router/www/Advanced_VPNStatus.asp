@@ -228,6 +228,8 @@ function parseStatus(text, block){
 			{
 				if (j == 0) {
 					code += '<td style="white-space:nowrap; text-align:left;">' + clientTableEntries[i][j] + '<br><span style="color: cyan; background: transparent;">' + clientTableEntries[i][clientTableEntries[i].length-2] +'</span></td>';
+				} else if ((j == 3) || (j == 4)) {
+					code += '<td style="vertical-align:top; text-align:left;">' + Number(clientTableEntries[i][j]).toLocaleString() + '</td>';
 				} else {
 					code += '<td style="vertical-align:top; text-align:left;">' + clientTableEntries[i][j] + '</td>';
 				}
@@ -281,7 +283,7 @@ function parseStatus(text, block){
 		{
 			code += '<tr>';
 			code += '<th width="80%" style="text-align:left;">' + statsTableEntries[i][0] +'</th>';
-			code += '<td width="20%" align="left" style="text-align:left;">' + statsTableEntries[i][1] +'</td>';
+			code += '<td width="20%" align="left" style="text-align:left;">' + Number(statsTableEntries[i][1]).toLocaleString() +'</td>';
 			code += '</tr>';
 		}
 		code += '</table>';
@@ -298,7 +300,7 @@ function parseStatus(text, block){
 		{
 			code += '<tr>';
 			code += '<th width="80%" style="text-align:left;">' + staticstatsTableEntries[i][0] +'</th>';
-			code += '<td width="20%" align="left" style="text-align:left;">' + staticstatsTableEntries[i][1] +'</td>';
+			code += '<td width="20%" align="left" style="text-align:left;">' + Number(staticstatsTableEntries[i][1]).toLocaleString() +'</td>';
 			code += '</tr>';
 		}
 		code += '</table>';
