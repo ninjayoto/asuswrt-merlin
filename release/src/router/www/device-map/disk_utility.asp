@@ -66,9 +66,9 @@ function initial(){
 }
 
 function load_schedule_value(){
-	document.form.diskmon_usbport.value = parent.getDiskPort(diskOrder-1);
-
-	if(parseInt(parent.getDiskPort(diskOrder-1)) == 1){
+	document.form.diskmon_usbport.value = parent.usbPorts[diskOrder-1].node;
+                                                    
+	if(parseInt(document.form.diskmon_usbport.value) == 1){
 		document.form.diskmon_freq.value = usb_path1_diskmon_freq;
 		diskmon_freq_row = usb_path1_diskmon_freq_time.split('&#62');
 	}
