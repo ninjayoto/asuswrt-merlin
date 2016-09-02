@@ -1819,6 +1819,8 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_radvd_dlx",	"0"		},	// Decrement lifetimes desired state
 	{ "ipv6_radvd_dl_x",	"0"		},	// Decrement lifetimes actual state
 	{ "ipv6_radvd_mtu",     "1"		},      // Advertise IPv6 MTU thru radvd */
+	{ "ipv6_dhcp6c_release","0"		},	// Prevent address release by DHCP6C
+	{ "ipv6_dhcp6c_force",	"0"		},	// Force IPv6 address negotiation
 
 	{ "web_redirect", 	"0"		},	// Redirect disabled by default for both NOLINK or NOINTERNET
 	{ "disiosdet",		"1"		},

@@ -3428,6 +3428,12 @@ int init_nvram(void)
 		nvram_unset("qos_limitbw");
 	}
 
+	// Initialize special ipv6 options
+	if(nvram_get("ipv6_dhcp6c_force") == NULL) {
+		nvram_set("ipv6_dhcp6c_force", "0");
+		nvram_set("ipv6_dhcp6c_release", "1");
+	}
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)

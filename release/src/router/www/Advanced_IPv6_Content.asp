@@ -85,12 +85,12 @@ function showInputfield(v){
 				document.form.ipv6_prefix.value = "";
 				document.form.ipv6_prefix_length.value = "";
 				document.form.ipv6_rtr_addr.value = "";
-				document.form.enable_mtu_ckb.checked = true;
+				document.form.ipv6_radvd_mtu.value = "1";
 		}else{
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr"); %>";
-				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
+				document.form.ipv6_radvd_mtu.value = "<% nvram_get("ipv6_radvd_mtu"); %>";
 		}
 		$("ipv6_ipaddr_r").style.display="none";
 		$("ipv6_dns_setting").style.display="";
@@ -102,8 +102,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("auto_config").style.display="";
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("special_config").style.display="";
+		$("radvd_mtu_tr").style.display="";
 	}
 	else if(v == "dhcp6"){
 		if(wan_proto_orig == "l2tp" || wan_proto_orig == "pptp" || wan_proto_orig == "pppoe")
@@ -149,7 +149,7 @@ function showInputfield(v){
 				//$("ipv6_prefix_length_span").innerHTML = "";
 				$("ipv6_prefix_length_span").innerHTML = "<% nvram_get("ipv6_prefix_length"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "";
-				document.form.enable_mtu_ckb.checked = true;
+				document.form.ipv6_radvd_mtu.value = "1";
 		}else{
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
@@ -157,7 +157,7 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "<% nvram_get("ipv6_prefix"); %>";
 				$("ipv6_prefix_length_span").innerHTML = "<% nvram_get("ipv6_prefix_length"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";
-				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
+				document.form.ipv6_radvd_mtu.value = "<% nvram_get("ipv6_radvd_mtu"); %>";
 		}
 		$("ipv6_dns_setting").style.display="";
 		inputCtrl(document.form.ipv6_dnsenable[0], 1);
@@ -172,8 +172,8 @@ function showInputfield(v){
 		var enable_dns = (document.form.ipv6_dnsenable[1].checked) ? '0' : '1';
 		showInputfield2('ipv6_dnsenable', enable_dns);
 		$("auto_config").style.display="";
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("special_config").style.display="";
+		$("radvd_mtu_tr").style.display="";
 	}
 	else if(v == "6to4"){
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -214,10 +214,10 @@ function showInputfield(v){
 		$("ipv6_ipaddr_r").style.display="";
 		if(v != ipv6_proto_orig){
 			$("ipv6_ipaddr_span").innerHTML = "";
-			document.form.enable_mtu_ckb.checked = true;
+			document.form.ipv6_radvd_mtu.value = "1";
 		}else{
 			$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";
-			document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
+			document.form.ipv6_radvd_mtu.value = "<% nvram_get("ipv6_radvd_mtu"); %>";
 		}
 
 		$("ipv6_dns_setting").style.display="";
@@ -229,8 +229,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("auto_config").style.display="";
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("special_config").style.display="";
+		$("radvd_mtu_tr").style.display="";
 	}
 	else if(v == "6in4"){
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -270,10 +270,10 @@ function showInputfield(v){
 				document.form.ipv6_prefix.value = "<% nvram_get("ipv6_prefix_s"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
 				$("ipv6_ipaddr_span").innerHTML = "";
-				document.form.enable_mtu_ckb.checked = true;
+				document.form.ipv6_radvd_mtu.value = "1";
 		}else{
 				$("ipv6_ipaddr_span").innerHTML = "<% nvram_get("ipv6_rtr_addr"); %>";
-				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
+				document.form.ipv6_radvd_mtu.value = "<% nvram_get("ipv6_radvd_mtu"); %>";
 		}
 		$("ipv6_dns_setting").style.display="";
 		inputCtrl(document.form.ipv6_dnsenable[0], 0);
@@ -284,8 +284,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("auto_config").style.display="";
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("special_config").style.display="";
+		$("radvd_mtu_tr").style.display="";
 	}
 	else if(v == "6rd"){
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -333,9 +333,9 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("auto_config").style.display="";
-		document.form.enable_mtu_ckb.checked = true;
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("special_config").style.display="";
+		document.form.ipv6_radvd_mtu.value = "1";
+		$("radvd_mtu_tr").style.display="";
 	}
 	else if(v == "other"){
 		if(wan_proto_orig == "l2tp" || wan_proto_orig == "pptp" || wan_proto_orig == "pppoe")
@@ -383,12 +383,12 @@ function showInputfield(v){
 				$("ipv6_prefix_span").innerHTML = "";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length_s"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr_s"); %>";
-				document.form.enable_mtu_ckb.checked = true;
+				document.form.ipv6_radvd_mtu.value = "1";
 		}else{
 				$("ipv6_prefix_span").innerHTML = "<% nvram_get("ipv6_prefix"); %>";
 				document.form.ipv6_prefix_length.value = "<% nvram_get("ipv6_prefix_length"); %>";
 				document.form.ipv6_rtr_addr.value = "<% nvram_get("ipv6_rtr_addr"); %>";
-				document.form.enable_mtu_ckb.checked = ('<% nvram_get("ipv6_radvd_mtu"); %>' == 1) ? true : false;
+				document.form.ipv6_radvd_mtu.value = "<% nvram_get("ipv6_radvd_mtu"); %>";
 		}
 		$("ipv6_ipaddr_r").style.display="none";
 		$("ipv6_dns_setting").style.display="";
@@ -400,8 +400,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
 		$("auto_config").style.display="";
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("special_config").style.display="";
+		$("radvd_mtu_tr").style.display="";
 	}	
 	else{		// disabled
 		inputCtrl(document.form.ipv6_ifdev_select, 0);
@@ -446,12 +446,12 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns_router[0], 0);
 		inputCtrl(document.form.ipv6_dns_router[1], 0);
 		$("auto_config").style.display="none";
-		document.form.enable_mtu_ckb.checked = true;
-		$("enable_mtu_span").style.display="none";
-		$("enable_mtu_defaults").style.display="none";
+		$("special_config").style.display="none";
+		document.form.ipv6_radvd_mtu.value = "1";
+		$("radvd_mtu_tr").style.display="none";
 	}		
 
-	hide_enable_mtu(document.form.ipv6_radvd.value);
+	hide_enable_mtu(document.form.ipv6_radvd_mtu.value);
 	
 	if(v != ipv6_proto_orig){
 			update_info(0);
@@ -565,11 +565,9 @@ function showInputfield2(s, v){
 
 function hide_enable_mtu(obj_val){
 	if((obj_val == "1") && (document.form.ipv6_service.value != "disabled")){
-		$("enable_mtu_span").style.display="";
-		$("enable_mtu_defaults").style.display="";
+		$("radvd_mtu_tr").style.display="";
 	} else {
-		$("enable_mtu_span").style.display="none";
-		$("enable_mtu_defaults").style.display="none";
+		$("radvd_mtu_tr").style.display="none";
 	}
 }
 
@@ -874,8 +872,8 @@ function applyRule(){
 		if(document.form.ipv6_service.value == "dhcp6")
 			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 	
-		document.form.ipv6_radvd_mtu.value = (document.form.enable_mtu_ckb.checked) ? 1 : 0;
-		document.form.ipv6_accept_ra.value=1;			// 0/1/2 default:1	
+//		document.form.ipv6_accept_ra.value=1;			// 0/1/2 default:1
+
 		showLoading();		
 		document.form.submit();
 	}
@@ -1280,25 +1278,23 @@ function showInfo(){
 					<tr>
 						<th><#Enable_Router_AD#></th>
 		     		<td>
-							<select name="ipv6_radvd" class="input_option">
-								<option class="content_input_fd" value="1" onclick="hide_enable_mtu(this.value);" <% nvram_match("ipv6_radvd", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
-								<option class="content_input_fd" value="0" onclick="hide_enable_mtu(this.value);" <% nvram_match("ipv6_radvd", "0","selected"); %>><#btn_disable#></option>
+							<select name="ipv6_radvd" class="input_option" onChange="hide_enable_mtu(this.value);" >
+								<option class="content_input_fd" value="1" <% nvram_match("ipv6_radvd", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
+								<option class="content_input_fd" value="0" <% nvram_match("ipv6_radvd", "0","selected"); %>><#btn_disable#></option>
 							</select>
-							<span id="enable_mtu_span"><input type="checkbox" name="enable_mtu_ckb" id="enable_mtu_ckb" value="" style="margin-left:20px;" onclick="document.form.ipv6_radvd_mtu.value=(this.checked==true)?1:0;"> Enable IPv6 MTU Advertisement**</input></span>
-							<span id="enable_mtu_defaults">&nbsp;&nbsp;&nbsp;Default: Enabled</span>
 		     		</td>
 		     	</tr>
-					<!--tr>
-						<th>Receive Advertisement ?</th>
+					<!-- tr>
+						<th>Receive Advertisement</th>
 		     		<td>
 							<select name="ipv6_accept_ra" class="input_option">
 								<option class="content_input_fd" value="0" <% nvram_match("ipv6_accept_ra", "0","selected"); %>><#btn_disable#></option>
-								<option class="content_input_fd" value="1" <% nvram_match("ipv6_accept_ra", "1","selected"); %>>From WAN</option>
+								<option class="content_input_fd" value="1" <% nvram_match("ipv6_accept_ra", "1","selected"); %>>From WAN (default)</option>
 								<option class="content_input_fd" value="2" <% nvram_match("ipv6_accept_ra", "2","selected"); %>>From LAN</option>
 							</select>
 		     		</td>
-		     	</tr-->
-				<tr>
+		     	</tr -->
+			<tr>
 						<th>Enable DHCPv6 Server</th>
 		     		<td>
 							<select name="ipv6_dhcp6s_enable" class="input_option">
@@ -1309,6 +1305,45 @@ function showInfo(){
 		     	</tr>
 			</table>
 			<!--=================================== Auto Config end ===================================-->
+
+			<!--=================================== Special Config start ===================================-->
+			<table id="special_config" style="margin-top:8px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
+				  <thead>
+				  <tr>
+						<td colspan="2">Special ISP Options</td>
+				  </tr>
+				  </thead>
+
+				<tr id="radvd_mtu_tr">
+						<th>Enable IPv6 MTU advertisement**</th>
+			     		<td>
+							<input type="radio" name="ipv6_radvd_mtu" class="input" value="1" <% nvram_match("ipv6_radvd_mtu", "1","checked"); %>><#checkbox_Yes#>
+							<input type="radio" name="ipv6_radvd_mtu" class="input" value="0" <% nvram_match("ipv6_radvd_mtu", "0","checked"); %>><#checkbox_No#>
+							<span style="padding-left:20px;">Default: <#checkbox_Yes#></span>
+			     		</td>
+				</tr>
+
+				<tr>
+						<th>Release addresses on exit**</th>
+			     		<td>
+							<input type="radio" name="ipv6_dhcp6c_release" class="input" value="1" <% nvram_match("ipv6_dhcp6c_release", "1","checked"); %>><#checkbox_Yes#>
+							<input type="radio" name="ipv6_dhcp6c_release" class="input" value="0" <% nvram_match("ipv6_dhcp6c_release", "0","checked"); %>><#checkbox_No#>
+							<span style="padding-left:20px;">Default: <#checkbox_Yes#></span>
+			     		</td>
+				</tr>
+
+				<tr>
+						<th>Prefix delegation requires address request**</th>
+			     		<td>
+							<input type="radio" name="ipv6_dhcp6c_force" class="input" value="1" <% nvram_match("ipv6_dhcp6c_force", "1","checked"); %>><#checkbox_Yes#>
+							<input type="radio" name="ipv6_dhcp6c_force" class="input" value="0" <% nvram_match("ipv6_dhcp6c_force", "0","checked"); %>><#checkbox_No#>
+							<span style="padding-left:20px;">Default: <#checkbox_No#></span>
+			     		</td>
+				</tr>
+
+
+			</table>
+			<!--=================================== Special Config end ===================================-->
 				
 				<div class="apply_gen">
 					<input class="button_gen" onclick="applyRule()" type="button" value="<#CTL_apply#>"/>
