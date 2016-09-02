@@ -842,13 +842,13 @@ int add_qos_rules(char *pcWANIF)
                 if ((!g) || ((p = strsep(&g, ",")) == NULL)) continue;
                 if ((inuse & (1 << i)) == 0) continue;
                 if (atoi(p) > 0) {
-                        fprintf(fn, "-A PREROUTING -m conntrack --ctstate RELATED,ESTABLISHED -j CONNMARK --restore-mark --mask 0xf\n", pcWANIF);
+                        fprintf(fn, "-A PREROUTING -m conntrack --ctstate RELATED,ESTABLISHED -j CONNMARK --restore-mark --mask 0xf\n");
 #ifdef CLS_ACT
 			fprintf(fn, "-A PREROUTING -i %s -j IMQ --todev 0\n", pcWANIF);
 #endif
 #ifdef RTCONFIG_IPV6
 			if (ipv6_enabled() && *wan6face) {
-				fprintf(fn_ipv6, "-A PREROUTING -m conntrack --ctstate RELATED,ESTABLISHED -j CONNMARK --restore-mark --mask 0xf\n", wan6face);
+				fprintf(fn_ipv6, "-A PREROUTING -m conntrack --ctstate RELATED,ESTABLISHED -j CONNMARK --restore-mark --mask 0xf\n");
 #ifdef CLS_ACT
 				fprintf(fn_ipv6, "-A PREROUTING -i %s -j IMQ --todev 0\n", wan6face);
 #endif
