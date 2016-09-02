@@ -2597,13 +2597,14 @@ TRACE_PT("writing Parental Control\n");
 	// FILTER from LAN to WAN
 	// Rules for MAC Filter and LAN to WAN Filter
 	// Drop rules always before Accept
-#ifdef RTCONFIG_PARENTALCTRL
-	if(nvram_get_int("MULTIFILTER_ALL") != 0 && count_pc_rules() > 0)
-		strcpy(chain, "PControls");
-#else
+
+//#ifdef RTCONFIG_PARENTALCTRL
+//	if(nvram_get_int("MULTIFILTER_ALL") != 0 && count_pc_rules() > 0)
+//		strcpy(chain, "PControls");
+//#else
 	if (nvram_match("macfilter_enable_x", "1"))
 		strcpy(chain, "MACS");
-#endif
+//#endif
 	else strcpy(chain, "FORWARD");
 
 	if (nvram_match("fw_lw_enable_x", "1"))
@@ -3634,13 +3635,13 @@ TRACE_PT("writing Parental Control\n");
 	// FILTER from LAN to WAN
 	// Rules for MAC Filter and LAN to WAN Filter
 	// Drop rules always before Accept
-#ifdef RTCONFIG_PARENTALCTRL
-	if(nvram_get_int("MULTIFILTER_ALL") != 0 && count_pc_rules() > 0)
-		strcpy(chain, "PControls");
-#else
+//#ifdef RTCONFIG_PARENTALCTRL
+//	if(nvram_get_int("MULTIFILTER_ALL") != 0 && count_pc_rules() > 0)
+//		strcpy(chain, "PControls");
+//#else
 	if (nvram_match("macfilter_enable_x", "1"))
 		strcpy(chain, "MACS");
-#endif
+//#endif
 	else strcpy(chain, "FORWARD");
 
 	if (nvram_match("fw_lw_enable_x", "1"))
