@@ -799,7 +799,7 @@ start_dhcp6c(void)
 		NULL,		/* interface */
 		NULL };
 	int index = 3;
-	int prefix_len;
+	int prefix_len, sla_len;
 	int rc;
 	unsigned char ea[ETHER_ADDR_LEN];
 	unsigned long iaid = 0;
@@ -838,9 +838,10 @@ start_dhcp6c(void)
 		nvram_set("ipv6_pd_plifetime", "");
 	}
 
-	prefix_len = 64 - (nvram_get_int("ipv6_prefix_length") ? : 64);
-	if (prefix_len < 0)
-		prefix_len = 0;
+	prefix_len = nvram_get_int("ipv6_prefix_length");
+	sla_len = 64 - (nvram_get_int("ipv6_prefix_length") ? : 64);
+	if (sla_len < 0)
+		sla_len = 0;
 
 	if (ether_atoe(nvram_safe_get("wan0_hwaddr"), ea)) {
 		/* Generate IAID from the last 7 digits of WAN MAC */
@@ -878,13 +879,14 @@ start_dhcp6c(void)
 		fprintf(fp, "script \"/sbin/dhcp6c-state\";\n"
 				"};\n");
 		if (nvram_get_int("ipv6_dhcp_pd"))
-		fprintf(fp,	"id-assoc pd %lu {\n"
-					"prefix ::/%d infinity;\n"
-					"prefix-interface %s {\n"
-						"sla-id 1;\n"
-						"sla-len %d;\n"
+		fprintf(fp,	"id-assoc pd %lu {\n", iaid);
+		if (nvram_get_int("ipv6_prefix_length") >= 64)
+		fprintf(fp, 	"prefix ::/%d infinity;\n", prefix_len);
+		fprintf(fp,		"prefix-interface %s {\n"
+					"sla-id 1;\n"
+					"sla-len %d;\n"
 					"};\n"
-				"};\n", iaid, nvram_get_int("ipv6_prefix_length"), lan_ifname, prefix_len);
+				"};\n", lan_ifname, sla_len);
 		if (nvram_match("ipv6_ra_conf", "mset"))
 		fprintf(fp,	"id-assoc na %lu { };\n", iaid);
 	} else {

@@ -1300,7 +1300,8 @@ void start_radvd(void)
 			nvram_get_int("ipv6_autoconf_type") : 0;
 
 		size = nvram_get_int("ipv6_prefix_length") ? : 64;
-		if (size < 64 && !stateful)
+//		if (size < 64 && !stateful)
+		if (size < 64)
 			size = 64;
 
 //	    	// Create radvd.conf
