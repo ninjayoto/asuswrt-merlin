@@ -73,6 +73,9 @@ static int yy_first_time = 1;
 static int yyerrorcount = 0;
  
 #ifndef NOCONFIG_DEBUG
+#ifdef YYDEBUG
+#undef YYDEBUG
+#endif
 #define YYDEBUG 1
 
 int cfdebug = 1;
@@ -112,6 +115,7 @@ ecl		\}
 
 %s S_CNF
 %s S_IFACE
+%s S_PROFILE
 %s S_PREF
 %s S_HOST
 %s S_DUID
@@ -136,6 +140,15 @@ ecl		\}
 	yylval.str = strdup(yytext);
 	BEGIN S_CNF;
 	return (IFNAME);
+}
+
+	/* profile configuration */
+<S_CNF>profile { DECHO; BEGIN S_PROFILE; return (PROFILE); }
+<S_PROFILE>{string} {
+	DECHO;
+	yylval.str = strdup(yytext);
+	BEGIN S_CNF;
+	return (PROFILENAME);
 }
 
 	/* host configuration */
@@ -231,6 +244,7 @@ ecl		\}
 <S_CNF>prefix-interface { DECHO; BEGIN S_IFACE; return (PREFIX_INTERFACE); }
 <S_CNF>sla-id { DECHO; return (SLA_ID); }
 <S_CNF>sla-len { DECHO; return (SLA_LEN); }
+<S_CNF>ifid { DECHO; return (IFID); }
 
 	/* duration */
 <S_CNF>infinity { DECHO; return (INFINITY); }
@@ -405,7 +419,11 @@ cfswitch_buffer(incl)
 	incstack[incstackp].state = YY_CURRENT_BUFFER;
 	incstack[incstackp].lineno = lineno;
 
+#ifdef __linux__
+	fp = fopen(path, "re");
+#else
 	fp = fopen(path, "r");
+#endif
 	if (fp == NULL) {
 		dprintf(LOG_ERR, FNAME, "cfparse: fopen(%s): %s",
 			path, strerror(errno));
@@ -428,7 +446,11 @@ cfparse(conf)
 	char *conf;
 {
 	configfilename = conf;
+#ifdef __linux__
+	if ((yyin = fopen(configfilename, "re")) == NULL) {
+#else
 	if ((yyin = fopen(configfilename, "r")) == NULL) {
+#endif
 		dprintf(LOG_ERR, FNAME, "cfparse: fopen(%s): %s",
 			configfilename, strerror(errno));
 		if (errno == ENOENT)

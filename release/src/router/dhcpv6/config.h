@@ -266,7 +266,7 @@ enum { DECL_SEND, DECL_ALLOW, DECL_INFO_ONLY, DECL_REQUEST, DECL_DUID,
        DECL_PREFIX, DECL_PREFERENCE, DECL_SCRIPT, DECL_DELAYEDKEY,
        DECL_ADDRESS,
        DECL_RANGE, DECL_ADDRESSPOOL,
-       IFPARAM_SLA_ID, IFPARAM_SLA_LEN,
+       IFPARAM_SLA_ID, IFPARAM_SLA_LEN, IFPARAM_IFID,
        DHCPOPT_RAPID_COMMIT, DHCPOPT_AUTHINFO,
        DHCPOPT_DNS, DHCPOPT_DNSNAME,
        DHCPOPT_IA_PD, DHCPOPT_IA_NA, DHCPOPT_NTP,
@@ -284,6 +284,8 @@ typedef enum {DHCP6_MODE_SERVER, DHCP6_MODE_CLIENT, DHCP6_MODE_RELAY }
 dhcp6_mode_t;
 
 extern const dhcp6_mode_t dhcp6_mode;
+
+extern char *profile;
 
 extern struct dhcp6_if *dhcp6_if;
 extern struct dhcp6_ifconf *dhcp6_iflist;
@@ -304,6 +306,7 @@ extern long long optrefreshtime;
 extern struct dhcp6_if *ifinit __P((char *));
 extern int ifreset __P((struct dhcp6_if *));
 extern int configure_interface __P((struct cf_namelist *));
+extern int configure_profile __P((struct cf_namelist *));
 extern int configure_host __P((struct cf_namelist *));
 extern int configure_keys __P((struct cf_namelist *));
 extern int configure_authinfo __P((struct cf_namelist *));

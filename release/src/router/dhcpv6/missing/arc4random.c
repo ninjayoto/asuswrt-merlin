@@ -59,9 +59,10 @@ u_int32_t
 arc4random()
 {
 	u_int32_t v;
+	ssize_t n;
 
 	if (fd < 0)
 		arc4random_init();
-	read(fd, &v, sizeof(v));
+	n = read(fd, &v, sizeof(v));
 	return v;
 }

@@ -63,6 +63,7 @@
 #endif
 
 extern int errno;
+char *profile = NULL;
 
 struct prefix_ifconf *prefix_ifconflist;
 struct dhcp6_list siplist, sipnamelist, dnslist, dnsnamelist, ntplist;
@@ -72,6 +73,7 @@ struct dhcp6_list bcmcslist, bcmcsnamelist;
 long long optrefreshtime;
 
 static struct dhcp6_ifconf *dhcp6_ifconflist;
+static struct dhcp6_ifconf *dhcp6_profileconflist;
 struct ia_conflist ia_conflist0;
 static struct host_conf *host_conflist0, *host_conflist;
 static struct keyinfo *key_list, *key_list0;
@@ -136,6 +138,8 @@ static void clear_iaconf __P((struct ia_conflist *));
 static void clear_hostconf __P((struct host_conf *));
 static void clear_keys __P((struct keyinfo *));
 static void clear_authinfo __P((struct authinfo *));
+static int configure_interface_or_profile __P((struct cf_namelist *,
+    struct dhcp6_ifconf **));
 static int configure_duid __P((char *, struct duid *));
 static int configure_addr __P((struct cf_list *, struct dhcp6_list *, char *));
 static int configure_domain __P((struct cf_list *, struct dhcp6_list *, char *));
@@ -153,170 +157,199 @@ configure_interface(iflist)
 	struct cf_namelist *iflist;
 {
 	struct cf_namelist *ifp;
-	struct dhcp6_ifconf *ifc;
-	char *cp;
 
 	for (ifp = iflist; ifp; ifp = ifp->next) {
-		struct cf_list *cfl;
-
 		if (if_nametoindex(ifp->name) == 0) {
 			dprintf(LOG_ERR, FNAME, "invalid interface(%s): %s",
 			    ifp->name, strerror(errno));
 			goto bad;
 		}
 
-		if ((ifc = malloc(sizeof(*ifc))) == NULL) {
-			dprintf(LOG_ERR, FNAME,
-			    "memory allocation for %s failed", ifp->name);
+		if (configure_interface_or_profile(ifp, &dhcp6_ifconflist))
 			goto bad;
-		}
-		memset(ifc, 0, sizeof(*ifc));
-		ifc->next = dhcp6_ifconflist;
-		dhcp6_ifconflist = ifc;
+	}
 
-		if ((ifc->ifname = strdup(ifp->name)) == NULL) {
-			dprintf(LOG_ERR, FNAME, "failed to copy ifname");
+	return (0);
+bad:
+	clear_ifconf(dhcp6_ifconflist);
+	dhcp6_ifconflist = NULL;
+	return (-1);
+}
+
+int
+configure_profile(profilelist)
+	struct cf_namelist *profilelist;
+{
+	struct cf_namelist *profp;
+
+	for (profp = profilelist; profp; profp = profp->next) {
+		if (configure_interface_or_profile(profp,
+			    &dhcp6_profileconflist))
 			goto bad;
-		}
+	}
 
-		ifc->server_pref = DH6OPT_PREF_UNDEF;
-		TAILQ_INIT(&ifc->reqopt_list);
-		TAILQ_INIT(&ifc->iaconf_list);
+	return (0);
+bad:
+	clear_ifconf(dhcp6_profileconflist);
+	dhcp6_profileconflist = NULL;
+	return (-1);
+}
 
-		for (cfl = ifp->params; cfl; cfl = cfl->next) {
-			switch(cfl->type) {
-			case DECL_REQUEST:
-				if (dhcp6_mode != DHCP6_MODE_CLIENT) {
-					dprintf(LOG_INFO, FNAME, "%s:%d "
-						"client-only configuration",
-						configfilename,
-						cfl->line);
-					goto bad;
-				}
-				if (add_options(DHCPOPTCODE_REQUEST,
-						ifc, cfl->list)) {
-					goto bad;
-				}
-				break;
-			case DECL_SEND:
-				if (add_options(DHCPOPTCODE_SEND,
-						ifc, cfl->list)) {
-					goto bad;
-				}
-				break;
-			case DECL_ALLOW:
-				if (add_options(DHCPOPTCODE_ALLOW,
-						ifc, cfl->list)) {
-					goto bad;
-				}
-				break;
-			case DECL_INFO_ONLY:
-				if (dhcp6_mode != DHCP6_MODE_CLIENT) {
-					dprintf(LOG_INFO, FNAME, "%s:%d "
-						"client-only configuration",
-						configfilename, cfl->line);
-					goto bad;
-				}
-				ifc->send_flags |= DHCIFF_INFO_ONLY;
-				break;
-			case DECL_PREFERENCE:
-				if (dhcp6_mode != DHCP6_MODE_SERVER) {
-					dprintf(LOG_INFO, FNAME, "%s:%d "
-						"server-only configuration",
-						configfilename, cfl->line);
-					goto bad;
-				}
-				ifc->server_pref = (int)cfl->num;
-				if (ifc->server_pref < 0 ||
-				    ifc->server_pref > 255) {
-					dprintf(LOG_INFO, FNAME, "%s:%d "
-						"bad value: %d",
-						configfilename, cfl->line,
-						ifc->server_pref);
-					goto bad;
-				}
-				break;
-			case DECL_SCRIPT:
-				if (dhcp6_mode != DHCP6_MODE_CLIENT) {
-					dprintf(LOG_INFO, FNAME, "%s:%d "
-						"client-only configuration",
-						configfilename, cfl->line);
-					goto bad;
-				}
-				if (ifc->scriptpath) {
-					dprintf(LOG_INFO, FNAME,
-					    "%s:%d duplicated configuration",
-					    configfilename, cfl->line);
-					goto bad;
-				}
-				cp = cfl->ptr;
-				ifc->scriptpath = strdup(cp + 1);
-				if (ifc->scriptpath == NULL) {
-					dprintf(LOG_NOTICE, FNAME,
-					    "failed to copy script path");
-					goto bad;
-				}
-				cp = ifc->scriptpath;
-				if (*cp != '/') {
-					dprintf(LOG_INFO, FNAME,
-					    "script must be an absolute path");
-					goto bad;
-				}
-				cp += strlen(ifc->scriptpath) - 1;
-				*cp = '\0'; /* clear the terminating quote */
-				break;
-			case DECL_ADDRESSPOOL:
-				{
-					struct dhcp6_poolspec* spec;
-					struct pool_conf* pool;
+static int configure_interface_or_profile(ifp, conflist)
+	struct cf_namelist *ifp;
+	struct dhcp6_ifconf **conflist;
+{
+	struct dhcp6_ifconf *conf;
+	char *cp;
+	struct cf_list *cfl;
 
-					spec = (struct dhcp6_poolspec *)cfl->ptr;
+	if ((conf = malloc(sizeof(*conf))) == NULL) {
+		dprintf(LOG_ERR, FNAME,
+		    "memory allocation for %s failed", ifp->name);
+		return (-1);
+	}
+	memset(conf, 0, sizeof(*conf));
+	conf->next = *conflist;
+	*conflist = conf;
 
-					for (pool = pool_conflist0; pool; pool = pool->next)
-						if (strcmp(spec->name, pool->name) == 0)
-							break;
-					if (pool == NULL) {
-						dprintf(LOG_ERR, FNAME, "%s:%d "
-							"pool '%s' not found",
-							configfilename, cfl->line,
-					   		spec->name);
-						goto bad;
-					}
-					if (spec->vltime != DHCP6_DURATION_INFINITE &&
-						(spec->pltime == DHCP6_DURATION_INFINITE ||
-						spec->pltime > spec->vltime)) {
-						dprintf(LOG_ERR, FNAME, "%s:%d ",
-							configfilename, cfl->line,
-							"specified a larger preferred lifetime "
-							"than valid lifetime");
-						goto bad;
-					}
-					ifc->pool = *spec;
-					if ((ifc->pool.name = strdup(spec->name)) == NULL) {
-						dprintf(LOG_ERR, FNAME,
-							"memory allocation failed");
-						goto bad;
-					}
-					dprintf(LOG_DEBUG, FNAME,
-						"pool '%s' is specified to the interface '%s'",
-						ifc->pool.name, ifc->ifname);
-				}
-				break;
-			default:
-				dprintf(LOG_ERR, FNAME, "%s:%d "
-					"invalid interface configuration",
-					configfilename, cfl->line);
-				goto bad;
+	if ((conf->ifname = strdup(ifp->name)) == NULL) {
+		dprintf(LOG_ERR, FNAME, "failed to copy interface or "
+		    "profile name");
+		return (-1);
+	}
+
+	conf->server_pref = DH6OPT_PREF_UNDEF;
+	TAILQ_INIT(&conf->reqopt_list);
+	TAILQ_INIT(&conf->iaconf_list);
+
+	for (cfl = ifp->params; cfl; cfl = cfl->next) {
+		switch(cfl->type) {
+		case DECL_REQUEST:
+			if (dhcp6_mode != DHCP6_MODE_CLIENT) {
+				dprintf(LOG_INFO, FNAME, "%s:%d "
+					"client-only configuration",
+					configfilename,
+					cfl->line);
+				return (-1);
 			}
+			if (add_options(DHCPOPTCODE_REQUEST,
+					conf, cfl->list)) {
+				return (-1);
+			}
+			break;
+		case DECL_SEND:
+			if (add_options(DHCPOPTCODE_SEND,
+					conf, cfl->list)) {
+				return (-1);
+			}
+			break;
+		case DECL_ALLOW:
+			if (add_options(DHCPOPTCODE_ALLOW,
+					conf, cfl->list)) {
+				return (-1);
+			}
+			break;
+		case DECL_INFO_ONLY:
+			if (dhcp6_mode != DHCP6_MODE_CLIENT) {
+				dprintf(LOG_INFO, FNAME, "%s:%d "
+					"client-only configuration",
+					configfilename, cfl->line);
+				return (-1);
+			}
+			conf->send_flags |= DHCIFF_INFO_ONLY;
+			break;
+		case DECL_PREFERENCE:
+			if (dhcp6_mode != DHCP6_MODE_SERVER) {
+				dprintf(LOG_INFO, FNAME, "%s:%d "
+					"server-only configuration",
+					configfilename, cfl->line);
+				return (-1);
+			}
+			conf->server_pref = (int)cfl->num;
+			if (conf->server_pref < 0 ||
+			    conf->server_pref > 255) {
+				dprintf(LOG_INFO, FNAME, "%s:%d "
+					"bad value: %d",
+					configfilename, cfl->line,
+					conf->server_pref);
+				return (-1);
+			}
+			break;
+		case DECL_SCRIPT:
+			if (dhcp6_mode != DHCP6_MODE_CLIENT) {
+				dprintf(LOG_INFO, FNAME, "%s:%d "
+					"client-only configuration",
+					configfilename, cfl->line);
+				return (-1);
+			}
+			if (conf->scriptpath) {
+				dprintf(LOG_INFO, FNAME,
+				    "%s:%d duplicated configuration",
+				    configfilename, cfl->line);
+				return (-1);
+			}
+			cp = cfl->ptr;
+			conf->scriptpath = strdup(cp + 1);
+			if (conf->scriptpath == NULL) {
+				dprintf(LOG_NOTICE, FNAME,
+				    "failed to copy script path");
+				return (-1);
+			}
+			cp = conf->scriptpath;
+			if (*cp != '/') {
+				dprintf(LOG_INFO, FNAME,
+				    "script must be an absolute path");
+				return (-1);
+			}
+			cp += strlen(conf->scriptpath) - 1;
+			*cp = '\0'; /* clear the terminating quote */
+			break;
+		case DECL_ADDRESSPOOL:
+			{
+				struct dhcp6_poolspec* spec;
+				struct pool_conf* pool;
+
+				spec = (struct dhcp6_poolspec *)cfl->ptr;
+
+				for (pool = pool_conflist0; pool; pool = pool->next)
+					if (strcmp(spec->name, pool->name) == 0)
+						break;
+				if (pool == NULL) {
+					dprintf(LOG_ERR, FNAME, "%s:%d "
+						"pool '%s' not found",
+						configfilename, cfl->line,
+				   		spec->name);
+					return (-1);
+				}
+				if (spec->vltime != DHCP6_DURATION_INFINITE &&
+					(spec->pltime == DHCP6_DURATION_INFINITE ||
+					spec->pltime > spec->vltime)) {
+					dprintf(LOG_ERR, FNAME, "%s:%d ",
+						configfilename, cfl->line,
+						"specified a larger preferred lifetime "
+						"than valid lifetime");
+					return (-1);
+				}
+				conf->pool = *spec;
+				if ((conf->pool.name = strdup(spec->name)) == NULL) {
+					dprintf(LOG_ERR, FNAME,
+						"memory allocation failed");
+					return (-1);
+				}
+				dprintf(LOG_DEBUG, FNAME,
+					"pool '%s' is specified to the interface '%s'",
+					conf->pool.name, conf->ifname);
+			}
+			break;
+		default:
+			dprintf(LOG_ERR, FNAME, "%s:%d "
+				"invalid interface configuration",
+				configfilename, cfl->line);
+			return (-1);
 		}
 	}
 	
 	return (0);
-
-  bad:
-	clear_ifconf(dhcp6_ifconflist);
-	dhcp6_ifconflist = NULL;
-	return (-1);
 }
 
 int
@@ -442,6 +475,7 @@ add_pd_pif(iapdc, cfl0)
 {
 	struct cf_list *cfl;
 	struct prefix_ifconf *pif;
+	int i, use_default_ifid = 1;
 
 	/* duplication check */
 	for (pif = TAILQ_FIRST(&iapdc->iapd_pif_list); pif;
@@ -495,10 +529,23 @@ add_pd_pif(iapdc, cfl0)
 				goto bad;
 			}
 			break;
+		case IFPARAM_IFID:
+			for (i = sizeof(pif->ifid) -1; i >= 0; i--)
+				pif->ifid[i] = (cfl->num >> 8*(sizeof(pif->ifid) - 1 - i)) & 0xff;
+			use_default_ifid = 0;
+			break;
 		default:
 			dprintf(LOG_ERR, FNAME, "%s:%d internal error: "
 			    "invalid configuration",
 			    configfilename, cfl->line);
+			goto bad;
+		}
+	}
+
+	if (use_default_ifid) {
+		if (get_default_ifid(pif)) {
+			dprintf(LOG_NOTICE, FNAME,
+			    "failed to get default IF ID for %s", pif->ifname);
 			goto bad;
 		}
 	}
@@ -1279,6 +1326,8 @@ configure_cleanup()
 	clear_iaconf(&ia_conflist0);
 	clear_ifconf(dhcp6_ifconflist);
 	dhcp6_ifconflist = NULL;
+	clear_ifconf(dhcp6_profileconflist);
+	dhcp6_profileconflist = NULL;
 	clear_hostconf(host_conflist0);
 	host_conflist0 = NULL;
 	clear_keys(key_list0);
@@ -1326,8 +1375,17 @@ configure_commit()
 			if (strcmp(ifp->ifname, ifc->ifname) == 0)
 				break;
 		}
-		if (ifc == NULL)
-			continue;
+		if (ifc == NULL) {
+			if (profile == NULL)
+				continue;
+			for (ifc = dhcp6_profileconflist; ifc;
+				    ifc = ifc->next) {
+				if (strcmp(profile, ifc->ifname) == 0)
+					break;
+			}
+			if (ifc == NULL)
+				continue;
+		}
 
 		/* copy new configuration */
 		ifp->send_flags = ifc->send_flags;
@@ -1353,6 +1411,8 @@ configure_commit()
 
 	clear_ifconf(dhcp6_ifconflist);
 	dhcp6_ifconflist = NULL;
+	clear_ifconf(dhcp6_profileconflist);
+	dhcp6_profileconflist = NULL;
 
 	/* clear unused IA configuration */
 	if (!TAILQ_EMPTY(&ia_conflist0)) {

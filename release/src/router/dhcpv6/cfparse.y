@@ -83,6 +83,7 @@ extern void yyerror __P((char *, ...))
 	} while (0)
 
 static struct cf_namelist *iflist_head, *hostlist_head, *iapdlist_head;
+static struct cf_namelist *profilelist_head;
 static struct cf_namelist *addrpoollist_head;
 static struct cf_namelist *authinfolist_head, *keylist_head;
 static struct cf_namelist *ianalist_head;
@@ -102,7 +103,8 @@ static void cleanup_cflist __P((struct cf_list *));
 %}
 
 %token INTERFACE IFNAME
-%token PREFIX_INTERFACE SLA_ID SLA_LEN DUID_ID
+%token PROFILE PROFILENAME
+%token PREFIX_INTERFACE SLA_ID SLA_LEN IFID DUID_ID
 %token ID_ASSOC IA_PD IAID IA_NA
 %token ADDRESS
 %token REQUEST SEND ALLOW PREFERENCE
@@ -133,7 +135,7 @@ static void cleanup_cflist __P((struct cf_list *));
 }
 
 %type <str> IFNAME HOSTNAME AUTHNAME KEYNAME DUID_ID STRING QSTRING IAID
-%type <str> POOLNAME
+%type <str> POOLNAME PROFILENAME
 %type <num> NUMBER duration authproto authalg authrdm
 %type <list> declaration declarations dhcpoption ifparam ifparams
 %type <list> address_list address_list_ent dhcpoption_list
@@ -153,6 +155,7 @@ statements:
 
 statement:
 		interface_statement
+	|	profile_statement
 	|	host_statement
 	|	option_statement
 	|	ia_statement
@@ -170,6 +173,18 @@ interface_statement:
 		MAKE_NAMELIST(ifl, $2, $4);
 
 		if (add_namelist(ifl, &iflist_head))
+			return (-1);
+	}
+	;
+
+profile_statement:
+	PROFILE PROFILENAME BCL declarations ECL EOS
+	{
+		struct cf_namelist *profilelist;
+
+		MAKE_NAMELIST(profilelist, $2, $4);
+
+		if (add_namelist(profilelist, &profilelist_head))
 			return (-1);
 	}
 	;
@@ -1041,6 +1056,14 @@ ifparam:
 			l->num = $2;
 			$$ = l;
 		}
+	|	IFID NUMBER EOS
+		{
+			struct cf_list *l;
+
+			MAKE_CFLIST(l, IFPARAM_IFID, NULL, NULL);
+			l->num = (u_int64_t)$2;
+			$$ = l;
+		}
 	;
 
 ianaconf_list:
@@ -1224,6 +1247,8 @@ cleanup()
 {
 	cleanup_namelist(iflist_head);
 	iflist_head = NULL;
+	cleanup_namelist(profilelist_head);
+	profilelist_head = NULL;
 	cleanup_namelist(hostlist_head);
 	hostlist_head = NULL;
 	cleanup_namelist(iapdlist_head);
@@ -1318,6 +1343,9 @@ cf_post_config()
 	if (configure_pool(addrpoollist_head))
 		config_fail();
 
+	if (configure_profile(profilelist_head))
+		config_fail();
+
 	if (configure_interface(iflist_head))
 		config_fail();
 
@@ -1337,4 +1365,5 @@ void
 cf_init()
 {
 	iflist_head = NULL;
+	profilelist_head = NULL;
 }
