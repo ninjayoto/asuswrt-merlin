@@ -192,6 +192,16 @@ extern size_t strlcat __P((char *, const char *, size_t));
 extern size_t strlcpy __P((char *, const char *, size_t));
 #endif
 
+/* add workaround for older kernels for debian updates */
+#ifdef __linux__
+#  ifndef O_CLOEXEC
+#  define O_CLOEXEC 0
+#  endif
+#  ifndef SOCK_CLOEXEC
+#  define SOCK_CLOEXEC 0
+#  endif
+#endif
+
 /*
  * compat hacks in case libc and kernel get out of sync:
  *
