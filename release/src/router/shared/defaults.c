@@ -699,6 +699,11 @@ struct nvram_tuple router_defaults[] = {
 	// VPN+DHCP, a sperated nvram to control this function
 	{ "wan_vpndhcp", "1"},
 
+	// DHCP option
+	{"wan_clientid_type", "0" },	/* 0: MAC 1: Node-specific RFC4361 */
+	{"wan_clientid", "" },
+	{"wan_vendorid", "" },
+
 	// For miniupnpd, so far default value only
 	{ "upnp_enable", "1" },
 	{ "upnp_secure", "1" },

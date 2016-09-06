@@ -343,6 +343,7 @@ start_udhcpc(char *wan_ifname, int unit, pid_t *ppid)
 	char tmp[100], prefix[] = "wanXXXXXXXXXX_";
 	char pid[sizeof("/var/run/udhcpcXXXXXXXXXX.pid")];
 	char clientid[sizeof("61:") + (32+32+1)*2];
+	char vendorid[32+32+13];
 	char *value;
 	char *dhcp_argv[] = { "udhcpc",
 		"-i", wan_ifname,
@@ -364,6 +365,7 @@ start_udhcpc(char *wan_ifname, int unit, pid_t *ppid)
 		NULL, NULL,	/* -x 61:wan_clientid */
 #endif
 		NULL, NULL,	/* -x 61:wan_clientid (non-DSL) */
+		NULL, NULL,	/* -V wan_vendorid */
 		NULL };
 	int index = 7;		/* first NULL */
 	int dr_enable;
@@ -429,6 +431,14 @@ start_udhcpc(char *wan_ifname, int unit, pid_t *ppid)
 		dhcp_argv[index++] = "-x";
 		dhcp_argv[index++] = clientid;
 	}
+
+	/* Vendor ID */
+	value = nvram_safe_get(strcat_r(prefix, "vendorid", tmp));
+	if (*value) {
+		dhcp_argv[index++] = "-V";
+		dhcp_argv[index++] = value;
+	}
+
 	return _eval(dhcp_argv, NULL, 0, ppid);
 }
 
