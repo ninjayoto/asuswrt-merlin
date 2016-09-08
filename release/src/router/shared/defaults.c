@@ -1771,6 +1771,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_ifdev",		"ppp"		},	
 	{ "ipv6_prefix",	""		},	// The global-scope IPv6 prefix to route/advertise
 	{ "ipv6_prefix_length",	"64"		},	// The bit length of the prefix. Used by dhcp6c. For radvd, /64 is always assumed.
+	{ "ipv6_slaid",		"0"		},	// The Site Level Aggregation ID prefix for local IPv6 subnets
 	{ "ipv6_dhcp_pd",	"1"		},	// Enable DHCP-PD (DHCP Prefix Delegation) by default
 	{ "ipv6_rtr_addr",	""		},	// defaults to $ipv6_prefix::1
 	{ "ipv6_prefix_len_wan","64"		},	// used in ipv6_service other

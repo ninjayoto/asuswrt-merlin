@@ -809,7 +809,7 @@ start_dhcp6c(void)
 		NULL,		/* interface */
 		NULL };
 	int index = 3;
-	int prefix_len, sla_len;
+	int prefix_len, sla_id, sla_len;
 	int rc;
 	unsigned char ea[ETHER_ADDR_LEN];
 	unsigned long iaid = 0;
@@ -848,6 +848,7 @@ start_dhcp6c(void)
 		nvram_set("ipv6_pd_plifetime", "");
 	}
 
+	sla_id = nvram_get_int("ipv6_slaid");
 	prefix_len = nvram_get_int("ipv6_prefix_length");
 	sla_len = 64 - (nvram_get_int("ipv6_prefix_length") ? : 64);
 	if (sla_len < 0)
@@ -893,10 +894,10 @@ start_dhcp6c(void)
 		if (nvram_get_int("ipv6_prefix_length") >= 64)
 		fprintf(fp, 	"prefix ::/%d infinity;\n", prefix_len);
 		fprintf(fp,		"prefix-interface %s {\n"
-					"sla-id 1;\n"
+					"sla-id %d;\n"
 					"sla-len %d;\n"
 					"};\n"
-				"};\n", lan_ifname, sla_len);
+				"};\n", lan_ifname, sla_id, sla_len);
 		if (nvram_match("ipv6_ra_conf", "mset"))
 		fprintf(fp,	"id-assoc na %lu { };\n", iaid);
 	} else {
