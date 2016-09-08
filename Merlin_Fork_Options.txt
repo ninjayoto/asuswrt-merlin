@@ -1,5 +1,5 @@
 Merlin Fork Custom Options
-Update-17
+Update-19
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
@@ -330,6 +330,43 @@ Ability to enable DFS channels for N66U EU routers
 					EU configured routers.
 				This setting enables support for the DFS and upper 5GHz channels with full regulatory
 					support.
+---------------------------------------------------------------------------------------------------------------
+Ability to set the Site Level Aggregation identifier (sla-id)
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set ipv6_slaid=[number]
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-19
+	Reboot Required:	Yes
+	Notes:			Sets which prefix out of the delegation to use. This is 2^sla-id. If you have a /48, 
+					valid values would be 2^16 or 0-65535. 
+					If you had a /56, it would be 2^8 or 0-255. A /60 is 0-15.
+---------------------------------------------------------------------------------------------------------------
+Control release of IPv6 Addresses on exit
+
+	Can be set in gui:	Yes
+	Enable via NVRAM:	nvram set ipv6_dhcp6c_release=[1 release,  0 no release]
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-19
+	Reboot Required:	Yes
+	Notes:			Release addresses on exit.  Not releases addresses allows some ISPs to continue to assign the 
+					same IPv6 addresses.
+---------------------------------------------------------------------------------------------------------------
+Ability force a DHCPv6 request during IPv6 prefix delegation
+
+	Can be set in gui:	Yes
+	Enable via NVRAM:	nvram set ipv6_dhcp6c_force=1
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-19
+	Reboot Required:	Yes
+	Notes:			Some ISPs will not send an IPv6 prefix without an address REQUEST.  
+					Sky UK is known to require this option.
 ---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:

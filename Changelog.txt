@@ -4,6 +4,51 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-19E1j9527  (8-September-2016)
+- CHANGED: aicloud: (backport) update APP-IPK library
+- CHANGED: aicloud: (backport) updated webdav configuration gen
+- CHANGED: dnsmasq: (backport) move dnssec trust anchor to conf file
+- CHANGED: iptv: (backport) updated predefined providers; add multicast_iptv support
+- CHANGED: iptv: (backport) add updated profiles to quick setup
+- CHANGED: nettle: (backport) increase optimization level to speed up dnssec validation
+- CHANGED: nettle: update to 3.2
+- CHANGED: openssl: (backport) update CA bundle to 20 April version
+- CHANGED: openvpn: (backport) no longer dump stats to syslog when opening status page
+- CHANGED: updhcpc: (backport) add support for vendor class dhcp option 60
+- CHANGED: webui: (backport) add upnp secure mode option
+- CHANGED: webui: format numbers in VPN Status page
+- CHANGED: firewall: change default for ipv6 neighbor soliciation filter to off
+* CHANGED: dhcp6c: add option to force address REQUEST for some ISPs
+* CHANGED: dhcp6c: add option to not release addresses on exit
+* CHANGED: dhcpv6: added additional dhcp6c logging/debug
+* CHANGED: dhcpv6: redo logging levels to make LOG_NOTICE available for status entries
+* CHANGED: dhcpv6: upstream fixes from debian 20080615-13
+* CHANGED: dropbear: include dropbearconvert utility
+* CHANGED: ipset: update to 6.29 for ARM routers (includes ipv6 support)
+* CHANGED: ipv6: allow other than 64 prefix lengths for native ipv6
+* CHANGED: jquery: update to 1.12.4
+* CHANGED: minidlna: (upstream) special detection for Allshare/Windows clients
+* CHANGED: minidlna: use odmpid for model name if available
+* CHANGED: openvpn: misc script cleanup
+* CHANGED: openvpn: update to 2.3.12
+* CHANGED: webui: updated ipv6 gui to support the new options
+- FIXED: system: custom script calls for igmpproxy
+- FIXED: openvpn: (backport) do not show policy rules option for openvpn client tap mode
+* FIXED: dhcpv6: add skip-ctlport patches
+* FIXED: dhcpv6: fix MIPS builds with upstream fixes
+* FIXED: disk: scheduled disk scans would run on wrong disk
+* FIXED: dropbear: reapply patches dropped during last update (X11FWD and SFTP-SERVER)
+* FIXED: firewall: fix bad rules when NSF and PControl are both active
+* FIXED: iptv: always check VID/PRIO values prior to submit
+* FIXED: ipv6: config file changes for prefix length support
+* FIXED: minidlna: would use a new uuid on every restart
+* FIXED: openvpn: nvram errno not being set
+* FIXED: qos: add single mac rules to ipv6
+* FIXED: qos: fix adding single hosts by mac to ipv6 mangle rules (pass 2)
+* FIXED: webui: handle multiple selections with same value for qos_overhead
+* FIXED: webui: remove obsolete help from NSF
+
+
 374.43_2-18E3j9527  (13-August-2016)
 * FIXED: should not allow qos_overhead option on MIPS routers
 * FIXED: could not Apply settings in Administration>System on IE11
