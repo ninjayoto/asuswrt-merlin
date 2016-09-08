@@ -795,6 +795,7 @@ start_dhcp6c(void)
 	char *dhcp6c_argv[] = { "dhcp6c",
 		"-T", "LL",
 		NULL,		/* -D */
+		NULL,		/* -n */
 		NULL,		/* interface */
 		NULL };
 	int index = 3;
@@ -901,6 +902,9 @@ start_dhcp6c(void)
 
 	if (nvram_get_int("ipv6_debug"))
 		dhcp6c_argv[index++] = "-D";
+
+	if (!nvram_get_int("ipv6_dhcp6c_release"))
+		dhcp6c_argv[index++] = "-n";
 
 	dhcp6c_argv[index++] = wan_ifname;
 

@@ -158,6 +158,8 @@ static void info_printf __P((const char *, ...));
 
 extern int client6_script __P((char *, int, struct dhcp6_optinfo *));
 
+int opt_norelease = 0;
+
 #define MAX_ELAPSED_TIME 0xffff
 
 int
@@ -180,7 +182,7 @@ main(argc, argv)
 	else
 		progname++;
 
-	while ((ch = getopt(argc, argv, "c:dDT:fik:p:P:")) != -1) {
+	while ((ch = getopt(argc, argv, "c:dDT:fik:p:P:n")) != -1) {
 		switch (ch) {
 		case 'c':
 			conffile = optarg;
@@ -213,6 +215,9 @@ main(argc, argv)
 			break;
 		case 'P':
 			profile = optarg;
+			break;
+		case 'n':
+			opt_norelease = 1;
 			break;
 		default:
 			usage();

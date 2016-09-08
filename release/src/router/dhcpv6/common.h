@@ -184,6 +184,8 @@ extern int ifaddrconf __P((ifaddrconf_cmd_t, char *, struct sockaddr_in6 *,
 extern int safefile __P((const char *));
 extern int dumpfile __P((const char *));
 
+extern int opt_norelease;
+
 /* missing */
 #ifndef HAVE_STRLCAT
 extern size_t strlcat __P((char *, const char *, size_t));

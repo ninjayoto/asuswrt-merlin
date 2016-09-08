@@ -421,8 +421,12 @@ release_all_ia(ifp)
 		for (ia = TAILQ_FIRST(&iac->iadata); ia; ia = ia_next) {
 			ia_next = TAILQ_NEXT(ia, link);
 
-			(void)release_ia(ia);
-
+			if (opt_norelease != 1) {
+				dprintf(LOG_INFO, FNAME, "Start address release");
+				(void)release_ia(ia);
+			} else {
+				dprintf(LOG_NOTICE, FNAME, "Bypassing address release");
+			}
 			/*
 			 * The client MUST stop using all of the addresses
 			 * being released as soon as the client begins the
