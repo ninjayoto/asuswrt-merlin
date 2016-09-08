@@ -118,7 +118,7 @@ relay6_script(scriptpath, client, dh6, len)
 
 	/* allocate an environments array */
 	if ((envp = malloc(sizeof (char *) * envc)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to allocate environment buffer");
 		dhcp6_clear_options(&optinfo);
 		return -1;
@@ -132,14 +132,14 @@ relay6_script(scriptpath, client, dh6, len)
 	/* address */
 	t = addr2str((struct sockaddr *) client);
 	if (t == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to get address of client");
 		ret = -1;
 		goto clean;
 	}
 	elen = sizeof (client_str) + 1 + strlen(t) + 1;
 	if ((s = envp[i++] = malloc(elen)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to allocate string for client");
 		ret = -1;
 		goto clean;

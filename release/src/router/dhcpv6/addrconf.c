@@ -140,7 +140,7 @@ update_address(ia, addr, dhcpifp, ctlp, callback)
 
 	if (iac_na == NULL) {
 		if ((iac_na = malloc(sizeof(*iac_na))) == NULL) {
-			dprintf(LOG_NOTICE, FNAME, "memory allocation failed");
+			dprintf(LOG_INFO, FNAME, "memory allocation failed");
 			return (-1);
 		}
 		memset(iac_na, 0, sizeof(*iac_na));
@@ -161,7 +161,7 @@ update_address(ia, addr, dhcpifp, ctlp, callback)
 	/* search for the given address, and make a new one if it fails */
 	if ((sa = find_addr(&iac_na->statefuladdr_head, addr)) == NULL) {
 		if ((sa = malloc(sizeof(*sa))) == NULL) {
-			dprintf(LOG_NOTICE, FNAME, "memory allocation failed");
+			dprintf(LOG_INFO, FNAME, "memory allocation failed");
 			return (-1);
 		}
 		memset(sa, 0, sizeof(*sa));
@@ -203,7 +203,7 @@ update_address(ia, addr, dhcpifp, ctlp, callback)
 		if (sa->timer == NULL) {
 			sa->timer = dhcp6_add_timer(addr_timo, sa);
 			if (sa->timer == NULL) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to add stateful addr timer");
 				remove_addr(sa); /* XXX */
 				return (-1);

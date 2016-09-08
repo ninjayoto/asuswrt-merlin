@@ -829,7 +829,7 @@ relay_to_server(dh6, len, from, ifname, ifid)
 			break;
 	}
 	if (p == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to find a global address on %s", ifname);
 
 		/*

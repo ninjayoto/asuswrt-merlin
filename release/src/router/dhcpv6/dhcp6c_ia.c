@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 
 #include "dhcp6.h"
 #include "config.h"
@@ -155,7 +156,7 @@ update_ia(iatype, ialist, ifp, serverid, authparam)
 				if (update_prefix(ia, &siav->val_prefix6,
 				    &iapdc->iapd_pif_list, ifp, &ia->ctl,
 				    callback)) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 					    "failed to update a prefix %s/%d",
 					    in6addr2str(&siav->val_prefix6.addr, 0),
 					    siav->val_prefix6.plen);
@@ -165,7 +166,7 @@ update_ia(iatype, ialist, ifp, serverid, authparam)
 				ianac = (struct iana_conf *)iac;
 				if (update_address(ia, &siav->val_statefuladdr6,
 				    ifp, &ia->ctl, callback)) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 					    "failed to update an address %s",
 					    in6addr2str(&siav->val_statefuladdr6.addr, 0));
 				}
@@ -333,19 +334,19 @@ reestablish_ia(ia)
 		dhcp6_remove_timer(&ia->timer);
 
 	if ((ev = dhcp6_create_event(ia->ifp, DHCP6S_REQUEST)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to create a new event");
+		dprintf(LOG_INFO, FNAME, "failed to create a new event");
 		goto fail;
 	}
 	TAILQ_INSERT_TAIL(&ia->ifp->event_list, ev, link);
 
 	if ((ev->timer = dhcp6_add_timer(client6_timo, ev)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to create a new event timer");
 		goto fail;
 	}
 
 	if ((evd = malloc(sizeof(*evd))) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to create a new event data");
 		goto fail;
 	}
@@ -354,7 +355,7 @@ reestablish_ia(ia)
 	TAILQ_INSERT_TAIL(&ev->data_list, evd, link);
 
 	if (duidcpy(&ev->serverid, &ia->serverid)) {
-		dprintf(LOG_NOTICE, FNAME, "failed to copy server ID");
+		dprintf(LOG_INFO, FNAME, "failed to copy server ID");
 		goto fail;
 	}
 
@@ -365,7 +366,7 @@ reestablish_ia(ia)
 	if (ia->ctl && ia->ctl->reestablish_data) {
 		if ((*ia->ctl->reestablish_data)(ia->ctl, &iaparam,
 		    &ia->evdata, evd)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make reestablish data");
 			goto fail;
 		}
@@ -446,25 +447,25 @@ release_ia(ia)
 
 	if ((ev = dhcp6_create_event(ia->ifp, DHCP6S_RELEASE))
 	    == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to create a new event");
+		dprintf(LOG_INFO, FNAME, "failed to create a new event");
 		goto fail;
 	}
 	TAILQ_INSERT_TAIL(&ia->ifp->event_list, ev, link);
 
 
 	if ((ev->timer = dhcp6_add_timer(client6_timo, ev)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to create a new event timer");
 		goto fail;
 	}
 
 	if (duidcpy(&ev->serverid, &ia->serverid)) {
-		dprintf(LOG_NOTICE, FNAME, "failed to copy server ID");
+		dprintf(LOG_INFO, FNAME, "failed to copy server ID");
 		goto fail;
 	}
 
 	if ((evd = malloc(sizeof(*evd))) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to create a new event data");
 		goto fail;
 	}
@@ -476,7 +477,7 @@ release_ia(ia)
 
 	if (ia->ctl && ia->ctl->release_data) {
 		if ((*ia->ctl->release_data)(ia->ctl, &iaparam, NULL, evd)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make release data");
 			goto fail;
 		}
@@ -592,19 +593,19 @@ ia_timo(arg)
 	}
 
 	if ((ev = dhcp6_create_event(ia->ifp, dhcpstate)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to create a new event");
+		dprintf(LOG_INFO, FNAME, "failed to create a new event");
 		goto fail;
 	}
 	TAILQ_INSERT_TAIL(&ia->ifp->event_list, ev, link);
 
 	if ((ev->timer = dhcp6_add_timer(client6_timo, ev)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to create a new event timer");
 		goto fail;
 	}
 
 	if ((evd = malloc(sizeof(*evd))) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to create a new event data");
 		goto fail;
 	}
@@ -614,7 +615,7 @@ ia_timo(arg)
 
 	if (ia->state == IAS_RENEW) {
 		if (duidcpy(&ev->serverid, &ia->serverid)) {
-			dprintf(LOG_NOTICE, FNAME, "failed to copy server ID");
+			dprintf(LOG_INFO, FNAME, "failed to copy server ID");
 			goto fail;
 		}
 	}
@@ -627,7 +628,7 @@ ia_timo(arg)
 		if (ia->ctl && ia->ctl->renew_data) {
 			if ((*ia->ctl->renew_data)(ia->ctl, &iaparam,
 			    &ia->evdata, evd)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to make renew data");
 				goto fail;
 			}
@@ -637,7 +638,7 @@ ia_timo(arg)
 		if (ia->ctl && ia->ctl->rebind_data) {
 			if ((*ia->ctl->rebind_data)(ia->ctl, &iaparam,
 			    &ia->evdata, evd)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to make rebind data");
 				goto fail;
 			}
@@ -693,13 +694,13 @@ get_ia(type, ifp, iac, iaparam, serverid)
 	int create = 0;
 
 	if (duidcpy(&newserver, serverid)) {
-		dprintf(LOG_NOTICE, FNAME, "failed to copy server ID");
+		dprintf(LOG_INFO, FNAME, "failed to copy server ID");
 		return (NULL);
 	}
 
 	if ((ia = find_ia(iac, type, iaparam->val_ia.iaid)) == NULL) {
 		if ((ia = malloc(sizeof(*ia))) == NULL) {
-			dprintf(LOG_NOTICE, FNAME, "memory allocation failed");
+			dprintf(LOG_INFO, FNAME, "memory allocation failed");
 			duidfree(&newserver); /* XXX */
 			return (NULL);
 		}

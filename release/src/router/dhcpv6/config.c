@@ -291,7 +291,7 @@ static int configure_interface_or_profile(ifp, conflist)
 			cp = cfl->ptr;
 			conf->scriptpath = strdup(cp + 1);
 			if (conf->scriptpath == NULL) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to copy script path");
 				return (-1);
 			}
@@ -423,7 +423,7 @@ configure_ia(ialist, iatype)
 					if (add_prefix(&pdp->iapd_prefix_list,
 					    "IAPD", DHCP6_LISTVAL_PREFIX6,
 					    cfl->ptr)) {
-						dprintf(LOG_NOTICE, FNAME, "failed "
+						dprintf(LOG_INFO, FNAME, "failed "
 							"to configure prefix");
 						goto bad;
 					}
@@ -441,7 +441,7 @@ configure_ia(ialist, iatype)
 					if (add_prefix(&nap->iana_address_list,
 					    "IANA", DHCP6_LISTVAL_STATEFULADDR6,
 					    cfl->ptr)) {
-						dprintf(LOG_NOTICE, FNAME, "failed "
+						dprintf(LOG_INFO, FNAME, "failed "
 							"to configure address");
 						goto bad;
 					}
@@ -481,7 +481,7 @@ add_pd_pif(iapdc, cfl0)
 	for (pif = TAILQ_FIRST(&iapdc->iapd_pif_list); pif;
 	    pif = TAILQ_NEXT(pif, link)) {
 		if (strcmp(pif->ifname, cfl0->ptr) == 0) {
-			dprintf(LOG_NOTICE, FNAME, "%s:%d "
+			dprintf(LOG_INFO, FNAME, "%s:%d "
 			    "duplicated prefix interface: %s",
 			    configfilename, cfl0->line, cfl0->ptr);
 			return (0); /* ignore it */
@@ -510,7 +510,7 @@ add_pd_pif(iapdc, cfl0)
 	pif->ifid_len = IFID_LEN_DEFAULT;
 	pif->sla_len = SLA_LEN_DEFAULT;
 	if (get_default_ifid(pif)) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to get default IF ID for %s", pif->ifname);
 		goto bad;
 	}
@@ -544,7 +544,7 @@ add_pd_pif(iapdc, cfl0)
 
 	if (use_default_ifid) {
 		if (get_default_ifid(pif)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to get default IF ID for %s", pif->ifname);
 			goto bad;
 		}
@@ -1244,7 +1244,7 @@ get_default_ifid(pif)
 #endif
 
 	if (pif->ifid_len < 64) {
-		dprintf(LOG_NOTICE, FNAME, "ID length too short");
+		dprintf(LOG_INFO, FNAME, "ID length too short");
 		return (-1);
 	}
 
@@ -1269,7 +1269,7 @@ get_default_ifid(pif)
 
 		sdl = (struct sockaddr_dl *)ifa->ifa_addr;
 		if (sdl->sdl_alen < 6) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "link layer address is too short (%s)",
 			    pif->ifname);
 			goto fail;
@@ -1284,7 +1284,7 @@ get_default_ifid(pif)
 
 		sll = (struct sockaddr_ll *)ifa->ifa_addr;
 		if (sll->sll_halen < 6) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "link layer address is too short (%s)",
 			    pif->ifname);
 			goto fail;
@@ -1829,11 +1829,11 @@ add_prefix(head, name, type, prefix0)
 	/* prefix duplication check */
 	if (dhcp6_find_listval(head, type, &oprefix, 0)) {
 		if (type == DHCP6_LISTVAL_PREFIX6) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "duplicated prefix: %s/%d for %s",
 			    in6addr2str(&oprefix.addr, 0), oprefix.plen, name);
 		} else {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "duplicated address: %s for %s",
 			    in6addr2str(&oprefix.addr, 0), name);
 		}
@@ -1845,12 +1845,12 @@ add_prefix(head, name, type, prefix0)
 	    (oprefix.pltime == DHCP6_DURATION_INFINITE ||
 	    oprefix.pltime > oprefix.vltime)) {
 		if (type == DHCP6_LISTVAL_PREFIX6) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "%s/%d has larger preferred lifetime "
 			    "than valid lifetime",
 			    in6addr2str(&oprefix.addr, 0), oprefix.plen);
 		} else {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "%s has larger preferred lifetime "
 			    "than valid lifetime",
 			    in6addr2str(&oprefix.addr, 0));
@@ -2237,7 +2237,7 @@ get_free_address_from_pool(pool, addr)
 			in6addr2str(&cur, 0));
 	}
 
-	dprintf(LOG_NOTICE, FNAME, "no available address");
+	dprintf(LOG_INFO, FNAME, "no available address");
 	return 0;
 }
 

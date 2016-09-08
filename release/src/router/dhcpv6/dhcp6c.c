@@ -296,7 +296,7 @@ client6_init()
 
 #ifdef USE_DHCP6CTL
 	if (dhcp6_ctl_authinit(ctlkeyfile, &ctlkey, &ctldigestlen) != 0) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed initialize control message authentication");
 		/* run the server anyway */
 	}
@@ -401,7 +401,7 @@ client6_init()
 #ifdef USE_DHCP6CTL
 	/* set up control socket */
 	if (ctlkey == NULL)
-		dprintf(LOG_NOTICE, FNAME, "skip opening control port");
+		dprintf(LOG_INFO, FNAME, "skip opening control port");
 	else if (dhcp6_ctl_init(ctladdr, ctlport,
 	    DHCP6CTL_DEF_COMMANDQUEUELEN, &ctlsock)) {
 		dprintf(LOG_ERR, FNAME,
@@ -437,7 +437,7 @@ client6_start(ifp)
 
 	/* create an event for the initial delay */
 	if ((ev = dhcp6_create_event(ifp, DHCP6S_INIT)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to create an event");
+		dprintf(LOG_INFO, FNAME, "failed to create an event");
 		return (-1);
 	}
 	TAILQ_INSERT_TAIL(&ifp->event_list, ev, link);
@@ -451,7 +451,7 @@ client6_start(ifp)
 	}
 
 	if ((ev->timer = dhcp6_add_timer(client6_timo, ev)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to add a timer for %s",
+		dprintf(LOG_INFO, FNAME, "failed to add a timer for %s",
 		    ifp->ifname);
 		dhcp6_remove_event(ev);
 		return (-1);
@@ -469,7 +469,7 @@ client6_startall(isrestart)
 
 	for (ifp = dhcp6_if; ifp; ifp = ifp->next) {
 		if (isrestart &&ifreset(ifp)) {
-			dprintf(LOG_NOTICE, FNAME, "failed to reset %s",
+			dprintf(LOG_INFO, FNAME, "failed to reset %s",
 			    ifp->ifname);
 			continue; /* XXX: try to recover? */
 		}
@@ -521,12 +521,14 @@ check_exit()
 		 * Check if we have an outstanding event.  If we do, we cannot
 		 * exit for now.
 		 */
-		if (!TAILQ_EMPTY(&ifp->event_list))
+		if (!TAILQ_EMPTY(&ifp->event_list)) {
+			dprintf(LOG_NOTICE, FNAME, "Waiting for outstanding events");
 			return;
+		}
 	}
 
 	/* We have no existing event.  Do exit. */
-	dprintf(LOG_INFO, FNAME, "exiting");
+	dprintf(LOG_NOTICE, FNAME, "exiting");
 
 	exit(0);
 }
@@ -541,7 +543,7 @@ process_signals()
 		check_exit();
 	}
 	if ((sig_flags & SIGF_HUP)) {
-		dprintf(LOG_INFO, FNAME, "restarting");
+		dprintf(LOG_NOTICE, FNAME, "restarting");
 		free_resources(NULL);
 		client6_startall(1);
 	}
@@ -786,7 +788,7 @@ client6_reload()
 		return;
 	}
 
-	dprintf(LOG_NOTICE, FNAME, "client reloaded");
+	dprintf(LOG_INFO, FNAME, "client reloaded");
 
 	return;
 }
@@ -815,13 +817,13 @@ client6_ifctl(ifname, command)
 		 * lease.
 		 */
 		if (ifreset(ifp)) {
-			dprintf(LOG_NOTICE, FNAME, "failed to reset %s",
+			dprintf(LOG_INFO, FNAME, "failed to reset %s",
 			    ifname);
 			return (-1);
 		}
 		free_resources(ifp);
 		if (client6_start(ifp)) {
-			dprintf(LOG_NOTICE, FNAME, "failed to restart %s",
+			dprintf(LOG_INFO, FNAME, "failed to restart %s",
 			    ifname);
 			return (-1);
 		}
@@ -927,13 +929,13 @@ client6_timo(arg)
 			ev->current_server = select_server(ev);
 			if (ev->current_server == NULL) {
 				/* this should not happen! */
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "can't find a server");
 				exit(1); /* XXX */
 			}
 			if (duidcpy(&ev->serverid,
 			    &ev->current_server->optinfo.serverID)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "can't copy server ID");
 				return (NULL); /* XXX: better recovery? */
 			}
@@ -948,7 +950,7 @@ client6_timo(arg)
 
 			if (construct_reqdata(ifp,
 			    &ev->current_server->optinfo, ev)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to construct request data");
 				break;
 			}
@@ -982,7 +984,7 @@ construct_confdata(ifp, ev)
 
 		evd = NULL;
 		if ((evd = malloc(sizeof(*evd))) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to create a new event data");
 			goto fail;
 		}
@@ -1337,7 +1339,7 @@ client6_send(ev)
 		case DHCP6_EVDATA_IAPD:
 			if (dhcp6_copy_list(&optinfo.iapd_list,
 			    (struct dhcp6_list *)evd->data)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to add an IAPD");
 				goto end;
 			}
@@ -1345,7 +1347,7 @@ client6_send(ev)
 		case DHCP6_EVDATA_IANA:
 			if (dhcp6_copy_list(&optinfo.iana_list,
 			    (struct dhcp6_list *)evd->data)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to add an IAPD");
 				goto end;
 			}
@@ -1483,7 +1485,7 @@ client6_recv()
 		}
 	}
 	if (pi == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to get packet info");
+		dprintf(LOG_INFO, FNAME, "failed to get packet info");
 		return;
 	}
 
@@ -1719,11 +1721,11 @@ client6_recvadvert(ifp, dh6, len, optinfo)
 		ev->current_server = newserver;
 		if (duidcpy(&ev->serverid,
 		    &ev->current_server->optinfo.serverID)) {
-			dprintf(LOG_NOTICE, FNAME, "can't copy server ID");
+			dprintf(LOG_INFO, FNAME, "can't copy server ID");
 			return (-1); /* XXX: better recovery? */
 		}
 		if (construct_reqdata(ifp, &ev->current_server->optinfo, ev)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to construct request data");
 			return (-1); /* XXX */
 		}
@@ -2234,7 +2236,7 @@ info_printf(const char *fmt, ...)
 #if 0
 	dprintf(LOG_DEBUG, FNAME, "%s", logbuf);
 #else
-	dprintf(LOG_NOTICE, FNAME, "%s", logbuf);
+	dprintf(LOG_INFO, FNAME, "%s", logbuf);
 #endif
 	if (infreq_mode)
 		printf("%s\n", logbuf);

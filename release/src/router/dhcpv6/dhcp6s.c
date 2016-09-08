@@ -231,6 +231,7 @@ main(argc, argv)
 	struct dhcp6_listval *dlv;
 	char *progname;
 	FILE *pidfp;
+	int fd;
 
 	if ((progname = strrchr(*argv, '/')) == NULL)
 		progname = *argv;
@@ -302,8 +303,12 @@ main(argc, argv)
 	}
 	device = argv[0];
 
-	if (foreground == 0)
+	if (foreground == 0) {
+		for (fd = 3; fd < 1024; fd++)
+			close(fd);
+
 		openlog(progname, LOG_NDELAY|LOG_PID, LOG_DAEMON);
+	}
 
 	setloglevel(debug);
 
@@ -316,16 +321,6 @@ main(argc, argv)
 	if ((cfparse(conffile)) != 0) {
 		dprintf(LOG_ERR, FNAME, "failed to parse configuration file");
 		exit(1);
-	}
-
-	if (foreground == 0) {
-		int fd;
-
-		if (daemon(0, 0) < 0)
-			err(1, "daemon");
-
-		for (fd = 3; fd < 1024; fd++)
-			close(fd);
 	}
 
 	/* dump current PID */
@@ -394,7 +389,7 @@ server6_init()
 	}
 
 	if (dhcp6_ctl_authinit(ctlkeyfile, &ctlkey, &ctldigestlen) != 0) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to initialize control message authentication");
 		/* run the server anyway */
 	}
@@ -577,7 +572,7 @@ server6_init()
 
 	/* set up control socket */
 	if (ctlkey == NULL || ctlkey->secret == NULL || ctlkey->secretlen == 0)
-		dprintf(LOG_NOTICE, FNAME, "skip opening control port");
+		dprintf(LOG_INFO, FNAME, "skip opening control port");
 	else if (dhcp6_ctl_init(ctladdr, ctlport,
 	    DHCP6CTL_DEF_COMMANDQUEUELEN, &ctlsock)) {
 		dprintf(LOG_ERR, FNAME,
@@ -598,8 +593,10 @@ process_signals()
 {
 	if ((sig_flags & SIGF_TERM)) {
 		unlink(pid_file);
-		exit(0);
+		server6_stop();
 	}
+
+	sig_flags = 0;
 }
 
 static void
@@ -839,7 +836,7 @@ server6_reload()
 		return;
 	}
 
-	dprintf(LOG_NOTICE, FNAME, "server reloaded");
+	dprintf(LOG_INFO, FNAME, "server reloaded");
 
 	return;
 }
@@ -902,7 +899,7 @@ server6_recv(s)
 		}
 	}
 	if (pi == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to get packet info");
+		dprintf(LOG_INFO, FNAME, "failed to get packet info");
 		return;
 	}
 	/*
@@ -1323,7 +1320,7 @@ react_solicit(ifp, dh6, len, optinfo, from, fromlen, relayinfohead)
 		/* make a local copy of the configured prefixes */
 		if (client_conf &&
 		    dhcp6_copy_list(&conflist, &client_conf->prefix_list)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make local data");
 			goto fail;
 		}
@@ -1369,7 +1366,7 @@ react_solicit(ifp, dh6, len, optinfo, from, fromlen, relayinfohead)
 		if (client_conf == NULL && ifp->pool.name) {
 			if ((client_conf = create_dynamic_hostconf(&optinfo->clientID,
 				&ifp->pool)) == NULL)
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 			    	"failed to make host configuration");
 		}
 		TAILQ_INIT(&conflist);
@@ -1377,7 +1374,7 @@ react_solicit(ifp, dh6, len, optinfo, from, fromlen, relayinfohead)
 		/* make a local copy of the configured addresses */
 		if (client_conf &&
 		    dhcp6_copy_list(&conflist, &client_conf->addr_list)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make local data");
 			goto fail;
 		}
@@ -1541,7 +1538,7 @@ react_request(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 		/* make a local copy of the configured prefixes */
 		if (client_conf &&
 		    dhcp6_copy_list(&conflist, &client_conf->prefix_list)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make local data");
 			goto fail;
 		}
@@ -1566,7 +1563,7 @@ react_request(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 				    iapd->val_ia.iaid,
 				    DH6OPT_STCODE_NOPREFIXAVAIL,
 				    &roptinfo.iapd_list)) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 					    "failed to make an option list");
 					dhcp6_clear_list(&conflist);
 					goto fail;
@@ -1584,7 +1581,7 @@ react_request(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 		if (client_conf == NULL && ifp->pool.name) {
 			if ((client_conf = create_dynamic_hostconf(&optinfo->clientID,
 				&ifp->pool)) == NULL)
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 			    	"failed to make host configuration");
 		}
 		TAILQ_INIT(&conflist);
@@ -1592,7 +1589,7 @@ react_request(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 		/* make a local copy of the configured prefixes */
 		if (client_conf &&
 		    dhcp6_copy_list(&conflist, &client_conf->addr_list)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make local data");
 			goto fail;
 		}
@@ -1610,7 +1607,7 @@ react_request(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 				    iana->val_ia.iaid,
 				    DH6OPT_STCODE_NOADDRSAVAIL,
 				    &roptinfo.iana_list)) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 					    "failed to make an option list");
 					dhcp6_clear_list(&conflist);
 					goto fail;
@@ -2004,7 +2001,7 @@ react_release(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 	stcode = DH6OPT_STCODE_SUCCESS;
 	if (dhcp6_add_listval(&roptinfo.stcode_list,
 	    DHCP6_LISTVAL_STCODE, &stcode, NULL) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to add a status code");
+		dprintf(LOG_INFO, FNAME, "failed to add a status code");
 		goto fail;
 	}
 
@@ -2129,7 +2126,7 @@ react_decline(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 	stcode = DH6OPT_STCODE_SUCCESS;
 	if (dhcp6_add_listval(&roptinfo.stcode_list,
 	    DHCP6_LISTVAL_STCODE, &stcode, NULL) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to add a status code");
+		dprintf(LOG_INFO, FNAME, "failed to add a status code");
 		goto fail;
 	}
 
@@ -2206,7 +2203,7 @@ react_confirm(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 	if (client_conf == NULL && ifp->pool.name) {
 		if ((client_conf = create_dynamic_hostconf(&optinfo->clientID,
 			&ifp->pool)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 		    	"failed to make host configuration");
 			goto fail;
 		}
@@ -2214,7 +2211,7 @@ react_confirm(ifp, pi, dh6, len, optinfo, from, fromlen, relayinfohead)
 	TAILQ_INIT(&conflist);
 	/* make a local copy of the configured addresses */
 	if (dhcp6_copy_list(&conflist, &client_conf->addr_list)) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to make local data");
 		goto fail;
 	}
@@ -2421,7 +2418,7 @@ update_ia(msgtype, iap, retlist, optinfo)
 			 */
 			if (make_ia_stcode(iap->type, iap->val_ia.iaid,
 			    DH6OPT_STCODE_NOBINDING, retlist)) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to make an option list");
 				return (-1);
 			}
@@ -2487,7 +2484,7 @@ update_ia(msgtype, iap, retlist, optinfo)
 				if (dhcp6_add_listval(&ialist,
 				    DHCP6_LISTVAL_PREFIX6, &prefix, NULL)
 				    == NULL) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 					    "failed  to copy binding info");
 					dhcp6_clear_list(&ialist);
 					return (-1);
@@ -2517,7 +2514,7 @@ update_ia(msgtype, iap, retlist, optinfo)
 				if (dhcp6_add_listval(&ialist,
 				    DHCP6_LISTVAL_STATEFULADDR6, &saddr, NULL)
 				    == NULL) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 					    "failed  to copy binding info");
 					dhcp6_clear_list(&ialist);
 					return (-1);
@@ -2563,7 +2560,7 @@ release_binding_ia(iap, retlist, optinfo)
 		 */
 		if (make_ia_stcode(iap->type, iap->val_ia.iaid,
 		    DH6OPT_STCODE_NOBINDING, retlist)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make an option list");
 			return (-1);
 		}
@@ -2638,7 +2635,7 @@ decline_binding_ia(iap, retlist, optinfo)
 		 */
 		if (make_ia_stcode(iap->type, iap->val_ia.iaid,
 		    DH6OPT_STCODE_NOBINDING, retlist)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to make an option list");
 			return (-1);
 		}
@@ -2838,13 +2835,13 @@ make_ia_stcode(iatype, iaid, stcode, retlist)
 	TAILQ_INIT(&stcode_list);
 	if (dhcp6_add_listval(&stcode_list, DHCP6_LISTVAL_STCODE,
 	    &stcode, NULL) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to make an option list");
+		dprintf(LOG_INFO, FNAME, "failed to make an option list");
 		return (-1);
 	}
 
 	if (dhcp6_add_listval(retlist, iatype,
 	    &ia_empty, &stcode_list) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to make an option list");
+		dprintf(LOG_INFO, FNAME, "failed to make an option list");
 		dhcp6_clear_list(&stcode_list);
 		return (-1);
 	}
@@ -2886,7 +2883,7 @@ make_ia(spec, conflist, retlist, client_conf, do_binding)
 		calc_ia_timo(&ia, blist, client_conf);
 		if (dhcp6_add_listval(retlist, spec->type, &ia, blist)
 		    == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to copy binding info");
 			return (0);
 		}
@@ -2962,7 +2959,7 @@ make_ia(spec, conflist, retlist, client_conf, do_binding)
 		if (do_binding) {
 			if (add_binding(&client_conf->duid, DHCP6_BINDING_IA,
 			    spec->type, spec->val_ia.iaid, &ialist) == NULL) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to make a binding");
 				found = 0;
 			}
@@ -3185,13 +3182,13 @@ add_binding(clientid, btype, iatype, iaid, val0)
 	u_int32_t duration = DHCP6_DURATION_INFINITE;
 
 	if ((binding = malloc(sizeof(*binding))) == NULL) {
-		dprintf(LOG_NOTICE, FNAME, "failed to allocate memory");
+		dprintf(LOG_INFO, FNAME, "failed to allocate memory");
 		return (NULL);
 	}
 	memset(binding, 0, sizeof(*binding));
 	binding->type = btype;
 	if (duidcpy(&binding->clientid, clientid)) {
-		dprintf(LOG_NOTICE, FNAME, "failed to copy DUID");
+		dprintf(LOG_INFO, FNAME, "failed to copy DUID");
 		goto fail;
 	}
 	binding->iatype = iatype;
@@ -3203,7 +3200,7 @@ add_binding(clientid, btype, iatype, iaid, val0)
 		TAILQ_INIT(&binding->val_list);
 		if (dhcp6_copy_list(&binding->val_list,
 		    (struct dhcp6_list *)val0)) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to copy binding data");
 			goto fail;
 		}
@@ -3222,7 +3219,7 @@ add_binding(clientid, btype, iatype, iaid, val0)
 				}
 
 				if (!lease_address(&lv->val_statefuladdr6.addr)) {
-					dprintf(LOG_NOTICE, FNAME,
+					dprintf(LOG_INFO, FNAME,
 						"cannot lease address %s",
 						in6addr2str(&lv->val_statefuladdr6.addr, 0));
 					TAILQ_REMOVE(ia_list, lv, link);
@@ -3230,7 +3227,7 @@ add_binding(clientid, btype, iatype, iaid, val0)
 				}
 			}
 			if (TAILQ_EMPTY(ia_list)) {
-				dprintf(LOG_NOTICE, FNAME, "cannot lease any address");
+				dprintf(LOG_INFO, FNAME, "cannot lease any address");
 				goto fail;
 			}
 		}
@@ -3248,7 +3245,7 @@ add_binding(clientid, btype, iatype, iaid, val0)
 
 		binding->timer = dhcp6_add_timer(binding_timo, binding);
 		if (binding->timer == NULL) {
-			dprintf(LOG_NOTICE, FNAME, "failed to add timer");
+			dprintf(LOG_INFO, FNAME, "failed to add timer");
 			goto fail;
 		}
 		timo.tv_sec = (long)duration;

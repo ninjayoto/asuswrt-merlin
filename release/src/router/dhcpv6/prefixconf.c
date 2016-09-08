@@ -159,7 +159,7 @@ update_prefix(ia, pinfo, pifc, dhcpifp, ctlp, callback)
 
 	if (iac_pd == NULL) {
 		if ((iac_pd = malloc(sizeof(*iac_pd))) == NULL) {
-			dprintf(LOG_NOTICE, FNAME, "memory allocation failed");
+			dprintf(LOG_INFO, FNAME, "memory allocation failed");
 			return (-1);
 		}
 		memset(iac_pd, 0, sizeof(*iac_pd));
@@ -181,7 +181,7 @@ update_prefix(ia, pinfo, pifc, dhcpifp, ctlp, callback)
 	/* search for the given prefix, and make a new one if it fails */
 	if ((sp = find_siteprefix(&iac_pd->siteprefix_head, pinfo, 1)) == NULL) {
 		if ((sp = malloc(sizeof(*sp))) == NULL) {
-			dprintf(LOG_NOTICE, FNAME, "memory allocation failed");
+			dprintf(LOG_INFO, FNAME, "memory allocation failed");
 			return (-1);
 		}
 		memset(sp, 0, sizeof(*sp));
@@ -244,7 +244,7 @@ update_prefix(ia, pinfo, pifc, dhcpifp, ctlp, callback)
 		if (sp->timer == NULL) {
 			sp->timer = dhcp6_add_timer(siteprefix_timo, sp);
 			if (sp->timer == NULL) {
-				dprintf(LOG_NOTICE, FNAME,
+				dprintf(LOG_INFO, FNAME,
 				    "failed to add prefix timer");
 				remove_siteprefix(sp); /* XXX */
 				return (-1);
@@ -447,7 +447,7 @@ add_ifprefix(siteprefix, prefix, pconf)
 	int b, i;
 
 	if ((ifpfx = malloc(sizeof(*ifpfx))) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to allocate memory for ifprefix");
 		return (-1);
 	}

@@ -179,7 +179,7 @@ client6_script(scriptpath, state, optinfo)
 
 	/* allocate an environments array */
 	if ((envp = malloc(sizeof (char *) * envc)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to allocate environment buffer");
 		return -1;
 	}
@@ -191,7 +191,7 @@ client6_script(scriptpath, state, optinfo)
 	i = 0;
 	/* reason */
 	if ((envp[i++] = strdup(reason)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to allocate reason strings");
 		ret = -1;
 		goto clean;
@@ -199,7 +199,7 @@ client6_script(scriptpath, state, optinfo)
 	/* state */
 	elen = 6 + 7 + 1; /* "state=" + dhcp6_statestr (max 7) + NUL */
 	if ((s = envp[i++] = malloc(elen)) == NULL) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "failed to allocate state strings");
 		ret = -1;
 		goto clean;
@@ -211,7 +211,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (dnsserver_str) +
 		    (INET6_ADDRSTRLEN + 1) * dnsservers + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for DNS servers");
 			ret = -1;
 			goto clean;
@@ -231,7 +231,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (ntpserver_str) +
 		    (INET6_ADDRSTRLEN + 1) * ntpservers + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for NTP servers");
 			ret = -1;
 			goto clean;
@@ -251,7 +251,7 @@ client6_script(scriptpath, state, optinfo)
 	if (dnsnamelen) {
 		elen = sizeof (dnsname_str) + dnsnamelen + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for DNS name");
 			ret = -1;
 			goto clean;
@@ -269,7 +269,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (sipserver_str) +
 		    (INET6_ADDRSTRLEN + 1) * sipservers + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for SIP servers");
 			ret = -1;
 			goto clean;
@@ -288,7 +288,7 @@ client6_script(scriptpath, state, optinfo)
 	if (sipnamelen) {
 		elen = sizeof (sipname_str) + sipnamelen + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for SIP domain name");
 			ret = -1;
 			goto clean;
@@ -306,7 +306,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (nisserver_str) +
 		    (INET6_ADDRSTRLEN + 1) * nisservers + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for NIS servers");
 			ret = -1;
 			goto clean;
@@ -325,7 +325,7 @@ client6_script(scriptpath, state, optinfo)
 	if (nisnamelen) {
 		elen = sizeof (nisname_str) + nisnamelen + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for NIS domain name");
 			ret = -1;
 			goto clean;
@@ -343,7 +343,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (nispserver_str) +
 		    (INET6_ADDRSTRLEN + 1) * nispservers + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for NIS+ servers");
 			ret = -1;
 			goto clean;
@@ -362,7 +362,7 @@ client6_script(scriptpath, state, optinfo)
 	if (nispnamelen) {
 		elen = sizeof (nispname_str) + nispnamelen + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for NIS+ domain name");
 			ret = -1;
 			goto clean;
@@ -380,7 +380,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (bcmcsserver_str) +
 		    (INET6_ADDRSTRLEN + 1) * bcmcsservers + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for BCMC servers");
 			ret = -1;
 			goto clean;
@@ -399,7 +399,7 @@ client6_script(scriptpath, state, optinfo)
 	if (bcmcsnamelen) {
 		elen = sizeof (bcmcsname_str) + bcmcsnamelen + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for BCMC domain name");
 			ret = -1;
 			goto clean;
@@ -417,7 +417,7 @@ client6_script(scriptpath, state, optinfo)
 		elen = sizeof (vlifetime_str) +
 		    (10 + 1) * iapd_prefix + 1;
 		if ((s = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for valid lifetime");
 			ret = -1;
 			goto clean;
@@ -425,7 +425,7 @@ client6_script(scriptpath, state, optinfo)
 		memset(s, 0, elen);
 		snprintf(s, elen, "%s=", vlifetime_str);
 		if ((s2 = envp[i++] = malloc(elen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for pref. lifetime");
 			ret = -1;
 			goto clean;
@@ -436,7 +436,7 @@ client6_script(scriptpath, state, optinfo)
 		elen2 = sizeof (iapdprefix_str) + 
 		    (INET6_ADDRSTRLEN + 4 + 1) * iapd_prefix + 1;
 		if ((s3 = envp[i++] = malloc(elen2)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "failed to allocate strings for prefix and length");
 			ret = -1;
 			goto clean;

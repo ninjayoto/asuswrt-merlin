@@ -60,7 +60,7 @@ ifinit(ifname)
 	struct dhcp6_if *ifp;
 
 	if ((ifp = find_ifconfbyname(ifname)) != NULL) {
-		dprintf(LOG_NOTICE, FNAME, "duplicated interface: %s", ifname);
+		dprintf(LOG_INFO, FNAME, "duplicated interface: %s", ifname);
 		return (NULL);
 	}
 

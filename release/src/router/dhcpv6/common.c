@@ -1000,7 +1000,7 @@ get_duid(idfile, duid)
 	char tmpbuf[256];	/* HWID should be no more than 256 bytes */
 
 	if ((fp = fopen(idfile, "r")) == NULL && errno != ENOENT)
-		dprintf(LOG_NOTICE, FNAME, "failed to open DUID file: %s",
+		dprintf(LOG_INFO, FNAME, "failed to open DUID file: %s",
 		    idfile);
 
 	memset(duid, 0, sizeof(*duid));
@@ -2303,7 +2303,7 @@ dhcp6_set_options(type, optbp, optep, optinfo)
 			goto fail;
 		}
 		if ((tmpbuf = malloc(optlen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "memory allocation failed for IA_NA options");
 			goto fail;
 		}
@@ -2457,7 +2457,7 @@ dhcp6_set_options(type, optbp, optep, optinfo)
 			goto fail;
 		}
 		if ((tmpbuf = malloc(optlen)) == NULL) {
-			dprintf(LOG_NOTICE, FNAME,
+			dprintf(LOG_INFO, FNAME,
 			    "memory allocation failed for IA_PD options");
 			goto fail;
 		}
@@ -3216,7 +3216,7 @@ setloglevel(debuglevel)
 	if (foreground) {
 		switch(debuglevel) {
 		case 0:
-			debug_thresh = LOG_ERR;
+			debug_thresh = LOG_NOTICE;
 			break;
 		case 1:
 			debug_thresh = LOG_INFO;
@@ -3228,7 +3228,7 @@ setloglevel(debuglevel)
 	} else {
 		switch(debuglevel) {
 		case 0:
-			setlogmask(LOG_UPTO(LOG_ERR));
+			setlogmask(LOG_UPTO(LOG_NOTICE));
 			break;
 		case 1:
 			setlogmask(LOG_UPTO(LOG_INFO));
@@ -3271,7 +3271,7 @@ my_dprintf(int level, const char *fname, const char *fmt, ...)
 #if 0
 		syslog(level, "%s%s%s", fname, printfname ? ": " : "", logbuf);
 #else
-		syslog(level > LOG_NOTICE ? LOG_NOTICE : level, "%s%s%s", fname, printfname ? ": " : "", logbuf);
+		syslog(level > LOG_INFO ? LOG_INFO : level, "%s%s%s", fname, printfname ? ": " : "", logbuf);
 #endif
 }
 
@@ -3351,7 +3351,7 @@ ifaddrconf(cmd, ifname, addr, plen, pltime, vltime)
 	memset(&ifr, 0, sizeof(ifr));
 	strncpy(ifr.ifr_name, ifname, IFNAMSIZ - 1);
 	if (ioctl(s, SIOGIFINDEX, &ifr) < 0) {
-		dprintf(LOG_NOTICE, FNAME, "failed to get the index of %s: %s",
+		dprintf(LOG_INFO, FNAME, "failed to get the index of %s: %s",
 		    ifname, strerror(errno));
 		close(s); 
 		return (-1); 
@@ -3365,7 +3365,7 @@ ifaddrconf(cmd, ifname, addr, plen, pltime, vltime)
 #endif
 
 	if (ioctl(s, ioctl_cmd, &req)) {
-		dprintf(LOG_NOTICE, FNAME, "failed to %s an address on %s: %s",
+		dprintf(LOG_INFO, FNAME, "failed to %s an address on %s: %s",
 		    cmdstr, ifname, strerror(errno));
 		close(s);
 		return (-1);
@@ -3374,7 +3374,7 @@ ifaddrconf(cmd, ifname, addr, plen, pltime, vltime)
 #ifdef __sun__
 	memcpy(&req.lifr_addr, addr, sizeof (*addr));
 	if (ioctl(s, SIOCSLIFADDR, &req) == -1) {
-		dprintf(LOG_NOTICE, FNAME, "failed to %s new address on %s: %s",
+		dprintf(LOG_INFO, FNAME, "failed to %s new address on %s: %s",
 		    cmdstr, ifname, strerror(errno));
 		close(s);
 		return (-1);
@@ -3397,13 +3397,13 @@ safefile(path)
 
 	/* no setuid */
 	if (getuid() != geteuid()) {
-		dprintf(LOG_NOTICE, FNAME,
+		dprintf(LOG_INFO, FNAME,
 		    "setuid'ed execution not allowed");
 		return (-1);
 	}
 
 	if (lstat(path, &s) != 0) {
-		dprintf(LOG_NOTICE, FNAME, "lstat failed: %s",
+		dprintf(LOG_INFO, FNAME, "lstat failed: %s",
 		    strerror(errno));
 		return (-1);
 	}
@@ -3411,7 +3411,7 @@ safefile(path)
 	/* the file must be owned by the running uid */
 	myuid = getuid();
 	if (s.st_uid != myuid) {
-		dprintf(LOG_NOTICE, FNAME, "%s has invalid owner uid", path);
+		dprintf(LOG_INFO, FNAME, "%s has invalid owner uid", path);
 		return (-1);
 	}
 
@@ -3420,7 +3420,7 @@ safefile(path)
 	case S_IFLNK:
 		break;
 	default:
-		dprintf(LOG_NOTICE, FNAME, "%s is an invalid file type 0x%o",
+		dprintf(LOG_INFO, FNAME, "%s is an invalid file type 0x%o",
 		    path, (s.st_mode & S_IFMT));
 		return (-1);
 	}
