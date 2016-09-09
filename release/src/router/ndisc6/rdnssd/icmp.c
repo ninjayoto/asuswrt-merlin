@@ -103,6 +103,9 @@ static int icmp_recv (int fd)
 			return 0;
 		}
 
+		if (nvram_match("dh_debug", "1"))
+			mylog("Received RA_FLAG 0x%02x, LAST_FLAG 0x%02x, RA_CONF %s", icmp6.nd_ra_flags_reserved, last_flag, nvram_get("ipv6_ra_conf"));
+
 		if( (icmp6.nd_ra_flags_reserved & ND_RA_FLAG_MANAGED) && last_flag != icmp6.nd_ra_flags_reserved){
 			/*Get Address & DNS from DHCPv6*/
 			mylog("Get IPv6 address & DNS from DHCPv6");
