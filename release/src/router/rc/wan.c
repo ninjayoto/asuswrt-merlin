@@ -1991,6 +1991,7 @@ int update_resolvconf(void)
 }
 
 #ifdef RTCONFIG_IPV6
+static force_complete = 0;
 void wan6_up(const char *wan_ifname)
 {
 	char addr6[INET6_ADDRSTRLEN + 4];
@@ -2039,6 +2040,14 @@ void wan6_up(const char *wan_ifname)
 		stop_dhcp6c();
 		start_dhcp6c();
 #else
+		if (nvram_match("ipv6_dhcp6c_force", "1") && (force_complete == 0)) {
+			/*Force dhcp6c to start to poke the ISP*/
+			logmessage("wan6", "User option force address request");
+			nvram_set("ipv6_ra_conf", "noneset");
+			system("rc rc_service start_dhcp6c");
+			force_complete = 1;
+		}
+
 		start_rdnssd();
 #endif
 		break;
