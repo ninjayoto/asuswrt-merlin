@@ -824,7 +824,8 @@ client6_ifctl(ifname, command)
 		if (ifreset(ifp)) {
 			dprintf(LOG_INFO, FNAME, "failed to reset %s",
 			    ifname);
-			return (-1);
+//			return (-1);
+			continue; /* XXX: try to recover? */
 		}
 		free_resources(ifp);
 		if (client6_start(ifp)) {
