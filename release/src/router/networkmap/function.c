@@ -238,7 +238,7 @@ int Nbns_query(unsigned char *src_ip, unsigned char *dest_ip, P_CLIENT_DETAIL_IN
                 break;
 	    }
         }
-	sleep(2); //2008.09.16 Yau add
+	sleep(1); //2008.09.16 Yau add
     }
     close(sock_nbns);
     NMP_DEBUG_M("NBNS close socket\n");
@@ -1179,7 +1179,6 @@ SMBretry:
 								NMP_DEBUG_M("Called Name Error!\n");
 								smbretry_flag++;
                                                         	close(sockfd);
-                                                                sleep(2);
 								if(smbretry_flag == 5)
 								{
 									operate = 0;
@@ -1826,7 +1825,6 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 	        my_dvinfo.nativeLanMan_len = 5;
 		bzero(SMB_OS, sizeof(SMB_OS));
 	        bzero(SMB_PriDomain, sizeof(SMB_PriDomain));
-		sleep(2);
 
 		lock = file_lock("networkmap");
 		if(!SendSMBReq(dest_ip, &my_dvinfo))
