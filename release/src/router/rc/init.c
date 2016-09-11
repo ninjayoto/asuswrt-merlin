@@ -3434,6 +3434,14 @@ int init_nvram(void)
 		nvram_set("ipv6_dhcp6c_release", "1");
 	}
 
+	// Initialize new IPv6 parm
+        if(nvram_get("ipv6_slaid") == NULL)
+                nvram_set("ipv6_slaid", "0");
+
+	// Initialize DHCP vendor class
+        if(nvram_get("wan_vendorid") == NULL)
+                nvram_set("wan_vendorid", "");
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
