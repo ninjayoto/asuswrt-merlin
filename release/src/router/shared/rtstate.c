@@ -453,6 +453,12 @@ int get_dualwan_by_unit(int unit)
 {
 	int i;
 	char word[80], *next;
+	char *wans_dualwan = nvram_get("wans_dualwan");
+
+	if(wans_dualwan == NULL)	//default value
+	{
+		wans_dualwan = nvram_default_get("wans_dualwan");
+	}
 
 	i = 0;
 	foreach(word, nvram_safe_get("wans_dualwan"), next) {
