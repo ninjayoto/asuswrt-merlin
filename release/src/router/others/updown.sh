@@ -106,14 +106,18 @@ then
 		if [ $ipv6_enabled == 1 -a $vpn_allow_ipv6 != 1 ]
 		then
 			if [ $(nvram get ipv6_dns_router) == 1 ]
-			then
-				echo ip6tables -I INPUT 2 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	#dnsmasq as ipv6 dns server
-				echo ip6tables -I INPUT 2 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
-			else
-				echo ip6tables -I FORWARD 4 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	#router not ipv6 dns server
+			then #dnsmasq as ipv6 dns server
+				if [ $(nvram get vpn_client$(echo $instance)_adns) != 3 ] #allow in exclusive mode
+				then
+					echo ip6tables -I INPUT 2 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	
+					echo ip6tables -I INPUT 2 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+					logger -t "openvpn-updown" "VPN IPv6 DNS leak protection enabled (INPUT mode)"
+				fi
+			else #router not ipv6 dns server
+				echo ip6tables -I FORWARD 4 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	
 				echo ip6tables -I FORWARD 4 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+				logger -t "openvpn-updown" "VPN IPv6 DNS leak protection enabled (FORWARD mode)"
 			fi
-			logger -t "openvpn-updown" "VPN IPv6 DNS leak protection enabled"
 		fi
 	fi
 fi
@@ -135,7 +139,7 @@ then
 			/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
 			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
 			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
-			logger -t "openvpn-updown" "Removed VPN IPv6 DNS leak protection"
+#			logger -t "openvpn-updown" "Removed VPN IPv6 DNS leak protection"
 		fi
 	fi
 fi
