@@ -399,12 +399,7 @@ static inline int dualwan_unit__usbif(int unit)
 static inline int dualwan_unit__nonusbif(int unit)
 {
 	int type = get_dualwan_by_unit(unit);
-#ifdef RTCONFIG_MULTICAST_IPTV
-        return (type == WANS_DUALWAN_IF_WAN || type == WANS_DUALWAN_IF_DSL || type == WANS_DUALWAN_IF_LAN || 
-		type == WAN_UNIT_IPTV || type == WAN_UNIT_VOIP);
-#else
 	return (type == WANS_DUALWAN_IF_WAN || type == WANS_DUALWAN_IF_DSL || type == WANS_DUALWAN_IF_LAN);
-#endif
 }
 extern int get_usbif_dualwan_unit(void);
 extern int get_primaryif_dualwan_unit(void);
@@ -416,11 +411,7 @@ static inline int dualwan_unit__usbif(int unit)
 
 static inline int dualwan_unit__nonusbif(int unit)
 {
-#ifdef RTCONFIG_MULTICAST_IPTV
-	return (unit == WAN_UNIT_FIRST || unit == WAN_UNIT_IPTV || unit == WAN_UNIT_VOIP);
-#else
 	return (unit == WAN_UNIT_FIRST);
-#endif
 }
 static inline int get_usbif_dualwan_unit(void)
 {

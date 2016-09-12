@@ -886,12 +886,6 @@ void convert_routes(void)
 	char *nv, *nvp, *b;
 	char *ip, *netmask, *gateway, *metric, *interface;
 	char wroutes[4096], lroutes[4096], mroutes[4096];
-	int wan_max_unit = WAN_UNIT_MAX;
-
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6)
-		wan_max_unit = WAN_UNIT_MULTICAST_IPTV_MAX;
-#endif
 
 	/* Disable Static if it's not enable */
 	wroutes[0] = 0;
@@ -1315,14 +1309,6 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 	int unit;
 	char tmp[100], prefix[] = "wanXXXXXXXXXX_";
 	char name[PATH_MAX];
-	int wan_max_unit = WAN_UNIT_MAX;
-
-	ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
-
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6)
-		wan_max_unit = WAN_UNIT_MULTICAST_IPTV_MAX;
-#endif
 
 	for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
 		snprintf(prefix, sizeof(prefix), "wan%d_", unit);
@@ -2319,22 +2305,6 @@ TRACE_PT("writing Parental Control\n");
 			fprintf(fp, "-A INPUT -p tcp -m tcp --dport %d -j %s\n", 3838, logaccept);	// oleg patch
 		}
 
-#ifdef RTCONFIG_MULTICAST_IPTV
-		if (nvram_get_int("switch_stb_x") > 6) {
-			char *movistar_wan;
-			if (nvram_invmatch("wan0_pppoe_ifname", ""))
-				movistar_wan = nvram_safe_get("wan0_pppoe_ifname");
-			else
-				movistar_wan = nvram_safe_get("wan0_ifname");
-			if (nvram_match("switch_wantag", "movistar")) {
-				fprintf(fp, "-A INPUT -i %s -s 10.0.0.0/255.0.0.0 -j DROP\n", movistar_wan);
-				fprintf(fp, "-A INPUT -i %s -s 172.16.0.0/255.255.15.0 -j DROP\n", movistar_wan);
-				fprintf(fp, "-A INPUT -i vlan2 -s 172.16.0.0/255.255.15.0 -j ACCEPT\n");
-				fprintf(fp, "-A INPUT -i vlan3 -s 10.31.255.134/255.255.255.255 -j ACCEPT\n");
-			}
-		}
-#endif
-
 #if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD)
 		//Add for pptp server
 		if (nvram_match("pptpd_enable", "1")) {
@@ -3041,12 +3011,6 @@ filter_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	char *ip;
 #endif
 	int v4v6_ok;
-	int wan_max_unit = WAN_UNIT_MAX;
-
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6)
-		wan_max_unit = WAN_UNIT_MULTICAST_IPTV_MAX;
-#endif
 
 	if ((fp=fopen("/tmp/filter_rules", "w"))==NULL) return;
 
@@ -3225,22 +3189,6 @@ TRACE_PT("writing Parental Control\n");
 			fprintf(fp, "-A INPUT -p igmp -d 224.0.0.0/4 -j %s\n", logaccept);
 			fprintf(fp, "-A INPUT -p udp -d 224.0.0.0/4 ! --dport 1900 -j %s\n", logaccept);
 		}
-
-#ifdef RTCONFIG_MULTICAST_IPTV
-		if (nvram_get_int("switch_stb_x") > 6) {
-			char *movistar_wan;
-			if (nvram_invmatch("wan0_pppoe_ifname", ""))
-				movistar_wan = nvram_safe_get("wan0_pppoe_ifname");
-			else
-				movistar_wan = nvram_safe_get("wan0_ifname");
-			if (nvram_match("switch_wantag", "movistar")) {
-				fprintf(fp, "-A INPUT -i %s -s 10.0.0.0/255.0.0.0 -j DROP\n", movistar_wan);
-				fprintf(fp, "-A INPUT -i %s -s 172.16.0.0/255.255.15.0 -j DROP\n", movistar_wan);
-				fprintf(fp, "-A INPUT -i vlan2 -s 172.16.0.0/255.255.15.0 -j ACCEPT\n");
-				fprintf(fp, "-A INPUT -i vlan3 -s 10.31.255.134/255.255.255.255 -j ACCEPT\n");
-			}
-		}
-#endif
 
 		/* enable incoming packets from broken dhcp servers, which are sending replies
 		 * from addresses other than used for query, this could lead to lower level
@@ -4316,17 +4264,6 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	char *wan_if;
 	char *wan_ip;
 	char *wan_proto;
-	int wan_max_unit = WAN_UNIT_MAX;
-#ifdef CONFIG_BCMWL5 /* the only use so far */
-	char lan_class[32];
-
-	ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
-#endif
-
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6)
-		wan_max_unit = WAN_UNIT_MULTICAST_IPTV_MAX;
-#endif
 
 	eval("iptables", "-t", "mangle", "-F");
 #ifdef RTCONFIG_IPV6
@@ -4340,11 +4277,7 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 				continue;
 
 			wan_if = get_wan_ifname(unit);
-#ifdef RTCONFIG_MULTICAST_IPTV
-			if (nvram_get_int("switch_stb_x") > 6 &&
-			    strstr(nvram_safe_get("iptv_wan_ifnames"), wan_if) != NULL)
-				continue;
-#endif
+
 			add_iQosRules(wan_if);
 		}
 	}
@@ -4613,16 +4546,6 @@ int start_firewall(int wanunit, int lanunit)
 	    strcmp(wan_if, mcast_ifname) == 0)
 		mcast_ifname = NULL;
 
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6) {
-		if (nvram_match("switch_wantag", "maxis_fiber_sp_iptv") ||
-		    nvram_match("switch_wantag", "maxis_fiber_iptv"))
-			mcast_ifname = nvram_safe_get("iptv_wan_ifnames"); /* bug here, boyau */
-		else if (nvram_match("switch_wantag", "movistar"))
-			mcast_ifname = "vlan2"; /* and here */
-	}
-#endif
-
 	/* Block obviously spoofed IP addresses */
 	if (!(dir = opendir("/proc/sys/net/ipv4/conf")))
 		perror("/proc/sys/net/ipv4/conf");
@@ -4666,14 +4589,8 @@ int start_firewall(int wanunit, int lanunit)
 
 	/* nat setting */
 #ifdef RTCONFIG_DUALWAN // RTCONFIG_DUALWAN
-	if (nvram_match("wans_mode", "lb")
-#ifdef RTCONFIG_MULTICAST_IPTV
-	|| (nvram_get_int("switch_stb_x") > 6 &&
-	    nvram_match("switch_wantag", "movistar"))
-#endif
-	) {
+	if(nvram_match("wans_mode", "lb")){
 		nat_setting2(lan_if, lan_ip, logaccept, logdrop);
-
 
 #ifdef WEB_REDIRECT
 		redirect_setting();

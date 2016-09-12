@@ -575,27 +575,6 @@ wan_defaults(void)
 
 		++unit;
 	}
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6) {
-		unit = WAN_UNIT_IPTV;
-		foreach (word, nvram_safe_get("iptv_wan_ifnames"), next) {
-			snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-			nvram_set(strcat_r(prefix, "ifname", tmp), word);
-			if (nvram_match("switch_wantag", "singtel"))
-				nvram_set(strcat_r(prefix, "vendorid", tmp),"S_iptvsys");
-
-			for (t = router_defaults; t->name; t++) {
-				if (strncmp(t->name, "wan_", 4) != 0) continue;
-
-				if (!nvram_get(strcat_r(prefix, &t->name[4], tmp))) {
-					_dprintf("_set %s = %s\n", tmp, t->value);
-					nvram_set(tmp, t->value);
-				}
-			}
-			++unit;
-		}
-	}
-#endif
 }
 
 void
@@ -3455,23 +3434,6 @@ int init_nvram(void)
 	}
 #endif
 
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6) {
-		if(nvram_match("switch_wantag", "singtel")) {
-			nvram_set("iptv_wan_ifnames", "vlan30 vlan40");
-		} else if(nvram_match("switch_wantag", "maxis_fiber_sp_iptv")) {
-			nvram_set("iptv_wan_ifnames", "vlan15");
-			nvram_set("iptv_ifname", "vlan15");
-		} else if(nvram_match("switch_wantag", "maxis_fiber_iptv")) {
-			nvram_set("iptv_wan_ifnames", "vlan823");
-			nvram_set("iptv_ifname", "vlan823");
-		} else if(nvram_match("switch_wantag", "movistar")) {
-			nvram_set("iptv_wan_ifnames", "vlan2 vlan3");
-			nvram_set("iptv_ifname", "vlan2");
-		}
-	}
-#endif
-
 #ifdef RTCONFIG_RALINK
 	char word[256], *next;
 	char tmp[128], prefix[] = "wlXXXXXXXXXX_";
@@ -3694,10 +3656,6 @@ int init_nvram(void)
 		nvram_set("reboot_schedule", "00000000000");
 #endif
 
-#ifdef RTCONFIG_NOIPTV
-	add_rc_support("noiptv");
-#endif
-
 	return 0;
 }
 
@@ -3902,56 +3860,8 @@ fa_override_vlan2ports()
 }
 
 void
-fa_mode_adjust()
-{
-	char *wan_proto;
-	char buf[16];
-
-	snprintf(buf, 16, "%s", nvram_safe_get("wans_dualwan"));
-
-	if (nvram_get_int("sw_mode") == SW_MODE_ROUTER || nvram_get_int("sw_mode") == SW_MODE_AP) {
-		if (!nvram_match("ctf_disable_force", "1")
- 			&& !nvram_get_int("qos_enable")
-		) {
-			nvram_set_int("ctf_fa_mode", CTF_FA_NORMAL);
-		}else{
-			nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
-		}
-	}else{ /* repeater mode */
-		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
-	}
-
-	if (nvram_match("x_Setting", "0") ||
-	  (nvram_get_int("sw_mode") == SW_MODE_REPEATER)) {
-		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
-	} else if (nvram_get_int("sw_mode") == SW_MODE_ROUTER) {
-		if (!strcmp(buf, "wan none") || !strcmp(buf, "wan usb"))
-			wan_proto = nvram_safe_get("wan0_proto");
-		else // for (usb wan).
-			wan_proto = nvram_safe_get("wan1_proto");
-
-		if ((strcmp(wan_proto, "dhcp") && strcmp(wan_proto, "static")))
-		{
-			nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
-			_dprintf("wan_proto:%s not support FA mode...\n", wan_proto);
-		}
-	}
-	if(!nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
-		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
-		dbG("IPTV environment, disable FA mode\n");
-	}
-
-#ifdef RTCONFIG_PORT_BASED_VLAN
-	if (vlan_enable())
-		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
-#endif
-}
-
-void
 fa_mode_init()
 {
-	fa_mode_adjust();
-
 	fa_mode = nvram_get_int("ctf_fa_mode");
 	switch (fa_mode) {
 		case CTF_FA_BYPASS:

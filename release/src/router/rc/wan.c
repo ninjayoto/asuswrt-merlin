@@ -654,13 +654,6 @@ start_igmpproxy(char *wan_ifname)
 	wan_ifname = "br1";
 #endif
 
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6 &&
-	    nvram_match("switch_wantag", "movistar") &&
-	    !nvram_match("iptv_ifname", wan_ifname))
-		return;
-#endif
-
 	stop_igmpproxy();
 
 	if (nvram_get_int("udpxy_enable_x")) {
@@ -681,15 +674,9 @@ start_igmpproxy(char *wan_ifname)
 		return;
 	}
 
-	fprintf(fp, "# automagically generated from web settings\n");
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if ( !(nvram_get_int("switch_stb_x") > 6 &&
-		nvram_match("switch_wantag", "movistar")) )
-		fprintf(fp, "quickleave\n\n");
-#else
-		fprintf(fp, "quickleave\n\n");
-#endif
-		fprintf(fp, "phyint %s upstream  ratelimit 0  threshold 1\n"
+	fprintf(fp, "# automagically generated from web settings\n"
+		"quickleave\n\n"
+		"phyint %s upstream  ratelimit 0  threshold 1\n"
 		"\taltnet %s\n\n"
 		"phyint %s downstream  ratelimit 0  threshold 1\n\n",
 		wan_ifname,
@@ -1812,10 +1799,6 @@ stop_wan_if(int unit)
 		killall_tk("auth-fail");
 #endif
 
-#ifdef RTCONFIG_MULTICAST_IPTV
-		if (nvram_get_int("switch_stb_x") > 6 &&
-		    nvram_match("switch_wantag", "movistar") && unit == WAN_UNIT_IPTV)
-#endif
 		stop_igmpproxy();
 
 		killall("zcip", SIGTERM);
@@ -2268,17 +2251,8 @@ wan_up(char *wan_ifname)	// oleg patch, replace
 	/* Set default route to gateway if specified */
 	if (strcmp(wan_proto, "dhcp") == 0 || strcmp(wan_proto, "static") == 0) {
 		/* the gateway is in the local network */
-		if (gateway &&
-		    inet_addr_(gateway) != inet_addr_(nvram_safe_get(strcat_r(prefix, "ipaddr", tmp)))) {
-#ifdef RTCONFIG_MULTICAST_IPTV
-			/* Rawny: delete gateway route in IPTV(movistar) case to enable QUAGGA */
-			if (nvram_get_int("switch_stb_x") > 6 &&
-			    !nvram_match("switch_wantag", "movistar"))
-#endif
+		if (gateway)
 			route_add(wan_ifname, 0, gateway, NULL, "255.255.255.255");
-		}
-		/* replaced with add_multi_routes()
-		route_add(wan_ifname, 0, "0.0.0.0", gateway, "0.0.0.0"); */
 	}
 
 	/* default route via default gateway */
@@ -2316,15 +2290,6 @@ wan_up(char *wan_ifname)	// oleg patch, replace
 		     (get_ipv6_service() != IPV6_NATIVE_DHCP))) {
 			wan6_up(get_wan6face());
 		}
-	}
-#endif
-
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6 &&
-	    nvram_match("iptv_ifname", wan_ifname)) {
-		if (nvram_match("switch_wantag", "maxis_fiber_iptv"))
-			route_add(wan_ifname, 0, "172.17.90.1", NULL, "255.255.255.255");
-		start_igmpproxy(wan_ifname);
 	}
 #endif
 
@@ -2423,17 +2388,6 @@ wan_down(char *wan_ifname)
 
 	/* Remove default route to gateway if specified */
 	if (wan_unit == wan_primary_ifunit()) {
-		/* Stop multicast router when not VPN */
-		if (strcmp(wan_proto, "dhcp") == 0 ||
-		    strcmp(wan_proto, "static") == 0) {
-#ifdef RTCONFIG_MULTICAST_IPTV
-			if (nvram_get_int("switch_stb_x") > 6 &&
-			    !nvram_match("switch_wantag", "movistar"))
-#endif
-			stop_igmpproxy();
-		}
-
-		/* Remove default route to gateway if specified */
 		gateway = nvram_safe_get(strcat_r(prefix, "gateway", tmp));
 		if (inet_addr_(gateway) == INADDR_ANY)
 			gateway = NULL;
@@ -2476,17 +2430,6 @@ wan_ifunit(char *wan_ifname)
 			     nvram_match(strcat_r(prefix, "proto", tmp), "static")))
 				return unit;
 		}
-#ifdef RTCONFIG_MULTICAST_IPTV
-		if (nvram_get_int("switch_stb_x") > 6) {
-			for (unit = WAN_UNIT_IPTV; unit < WAN_UNIT_MULTICAST_IPTV_MAX; unit++) {
-				snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-				if (nvram_match(strcat_r(prefix, "ifname", tmp), wan_ifname) &&
-				    (nvram_match(strcat_r(prefix, "proto", tmp), "dhcp") ||
-				     nvram_match(strcat_r(prefix, "proto", tmp), "static")))
-					return unit;
-			}
-		}
-#endif
 	}
 
 	return -1;
@@ -2507,18 +2450,6 @@ wanx_ifunit(char *wan_ifname)
 		     nvram_match(strcat_r(prefix, "proto", tmp), "l2tp")))
 			return unit;
 	}
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6) {
-		for (unit = WAN_UNIT_IPTV; unit < WAN_UNIT_MULTICAST_IPTV_MAX; unit++) {
-			snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-			if (nvram_match(strcat_r(prefix, "ifname", tmp), wan_ifname) &&
-			    (nvram_match(strcat_r(prefix, "proto", tmp), "pppoe") ||
-			     nvram_match(strcat_r(prefix, "proto", tmp), "pptp") ||
-			     nvram_match(strcat_r(prefix, "proto", tmp), "l2tp")))
-				return unit;
-		}
-	}
-#endif
 	return -1;
 }
 
@@ -2762,15 +2693,6 @@ start_wan(void)
 		_dprintf("%s: start_wan_if(%d)!\n", __FUNCTION__, unit);
 		start_wan_if(unit);
 	}
-#ifdef RTCONFIG_MULTICAST_IPTV
-	/* Start each configured and enabled wan connection and its undelying i/f */
-	if (nvram_get_int("switch_stb_x") > 6) {
-		for (unit = WAN_UNIT_IPTV; unit < WAN_UNIT_MULTICAST_IPTV_MAX; ++unit) {
-			_dprintf("%s: start_wan_if(%d)!\n", __FUNCTION__, unit);
-			start_wan_if(unit);
-		}
-	}
-#endif
 #else
 	start_wan_if(WAN_UNIT_FIRST);
 
@@ -2861,16 +2783,6 @@ void convert_wan_nvram(char *prefix, int unit)
 	else nvram_set(strcat_r(prefix, "hwaddr", tmp), nvram_safe_get("et1macaddr"));
 #endif
 
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if (nvram_get_int("switch_stb_x") > 6 &&
-	    unit > 9) {
-		unsigned char ea[6];
-		ether_atoe(nvram_safe_get("et0macaddr"), ea);
-		ea[5] = (ea[5] & 0xf0) | ((ea[5] + unit - 9) & 0x0f);
-		ether_etoa(ea, macbuf);
-		nvram_set(strcat_r(prefix, "hwaddr", tmp), macbuf);
-	}
-#endif
 	// sync proto
 	if (nvram_match(strcat_r(prefix, "proto", tmp), "static"))
 		nvram_set_int(strcat_r(prefix, "dhcpenable_x", tmp), 0);

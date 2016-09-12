@@ -1395,24 +1395,6 @@ int validate_instance(webs_t wp, char *name)
 				found = NVRAM_MODIFIED_BIT;
 			}
 		}
-#ifdef RTCONFIG_MULTICAST_IPTV
-	if(nvram_match("switch_wantag", "movistar")){
-		sprintf(prefix, "wan10_");//IPTV
-		value = get_cgi_json(strcat_r(prefix, name+4, tmp), root);
-		if(value && strcmp(nvram_safe_get(tmp), value)) {
-			//dbG("nvram set %s = %s\n", tmp, value);
-			nvram_set(tmp, value);
-			found = NVRAM_MODIFIED_BIT;
-		}
-		sprintf(prefix, "wan11_");//VoIP
-		value = get_cgi_json(strcat_r(prefix, name+4, tmp), root);
-		if(value && strcmp(nvram_safe_get(tmp), value)) {
-			//dbG("nvram set %s = %s\n", tmp, value);
-			nvram_set(tmp, value);
-			found = NVRAM_MODIFIED_BIT;
-		}
-	}
-#endif
 	}
 #ifdef RTCONFIG_DSL
 	else if(strncmp(name, "dsl", 3)==0) {

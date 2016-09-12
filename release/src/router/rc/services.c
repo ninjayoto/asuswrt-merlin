@@ -752,15 +752,6 @@ void start_dnsmasq(int force)
 		/* Faster for moving clients, if authoritative */
 		if (nvram_get_int("dhcpd_auth") >= 0)
 			fprintf(fp, "dhcp-authoritative\n");
-#ifdef RTCONFIG_MULTICAST_IPTV
-		/* Rawny: Add vendor class ID and DNS info for Movistar IPTV */
-		if (nvram_get_int("switch_stb_x") > 6 &&
-		    nvram_match("switch_wantag", "movistar")) {
-			fprintf(fp, "dhcp-vendorclass=ial,IAL\n");
-			fprintf(fp, "dhcp-option=ial,6,172.26.23.3\n");
-			fprintf(fp, "dhcp-option=ial,240,:::::239.0.2.10:22222:v6.0:239.0.2.30:22222\n");
-		}
-#endif
 
 		/* Shut up WPAD info requests */
 		fprintf(fp,"dhcp-option=252,\"\\n\"\n");

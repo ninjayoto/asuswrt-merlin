@@ -657,11 +657,3 @@ config RTCONFIG_BWDPI
 config RTCONFIG_REBOOT_SCHEDULE
 	bool "Reboot_schedule"
 	default n
-
-config RTCONFIG_MULTICAST_IPTV
-	bool "Multicsat IPTV"
-	default n
-
-config RTCONFIG_NOIPTV
-        bool "No IPTV support"
-        default n
