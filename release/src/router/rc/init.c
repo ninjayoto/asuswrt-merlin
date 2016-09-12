@@ -3860,8 +3860,57 @@ fa_override_vlan2ports()
 }
 
 void
+fa_mode_adjust()
+{
+	char *wan_proto;
+	char buf[16];
+
+	snprintf(buf, 16, "%s", nvram_safe_get("wans_dualwan"));
+
+	if (nvram_get_int("sw_mode") == SW_MODE_ROUTER || nvram_get_int("sw_mode") == SW_MODE_AP) {
+		if (!nvram_match("ctf_disable_force", "1")
+			&& nvram_get_int("ctf_fa_cap")
+ 			&& !nvram_get_int("qos_enable")
+		) {
+			nvram_set_int("ctf_fa_mode", CTF_FA_NORMAL);
+		}else{
+			nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
+		}
+	}else{ /* repeater mode */
+		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
+	}
+
+	if (nvram_match("x_Setting", "0") ||
+	  (nvram_get_int("sw_mode") == SW_MODE_REPEATER)) {
+		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
+	} else if (nvram_get_int("sw_mode") == SW_MODE_ROUTER) {
+		if (!strcmp(buf, "wan none") || !strcmp(buf, "wan usb"))
+			wan_proto = nvram_safe_get("wan0_proto");
+		else // for (usb wan).
+			wan_proto = nvram_safe_get("wan1_proto");
+
+		if ((strcmp(wan_proto, "dhcp") && strcmp(wan_proto, "static")))
+		{
+			nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
+			_dprintf("wan_proto:%s not support FA mode...\n", wan_proto);
+		}
+	}
+	if(!nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
+		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
+		dbG("IPTV environment, disable FA mode\n");
+	}
+
+#ifdef RTCONFIG_PORT_BASED_VLAN
+	if (vlan_enable())
+		nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
+#endif
+}
+
+void
 fa_mode_init()
 {
+	fa_mode_adjust();
+
 	fa_mode = nvram_get_int("ctf_fa_mode");
 	switch (fa_mode) {
 		case CTF_FA_BYPASS:
@@ -3923,35 +3972,19 @@ fa_nvram_adjust()	/* before insmod et */
 void
 chk_etfa()	/* after insmod et */
 {
-	if(FA_ON(fa_mode)){
-		if(
-#ifdef RTCONFIG_QTN
-			!nvram_get_int("PA") ||
-#endif
-#ifdef RTCONFIG_RGMII_BCM_FA
-			(get_fa_rev()<0) ||
-#else
-			(get_fa_rev()<3) ||
-#endif
-			nvram_match("ctf_disable", "1") || nvram_match("ctf_disable_force", "1")){ // in case UI chaos
+	if (FA_ON(fa_mode)) {
+		if (
+			!nvram_get_int("ctf_fa_cap") ||
+			nvram_match("ctf_disable", "1") || nvram_match("ctf_disable_force", "1")) { // in case UI chaos
 			_dprintf("\nChip Not Support FA Mode or ctf disabled!\n");
 
 			nvram_unset("ctf_fa_mode");
-			fa_mode = CTF_FA_DISABLED;
 			nvram_commit();
 			reboot(RB_AUTOBOOT);
 			return;
 		}
 	} else {
-		if(
-#ifdef RTCONFIG_QTN
-			!nvram_get_int("PA") ||
-#endif
-#ifdef RTCONFIG_RGMII_BCM_FA
-			(get_fa_rev()<0))
-#else
-			(get_fa_rev()<3))
-#endif
+		if (!nvram_get_int("ctf_fa_cap"))
 			nvram_unset("ctf_fa_mode");
 	}
 }

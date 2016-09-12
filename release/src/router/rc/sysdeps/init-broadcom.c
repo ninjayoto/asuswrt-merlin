@@ -1112,6 +1112,34 @@ void init_switch()
 	}
 #ifdef RTCONFIG_BCMFA
 	fa_nvram_adjust();
+
+	if (!nvram_get("ctf_fa_cap")) {
+		char ctf_fa_mode_bak[2];
+		int nvram_ctf_fa_mode = 0;
+
+		if (nvram_get("ctf_fa_mode"))
+		{
+			nvram_ctf_fa_mode = 1;
+			strcpy(ctf_fa_mode_bak, nvram_safe_get("ctf_fa_mode"));
+		}
+
+		nvram_set_int("ctf_fa_mode", 2);
+		modprobe("et");
+		FILE *fp;
+		if ((fp = fopen("/proc/fa", "r"))) {
+			/* FA is capable */
+			fclose(fp);
+			nvram_set_int("ctf_fa_cap", 1);
+		} else nvram_set_int("ctf_fa_cap", 0);
+
+		if (nvram_ctf_fa_mode)
+			nvram_set("ctf_fa_mode", ctf_fa_mode_bak);
+		else
+			nvram_unset("ctf_fa_mode");
+		nvram_commit();
+
+		modprobe_r("et");
+	}
 #endif
 	// ctf must be loaded prior to any other modules
 	if (nvram_get_int("ctf_disable") == 0)
