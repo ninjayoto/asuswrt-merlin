@@ -29,6 +29,8 @@ var original_switch_wan1tagid = '<%nvram_get("switch_wan1tagid"); %>';
 var original_switch_wan1prio  = '<%nvram_get("switch_wan1prio"); %>';
 var original_switch_wan2tagid = '<%nvram_get("switch_wan2tagid"); %>';
 var original_switch_wan2prio  = '<%nvram_get("switch_wan2prio"); %>';
+var original_emf_enable = '<% nvram_get("emf_enable"); %>';
+var original_mr_enable = '<% nvram_get("mr_enable_x"); %>';
 
 var wans_lanport = '<% nvram_get("wans_lanport"); %>';
 var wans_dualwan_orig = '<% nvram_get("wans_dualwan"); %>';
@@ -42,7 +44,9 @@ function initial(){
 	if(!dsl_support) {
 		ISP_Profile_Selection(original_switch_wantag);
 	}
-	document.form.switch_stb_x.value = original_switch_stb_x;	
+	document.form.switch_stb_x.value = original_switch_stb_x;
+	document.form.emf_enable.value = original_emf_enable;
+	document.form.mr_enable_x.value = original_mr_enable;	
 
 	disable_udpxy();
 	
@@ -124,6 +128,43 @@ function load_ISP_profile() {
                 document.form.switch_wan2tagid.value = "821,822";
                 document.form.switch_wan2prio.value = "0";
         }
+        else if(document.form.switch_wantag.value == "meo") {
+                document.form.switch_stb_x.value = "4";
+                document.form.switch_wan0tagid.value = "12";
+                document.form.switch_wan0prio.value = "0";
+                document.form.switch_wan1tagid.value = "12";
+                document.form.switch_wan1prio.value = "0";
+                document.form.switch_wan2tagid.value = "";
+                document.form.switch_wan2prio.value = "0";
+        }
+        else if(document.form.switch_wantag.value == "vodafone") {
+                document.form.switch_stb_x.value = "3";
+                document.form.switch_wan0tagid.value = "100";
+                document.form.switch_wan0prio.value = "1";
+                document.form.switch_wan1tagid.value = "";
+                document.form.switch_wan1prio.value = "0";
+                document.form.switch_wan2tagid.value = "105";
+                document.form.switch_wan2prio.value = "1";
+        }
+        else if(document.form.switch_wantag.value == "hinet") {
+                document.form.switch_stb_x.value = "4";
+                document.form.switch_wan0tagid.value = "";
+                document.form.switch_wan0prio.value = "0";
+                document.form.switch_wan1tagid.value = "";
+                document.form.switch_wan1prio.value = "0";
+                document.form.switch_wan2tagid.value = "";
+                document.form.switch_wan2prio.value = "0";
+        }
+
+	if(document.form.switch_wantag.value == "meo" ||
+	   document.form.switch_wantag.value == "vodafone"
+	) {
+		document.form.mr_enable_x.value = "1";
+		document.form.emf_enable.value = "1";
+	}
+
+	if(document.form.switch_wantag.value == "meo")
+		document.form.ttl_inc_enable.value = "1";
 }
 
 function ISP_Profile_Selection(isp){
@@ -134,6 +175,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "none";
 		document.form.switch_wantag.value = "none";
 		document.form.switch_stb_x.value = "0";
 	}
@@ -144,6 +186,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
 		document.form.switch_wantag.value = "unifi_home";
 		document.form.switch_stb_x.value = "4";
 	}
@@ -154,6 +197,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
 		document.form.switch_wantag.value = "unifi_biz";
 		document.form.switch_stb_x.value = "0";
 	}
@@ -163,7 +207,8 @@ function ISP_Profile_Selection(isp){
 		$("wan_voip_x").style.display = "";
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";	
+		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";	
 		document.form.switch_wantag.value = "singtel_mio";
 		document.form.switch_stb_x.value = "6";
 	}
@@ -174,6 +219,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
 		document.form.switch_wantag.value = "singtel_others";
 		document.form.switch_stb_x.value = "4";
 	}
@@ -184,6 +230,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
 		document.form.switch_wantag.value = "m1_fiber";
                 document.form.switch_stb_x.value = "3";
 	}
@@ -194,6 +241,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
                 document.form.switch_wantag.value = "maxis_fiber_sp";
                 document.form.switch_stb_x.value = "3";
         }
@@ -204,8 +252,42 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
                 document.form.switch_wantag.value = "maxis_fiber";
                 document.form.switch_stb_x.value = "3";
+        }
+        else if(isp == "meo") {
+		$("wan_stb_x").style.display = "";
+		$("wan_iptv_x").style.display = "";
+		$("wan_voip_x").style.display = "";
+		$("wan_internet_x").style.display = "";
+		$("wan_iptv_port4_x").style.display = "";
+		$("wan_voip_port3_x").style.display = "";
+		$("mr_enable_x").style.display = "";	
+		document.form.switch_wantag.value = "meo";
+		document.form.switch_stb_x.value = "4";
+        }
+        else if(isp == "vodafone") {
+                $("wan_stb_x").style.display = "none";
+		$("wan_iptv_x").style.display = "";
+		$("wan_voip_x").style.display = "";
+		$("wan_internet_x").style.display = "none";
+		$("wan_iptv_port4_x").style.display = "none";
+		$("wan_voip_port3_x").style.display = "none";
+		$("mr_enable_x").style.display = "";	
+		document.form.switch_wantag.value = "vodafone";
+		document.form.switch_stb_x.value = "3";
+        }
+        else if(isp == "hinet") {
+		$("wan_stb_x").style.display = "";
+		$("wan_iptv_x").style.display = "";
+		$("wan_voip_x").style.display = "";
+		$("wan_internet_x").style.display = "";
+		$("wan_iptv_port4_x").style.display = "";
+		$("wan_voip_port3_x").style.display = "";
+		$("mr_enable_x").style.display = "";	
+		document.form.switch_wantag.value = "hinet";
+		document.form.switch_stb_x.value = "4";
         }
 	else if(isp == "manual"){
 		$("wan_stb_x").style.display = "none";
@@ -214,15 +296,37 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "";
 		$("wan_iptv_port4_x").style.display = "";
 		$("wan_voip_port3_x").style.display = "";
+		$("mr_enable_x").style.display = "";
 		document.form.switch_wantag.value = "manual";
 		document.form.switch_stb_x.value = "6";
 	}
+
+	if(isp == "vodafone" || isp == "meo")
+		$("iptv_title").innerHTML = "Bridge Port";
+	else
+		$("iptv_title").innerHTML = "IPTV STB Port";
+
+	if(isp == "vodafone")
+		$("voip_title").innerHTML = "IPTV STB Port";
+	else
+		$("voip_title").innerHTML = "VoIP Port";
+
+	load_ISP_profile();
 }
 
 function validForm(){
 	if (!dsl_support) {
         if(document.form.switch_wantag.value == "manual")
         {
+		if(document.form.switch_wan1tagid.value == "" && document.form.switch_wan2tagid.value == "")
+				document.form.switch_stb_x.value = "0";
+			else if(document.form.switch_wan1tagid.value == "" && document.form.switch_wan2tagid.value != "")
+				document.form.switch_stb_x.value = "3";
+			else if(document.form.switch_wan1tagid.value != "" && document.form.switch_wan2tagid.value == "")
+				document.form.switch_stb_x.value = "4";
+			else
+				document.form.switch_stb_x.value = "6";
+
                 if(document.form.switch_wan0tagid.value.length > 0)
                 {
                         if(!validate_range_null(document.form.switch_wan0tagid, 2, 4094, ""))
@@ -296,14 +400,11 @@ function applyRule(){
 					document.form.udpxy_enable_x.focus();
 					document.form.udpxy_enable_x.select();
 					return false;
-			}else{ 
-				showLoading();
-				document.form.submit();
 			}
-		}else{
-			showLoading();
-			document.form.submit();		
-		}	
+		}
+
+		showLoading();
+		document.form.submit();		
 	}
 }
 
@@ -379,6 +480,7 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 <input type="hidden" name="action_wait" value="10">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
+<input type="hidden" name="ttl_inc_enable" value='<% nvram_get("ttl_inc_enable"); %>'>
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -430,6 +532,9 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 						<option value="m1_fiber" <% nvram_match("switch_wantag", "m1_fiber", "selected"); %>>M1-Fiber</option>
 						<option value="maxis_fiber" <% nvram_match("switch_wantag", "maxis_fiber", "selected"); %>>Maxis-Fiber</option>
 						<option value="maxis_fiber_sp" <% nvram_match("switch_wantag", "maxis_fiber_sp", "selected"); %>>Maxis-Fiber-Special</option>
+						<option id="meoOption" value="meo" <% nvram_match("switch_wantag", "meo", "selected"); %>>Meo</option>
+						<option id="vodafoneOption" value="vodafone" <% nvram_match("switch_wantag", "vodafone", "selected"); %>>Vodafone</option>
+						<option value="hinet" <% nvram_match("switch_wantag", "hinet", "selected"); %>>Hinet MOD</option>
 						<option value="manual" <% nvram_match( "switch_wantag", "manual", "selected"); %>>Manual</option>
 		    </select>
   		</td>
@@ -445,15 +550,17 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 			<option value="4" <% nvram_match( "switch_stb_x", "4", "selected"); %>>LAN4</option>
 			<option value="5" <% nvram_match( "switch_stb_x", "5", "selected"); %>>LAN1 & LAN2</option>
 			<option value="6" <% nvram_match( "switch_stb_x", "6", "selected"); %>>LAN3 & LAN4</option>
+			<option value="7" style="visibility:hidden"></option>
+			<option value="8" style="visibility:hidden"></option>
 		    </select>
 		</td>
 		</tr>
 		<tr id="wan_iptv_x">
-	  	<th width="30%">IPTV STB Port</th>
+		<th id="iptv_title" width="30%">IPTV STB Port</th>
 	  	<td>LAN4</td>
 		</tr>
 		<tr id="wan_voip_x">
-	  	<th width="30%">VoIP Port</th>
+		<th id="voip_title" width="30%">VoIP Port</th>
 	  	<td>LAN3</td>
 		</tr>
 		<tr id="wan_internet_x">
@@ -535,7 +642,7 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 					<input type="radio" value="0" name="mr_enable_x" class="input" onClick="disable_udpxy();" <% nvram_match("mr_enable_x", "0", "checked"); %>><#checkbox_No#>
 				</td>
 			</tr-->	
-			<tr>
+			<tr id="mr_enable_x">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,11);"><#RouterConfig_GWMulticastEnable_itemname#> (IGMP Proxy)</a></th>
 				<td>
           <select name="mr_enable_x" class="input_option">
