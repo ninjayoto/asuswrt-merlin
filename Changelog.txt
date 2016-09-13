@@ -4,9 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-19E3j9527  (8-September-2016)
+* FIXED: Revert support for added IPTV profiles (causing update issues)
+* FIXED: defaults: set correct factory default for new dhcp6c release
+* FIXED: webui: updated link to latest firmware
+
+
 374.43_2-19E2j9527  (8-September-2016)
 * CHANGED: iptv: disable multicast since not currently used
 * CHANGED: init: explicity initialize some new nvram vars if no factory reset
+
 
 374.43_2-19E1j9527  (8-September-2016)
 - CHANGED: aicloud: (backport) update APP-IPK library
