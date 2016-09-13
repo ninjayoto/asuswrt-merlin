@@ -3469,6 +3469,10 @@ cprintf("disk_monitor: decide if scan the target...\n");
 			diskmon_alarm_sec = 0;
 			port_num = 0;
 			foreach(word, nvram_safe_get("ehci_ports"), next){
+				memset(nvram_name, 0, 32);
+				sprintf(nvram_name, "usb_path%d_diskmon_freq", (port_num+1));
+
+				diskmon_freq = nvram_get_int(nvram_name);
 				if((diskmon_enable & (1<<port_num)) == 0){
 					++port_num;
 					continue;
