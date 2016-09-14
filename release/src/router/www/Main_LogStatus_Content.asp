@@ -14,11 +14,13 @@
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
-<!--script language="JavaScript" type="text/javascript" src="/jquery.js"></script-->
+<script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
 <script>
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
+
+var $j = jQuery.noConflict();
 
 function showclock(){
 	JS_timeObj.setTime(systime_millsec);
@@ -39,19 +41,87 @@ function showclock(){
     //$("banner3").style.height = "13";
 }
 
-function showbootTime(){
-	Days = Math.floor(boottime / (60*60*24));	
-	Hours = Math.floor((boottime / 3600) % 24);
-	Minutes = Math.floor(boottime % 3600 / 60);
-	Seconds = Math.floor(boottime % 60);
+function update_upTime(){
+	$j.ajax({
+		url: '/ajax_uptime.asp',
+		dataType: 'script',
+		error: function(xhr){
+			update_wanTime();
+		},
+		success: function(response){
+			timenow = systime_millsec / 1000;
+			uptime = parseInt(uptimeStr.substring(32,42));
+			if (wanstart > 0) {
+				wantime = timenow - parseInt(wanstart);  //calc wan time
+				wantotal = parseInt(wanuptime) + wantime - parseInt(wanbootdelay);
+				document.getElementById('wan_total').style.display = "";
+				if (wantime != wantotal) {
+					document.getElementById('wan_current').style.display = "";
+					document.getElementById('wantotal_th').innerHTML = "WAN " + "<#General_x_SystemUpTime_itemname#>" + " (Total)";
+				}
+				else {
+					document.getElementById('wan_current').style.display = "none";
+					document.getElementById('wantotal_th').innerHTML = "WAN " + "<#General_x_SystemUpTime_itemname#>" + " (Total / Current)";
+				}
+				document.getElementById('wan_status').style.display = "none";
+			}
+			else if (wanstart == 0) {
+				wantime = uptime - parseInt(wanbootdelay);  //wan up during boot, time not yet set
+				wantotal = wantime;
+				document.getElementById('wan_total').style.display = "";
+				document.getElementById('wan_current').style.display = "none";
+				document.getElementById('wantotal_th').innerHTML = "WAN " + "<#General_x_SystemUpTime_itemname#>" + " (Total / Current)";
+				document.getElementById('wan_status').style.display = "none";
+			}
+			else {
+				wantime = 0; //wan is down
+				wantotal = parseInt(wanuptime) - parseInt(wanbootdelay);
+				document.getElementById('wan_total').style.display = "";
+				document.getElementById('wan_current').style.display = "";
+				document.getElementById('wantotal_th').innerHTML = "WAN " + "<#General_x_SystemUpTime_itemname#>" + " (Total)";
+				document.getElementById('wan_status').style.display = "";
+			}
+
+			//System
+			Days = Math.floor(uptime / (60*60*24));	
+			Hours = Math.floor((uptime / 3600) % 24);
+			Minutes = Math.floor(uptime % 3600 / 60);
+			Seconds = Math.floor(uptime % 60);
 	
-	$("boot_days").innerHTML = Days;
-	$("boot_hours").innerHTML = Hours;
-	$("boot_minutes").innerHTML = Minutes;
-	$("boot_seconds").innerHTML = Seconds;
-	boottime += 1;
-	setTimeout("showbootTime()", 1000);
+			$("boot_days").innerHTML = Days;
+			$("boot_hours").innerHTML = Hours;
+			$("boot_minutes").innerHTML = Minutes;
+			$("boot_seconds").innerHTML = Seconds;
+
+			//Current 
+			Days = Math.floor(wantime / (60*60*24));
+			Hours = Math.floor((wantime / 3600) % 24);
+			Minutes = Math.floor(wantime % 3600 / 60);
+			Seconds = Math.floor(wantime % 60);
+
+			$("wan_days").innerHTML = Days;
+			$("wan_hours").innerHTML = Hours;
+			$("wan_minutes").innerHTML = Minutes;
+			$("wan_seconds").innerHTML = Seconds;
+			
+			//Total
+			Days = Math.floor(wantotal / (60*60*24));
+			Hours = Math.floor((wantotal / 3600) % 24);
+			Minutes = Math.floor(wantotal % 3600 / 60);
+			Seconds = Math.floor(wantotal % 60);
+
+			if (Days >=0 && Hours >=0 && Minutes >=0 && Seconds >= 0) {  //block transients during up/down
+				$("wan_tdays").innerHTML = Days;
+				$("wan_thours").innerHTML = Hours;
+				$("wan_tminutes").innerHTML = Minutes;
+				$("wan_tseconds").innerHTML = Seconds;
+			}
+			
+			setTimeout("update_upTime();", 1000);
+		}
+	});
 }
+
 function clearLog(){
 	document.form1.target = "hidden_frame";
 	document.form1.action_mode.value = " Clear ";
@@ -70,8 +140,8 @@ function showDST(){
 function initial(){
 	show_menu();
 	showclock();
-	showbootTime();
 	showDST();
+	update_upTime();
 	var retArea = document.getElementById('textarea');
 	retArea.scrollTop = retArea.scrollHeight - retArea.clientHeight; //make Scroll_y bottom - IE fix 
 }
@@ -124,8 +194,16 @@ function initial(){
 											</td>										
 										</tr>
 										<tr>
-											<th><!--a class="hintstyle" href="javascript:void(0);" onClick="openHint(12, 1);"--><#General_x_SystemUpTime_itemname#></a></th>
+											<th id="uptime_th"><!--a class="hintstyle" href="javascript:void(0);" onClick="openHint(12, 1);"--><#General_x_SystemUpTime_itemname#></a></th>
 											<td><span id="boot_days"></span> <#Day#> <span id="boot_hours"></span> <#Hour#> <span id="boot_minutes"></span> <#Minute#> <span id="boot_seconds"></span> <#Second#></td>
+										</tr>
+										<tr id="wan_total" style="display:none">
+											<th id="wantotal_th">WAN <#General_x_SystemUpTime_itemname#> (Total)</th>
+											<td><span id="wan_tdays"></span> <#Day#> <span id="wan_thours"></span> <#Hour#> <span id="wan_tminutes"></span> <#Minute#> <span id="wan_tseconds"></span> <#Second#></td>
+										</tr>
+										<tr id="wan_current" style="display:none;">
+											<th>WAN <#General_x_SystemUpTime_itemname#> (Current)</th>
+											<td><span id="wan_days"></span> <#Day#> <span id="wan_hours"></span> <#Hour#> <span id="wan_minutes"></span> <#Minute#> <span id="wan_seconds"></span> <#Second#><span id="wan_status" style="display:none;margin-left:20px;">WAN is down</span></td>
 										</tr>
 									</table>
 									<div style="margin-top:8px">

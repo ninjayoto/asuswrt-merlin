@@ -1002,6 +1002,11 @@ restore_defaults(void)
 	/* reset qos err status */
 	nvram_set("qos_addr_err", "4");
 
+	/* reset wan start time */
+	nvram_set("wan_t0", "-1");
+	nvram_set("wan_uptime", "0");
+	nvram_set("wan_bootdly", "0");
+
 #ifdef RTCONFIG_QTN
 	nvram_unset("qtn_ready");
 #endif

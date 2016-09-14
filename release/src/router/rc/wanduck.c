@@ -15,6 +15,10 @@
  * MA 02111-1307 USA
  */
 #include <rtconfig.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/sysinfo.h>
 #ifdef RTCONFIG_USB_MODEM
 #include <usb_info.h>
 #endif
@@ -1186,10 +1190,15 @@ void record_wan_state_nvram(int wan_unit, int state, int sbstate, int auxstate){
 }
 
 void record_conn_status(int wan_unit){
+	struct sysinfo s_info;
 	char prefix_wan[8], nvram_name[16], wan_proto[16];
 	char log_title[32];
+	char buf[32];
+	int conn_wanup;
+	long int timenow, wan_t0, wan_uptime, wan_bootdelay;
 
 	memset(log_title, 0, 32);
+	memset(buf, 0, 32);
 #ifdef RTCONFIG_DUALWAN
 	if(!strcmp(dualwan_mode, "lb") || !strcmp(dualwan_mode, "fb"))
 		sprintf(log_title, "WAN(%d) Connection", wan_unit);
@@ -1203,6 +1212,7 @@ void record_conn_status(int wan_unit){
 	memset(wan_proto, 0, 16);
 	strcpy(wan_proto, nvram_safe_get(strcat_r(prefix_wan, "proto", nvram_name)));
 
+	conn_wanup = 0;
 	if(conn_changed_state[wan_unit] == DISCONN || conn_changed_state[wan_unit] == C2D){
 #ifdef RTCONFIG_WIRELESSREPEATER
 		if(disconn_case[wan_unit] == CASE_AP_DISCONN){
@@ -1268,16 +1278,55 @@ void record_conn_status(int wan_unit){
 
 			logmessage(log_title, "WAN was exceptionally disconnected.");
 		}
+		//mark wan as down
+		timenow = (long int) (time(0));
+		wan_uptime = atol(nvram_get("wan_uptime"));
+		wan_t0 = atol(nvram_get("wan_t0"));
+		sysinfo(&s_info);
+		if(wan_t0 > 0){
+			wan_uptime = wan_uptime + (timenow - wan_t0);
+		}
+		else if(wan_t0 == 0){
+			wan_uptime = wan_uptime + s_info.uptime;
+		}
+		//logmessage(log_title, "timenow=%ld system_uptime=%ld wan_t0=%ld wan_uptime=%ld", timenow, s_info.uptime, wan_t0, wan_uptime);
+		sprintf(buf, "wan_uptime=%ld", wan_uptime);
+		eval("nvram", "set", buf);
+		sprintf(buf, "wan_t0=%ld", -1);
+		eval("nvram", "set", buf);
+		return;
 	}
 	else if(conn_changed_state[wan_unit] == D2C){
 		if(disconn_case_old[wan_unit] == 10)
 			return;
 		disconn_case_old[wan_unit] = 10;
+		conn_wanup = 1;
 
 		logmessage(log_title, "WAN was restored.");
 	}
 	else if(conn_changed_state[wan_unit] == PHY_RECONN){
+		if(disconn_case_old[wan_unit] == PHY_RECONN)
+			return;
+		disconn_case_old[wan_unit] = PHY_RECONN;
+		//conn_wanup = 1;
+
 		logmessage(log_title, "Ethernet link up.");
+	}
+
+	// save new wan start time
+	if(conn_wanup) {
+		timenow = (long int) (time(0));
+		wan_bootdelay = atol(nvram_get("wan_bootdly"));
+		sysinfo(&s_info);
+		if(nvram_match("ntp_sync", "1"))
+			sprintf(buf, "wan_t0=%ld", timenow);
+		else {
+			sprintf(buf, "wan_bootdly=%ld", wan_bootdelay + s_info.uptime);
+			eval("nvram", "set", buf);
+			sprintf(buf, "wan_t0=%ld", 0);
+		}
+		eval("nvram", "set", buf);
+		
 	}
 }
 
