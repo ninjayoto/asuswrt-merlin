@@ -214,12 +214,14 @@ int ntp_main(int argc, char *argv[])
 		}
 		else
 		{ //make sure dnsmasq is up before starting update
-			for ( i = 1; i < 4; i++ ) {
-				if (!pids("dnsmasq")) {
-					logmessage("ntp", "waiting for dnsmasq...");
-					sleep(i*i);
-				} else {
-					i = 99;
+			if (nvram_get_int("sw_mode") == SW_MODE_ROUTER) {
+				for ( i = 1; i < 4; i++ ) {
+					if (!pids("dnsmasq")) {
+						logmessage("ntp", "waiting for dnsmasq...");
+						sleep(i*i);
+					} else {
+						i = 99;
+					}
 				}
 			}
 
