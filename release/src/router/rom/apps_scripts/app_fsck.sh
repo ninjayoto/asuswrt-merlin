@@ -43,7 +43,6 @@ autofix=`nvram get apps_state_autofix`
 fs_mod=`nvram get usb_hfs_mod`
 
 log_file=`_get_fsck_logfile $2`
-log_option="> $log_file 2>&1"
 
 if [ "$autofix" == "1" ]; then
 	if [ "$1" == "ntfs" ]; then
@@ -93,7 +92,8 @@ if [ "$1" == "ntfs" ]; then
 	RET=1
 	while [ ${c} -lt 4 -a ${RET} -ne 0 ] ; do
 		c=$((${c} + 1))
-		eval chkntfs $autocheck_option $autofix_option --verbose $2 $log_option
+		echo `date` >$log_file
+		eval chkntfs $autocheck_option $autofix_option --verbose $2 >>$log_file 2>&1
 		RET=$?
 		if [ ${RET} -ge 251 -a ${RET} -le 254 ] ; then
 			break;
@@ -105,11 +105,14 @@ elif [ "$1" == "hfs" ] || [ "$1" == "hfsplus" ] || [ "$1" == "thfsplus" ] || [ "
 	while [ ${c} -lt 4 -a ${RET} -ne 0 ] ; do
 		c=$((${c} + 1))
 		if [ "$fs_mod" == "open" ]; then
-			eval fsck.hfsplus $autocheck_option $autofix_option $2 $log_option
+			echo `date` >$log_file
+			eval fsck.hfsplus $autocheck_option $autofix_option $2 >>$log_file 2>&1
 		elif [ "$fs_mod" == "paragon" ]; then
-			eval chkhfs $autocheck_option $autofix_option --verbose $2 $log_option
+			echo `date` >$log_file
+			eval chkhfs $autocheck_option $autofix_option --verbose $2 >>$log_file 2>&1
 		elif [ "$fs_mod" == "tuxera" ]; then
-			eval fsck_hfs $autocheck_option $autofix_option $2 $log_option
+			echo `date` >$log_file
+			eval fsck_hfs $autocheck_option $autofix_option $2 >>$log_file 2>&1
 		fi
 		RET=$?
 		if [ ${RET} -ge 251 -a ${RET} -le 254 ] ; then
@@ -117,7 +120,8 @@ elif [ "$1" == "hfs" ] || [ "$1" == "hfsplus" ] || [ "$1" == "thfsplus" ] || [ "
 		fi
 	done
 else
-	eval fsck.$1 -$autocheck_option$autofix_option -v $2 $log_option
+	echo `date` >$log_file
+	eval fsck.$1 -$autocheck_option$autofix_option -v $2 >>$log_file 2>&1
 	RET=$?
 fi
 free_caches -w 0 -c 0
