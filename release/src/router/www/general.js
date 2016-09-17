@@ -1156,7 +1156,8 @@ function change_common_radio(o, s, v, r){
 				inputCtrl(document.form.ddns_passwd_x, 1);
 				showhide("wildcard_field",1);				
 			}
-			change_ddns_setting(document.form.ddns_server_x.value);			
+			change_ddns_setting(document.form.ddns_server_x.value);
+			inputCtrl(document.form.ddns_refresh_x, 1);			
 		}else{
 			if(document.form.ddns_server_x.value == "WWW.ASUS.COM"){
 				document.form.DDNSName.parentNode.parentNode.parentNode.style.display = "none";
@@ -1172,6 +1173,7 @@ function change_common_radio(o, s, v, r){
 			document.form.ddns_regular_check.value = 0;
 			showhide("check_ddns_field", 0);
 			inputCtrl(document.form.ddns_regular_period, 0);
+			inputCtrl(document.form.ddns_refresh_x, 0);
 		}	
 	}
 	else if(v == "wan_dnsenable_x"){
