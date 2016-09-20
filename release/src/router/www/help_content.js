@@ -118,7 +118,7 @@ helpcontent[7] = new Array("",
 							 "<#BOP_isp_heart_desc#>",
 							 "<#IPConnection_BattleNet_itemdesc#>",
 							 "<#Layer3Forwarding_x_STB_itemdesc#>",
-							 "<#hwnat_desc#>",	//21
+							 "<#hwnat_desc#>",	//22
 							 "<#IPConnection_UPnP_itemdesc#>",
 							 "<#IPConnection_PortRange_itemdesc#>",
 							 "<#IPConnection_LocalIP_itemdesc#>",
@@ -126,7 +126,8 @@ helpcontent[7] = new Array("",
 							 "<#qis_pppoe_help1#>",
 							 "<#isp_profile#>",
 							 "<#PPPConnection_Authentication_itemdesc#>",
-							 "<#PPPConnection_Authentication_itemdesc2#>");
+							 "<#PPPConnection_Authentication_itemdesc2#>", //30
+							 "<#IPConnection_LocalIP_itemdesc#> or fixed Interface (Device) ID starting with ::<br/>A fixed Interface ID is commonly an EUI-64 address.");
 //Firewall
 helpcontent[8] = new Array("",
 						   "<#FirewallConfig_WanLanLog_itemdesc#>",
