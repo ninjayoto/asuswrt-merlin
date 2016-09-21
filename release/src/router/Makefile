@@ -449,6 +449,8 @@ obj-y += libnfnetlink
 else
 obj-y += ipset
 endif
+obj-$(RTCONFIG_NANO) += ncurses
+obj-$(RTCONFIG_NANO) += nano
 
 obj-clean := $(foreach obj, $(obj-y) $(obj-n) $(obj-), $(obj)-clean)
 obj-install := $(foreach obj,$(obj-y),$(obj)-install)
@@ -3224,6 +3226,65 @@ ipset_arm-install: ipset_arm
 ipset_arm-clean:
 	-@$(MAKE) -C ipset_arm clean
 	-@rm -rf ipset_arm/Makefile ipset_arm/stamp-h1
+
+ncurses/Makefile:
+	cd ncurses && CFLAGS="$(EXTRACFLAGS) -Os -Wall -I$(STAGEDIR)/usr/include -ffunction-sections -fdata-sections -fPIC" \
+	$(CONFIGURE) --prefix=/usr --without-cxx --without-cxx-binding \
+	LDFLAGS="$(LDFLAGS) -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(STAGEDIR)/usr/lib" \
+	--enable-echo --enable-const --enable-overwrite --disable-rpath --without-ada \
+	$(if $(RTCONFIG_BCMARM),--enable-widec,) \
+	--without-debug --without-manpages --without-profile --without-progs --without-tests \
+	--disable-home-terminfo --with-normal --with-shared --with-build-cppflags=-D_GNU_SOURCE \
+	--disable-termcap --disable-database --with-fallbacks="xterm,vt100,vt200,linux,ansi,xterm-256color"
+
+#	--with-default-terminfo-dir=/usr/share/terminfo --with-terminfo-dirs=/usr/share/terminfo
+
+ncurses: ncurses/Makefile
+	@$(SEP)
+	cd ncurses && $(MAKE) -C ncurses
+ifeq ($(RTCONFIG_BCMARM),y)
+	cd ncurses/lib && ln -sf libncursesw.so.6.0 libtinfo.so
+endif
+
+ncurses-clean:
+	-@$(MAKE) -C ncurses distclean
+	@rm -f ncurses/Makefile
+
+ncurses-install:
+ifeq ($(RTCONFIG_BCMARM),y)
+	install -D ncurses/lib/libncursesw.so.6.0 $(INSTALLDIR)/ncurses/usr/lib/libncursesw.so.6.0
+else
+	install -D ncurses/lib/libncurses.so.6.0 $(INSTALLDIR)/ncurses/usr/lib/libncurses.so.6.0
+endif
+
+	$(STRIP) $(INSTALLDIR)/ncurses/usr/lib/*.so.*
+
+ifeq ($(RTCONFIG_BCMARM),y)
+	cd $(INSTALLDIR)/ncurses/usr/lib && ln -sf libncursesw.so.6.0 libncursesw.so.6
+else
+	cd $(INSTALLDIR)/ncurses/usr/lib && ln -sf libncurses.so.6.0 libncurses.so.6
+endif
+
+nano/Makefile:
+	cd nano && $(CONFIGURE) --prefix=$(INSTALLDIR)/nano/usr \
+	CFLAGS="$(EXTRACFLAGS) -Os -Wall -I$(TOP)/ncurses/include -ffunction-sections -fdata-sections" \
+	LDFLAGS="$(LDFLAGS) -L$(TOP)/ncurses/lib -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	$(if $(RTCONFIG_BCMARM),ac_cv_lib_ncursesw_get_wch=yes,ac_cv_lib_ncursesw_get_wch=no) \
+	$(if $(RTCONFIG_BCMARM),--enable-utf8,--enable-tiny) \
+	--disable-speller --disable-extra --disable-tabcomp --enable-wrapping --disable-glibtest \
+	--disable-libmagic --disable-nls
+
+nano-clean:
+	-@$(MAKE) -C nano distclean
+	@rm -f nano/Makefile
+
+nano-install:
+	@$(MAKE) -C nano install-exec INSTALLDIR=$(INSTALLDIR)/nano/usr/bin/nano
+	$(STRIP) $(INSTALLDIR)/nano/usr/bin/nano
+
+nano: ncurses nano/Makefile
+	@$(SEP)
+	$(MAKE) -C $@
 
 tftp:
 	cd tftp-1.0 && CC=$(CC) && $(MAKE)
