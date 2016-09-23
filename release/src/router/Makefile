@@ -157,6 +157,7 @@ else
 obj-y += dproxy
 obj-y += udhcpd
 endif
+obj-$(RTCONFIG_DNSSEC) += nettle
 obj-y += etc
 # obj-y += vlan # use Busybox vconfig
 #obj-y += utils
@@ -1112,7 +1113,7 @@ openssl/stamp-h1:
 	cd openssl && \
 	./Configure $(HOSTCONFIG) --openssldir=/etc --cross-compile-prefix=' ' \
 	-ffunction-sections -fdata-sections -Wl,--gc-sections \
-	shared $(OPENSSL_CIPHERS) no-ssl2 no-ssl3
+	shared $(OPENSSL_CIPHERS)
 #	no-sha0 no-smime no-camellia no-krb5 no-rmd160 no-ripemd \
 #	no-seed no-capieng no-cms no-gms no-gmp no-rfc3779 \
 #	no-ec no-ecdh no-ecdsa no-err no-hw no-jpake no-threads \
@@ -1123,6 +1124,7 @@ openssl/stamp-h1:
 	@touch $@
 
 openssl: openssl/stamp-h1
+	$(MAKE) -C openssl && $(MAKE) $@-stage
 
 openssl-clean:
 	-@$(MAKE) -C openssl clean
@@ -1166,6 +1168,8 @@ ifeq ($(RTCONFIG_HTTPS),y)
 	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libssl.so.1.0.0 libssl.so
 endif
 
+openssl-stage:
+	@$(MAKE) -C openssl install_sw INSTALL_PREFIX=$(STAGEDIR)
 
 mssl:	openssl
 
