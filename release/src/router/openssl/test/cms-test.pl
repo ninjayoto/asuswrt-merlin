@@ -113,7 +113,7 @@ else
 	{
 	die "Error checking for EC support\n";
 	}
-
+    
 system ("$ossl_path no-ec2m > $null_path");
 if ($? == 0)
 	{
@@ -141,7 +141,7 @@ else
 	{
 	die "Error checking for ECDH support\n";
 	}
-
+    
 my @smime_pkcs7_tests = (
 
     [

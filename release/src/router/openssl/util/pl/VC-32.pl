@@ -327,7 +327,7 @@ sub do_lib_rule
 		local($ex)=($target =~ /O_CRYPTO/)?'':' $(L_CRYPTO)';
 		$ex.=" $zlib_lib" if $zlib_opt == 1 && $target =~ /O_CRYPTO/;
 
-		if ($fips && $target =~ /O_CRYPTO/)
+ 		if ($fips && $target =~ /O_CRYPTO/)
 			{
 			$ret.="$target: $objs \$(PREMAIN_DSO_EXE)";
 			$ret.="\n\tSET FIPS_LINK=\$(LINK_CMD)\n";
@@ -389,7 +389,7 @@ sub do_link_rule
 		$ret.="\t\$(LINK_CMD) \$(LFLAGS) $efile$target @<<\n";
 		$ret.="\t\$(APP_EX_OBJ) $files $libs\n<<\n";
 		}
-	$ret.="\tIF EXIST \$@.manifest mt -nologo -manifest \$@.manifest -outputresource:\$@;1\n\n";
+    	$ret.="\tIF EXIST \$@.manifest mt -nologo -manifest \$@.manifest -outputresource:\$@;1\n\n";
 	return($ret);
 	}
 

@@ -275,7 +275,7 @@ my %globals;
 	} else {
 	    %szmap = (	b=>"BYTE$PTR",  w=>"WORD$PTR",
 			l=>"DWORD$PTR", d=>"DWORD$PTR",
-			q=>"QWORD$PTR", o=>"OWORD$PTR",
+	    		q=>"QWORD$PTR", o=>"OWORD$PTR",
 			x=>"XMMWORD$PTR", y=>"YMMWORD$PTR", z=>"ZMMWORD$PTR" );
 
 	    $self->{label} =~ s/\./\$/g;
@@ -870,7 +870,7 @@ while($line=<>) {
     } elsif ($opcode=opcode->re(\$line)) {
 	my $asm = eval("\$".$opcode->mnemonic());
 	undef @bytes;
-
+	
 	if ((ref($asm) eq 'CODE') && scalar(@bytes=&$asm($line))) {
 	    print $gas?".byte\t":"DB\t",join(',',@bytes),"\n";
 	    next;

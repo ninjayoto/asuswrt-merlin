@@ -1628,7 +1628,7 @@ $code.=<<___ if(1);
 	llgc	$len,2*$SIZE_T-1($sp)
 	nill	$len,0x0f		# $len%=16
 	br	$ra
-
+	
 .align	16
 .Lxts_km_vanilla:
 ___
@@ -1855,7 +1855,7 @@ $code.=<<___;
 	xgr	$s1,%r1
 	lrvgr	$s1,$s1			# flip byte order
 	lrvgr	$s3,$s3
-	srlg	$s0,$s1,32		# smash the tweak to 4x32-bits
+	srlg	$s0,$s1,32		# smash the tweak to 4x32-bits 
 	stg	$s1,$tweak+0($sp)	# save the tweak
 	llgfr	$s1,$s1
 	srlg	$s2,$s3,32
@@ -1906,7 +1906,7 @@ $code.=<<___;
 	xgr	$s1,%r1
 	lrvgr	$s1,$s1			# flip byte order
 	lrvgr	$s3,$s3
-	srlg	$s0,$s1,32		# smash the tweak to 4x32-bits
+	srlg	$s0,$s1,32		# smash the tweak to 4x32-bits 
 	stg	$s1,$tweak+0($sp)	# save the tweak
 	llgfr	$s1,$s1
 	srlg	$s2,$s3,32
@@ -2098,7 +2098,7 @@ $code.=<<___;
 	xgr	$s1,%r1
 	lrvgr	$s1,$s1			# flip byte order
 	lrvgr	$s3,$s3
-	srlg	$s0,$s1,32		# smash the tweak to 4x32-bits
+	srlg	$s0,$s1,32		# smash the tweak to 4x32-bits 
 	stg	$s1,$tweak+0($sp)	# save the tweak
 	llgfr	$s1,$s1
 	srlg	$s2,$s3,32
