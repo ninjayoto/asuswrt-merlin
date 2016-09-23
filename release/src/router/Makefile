@@ -138,6 +138,12 @@ else
 obj-y += iptables
 obj-y += iproute2
 endif
+obj-y += libbcmcrypto
+ifeq ($(RTCONFIG_HTTPS),y)
+obj-y += openssl
+obj-y += wget zlib
+obj-y += mssl
+endif
 
 ifeq ($(RTCONFIG_BWDPI),y)
 obj-y += bwdpi
@@ -192,9 +198,9 @@ obj-$(RTCONFIG_EMF) += emf
 obj-$(RTCONFIG_EMF) += igs
 endif
 
-obj-y += libbcmcrypto
+#obj-y += libbcmcrypto
 #obj-y += cyassl
-obj-$(RTCONFIG_HTTPS) += mssl
+#obj-$(RTCONFIG_HTTPS) += mssl
 #obj-y += mdu
 obj-$(RTCONFIG_TFTP) += tftp
 
@@ -344,8 +350,8 @@ obj-$(RTCONFIG_PPP_BASE) += pppd rp-pppoe
 obj-$(RTCONFIG_L2TP) += rp-l2tp
 obj-$(RTCONFIG_PPTP) += accel-pptp
 obj-$(RTCONFIG_EAPOL) += wpa_supplicant
-obj-$(RTCONFIG_HTTPS) += openssl
-obj-$(RTCONFIG_HTTPS) += wget zlib
+#obj-$(RTCONFIG_HTTPS) += openssl
+#obj-$(RTCONFIG_HTTPS) += wget zlib
 obj-$(RTCONFIG_SSH) += dropbear
 #obj-$(RTCONFIG_ZEBRA) += zebra
 #	obj-$(RTCONFIG_IPP2P) += ipp2p
