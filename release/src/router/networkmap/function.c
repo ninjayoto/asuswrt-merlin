@@ -1118,12 +1118,14 @@ SMBretry:
                         if(error != 0)
                         {
                                 perror("SAMBA: get socket opt err");
+				close(sockfd);
                                 return -1 ;
                         }
                 }
                 else
                 {
                         perror("SAMBA: select err");
+			close(sockfd);
                         return -1 ;
                 }
         }
@@ -1155,6 +1157,7 @@ SMBretry:
                                 if (send(sockfd, buf, offsetlen, 0) == -1)
                                 {
                                         perror("connect") ;
+					close(sockfd);
                                         return -1 ;
                                 }
                                 gettimeofday(&tv1, NULL);       // set nbss statrt time
@@ -1173,6 +1176,7 @@ SMBretry:
                                                 if ((numbytes=recv(sockfd, nbss_buf, sizeof(nbss_buf), 0)) == -1)
                                                 {
                                                  perror("recv");
+						 close(sockfd);
                                                  return -1 ;
                                                 }
                                                 if(numbytes > 0)
@@ -1271,6 +1275,7 @@ SMBretry:
                                                 if ((numbytes=recv(sockfd, buf, sizeof(buf), 0)) == -1)
                                                 {
                                                  perror("recv");
+						 close(sockfd);
                                                  return -1 ;
                                                 }
                                                 if(numbytes > 0)
@@ -1440,6 +1445,7 @@ SMBretry:
                                 if (send(sockfd, buf, offsetlen, 0) == -1)
                                 {
                                         perror("connect") ;
+					close(sockfd);
                                         return -1 ;
                                 }
                                 gettimeofday(&tv1, NULL);       // set SMB SESSON ANDX REQ statrt time
@@ -1460,6 +1466,7 @@ SMBretry:
                                                 if ((numbytes=recv(sockfd, buf, sizeof(buf), 0)) == -1)
                                                 {
                                                  	perror("recv");
+							close(sockfd);
                                                  	return -1 ;
                                                 }
                                                 if(numbytes > 0)
@@ -1604,6 +1611,7 @@ Asus_Device_Discovery(unsigned char *src_ip, unsigned char *dest_ip, P_CLIENT_DE
         if (setsockopt(sock_dd, SOL_SOCKET, SO_REUSEADDR, (char *)&flag, sizeof(flag)) < 0)
         {
                 NMP_DEBUG_M("DD: SO_REUSEADDR failed: %s\n", strerror(errno));
+		close(sock_dd);
                 return -1;
         }
 
@@ -1611,6 +1619,7 @@ Asus_Device_Discovery(unsigned char *src_ip, unsigned char *dest_ip, P_CLIENT_DE
     	if (-1 == status)
     	{
         	NMP_DEBUG_M("DD: bind error.\n");
+		close(sock_dd);
         	return -1;
     	}
 
