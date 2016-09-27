@@ -1083,7 +1083,7 @@ function show_menu(){
 
 	//nvram low
         if(nvram_total){
-                if((nvram_total - nvram_used) < 1024){         //case7
+                if((nvram_total - nvram_used) < 3072){         //case7
                         notification.array[7] = 'noti_low_nvram';
                         notification.low_nvram = 1;
                         notification.desc[7] = Untranslated.ASUSGATE_note7;
