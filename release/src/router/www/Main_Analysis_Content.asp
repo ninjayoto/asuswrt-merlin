@@ -54,8 +54,17 @@
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="/merlin.js"></script>
 <script>
+
+var ipv6_enabled = '<% nvram_get("ipv6_service"); %>';
+
 function initial(){
+	setRadioValue(document.form.pingTYP, "4");
+	if (ipv6_enabled == "disabled")
+		$("pingTYP_tr").style.display = "none";
+	else
+		$("pingTYP_tr").style.display = "";
 	show_menu();
 	showLANIPList();
 }
@@ -74,7 +83,10 @@ function updateOptions(){
 		if(document.form.pingCNT.value == ""){
 			document.form.pingCNT.value = 5;
 		}
-		document.form.SystemCmd.value = "ping -c " + document.form.pingCNT.value + " " + document.form.destIP.value;
+		if(document.form.pingSZE.value == ""){
+			document.form.pingSZE.value = 56;
+		}
+		document.form.SystemCmd.value = document.form.cmdMethod.value + " -" + getRadioValue(document.form.pingTYP) + " -c " + document.form.pingCNT.value + " -s " + document.form.pingSZE.value + " " + document.form.destIP.value;
 	}
 	else
 		document.form.SystemCmd.value = document.form.cmdMethod.value + " " + document.form.destIP.value;
@@ -89,14 +101,23 @@ function updateOptions(){
 function hideCNT(_val){
 	if(_val == "ping"){
 		$("pingCNT_tr").style.display = "";
+		$("pingSZE_tr").style.display = "";
+		if (ipv6_enabled == "disabled")
+			$("pingTYP_tr").style.display = "none";
+		else
+			$("pingTYP_tr").style.display = "";
 		$("cmdDesc").innerHTML = "<#NetworkTools_Ping#>";
 	}
 	else if(_val == "traceroute"){
 		$("pingCNT_tr").style.display = "none";
+		$("pingSZE_tr").style.display = "none";
+		$("pingTYP_tr").style.display = "none";
 		$("cmdDesc").innerHTML = "<#NetworkTools_tr#>";
 	}
 	else{
 		$("pingCNT_tr").style.display = "none";
+		$("pingSZE_tr").style.display = "none";
+		$("pingTYP_tr").style.display = "none";
 		$("cmdDesc").innerHTML = "<#NetworkTools_nslookup#>";
 	}
 }
@@ -245,10 +266,23 @@ function pullLANIPList(obj){
 												<div id="ClientList_Block_PC" class="ClientList_Block_PC"></div>
 											</td>
 										</tr>
+										<tr id="pingTYP_tr">
+											<th width="20%">Name Resolution</th>
+											<td>
+						<input type="radio" name="pingTYP" class="input" value="4">IPv4
+						<input type="radio" name="pingTYP" class="input" value="6">IPv6
+											</td>
+										</tr>
+										<tr id="pingSZE_tr">
+											<th width="20%">Packet Size</th>
+											<td>
+						<input type="text" name="pingSZE" class="input_6_table" maxlength="4" value="" onKeyPress="return is_number(this, event);" placeholder="56">
+											</td>
+										</tr>
 										<tr id="pingCNT_tr">
 											<th width="20%"><#NetworkTools_Count#></th>
 											<td>
-						<input type="text" name="pingCNT" class="input_3_table" maxlength="2" value="" onKeyPress="return is_number(this, event);" placeholder="5">
+						<input type="text" name="pingCNT" class="input_6_table" maxlength="3" value="" onKeyPress="return is_number(this, event);" placeholder="5">
 											</td>
 										</tr>
 									</table>
