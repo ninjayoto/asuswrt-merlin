@@ -3872,7 +3872,8 @@ fa_mode_adjust()
 			&& nvram_get_int("ctf_fa_cap")
  			&& !nvram_get_int("qos_enable")
 		) {
-			nvram_set_int("ctf_fa_mode", CTF_FA_NORMAL);
+			if (!nvram_get_int("ctf_fa_mode"))
+				nvram_set_int("ctf_fa_mode", CTF_FA_NORMAL);
 		}else{
 			nvram_set_int("ctf_fa_mode", CTF_FA_DISABLED);
 		}
