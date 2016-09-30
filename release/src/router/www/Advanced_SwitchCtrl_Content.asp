@@ -20,11 +20,12 @@
 
 <script>
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
+var ctf_support = ('<% nvram_get("ctf_fa_mode"); %>' == '') ? 0 : 1;
 
 function initial(){
 	show_menu();
 
-	if('<% nvram_get("ctf_fa_mode"); %>' != ''){
+	if(ctf_support == 1){
 		document.form.ctf_level.length = 0;
 		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_buttonname#>", 0, getCtfLevel(0));
 		add_option(document.form.ctf_level, "Level 1 CTF", 1, getCtfLevel(1));
@@ -32,17 +33,10 @@ function initial(){
 	}
 }
 
-/*
-					ctf_disable_force   ctf_fa_mode
-Disable   1                   0
-Level 1   0                   0
-Level 2   0                   2 
-
-*/
 function getCtfLevel(val){
 	var curVal;
 
-	if(document.form.ctf_disable_force.value == 0 && document.form.ctf_fa_mode.value == 0)
+	if(document.form.ctf_disable_force.value == 0 && document.form.ctf_fa_mode.value == 1)
 		curVal = 1;
 	else if(document.form.ctf_disable_force.value == 0 && document.form.ctf_fa_mode.value == 2)
 		curVal = 2;
@@ -58,15 +52,18 @@ function getCtfLevel(val){
 function applyRule(){
 	if(document.form.ctf_level.value == 1){
 		document.form.ctf_disable_force.value = 0;
-		document.form.ctf_fa_mode.value = 0;
+		if(ctf_support == 1)
+			document.form.ctf_fa_mode.value = 1;
 	}
 	else if(document.form.ctf_level.value == 2){
 		document.form.ctf_disable_force.value = 0;
-		document.form.ctf_fa_mode.value = 2;
+		if(ctf_support == 1)
+			document.form.ctf_fa_mode.value = 2;
 	}
 	else{
 		document.form.ctf_disable_force.value = 1;
-		document.form.ctf_fa_mode.value = 0;
+		if(ctf_support == 1)
+			document.form.ctf_fa_mode.value = 0;
 	}
 
 	if(valid_form()){
@@ -112,7 +109,7 @@ function valid_form(){
 <input type="hidden" name="modified" value="0">
 <input type="hidden" name="action_mode" value="apply">
 <input type="hidden" name="action_script" value="reboot">
-<input type="hidden" name="action_wait" value="60">
+<input type="hidden" name="action_wait" value="90">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
 <input type="hidden" name="ctf_fa_mode" value="<% nvram_get("ctf_fa_mode"); %>">

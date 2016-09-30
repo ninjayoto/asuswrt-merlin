@@ -129,7 +129,7 @@ function hwaccel_state(){
 	} else if (hwacc == "0") {
 		code = "<span>Enabled";
 		if (ctf_fa != "") {
-			if (ctf_fa != "0")
+			if (ctf_fa == "2")
 				code += " (CTF + FA)";
 			else
 				code += " (CTF only)";
