@@ -3228,11 +3228,11 @@ ipset_arm-clean:
 	-@rm -rf ipset_arm/Makefile ipset_arm/stamp-h1
 
 ncurses/Makefile:
-	cd ncurses && CFLAGS="$(EXTRACFLAGS) -Os -Wall -I$(STAGEDIR)/usr/include -ffunction-sections -fdata-sections -fPIC" \
+	cd ncurses && CFLAGS="$(EXTRACFLAGS) -Os -I$(STAGEDIR)/usr/include -ffunction-sections -fdata-sections -fPIC" \
 	$(CONFIGURE) --prefix=/usr --without-cxx --without-cxx-binding \
 	LDFLAGS="$(LDFLAGS) -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(STAGEDIR)/usr/lib" \
 	--enable-echo --enable-const --enable-overwrite --disable-rpath --without-ada \
-	$(if $(RTCONFIG_BCMARM),--enable-widec,) \
+	$(if $(RTCONFIG_BCMARM),--enable-widec,) --enable-pc-files \
 	--without-debug --without-manpages --without-profile --without-progs --without-tests \
 	--disable-home-terminfo --with-normal --with-shared --with-build-cppflags=-D_GNU_SOURCE \
 	--disable-termcap --disable-database --with-fallbacks="xterm,vt100,vt200,linux,ansi,xterm-256color"
@@ -3241,10 +3241,7 @@ ncurses/Makefile:
 
 ncurses: ncurses/Makefile
 	@$(SEP)
-	cd ncurses && $(MAKE) -C ncurses
-ifeq ($(RTCONFIG_BCMARM),y)
-	cd ncurses/lib && ln -sf libncursesw.so.6.0 libtinfo.so
-endif
+	cd ncurses && $(MAKE) -C ncurses && $(MAKE) -C misc pc-files
 
 ncurses-clean:
 	-@$(MAKE) -C ncurses distclean
@@ -3267,8 +3264,9 @@ endif
 
 nano/Makefile:
 	cd nano && $(CONFIGURE) --prefix=$(INSTALLDIR)/nano/usr \
-	CFLAGS="$(EXTRACFLAGS) -Os -Wall -I$(TOP)/ncurses/include -ffunction-sections -fdata-sections" \
+	CFLAGS="$(EXTRACFLAGS) -Os -I$(TOP)/ncurses/include -ffunction-sections -fdata-sections" \
 	LDFLAGS="$(LDFLAGS) -L$(TOP)/ncurses/lib -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	PKG_CONFIG_PATH="$(TOP)/ncurses/misc" PKG_CONFIG_LIBDIR="$(TOP)/ncurses/misc"\
 	$(if $(RTCONFIG_BCMARM),ac_cv_lib_ncursesw_get_wch=yes,ac_cv_lib_ncursesw_get_wch=no) \
 	$(if $(RTCONFIG_BCMARM),--enable-utf8,--enable-tiny) \
 	--disable-speller --disable-extra --disable-tabcomp --enable-wrapping --disable-glibtest \
