@@ -3201,9 +3201,11 @@ TRACE_PT("writing Parental Control\n");
 			wan_proto = nvram_safe_get(strcat_r(prefix, "proto", tmp));
 			wan_ip = nvram_safe_get(strcat_r(prefix, "ipaddr", tmp));
 
-			if(!strcmp(wan_proto, "dhcp") || !strcmp(wan_proto, "bigpond"))	// oleg patch
+			if (!strcmp(wan_proto, "dhcp") || !strcmp(wan_proto, "bigpond") ||
+		    	    nvram_match(strcat_r(prefix, "dhcpenable_x", tmp), "1"))
+			{
 				fprintf(fp, "-A INPUT -p udp --sport 67 --dport 68 -j %s\n", logaccept);
-
+			}
 			break; // set one time.
 		}
 
