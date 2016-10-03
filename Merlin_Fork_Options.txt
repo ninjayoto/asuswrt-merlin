@@ -1,5 +1,4 @@
 Merlin Fork Custom Options
-Update-19
 
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS

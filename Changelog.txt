@@ -4,6 +4,40 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E1j9527  (5-October-2016)
+- CHANGED: firewall: (backport) allow bogus DHCP REPLIES from broken ISPs on renewals, not just on initial lease
+- CHANGED: init: (backport) improved detection for CTF FA mode
+- CHANGED: nano: (backport) add support for all supported models
+- CHANGED: openssl: update to 1.0.2j
+- CHANGED: ssh: (backport) allow WAN access to SSH over IPv6 if WAN access is enabled
+* CHANGED  iptv: re-add basic support for meo, vodafone and hinet profiles
+* CHANGED: webui: add wan total uptime and current uptime to syslog general page
+* CHANGED  updown: only enable ipv6 dns leak protection if not in dns exclusive mode
+* CHANGED: networkmap: improve performance, revert added delays
+* CHANGED: diskmon: add timestamp to autochk results
+* CHANGED: webui: update ping options in network analysis
+* CHANGED: firewall: support fixed Interface ID (EUI64) ipv6 destination addresses
+* CHANGED: openssl: updated CA bundle to September 26th version
+* CHANGED: webui: updated low nvram alert to less than 3K available
+- FIXED: networkmap: (backport) fix leaked file descriptors
+- FIXED: rtstate: (backport) set default for dual wan if not set
+- FIXED: webui: (backport) hide forced refresh field if DDNS is disabled
+- FIXED: rc: (backport) do not try to fill the remote field in the exported OpenVPN client config if DDNS type is set to Custom
+- FIXED: nano: fix Makefile to generate/use ncurses pc files
+- FIXED: rc: (backport) apply same DHCP workaround for broken DHCP servers to dualwan mode
+- FIXED: networkmap: (backport) fix memory leak - missing free()
+- FIXED: networkmap: (backport) fixed numerous leaked handles, missing socket close() calls on error cases
+* FIXED: diskmon: get correct run frequency if scan schedule set for multiple drives (ASUS bug)
+* FIXED: dhcp6c: try to recover if unable to release ifp
+* FIXED: networkmap: abort arp scan if unable to create socket
+* FIXED: iptv: always check VID and PRIO for valid values prior to submit (ASUS bug)
+* FIXED: ntp: only perform dnsmasq check if running in router mode
+* FIXED: webui: fix login_state_hook if using https login (ASUS bug)
+* FIXED: ctf: additional backports to support fa_mode capability detection (fixes firmware update errors)
+* FIXED: webui: correctly handle ctf_fa_mode selection
+* FIXED: webui: change oui lookup from ieee.org to macvendorlookup.com
+
+
 374.43_2-19E3j9527  (8-September-2016)
 * FIXED: Revert support for added IPTV profiles (causing update issues)
 * FIXED: defaults: set correct factory default for new dhcp6c release
