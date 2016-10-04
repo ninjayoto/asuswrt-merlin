@@ -25,11 +25,14 @@ var ctf_support = ('<% nvram_get("ctf_fa_mode"); %>' == '') ? 0 : 1;
 function initial(){
 	show_menu();
 
+	document.form.ctf_level.length = 0;
 	if(ctf_support == 1){
-		document.form.ctf_level.length = 0;
 		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_buttonname#>", 0, getCtfLevel(0));
 		add_option(document.form.ctf_level, "Level 1 CTF", 1, getCtfLevel(1));
 		add_option(document.form.ctf_level, "Level 2 CTF", 2, getCtfLevel(2));
+	} else {
+		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_buttonname#>", 0, getCtfLevelM(0));
+		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_button1name#>", 1, getCtfLevelM(1));
 	}
 }
 
@@ -40,6 +43,20 @@ function getCtfLevel(val){
 		curVal = 1;
 	else if(document.form.ctf_disable_force.value == 0 && document.form.ctf_fa_mode.value == 2)
 		curVal = 2;
+	else
+		curVal = 0;
+
+	if(curVal == val)
+		return true;
+	else
+		return false;
+}
+
+function getCtfLevelM(val){
+	var curVal;
+
+	if(document.form.ctf_disable_force.value == 0 && document.form.ctf_disable.value == 0)
+		curVal = 1;
 	else
 		curVal = 0;
 
@@ -114,6 +131,7 @@ function valid_form(){
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
 <input type="hidden" name="ctf_fa_mode" value="<% nvram_get("ctf_fa_mode"); %>">
 <input type="hidden" name="ctf_disable_force" value="<% nvram_get("ctf_disable_force"); %>">
+<input type="hidden" name="ctf_disable" value="<% nvram_get("ctf_disable"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
