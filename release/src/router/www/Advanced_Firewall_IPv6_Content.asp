@@ -9,7 +9,7 @@
 <link rel="shortcut icon" href="images/favicon.png">
 <link rel="icon" href="images/favicon.png">
 <title><#Web_Title#> - IPv6 Firewall</title>
-<link rel="stylesheet" type="text/css" href="index_style.css"> 
+<link rel="stylesheet" type="text/css" href="index_style.css">
 <link rel="stylesheet" type="text/css" href="form_style.css">
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
@@ -49,7 +49,7 @@ function initial(){
 }
 
 function isChange(){
-	if((document.form.ipv6_fw_enable[0].checked == true && '<% nvram_get("ipv6_fw_enable"); %>' == '0') || 
+	if((document.form.ipv6_fw_enable[0].checked == true && '<% nvram_get("ipv6_fw_enable"); %>' == '0') ||
 				(document.form.ipv6_fw_enable[1].checked == true && '<% nvram_get("ipv6_fw_enable"); %>' == '1')){
 		return true;
 	}
@@ -67,23 +67,23 @@ function applyRule(){
 	var tmp_value = "";
 
 	for(i=0; i<rule_num; i++){
-		tmp_value += "<"		
-		for(j=0; j<item_num-1; j++){			
+		tmp_value += "<"
+		for(j=0; j<item_num-1; j++){
 
 			if($('ipv6_fw_rulelist_table').rows[i].cells[j].innerHTML.lastIndexOf("...")<0){
 				tmp_value += $('ipv6_fw_rulelist_table').rows[i].cells[j].innerHTML;
 			}else{
 				tmp_value += $('ipv6_fw_rulelist_table').rows[i].cells[j].title;
-			}		
+			}
 
-			if(j != item_num-2)	
+			if(j != item_num-2)
 				tmp_value += ">";
 		}
 	}
 
 	if(tmp_value == "<"+"<#IPConnection_VSList_Norule#>" || tmp_value == "<")
-		tmp_value = "";	
-	
+		tmp_value = "";
+
 	document.form.ipv6_fw_rulelist.value = tmp_value;
 	showLoading();
 	document.form.submit();
@@ -109,7 +109,7 @@ function change_wizard(o, id){
 				document.form.ipv6_fw_proto_x_0.options[3].selected = 1;
 
 			document.form.ipv6_fw_port_x_0.value = wItem[i][1];
-			document.form.ipv6_fw_desc_x_0.value = wItem[i][0]+" Server";				
+			document.form.ipv6_fw_desc_x_0.value = wItem[i][0]+" Server";
 			break;
 		}
 	}
@@ -127,12 +127,12 @@ function addRow(obj, head){
 
 function validForm(){
 	if(!Block_chars(document.form.ipv6_fw_desc_x_0, ["<" ,">" ,"'" ,"%"])){
-				return false;		
-	}	
+				return false;
+	}
 
 	if(!Block_chars(document.form.ipv6_fw_port_x_0, ["<" ,">"])){
-				return false;		
-	}	
+				return false;
+	}
 
 	if(document.form.ipv6_fw_proto_x_0.value=="OTHER"){
 		if (!check_multi_range(document.form.ipv6_fw_port_x_0, 1, 255, false))
@@ -146,14 +146,14 @@ function validForm(){
 	if(document.form.ipv6_fw_lipaddr_x_0.value==""){
 		alert("<#JS_fieldblank#>");
 		document.form.ipv6_fw_lipaddr_x_0.focus();
-		document.form.ipv6_fw_lipaddr_x_0.select();		
+		document.form.ipv6_fw_lipaddr_x_0.select();
 		return false;
 	}
 
 	if(document.form.ipv6_fw_port_x_0.value==""){
 		alert("<#JS_fieldblank#>");
 		document.form.ipv6_fw_port_x_0.focus();
-		document.form.ipv6_fw_port_x_0.select();		
+		document.form.ipv6_fw_port_x_0.select();
 		return false;
 	}
 
@@ -172,11 +172,11 @@ function addRow_Group(upper){
 			document.form.ipv6_fw_enable[0].checked = true;
 
 		var rule_num = $('ipv6_fw_rulelist_table').rows.length;
-		var item_num = $('ipv6_fw_rulelist_table').rows[0].cells.length;	
+		var item_num = $('ipv6_fw_rulelist_table').rows[0].cells.length;
 		if(rule_num >= upper){
 			alert("<#JS_itemlimit1#> " + upper + " <#JS_itemlimit2#>");
 			return;
-		}	
+		}
 
 		addRow(document.form.ipv6_fw_desc_x_0 ,1);
 		addRow(document.form.ipv6_fw_ripaddr_x_0, 0);
@@ -192,35 +192,35 @@ function validate_multi_range(val, mini, maxi){
 	var rangere=new RegExp("^([0-9]{1,5})\:([0-9]{1,5})$", "gi");
 	if(rangere.test(val)){
 		if(!validate_each_port(document.form.ipv6_fw_port_x_0, RegExp.$1, mini, maxi) || !validate_each_port(document.form.ipv6_fw_port_x_0, RegExp.$2, mini, maxi)){
-				return false;								
+				return false;
 		}else if(parseInt(RegExp.$1) >= parseInt(RegExp.$2)){
-				alert("<#JS_validport#>");	
-				return false;												
-		}else				
-			return true;	
+				alert("<#JS_validport#>");
+				return false;
+		}else
+			return true;
 	}else{
-		if(!validate_single_range(val, mini, maxi)){	
-			return false;											
+		if(!validate_single_range(val, mini, maxi)){
+			return false;
 		}
-		
-		return true;								
-	}	
+
+		return true;
+	}
 }
 
 function validate_single_range(val, min, max) {
 	for(j=0; j<val.length; j++){		//is_number
-		if (val.charAt(j)<'0' || val.charAt(j)>'9'){			
+		if (val.charAt(j)<'0' || val.charAt(j)>'9'){
 			alert('<#JS_validrange#> ' + min + ' <#JS_validrange_to#> ' + max);
 			return false;
 		}
 	}
 
-	if(val < min || val > max) {		//is_in_range		
+	if(val < min || val > max) {		//is_in_range
 		alert('<#JS_validrange#> ' + min + ' <#JS_validrange_to#> ' + max);
 		return false;
-	}else	
+	}else
 		return true;
-}	
+}
 
 var parse_port="";
 function check_multi_range(obj, mini, maxi, allow_range){
@@ -228,24 +228,24 @@ function check_multi_range(obj, mini, maxi, allow_range){
 	var PortSplit = obj.value.split(",");
 	for(i=0;i<PortSplit.length;i++){
 		PortSplit[i] = PortSplit[i].replace(/(^\s*)|(\s*$)/g, ""); 		// "\space" to ""
-		PortSplit[i] = PortSplit[i].replace(/(^0*)/g, ""); 		// "^0" to ""	
+		PortSplit[i] = PortSplit[i].replace(/(^0*)/g, ""); 		// "^0" to ""
 		if(PortSplit[i] == "" ||PortSplit[i] == 0){
 			alert("<#JS_ipblank1#>");
 			obj.focus();
-			obj.select();			
+			obj.select();
 			return false;
 		}
-		
+
 		if(allow_range)
 			res = validate_multi_range(PortSplit[i], mini, maxi);
-		else	
+		else
 			res = validate_single_range(PortSplit[i], mini, maxi);
-		
+
 		if(!res){
 			obj.focus();
 			obj.select();
 			return false;
-		}						
+		}
 
 		if(i ==PortSplit.length -1)
 			parse_port = parse_port + PortSplit[i];
@@ -253,20 +253,20 @@ function check_multi_range(obj, mini, maxi, allow_range){
 			parse_port = parse_port + PortSplit[i] + ",";
 
 	}
-	
+
 	document.form.ipv6_fw_port_x_0.value = parse_port;
 	parse_port ="";
-	return true;	
+	return true;
 }
 
-function edit_Row(r){ 	
+function edit_Row(r){
 	var i=r.parentNode.parentNode.rowIndex;
 	document.form.ipv6_fw_desc_x_0.value = $('ipv6_fw_rulelist_table').rows[i].cells[0].innerHTML;
-	document.form.ipv6_fw_ripaddr_x_0.value = $('ipv6_fw_rulelist_table').rows[i].cells[1].innerHTML; 
+	document.form.ipv6_fw_ripaddr_x_0.value = $('ipv6_fw_rulelist_table').rows[i].cells[1].innerHTML;
 	document.form.ipv6_fw_lipaddr_x_0.value = $('ipv6_fw_rulelist_table').rows[i].cells[2].innerHTML;
 	document.form.ipv6_fw_port_x_0.value = $('ipv6_fw_rulelist_table').rows[i].cells[3].innerHTML;
 	document.form.ipv6_fw_proto_x_0.value = $('ipv6_fw_rulelist_table').rows[i].cells[4].innerHTML;
-	del_Row(r);	
+	del_Row(r);
 }
 
 function del_Row(r){
@@ -276,7 +276,7 @@ function del_Row(r){
   var ipv6_fw_rulelist_value = "";
 	for(k=0; k<$('ipv6_fw_rulelist_table').rows.length; k++){
 		for(j=0; j<$('ipv6_fw_rulelist_table').rows[k].cells.length-1; j++){
-			if(j == 0)	
+			if(j == 0)
 				ipv6_fw_rulelist_value += "<";
 			else
 				ipv6_fw_rulelist_value += ">";
@@ -285,7 +285,7 @@ function del_Row(r){
 				ipv6_fw_rulelist_value += $('ipv6_fw_rulelist_table').rows[k].cells[j].innerHTML;
 			}else{
 				ipv6_fw_rulelist_value += $('ipv6_fw_rulelist_table').rows[k].cells[j].title;
-			}			
+			}
 		}
 	}
 
@@ -304,9 +304,9 @@ function showipv6_fw_rulelist(){
 	else{
 		for(var i = 1; i < ipv6_fw_rulelist_row.length; i++){
 			overlib_str0[i] ="";
-			overlib_str1[i] ="";	
-			overlib_str2[i] ="";	
-			overlib_str3[i] ="";			
+			overlib_str1[i] ="";
+			overlib_str2[i] ="";
+			overlib_str3[i] ="";
 			code +='<tr id="row'+i+'">';
 			var ipv6_fw_rulelist_col = ipv6_fw_rulelist_row[i].split('>');
 			var wid=[15, 24, 24, 14, 11];
@@ -349,7 +349,7 @@ function showipv6_fw_rulelist(){
 		}
 	}
 	code +='</table>';
-	$("ipv6_fw_rulelist_Block").innerHTML = code;	     
+	$("ipv6_fw_rulelist_Block").innerHTML = code;
 }
 
 function ipv6_valid(obj, cidr){
@@ -396,15 +396,15 @@ function changeBgColor(obj, num){
 <input type="hidden" name="ipv6_fw_rulelist" value=''>
 <table class="content" align="center" cellpadding="0" cellspacing="0" >
 	<tr>
-		<td width="17">&nbsp;</td>		
-		<td valign="top" width="202">				
-		<div  id="mainMenu"></div>	
-		<div  id="subMenu"></div>		
-		</td>				
+		<td width="17">&nbsp;</td>
+		<td valign="top" width="202">
+		<div  id="mainMenu"></div>
+		<div  id="subMenu"></div>
+		</td>
 
     <td valign="top">
 	<div id="tabMenu" class="submenuBlock"></div>
-		<!--===================================Beginning of Main Content===========================================-->		
+		<!--===================================Beginning of Main Content===========================================-->
 <table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
 	<tr>
 		<td valign="top" >
@@ -445,8 +445,8 @@ function changeBgColor(obj, num){
 			</td>
 		</tr>
 
-      	</table>			
-      	
+      	</table>
+
 		<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table">
 			<thead>
 			<tr>
@@ -488,7 +488,7 @@ function changeBgColor(obj, num){
 					<input type="button" class="add_btn" onClick="addRow_Group(128);" name="ipv6_fw_rulelist2" value="">
 				</td>
 				</tr>
-				</table>		
+				</table>
 
 				<div id="ipv6_fw_rulelist_Block"></div>
 
@@ -499,14 +499,14 @@ function changeBgColor(obj, num){
 
 		</td>
 		</tr>
-	</tbody>	
+	</tbody>
 
 	</table>
 </td>
-         
+
         </tr>
-      </table>				
-		<!--===================================Ending of Main Content===========================================-->		
+      </table>
+		<!--===================================Ending of Main Content===========================================-->
 	</td>
 
     <td width="10" align="center" valign="top">&nbsp;</td>
