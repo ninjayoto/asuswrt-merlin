@@ -64,6 +64,7 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 
 <% login_state_hook(); %>
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
+var ipv6_service = '<% nvram_get("ipv6_service"); %>';
 
 if(pptpd_support){
 	var pptpd_clients = '<% nvram_get("pptpd_clients"); %>';
@@ -308,6 +309,9 @@ function applyRule(){
 		    (document.form.dhcp_gateway_x.value != dhcp_gateway_curr) ||
 		    (document.form.lan_domain.value != lan_domain_curr)) {
 
+		    if (ipv6_service == "dhcp6")
+			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+		    else
 			document.form.action_script.value = "restart_net_and_phy";
 		
 		} else {

@@ -28,6 +28,7 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 <% login_state_hook(); %>
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var origin_lan_ip = '<% nvram_get("lan_ipaddr"); %>';
+var ipv6_service = '<% nvram_get("ipv6_service"); %>';
 if(pptpd_support){	
 	var pptpd_clients = '<% nvram_get("pptpd_clients"); %>';
 	var pptpd_clients_subnet = pptpd_clients.split(".")[0]+"."
@@ -63,6 +64,8 @@ function initial(){
 
 function applyRule(){
 	if(validForm()){
+		if (ipv6_service == "dhcp6")
+			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 		showLoading();
 		document.form.submit();
 	}
