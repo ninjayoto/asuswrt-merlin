@@ -1858,7 +1858,7 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 			}
 	                else
 			{
-       		                p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 6;
+       		                p_client_detail_info_tab->type[p_client_detail_info_tab->detail_info_num] = 1;
                                 NMP_DEBUG("Find: Unknown SMB! SMB_OS=%s, SMB_PriDomain=%s\n", SMB_OS, SMB_PriDomain);
                         }
 		}
