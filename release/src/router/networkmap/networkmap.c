@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
 	int shm_client_detail_info_id;
 	int ip_dup, mac_dup, real_num;
 	int lock;
+	unsigned short msg_type;
 
         FILE *fp = fopen("/var/run/networkmap.pid", "w");
         if(fp != NULL){
@@ -283,28 +284,34 @@ int main(int argc, char *argv[])
 		}
 		else {
 		    arp_ptr = (ARP_HEADER*)(buffer);
-//                  NMP_DEBUG("*Receive an ARP Packet from: %d.%d.%d.%d, len:%d\n",
-//				(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
-//				(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
-//				arp_getlen);
+                    NMP_DEBUG_M("*Receive an ARP Packet from: %d.%d.%d.%d, len:%d\n",
+				(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
+				(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
+				arp_getlen);
 
 		    //Check ARP packet if source ip and router ip at the same network
                     if( !memcmp(my_ipaddr, arp_ptr->source_ipaddr, 3) ) {
+			msg_type = ntohs(arp_ptr->message_type);
 
 			swapbytes16(arp_ptr->message_type);
 
 			//ARP Response packet to router
-			if( arp_ptr->message_type == 0x02 &&   		       	// ARP response
+			if( //ARP packet to router
+			   (msg_type == 0x02 &&   		       	// ARP response
                        	    memcmp(arp_ptr->dest_ipaddr, my_ipaddr, 4) == 0 && 	// dest IP
                        	    memcmp(arp_ptr->dest_hwaddr, my_hwaddr, 6) == 0) 	// dest MAC
-			{
+			    ||
+			   (msg_type == 0x01 &&                    // ARP request
+                            memcmp(arp_ptr->dest_ipaddr, my_ipaddr, 4) == 0)    // dest IP
+			){
 			    //NMP_DEBUG("   It's an ARP Response to Router!\n");
-                            NMP_DEBUG("*RCV %d.%d.%d.%d-%02X:%02X:%02X:%02X:%02X:%02X\n",
+                            NMP_DEBUG("*RCV %d.%d.%d.%d-%02X:%02X:%02X:%02X:%02X:%02X,%d,%02X\n",
                             (int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
                             (int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
                             arp_ptr->source_hwaddr[0],arp_ptr->source_hwaddr[1],
                             arp_ptr->source_hwaddr[2],arp_ptr->source_hwaddr[3],
-                            arp_ptr->source_hwaddr[4],arp_ptr->source_hwaddr[5]);
+                            arp_ptr->source_hwaddr[4],arp_ptr->source_hwaddr[5],
+			    scan_count, msg_type);
 
                             for(i=0; i<p_client_detail_info_tab->ip_mac_num; i++) {
 				ip_dup = memcmp(p_client_detail_info_tab->ip_addr[i], arp_ptr->source_ipaddr, 4);
@@ -376,6 +383,13 @@ int main(int argc, char *argv[])
                                         if( !memcmp(p_client_detail_info_tab->ip_addr[i], arp_ptr->source_ipaddr, 4) &&
 					    !memcmp(p_client_detail_info_tab->mac_addr[i], arp_ptr->source_hwaddr, 6)) {
                                               	NMP_DEBUG_M("Find the same IP/MAC at the table!\n");
+						NMP_DEBUG_M("*DUP %d.%d.%d.%d-%02X:%02X:%02X:%02X:%02X:%02X,%d,%02X\n",
+						(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
+						(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
+						arp_ptr->source_hwaddr[0],arp_ptr->source_hwaddr[1],
+						arp_ptr->source_hwaddr[2],arp_ptr->source_hwaddr[3],
+						arp_ptr->source_hwaddr[4],arp_ptr->source_hwaddr[5],
+						scan_count, msg_type);
                 	                        break;
                         	        }
                         	}
