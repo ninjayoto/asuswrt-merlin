@@ -4,6 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E2j9527  (11-October-2016)
+- CHANGED: busybox: (backport) enable module alias support in modutils
+- CHANGED: webui: (backport) implement option to reset an OpenVPN instance to its default settings
+- CHANGED: openvpn: (backport) disable reverse-path filtering when enabling policy-based routing
+* CHANGED: networkmap: improve debug messaging
+* CHANGED: webui: force reboot when changing certain lan parameters with ipv6 active
+* CHANGED: busybox: add getopt utility
+* CHANGED: webui: add dual stack warning to openvpn client
+* CHANGED: helper: added pc-delete() for postconf scripts
+- FIXED: make: update autoreconf make for ipset for compatibility
+- FIXED: ipset_arm: (backport) provide a modprobe.conf file with the list of module aliases used by ipset6 mapping modules
+* FIXED: networkmap: set type as PC if unknown SMB found
+* FIXED: usb: only run scheduled disk scans if system time has been set
+
+
 374.43_2-20E1j9527  (5-October-2016)
 - CHANGED: firewall: (backport) allow bogus DHCP REPLIES from broken ISPs on renewals, not just on initial lease
 - CHANGED: init: (backport) improved detection for CTF FA mode
