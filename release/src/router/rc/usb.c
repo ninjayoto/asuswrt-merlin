@@ -3380,6 +3380,7 @@ int diskmon_main(int argc, char *argv[])
 	int val_day[2] = {0, 0}, val_hour[2] = {0, 0};
 	int wait_second[2] = {0, 0}, wait_hour = 0;
 	int diskmon_alarm_sec = 0;
+	int validtime;
 
 	fp = fopen("/var/run/disk_monitor.pid", "w");
 	if(fp != NULL) {
@@ -3458,13 +3459,14 @@ cprintf("disk_monitor: Port %d: val_day=%d, val_hour=%d.\n", port_num, val_day[p
 	while(1){
 		time(&now);
 		localtime_r(&now, &local);
+		validtime=nvram_get_int("ntp_sync");
 cprintf("disk_monitor: day=%d, week=%d, time=%d:%d.\n", local.tm_mday, local.tm_wday, local.tm_hour, local.tm_min);
 
 		if(diskmon_signal == SIGUSR2){
 cprintf("disk_monitor: wait more %d seconds and avoid to scan too often.\n", DISKMON_SAFE_RANGE*60);
 			diskmon_alarm_sec = DISKMON_SAFE_RANGE*60;
 		}
-		else if(first_alarm || diskmon_signal == SIGALRM){
+		else if((first_alarm || diskmon_signal == SIGALRM) && validtime){
 cprintf("disk_monitor: decide if scan the target...\n");
 			diskmon_alarm_sec = 0;
 			port_num = 0;
@@ -3511,7 +3513,7 @@ cprintf("disk_monitor: %d: wait_second=%d...\n", port_num, wait_second[port_num]
 		}
 
 		if(first_alarm || diskmon_signal == SIGUSR2 || diskmon_signal == SIGALRM){
-			if(first_alarm)
+			if(first_alarm && validtime)
 				first_alarm = 0;
 
 cprintf("disk_monitor: wait_second=%d...\n", diskmon_alarm_sec);
