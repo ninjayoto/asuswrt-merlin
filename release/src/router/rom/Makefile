@@ -91,6 +91,10 @@ else
 	rm -f $(INSTALLDIR)/rom/etc/openssl.cnf
 endif
 
+ifneq ($(RTCONFIG_BCMARM),y)
+	rm -f $(INSTALLDIR)/rom/etc/modprobe.conf
+endif
+
 ifeq ($(RTCONFIG_DUALWAN),y)
 	cp -rf rom/etc/static_routes $(INSTALLDIR)/rom/etc/
 endif
