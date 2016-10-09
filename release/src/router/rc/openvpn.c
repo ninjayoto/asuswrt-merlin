@@ -31,6 +31,8 @@
 #define BUF_SIZE 256
 #define IF_SIZE 8
 
+extern struct nvram_tuple router_defaults[];
+
 static int ovpn_waitfor(const char *name)
 {
 	int pid, n = 5;
@@ -1850,4 +1852,36 @@ void update_vpnrouting(int unit){
 	char tmp[56];
 	snprintf(tmp, sizeof (tmp), "dev=tun1%d script_type=rmupdate /usr/sbin/vpnrouting.sh", unit);
 	system(tmp);
+}
+
+void reset_vpn_settings(int type, int unit){
+	struct nvram_tuple *t;
+	char prefix[]="vpn_XXX_SERVICX_", tmp[100];
+	char word[256], *next;
+	char *service;
+
+	if (type == 1)
+		service = "server";
+	else if (type == 2)
+		service = "client";
+	else
+		return;
+
+	logmessage("openvpn","Resetting %s (unit %d) to default settings", service, unit);
+
+	snprintf(prefix, sizeof(prefix), "vpn_%s%d_", service, unit);
+
+	for (t = router_defaults; t->name; t++) {
+		if (strncmp(t->name, prefix, 12)==0) {
+			nvram_set(t->name, t->value);
+		}
+	}
+
+	snprintf(prefix, sizeof(prefix), "vpn_crt_%s%d_", service, unit);
+
+	for (t = router_defaults; t->name; t++) {
+		if (strncmp(t->name, prefix, 16)==0) {
+			nvram_set(t->name, t->value);
+		}
+	}
 }

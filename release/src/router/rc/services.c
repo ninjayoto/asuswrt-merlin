@@ -5403,6 +5403,14 @@ check_ddr_done:
 	else if (strncmp(script, "vpnrouting" ,10) == 0) {
 		if (action & RC_SERVICE_START) update_vpnrouting(atoi(&script[10]));
 	}
+	else if (strncmp(script, "clearvpnserver", 14) == 0)
+	{
+		reset_vpn_settings(1, nvram_get_int("vpn_server_unit"));
+	}
+	else if (strncmp(script, "clearvpnclient", 14) == 0)
+	{
+		reset_vpn_settings(2, nvram_get_int("vpn_client_unit"));
+	}
 #endif
 #if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD) || defined(RTCONFIG_OPENVPN)
 	else if (strcmp(script, "vpnd") == 0)

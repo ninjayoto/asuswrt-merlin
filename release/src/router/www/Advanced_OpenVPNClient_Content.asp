@@ -675,6 +675,16 @@ function pullLANIPList(obj){
 		hideClients_Block();
 }
 
+function defaultSettings() {
+	if (confirm("WARNING: This will reset this OpenVPN client to factory default settings!\n\nKeys and certificates associated to this instance will also be DELETED!\n\nProceed?")) {
+		document.form.action_script.value = "stop_vpnclient" + openvpn_unit + ";clearvpnclient" + openvpn_unit;
+		parent.showLoading();
+		document.form.submit();
+	} else {
+		return false;
+	}
+}
+
 </script>
 </head>
 
@@ -1151,6 +1161,7 @@ function pullLANIPList(obj){
 					</tr>
 					</table>
 					<div class="apply_gen">
+						<input type="button" id="restoreButton" class="button_gen" value="<#Setting_factorydefault_value#>" onclick="defaultSettings();">
 						<input name="button" type="button" class="button_gen" onclick="applyRule();" value="<#CTL_apply#>"/>
 			        </div>
 				</td></tr>

@@ -786,6 +786,21 @@ function change_vpn_unit(val){
         document.openvpn_form.submit();
 }
 
+function enable_openvpn(state){
+	var tmp_value = "";
+
+	for (var i=1; i < 3; i++) {
+		if (i == openvpn_unit) {
+			if (state == 1)
+				tmp_value += ""+i+",";
+		} else {
+			if (document.openvpn_form.vpn_serverx_eas.value.indexOf(''+(i)) >= 0)
+				tmp_value += ""+i+","
+		}
+	}
+	document.openvpn_form.vpn_serverx_eas.value = tmp_value;
+}
+
 function cal_panel_block(){
 	var blockmarginLeft;
 	if (window.innerWidth)
@@ -809,6 +824,18 @@ function cal_panel_block(){
 
 	$("tlsKey_panel").style.marginLeft = blockmarginLeft+"px";
 }
+
+function defaultSettings() {
+	if (confirm("WARNING: This will reset this OpenVPN server to factory default settings!\n\nKeys and certificates associated to this instance will also be DELETED!\n\nProceed?")) {
+		document.openvpn_form.action_script.value = "stop_vpnserver" + openvpn_unit + ";clearvpnserver" + openvpn_unit;
+		enable_openvpn(0);
+		parent.showLoading();
+		document.openvpn_form.submit();
+	} else {
+		return false;
+	}
+}
+
 </script>
 </head>
 
@@ -1395,6 +1422,7 @@ function cal_panel_block(){
 								</table>
 
 								<div class="apply_gen">
+									<input type="button" id="restoreButton" class="button_gen" value="<#Setting_factorydefault_value#>" onclick="defaultSettings();">
 									<input name="button" type="button" class="button_gen" onclick="openvpn_applyRule();" value="<#CTL_apply#>"/>
 			        			</div>
 							</td>
