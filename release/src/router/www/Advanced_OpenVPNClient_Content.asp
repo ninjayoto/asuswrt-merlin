@@ -191,6 +191,10 @@ var clientlist_array = '<% nvram_get("vpn_client_clientlist"); %>';
 
 function initial()
 {
+	var ipv6_warning = ('<% nvram_get("ipv6_service"); %>' == "disabled") ? 0 : 1;
+	if (ipv6_warning)
+		document.getElementById('ipv6warning').style.display = "";
+
 	show_menu();
 	showclientlist();
 	showLANIPList();
@@ -822,6 +826,7 @@ function defaultSettings() {
                            the required keys,<br>otherwise you will be unable to turn it on.
                         <p><br>In case of problem, see the <a style="font-weight: bolder;text-decoration:underline;" class="hyperlink" href="Main_LogStatus_Content.asp">System Log</a> for any error message related to openvpn.
                 </div>
+		<span id="ipv6warning" style="color:#FFCC00;display:none;"><br>&nbsp;&nbsp;WARNING: You are running in a dual stack environemnt (IPv4 / IPv6). &nbsp;IPv6 enabled websites may bypass the VPN.<br>&nbsp;&nbsp;To ensure all traffic is routed through the VPN, disable IPv6 on the client or the router.<br>&nbsp;</span>
 
 				<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 					<thead>
