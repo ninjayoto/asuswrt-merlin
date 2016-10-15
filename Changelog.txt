@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E3j9527  (18-October-2016)
+* CHANGED: networkmap: backport some additional ASUS optimizations
+* FIXED: qos: use correct protocol ip for u32 matches
+* FIXED: ctf: don't enable ctf if cstats is enabled (ASUS bug)
+* FIXED: ipv6: change dhcp6c options for prefix lengths <64
+
+
 374.43_2-20E2j9527  (11-October-2016)
 - CHANGED: busybox: (backport) enable module alias support in modutils
 - CHANGED: webui: (backport) implement option to reset an OpenVPN instance to its default settings
