@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
 			memset(scan_ipaddr, 0x00, 4);
 			memcpy(scan_ipaddr, &router_addr.sin_addr, 3);
 	                arp_timeout.tv_sec = 0;
-        	        arp_timeout.tv_usec = 50000;
+        	        arp_timeout.tv_usec = 10000;
                 	setsockopt(arp_sockfd, SOL_SOCKET, SO_RCVTIMEO, &arp_timeout, sizeof(arp_timeout));//set receive timeout
 			NMP_DEBUG("Starting full scan!\n");
 
@@ -284,16 +284,21 @@ int main(int argc, char *argv[])
 		}
 		else {
 		    arp_ptr = (ARP_HEADER*)(buffer);
-                    NMP_DEBUG_M("*Receive an ARP Packet from: %d.%d.%d.%d, len:%d\n",
-				(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
-				(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
+/*
+                    NMP_DEBUG_M("*Receive an ARP Packet from: %d.%d.%d.%d to %d.%d.%d.%d:%02X:%02X:%02X:%02X - len:%d\n",
+				(int)arp_ptr->source_ipaddr[0],(int)arp_ptr->source_ipaddr[1],
+				(int)arp_ptr->source_ipaddr[2],(int)arp_ptr->source_ipaddr[3],
+				(int)arp_ptr->dest_ipaddr[0],(int)arp_ptr->dest_ipaddr[1],
+				(int)arp_ptr->dest_ipaddr[2],(int)arp_ptr->dest_ipaddr[3],
+                                arp_ptr->dest_hwaddr[0],arp_ptr->dest_hwaddr[1],
+                                arp_ptr->dest_hwaddr[2],arp_ptr->dest_hwaddr[3],
 				arp_getlen);
-
+*/
 		    //Check ARP packet if source ip and router ip at the same network
                     if( !memcmp(my_ipaddr, arp_ptr->source_ipaddr, 3) ) {
 			msg_type = ntohs(arp_ptr->message_type);
 
-			swapbytes16(arp_ptr->message_type);
+//			swapbytes16(arp_ptr->message_type);
 
 			//ARP Response packet to router
 			if( //ARP packet to router
@@ -337,11 +342,13 @@ int main(int argc, char *argv[])
                 	                memcpy(p_client_detail_info_tab->mac_addr[i],
                         	                arp_ptr->source_hwaddr, 6);
 					file_unlock(lock);
+					/*
 					real_num = p_client_detail_info_tab->detail_info_num;
 					p_client_detail_info_tab->detail_info_num = i;
 					FindAllApp(my_ipaddr, p_client_detail_info_tab);
 					FindHostname(p_client_detail_info_tab);
 					p_client_detail_info_tab->detail_info_num = real_num;
+					*/
 					break;
 				}
 
@@ -411,7 +418,9 @@ int main(int argc, char *argv[])
 	    if(p_client_detail_info_tab->detail_info_num < p_client_detail_info_tab->ip_mac_num) {
 		nvram_set("networkmap_status", "1");
 		FindAllApp(my_ipaddr, p_client_detail_info_tab);
+		lock = file_lock("networkmap");
 		FindHostname(p_client_detail_info_tab);
+		file_unlock(lock);
 
 		#ifdef DEBUG //Fill client detail info table
                 fp_ip=fopen("/var/client_detail_info.txt", "a");
