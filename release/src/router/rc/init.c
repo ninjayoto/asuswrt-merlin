@@ -3876,6 +3876,8 @@ fa_mode_adjust()
 		if (!nvram_match("ctf_disable_force", "1")
 			&& nvram_get_int("ctf_fa_cap")
  			&& !nvram_get_int("qos_enable")
+			&& !nvram_get_int("cstats_enable")
+			&& !nvram_match("gmac3_enable", "1")
 		) {
 			if (!nvram_get_int("ctf_fa_mode"))
 				nvram_set_int("ctf_fa_mode", CTF_FA_NORMAL);
