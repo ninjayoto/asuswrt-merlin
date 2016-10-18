@@ -2016,7 +2016,7 @@ void wan6_up(const char *wan_ifname)
 		}
 
 		// backport from tomato
-		if (nvram_get_int("ipv6_isp_opt") == 1) {
+		if (nvram_get_int("ipv6_isp_opt") & 1) {
 			eval("ip", "-6", "route", "add", "::/0", "dev", (char *)wan_ifname);
 		}
 #if 0

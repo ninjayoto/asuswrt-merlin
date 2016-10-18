@@ -813,6 +813,7 @@ start_dhcp6c(void)
 	int rc;
 	unsigned char ea[ETHER_ADDR_LEN];
 	unsigned long iaid = 0;
+	unsigned long iana = 0;
 	struct {
 		uint16 type;
 		uint16 hwtype;
@@ -860,6 +861,9 @@ start_dhcp6c(void)
 			((unsigned long)(ea[4]) << 8) |
 			((unsigned long)(ea[5]));
 
+		if (nvram_get_int("ipv6_isp_opt") & 4)
+			iana = iaid;
+
 		/* Generate DUID-LL */
 		duid_len = sizeof(duid) + ETHER_ADDR_LEN;
 		duid.type = htons(3);	/* DUID-LL */
@@ -882,7 +886,7 @@ start_dhcp6c(void)
 		if (nvram_get_int("ipv6_dhcp_pd"))
 		fprintf(fp,		"send ia-pd %lu;\n", iaid);
 		if (nvram_match("ipv6_ra_conf", "mset"))
-		fprintf(fp,		"send ia-na %lu;\n", iaid);
+		fprintf(fp,		"send ia-na %lu;\n", iana);
 		fprintf(fp,		"send rapid-commit;\n");
 		if (nvram_match("ipv6_dnsenable", "1"))
 		fprintf(fp,		"request domain-name-servers;\n"
@@ -891,7 +895,7 @@ start_dhcp6c(void)
 				"};\n");
 		if (nvram_get_int("ipv6_dhcp_pd"))
 		fprintf(fp,	"id-assoc pd %lu {\n", iaid);
-		if (nvram_get_int("ipv6_prefix_length") >= 64)
+		if ((nvram_get_int("ipv6_isp_opt") & 2) == 0)
 		fprintf(fp, 	"prefix ::/%d infinity;\n", prefix_len);
 		fprintf(fp,		"prefix-interface %s {\n"
 					"sla-id %d;\n"
@@ -899,7 +903,7 @@ start_dhcp6c(void)
 					"};\n"
 				"};\n", lan_ifname, sla_id, sla_len);
 		if (nvram_match("ipv6_ra_conf", "mset"))
-		fprintf(fp,	"id-assoc na %lu { };\n", iaid);
+		fprintf(fp,	"id-assoc na %lu { };\n", iana);
 	} else {
 		perror("/etc/dhcp6c.conf");
 		return -1;
