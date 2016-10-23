@@ -1018,6 +1018,7 @@ int start_tqos(void)
 //	int down_class_num=6;   // for download class_num = 0x6 / 0x106
 	int overhead = 0;
 	char overheadstr[sizeof("overhead 64 linklayer atm")];
+	unsigned int l, u, v;  // vars for use in intermediate bw calcs
 
 	// judge interface by get_wan_ifname
 	// add Qos iptable rules in mangle table,
@@ -1035,15 +1036,6 @@ int start_tqos(void)
 	if ((f = fopen(qosfn, "w")) == NULL) return -2;
 
 	fprintf(stderr, "[qos] tc START!\n");
-
-	/* qos_burst */
-	i = nvram_get_int("qos_burst0");
-	if (i > 0) sprintf(burst_root, "burst %dk", i);
-		else burst_root[0] = 0;
-
-	i = nvram_get_int("qos_burst1");
-	if (i > 0) sprintf(burst_leaf, "burst %dk", i);
-		else burst_leaf[0] = 0;
 
 	/* r2q */
 	if ((i = nvram_get_int("qos_r2q")) == 0) {
@@ -1085,6 +1077,10 @@ int start_tqos(void)
 	* the BW is set here for each class 
 	*/
 	bw = obw;
+	/* qos_burst root */
+	v = obw / 50; // recommended 2% of rate
+	if (v < 50) v = 50;
+		sprintf(burst_root, "burst %dk cburst %dk", v, v);
 
 #ifdef RTCONFIG_BCMARM
 	switch(nvram_get_int("qos_sched")){
@@ -1217,6 +1213,15 @@ int start_tqos(void)
 
 		if (ceil > 0) sprintf(s, "ceil %ukbit ", calc(bw, ceil));
 			else s[0] = 0;
+
+		// rate in kb/s
+		u = calc(bw, rate);
+
+		// burst rate
+		v = u / 50; // recommended 2% of rate
+		if (v < 50) v = 50;
+		sprintf(burst_leaf, "burst %dk cburst %dk", v, v);
+
 		x = (i + 1) * 10;
 
 		fprintf(f,
@@ -1296,6 +1301,10 @@ int start_tqos(void)
 	// ingress
 	first = 1;
 	bw = ibw;
+	/* qos_burst root */
+	v = ibw / 50; // recommended 2% of rate
+	if (v < 50) v = 50;
+		sprintf(burst_root, "burst %dk cburst %dk", v, v);
 
 	if (bw > 0) {
 		g = buf = strdup(nvram_safe_get("qos_irates"));
