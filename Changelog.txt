@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E5j9527  (23-October-2016)
+* CHANGED: dhcp6s: force separate entry for each name server
+* CHANGED: ipv6: add nvram option to disable rapid-commit
+
+
 374.43_2-20E4j9527  (23-October-2016)
 * CHANGED: webui: resize data windows for log status pages
 - FIXED: kernel-arm: (backport) Patch 2.6.36 kernel against CVE-2016-5195
