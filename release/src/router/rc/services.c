@@ -1177,6 +1177,13 @@ void start_dhcp6s(void)
 	if (strlen(p))
 		fprintf(fp,	"option domain-name \"%s\";\n", p);
 
+	/* set interface options */
+	if ((nvram_get_int("ipv6_isp_opt") & 8) == 0) {
+		fprintf(fp,	"interface %s {\n", nvram_safe_get("lan_ifname"));
+		fprintf(fp,	"	allow rapid-commit;\n");
+		fprintf(fp,	"};\n");
+	}
+
 	/* set DHCP range */
 	if (nvram_get_int("ipv6_autoconf_type")) {
 		/* support stateful with dhcp_pd, update dhcp addr range now that prefix is available */

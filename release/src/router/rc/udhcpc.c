@@ -887,6 +887,7 @@ start_dhcp6c(void)
 		fprintf(fp,		"send ia-pd %lu;\n", iaid);
 		if (nvram_match("ipv6_ra_conf", "mset"))
 		fprintf(fp,		"send ia-na %lu;\n", iana);
+		if ((nvram_get_int("ipv6_isp_opt") & 8) == 0)
 		fprintf(fp,		"send rapid-commit;\n");
 		if (nvram_match("ipv6_dnsenable", "1"))
 		fprintf(fp,		"request domain-name-servers;\n"
