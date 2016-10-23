@@ -501,9 +501,9 @@ function showqos_bw_rulelist(){
 											<th>Queueing Discipline</th>
 											<td>
 												<select name="qos_sched" class="input_option">
-													<option value="0"<% nvram_match("qos_sched", "0","selected"); %>>SFQ (Default)</option>
+													<option value="0"<% nvram_match("qos_sched", "0","selected"); %>>SFQ</option>
 													<option value="1"<% nvram_match("qos_sched", "1","selected"); %>>CODEL</option>
-													<option value="2"<% nvram_match("qos_sched", "2","selected"); %>>FQ_CODEL</option>
+													<option value="2"<% nvram_match("qos_sched", "2","selected"); %>>FQ_CODEL (Default)</option>
 												</select>
 											</td>
 										</tr>
@@ -555,6 +555,7 @@ function showqos_bw_rulelist(){
 													<option value="3"<% nvram_match("qos_default", "3","selected"); %> onclick="changeButton();">Low (Default)</option>
 													<option value="4"<% nvram_match("qos_default", "4","selected"); %> onclick="changeButton();">Lowest</option>
 												</select>
+												<span>&nbsp;&nbsp;(Default level is also used by any VPN connections)</span>
 											</td>
 										</tr>
 
