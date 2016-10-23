@@ -439,11 +439,11 @@ int add_qos_rules(char *pcWANIF)
 		if(strcmp(port, "") == 0 ){
 			sprintf(dport, "%s", "");
 		}
-		else{
-			if(q_leave != NULL) 
-				sprintf(dport, "-m multiport --dport %s", port); // multi port
-			else
-				sprintf(dport, "--dport %s", port); // single port
+		else{ // always use multiport to specify port as source or destination
+//			if(q_leave != NULL)
+				sprintf(dport, "-m multiport --port %s", port); // multi port
+//			else
+//				sprintf(dport, "--dport %s", port); // single port
 		}
 		//fprintf(stderr, "[qos] tmp=%s, q_port=%s, q_leave=%s, port=%s\n", tmp, q_port, q_leave, port ); // tmp test
 
