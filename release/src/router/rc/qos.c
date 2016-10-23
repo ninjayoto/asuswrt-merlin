@@ -1065,12 +1065,15 @@ int start_tqos(void)
         i = nvram_get_int("qos_sfql");
         if (i > 1)
 		sprintf(sfq_limit, "limit %d", i);
+	/*
 	else if (i == 1) {
 		x = (obw/1024) + 10;
 		x = (x > 127) ? 127 : x;
 		sprintf(sfq_limit, "limit %d", x);
 	}
-	else sfq_limit[0] = 0;
+	*/
+	else
+		sfq_limit[0] = 0;
 
 	/* ceiling factor */
 	i = nvram_get_int("qos_cfactor");
