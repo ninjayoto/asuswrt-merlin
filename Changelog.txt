@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E6j9527  (24-October-2016)
+- CHANGED: dropbear: (backport) disable MD5 support, for security reasons
+- CHANGED: vpn: (backport) sync policy rules priorities with Merlin
+- FIXED: build: (backport) autoreconf nano on rebuild, to hopefully work with people using older build environments
+- FIXED: rc: (backport) re-create passwd after the JFFS2 partition is mounted, in case we have custom configs stored there
+- FIXED: kernel-mips: (backport) patch the 2.6.22.19 kernel against CVE-2016-5195
+
+
 374.43_2-20E5j9527  (23-October-2016)
 * CHANGED: dhcp6s: force separate entry for each name server
 * CHANGED: ipv6: add nvram option to disable rapid-commit
