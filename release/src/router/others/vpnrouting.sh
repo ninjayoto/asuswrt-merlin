@@ -100,30 +100,26 @@ init_table(){
 if [ "$dev" == "tun11" ]
 then
 	VPN_IP_LIST=$(nvram get vpn_client1_clientlist)
-	VPN_TBL=111
 	VPN_REDIR=$(nvram get vpn_client1_rgw)
 	VPN_FORCE=$(nvram get vpn_client1_enforce)
-	WAN_PRIO=1000
-	VPN_PRIO=1200
-	START_PRIO=1000
-	END_PRIO=1399
 	VPN_INSTANCE=1
 
 elif [ "$dev" == "tun12" ]
 then
 	VPN_IP_LIST=$(nvram get vpn_client2_clientlist)
-	VPN_TBL=112
 	VPN_REDIR=$(nvram get vpn_client2_rgw)
 	VPN_FORCE=$(nvram get vpn_client2_enforce)
-	WAN_PRIO=1400
-	VPN_PRIO=1600
-	START_PRIO=1400
-	END_PRIO=1799
 	VPN_INSTANCE=2
 else
 	run_custom_script
 	exit 0
 fi
+
+VPN_TBL="ovpnc"$VPN_INSTANCE
+START_PRIO=$((10000+(200*($VPN_INSTANCE-1))))
+END_PRIO=$(($START_PRIO+199))
+WAN_PRIO=$START_PRIO
+VPN_PRIO=$(($START_PRIO+100))
 
 export VPN_GW VPN_IP VPN_TBL VPN_FORCE
 
