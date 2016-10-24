@@ -3273,7 +3273,8 @@ else
 endif
 
 nano/Makefile:
-	cd nano && $(CONFIGURE) --prefix=$(INSTALLDIR)/nano/usr \
+	cd nano && \
+	autoreconf -i -f && $(CONFIGURE) --prefix=$(INSTALLDIR)/nano/usr \
 	CFLAGS="$(EXTRACFLAGS) -Os -I$(TOP)/ncurses/include -ffunction-sections -fdata-sections" \
 	LDFLAGS="$(LDFLAGS) -L$(TOP)/ncurses/lib -ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	PKG_CONFIG_PATH="$(TOP)/ncurses/misc" PKG_CONFIG_LIBDIR="$(TOP)/ncurses/misc"\
