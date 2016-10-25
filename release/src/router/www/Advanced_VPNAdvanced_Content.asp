@@ -161,6 +161,37 @@ ciphersarray = [
 		["RC5-CBC"],
 		["SEED-CBC"]
 ];
+
+var digestsarray = [
+		["DSA"],
+		["DSA-SHA"],
+		["DSA-SHA1"],
+		["DSA-SHA1-old"],
+		["ecdsa-with-SHA1"],
+		["MD4"],
+		["MD5"],
+		["MDC2"],
+		["RIPEMD160"],
+		["RSA-MD4"],
+		["RSA-MD5"],
+		["RSA-MDC2"],
+		["RSA-RIPEMD160"],
+		["RSA-SHA"],
+		["RSA-SHA1"],
+		["RSA-SHA1-2"],
+		["RSA-SHA224"],
+		["RSA-SHA256"],
+		["RSA-SHA384"],
+		["RSA-SHA512"],
+		["SHA"],
+		["SHA1"],
+		["SHA224"],
+		["SHA256"],
+		["SHA384"],
+		["SHA512"],
+		["whirlpool"]
+];
+
 /* initial variables for openvpn end */
 
 function initial(){
@@ -195,13 +226,25 @@ function initial(){
 	// Cipher list
 	free_options(document.openvpn_form.vpn_server_cipher);
 	currentcipher = "<% nvram_get("vpn_server_cipher"); %>";
-	add_option(document.openvpn_form.vpn_server_cipher, "Default","default",(currentcipher == "Default"));
+	add_option(document.openvpn_form.vpn_server_cipher, "Default","default",(currentcipher == "default"));
 	add_option(document.openvpn_form.vpn_server_cipher, "None","none",(currentcipher == "none"));
 
 	for(var i = 0; i < ciphersarray.length; i++){
 		add_option(document.openvpn_form.vpn_server_cipher,
 			ciphersarray[i][0], ciphersarray[i][0],
 			(currentcipher == ciphersarray[i][0]));
+	}
+
+	// Auth Digest
+	free_options(document.openvpn_form.vpn_server_digest);
+	currentdigest = "<% nvram_get("vpn_server_digest"); %>";
+	add_option(document.openvpn_form.vpn_server_digest, "Default","default",(currentdigest == "default"));
+	add_option(document.openvpn_form.vpn_server_digest, "None","none",(currentdigest == "none"));
+
+	for(var i = 0; i < digestsarray.length; i++){
+		add_option(document.openvpn_form.vpn_server_digest,
+			digestsarray[i][0], digestsarray[i][0],
+			(currentdigest == digestsarray[i][0]));
 	}
 
 	// Set these based on a compound field
@@ -1316,11 +1359,20 @@ function defaultSettings() {
 
 									<tr>
 										<th>Encryption cipher</th>
-			        					<td>
-			        						<select name="vpn_server_cipher" class="input_option">
+				        					<td>
+			        							<select name="vpn_server_cipher" class="input_option">
 												<option value="<% nvram_get("vpn_server_cipher"); %>" selected><% nvram_get("vpn_server_cipher"); %></option>
 											</select>
 			   							</td>
+									</tr>
+
+									<tr>
+										<th>Auth digest</th>
+										<td>
+											<select name="vpn_server_digest" class="input_option">
+												<option value="<% nvram_get("vpn_server_digest"); %>" selected><% nvram_get("vpn_server_digest"); %></option>
+											</select>
+										</td>
 									</tr>
 
 									<tr>

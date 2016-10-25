@@ -187,6 +187,36 @@ ciphersarray = [
 		["RC5-OF"]
 ];
 
+var digestsarray = [
+		["DSA"],
+		["DSA-SHA"],
+		["DSA-SHA1"],
+		["DSA-SHA1-old"],
+		["ecdsa-with-SHA1"],
+		["MD4"],
+		["MD5"],
+		["MDC2"],
+		["RIPEMD160"],
+		["RSA-MD4"],
+		["RSA-MD5"],
+		["RSA-MDC2"],
+		["RSA-RIPEMD160"],
+		["RSA-SHA"],
+		["RSA-SHA1"],
+		["RSA-SHA1-2"],
+		["RSA-SHA224"],
+		["RSA-SHA256"],
+		["RSA-SHA384"],
+		["RSA-SHA512"],
+		["SHA"],
+		["SHA1"],
+		["SHA224"],
+		["SHA256"],
+		["SHA384"],
+		["SHA512"],
+		["whirlpool"]
+];
+
 var clientlist_array = '<% nvram_get("vpn_client_clientlist"); %>';
 
 function initial()
@@ -202,8 +232,14 @@ function initial()
 	// Cipher list
 	free_options(document.form.vpn_client_cipher);
 	currentcipher = "<% nvram_get("vpn_client_cipher"); %>";
-	add_option(document.form.vpn_client_cipher, "Default","default",(currentcipher == "Default"));
+	add_option(document.form.vpn_client_cipher, "Default","default",(currentcipher == "default"));
 	add_option(document.form.vpn_client_cipher, "None","none",(currentcipher == "none"));
+
+	// Digest list
+	free_options(document.form.vpn_client_digest);
+	currentdigest = "<% nvram_get("vpn_client_digest"); %>";
+	add_option(document.form.vpn_client_digest, "Default","default",(currentdigest == "default"));
+	add_option(document.form.vpn_client_digest, "None","none",(currentdigest == "none"));
 
 	// Extract the type out of the interface name 
 	// (imported ovpn can result in this being tun3, for example)
@@ -215,6 +251,12 @@ function initial()
 		add_option(document.form.vpn_client_cipher,
 			ciphersarray[i][0], ciphersarray[i][0],
 			(currentcipher == ciphersarray[i][0]));
+	}
+
+	for(var i = 0; i < digestsarray.length; i++){
+		add_option(document.form.vpn_client_digest,
+			digestsarray[i][0], digestsarray[i][0],
+			(currentdigest == digestsarray[i][0]));
 	}
 
 	// Set these based on a compound field
@@ -1060,6 +1102,15 @@ function defaultSettings() {
 								<option value="<% nvram_get("vpn_client_cipher"); %>" selected><% nvram_get("vpn_client_cipher"); %></option>
 							</select>
 			   			</td>
+					</tr>
+
+					<tr>
+						<th>Auth digest</th>
+						<td>
+							<select name="vpn_client_digest" class="input_option">
+								<option value="<% nvram_get("vpn_client_digest"); %>" selected><% nvram_get("vpn_client_digest"); %></option>
+							</select>
+						</td>
 					</tr>
 
 					<tr>
