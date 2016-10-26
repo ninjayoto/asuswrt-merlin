@@ -49,7 +49,8 @@ function update_upTime(){
 			update_wanTime();
 		},
 		success: function(response){
-			timenow = systime_millsec / 1000;
+			timenow = systime_epoch;
+			systime_epoch += 1;
 			uptime = parseInt(uptimeStr.substring(32,42));
 			if (wanstart > 0) {
 				wantime = timenow - parseInt(wanstart);  //calc wan time

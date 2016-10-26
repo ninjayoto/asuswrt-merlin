@@ -81,6 +81,7 @@ var boottime = parseInt(uptimeStr.substring(32,42));
 var newformat_systime = uptimeStr.substring(8,11) + " " + uptimeStr.substring(5,7) + " " + uptimeStr.substring(17,25) + " " + uptimeStr.substring(12,16);  //Ex format: Jun 23 10:33:31 2008
 var systime_millsec = Date.parse(newformat_systime); // millsec from system
 var JS_timeObj = new Date(); // 1970.1.1
+var systime_epoch = Math.round(JS_timeObj.getTime() / 1000);
 var wan_route_x = "";
 var wan_nat_x = "";
 var wan_proto = "";
