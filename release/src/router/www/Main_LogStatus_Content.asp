@@ -99,6 +99,10 @@ function update_upTime(){
 			Minutes = Math.floor(wantime % 3600 / 60);
 			Seconds = Math.floor(wantime % 60);
 
+			if (Days < 0 || Hours < 0 || Minutes < 0 || Seconds < 0) {  //block transients during up/down
+				Days = 0; Hours = 0; Minutes = 0; Seconds = 0;
+			}
+
 			$("wan_days").innerHTML = Days;
 			$("wan_hours").innerHTML = Hours;
 			$("wan_minutes").innerHTML = Minutes;
