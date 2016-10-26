@@ -1318,15 +1318,16 @@ void record_conn_status(int wan_unit){
 		timenow = (long int) (time(0));
 		wan_bootdelay = atol(nvram_get("wan_bootdly"));
 		sysinfo(&s_info);
-		if(nvram_match("ntp_sync", "1"))
+		if(nvram_match("ntp_sync", "1")) {
 			sprintf(buf, "wan_t0=%ld", timenow);
+			eval("nvram", "set", buf);
+		}
 		else {
 			sprintf(buf, "wan_bootdly=%ld", wan_bootdelay + s_info.uptime);
 			eval("nvram", "set", buf);
 			sprintf(buf, "wan_t0=%ld", 0);
+			eval("nvram", "set", buf);
 		}
-		eval("nvram", "set", buf);
-		
 	}
 }
 
