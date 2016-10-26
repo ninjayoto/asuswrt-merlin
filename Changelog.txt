@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E7j9527  (28-October-2016)
+- CHANGED: openvpn: (backport) add webui setting for the auth digest alg to OpenVPN client and server
+* CHANGED: ipv6: change default for sending ia-na
+* FIXED: webui: use epoch time instead of new_format systime in WAN uptime calcs
+* FIXED: webui: filter transients in WAN current timer
+* FIXED: wan: stop upnp when stopping wan interface
+* FIXED: firewall: limit dropped packets logging if DoS protection is set
+
+
 374.43_2-20E6j9527  (24-October-2016)
 - CHANGED: dropbear: (backport) disable MD5 support, for security reasons
 - CHANGED: vpn: (backport) sync policy rules priorities with Merlin
