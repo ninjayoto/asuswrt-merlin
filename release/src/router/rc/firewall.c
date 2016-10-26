@@ -2874,14 +2874,18 @@ TRACE_PT("write wl filter\n");
 #endif
 
 	// logdrop chain
-	fprintf(fp,"-A logdrop -m state --state NEW -j LOG --log-prefix \"DROP \" "
+	fprintf(fp,"-A logdrop -m state --state NEW %s -j LOG --log-prefix \"DROP \" "
 		  "--log-tcp-sequence --log-tcp-options --log-ip-options\n"
-		  "-A logdrop -j DROP\n");
+		  "-A logdrop -j DROP\n",
+		  nvram_match("fw_dos_x", "1") ? "-m limit --limit 4/sec" : ""
+		);
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
-	fprintf(fp_ipv6,"-A logdrop -m state --state NEW -j LOG --log-prefix \"DROP \" "
+	fprintf(fp_ipv6,"-A logdrop -m state --state NEW %s -j LOG --log-prefix \"DROP \" "
 		  "--log-tcp-sequence --log-tcp-options --log-ip-options\n"
-		  "-A logdrop -j DROP\n");
+		  "-A logdrop -j DROP\n",
+		  nvram_match("fw_dos_x", "1") ? "-m limit --limit 4/sec" : ""
+		);
 #endif
 
 TRACE_PT("write url filter\n");
@@ -4002,14 +4006,18 @@ TRACE_PT("write wl filter\n");
 #endif
 
 	// logdrop chain
-	fprintf(fp,"-A logdrop -m state --state NEW -j LOG --log-prefix \"DROP \" "
+	fprintf(fp,"-A logdrop -m state --state NEW %s -j LOG --log-prefix \"DROP \" "
 		  "--log-tcp-sequence --log-tcp-options --log-ip-options\n"
-		  "-A logdrop -j DROP\n");
+		  "-A logdrop -j DROP\n",
+		  nvram_match("fw_dos_x", "1") ? "-m limit --limit 4/sec" : ""
+		);
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
-	fprintf(fp_ipv6, "-A logdrop -m state --state NEW -j LOG --log-prefix \"DROP \" "
+	fprintf(fp_ipv6, "-A logdrop -m state --state NEW %s -j LOG --log-prefix \"DROP \" "
 		  "--log-tcp-sequence --log-tcp-options --log-ip-options\n"
-		  "-A logdrop -j DROP\n");
+		  "-A logdrop -j DROP\n",
+		  nvram_match("fw_dos_x", "1") ? "-m limit --limit 4/sec" : ""
+		);
 #endif
 
 TRACE_PT("write url filter\n");
