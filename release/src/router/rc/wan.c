@@ -1800,6 +1800,7 @@ stop_wan_if(int unit)
 #endif
 
 		stop_igmpproxy();
+		stop_upnp();
 
 		killall("zcip", SIGTERM);
 	}
