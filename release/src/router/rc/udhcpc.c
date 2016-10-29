@@ -861,7 +861,7 @@ start_dhcp6c(void)
 			((unsigned long)(ea[4]) << 8) |
 			((unsigned long)(ea[5]));
 
-		if (nvram_get_int("ipv6_isp_opt") & 4)
+		if ((nvram_get_int("ipv6_isp_opt") & 4) == 0)
 			iana = iaid;
 
 		/* Generate DUID-LL */
