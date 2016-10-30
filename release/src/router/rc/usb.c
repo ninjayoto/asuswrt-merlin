@@ -1838,19 +1838,23 @@ void write_ftpd_conf()
 void
 start_ftpd(void)
 {
-	if(getpid()!=1) {
+	pid_t pid;
+	char *vsftpd_argv[] = { "vsftpd", "/etc/vsftpd.conf", NULL };
+
+	if (!nvram_get_int("enable_ftp"))
+		return;
+
+	if (getpid() != 1) {
 		notify_rc_after_wait("start_ftpd");
 		return;
 	}
-
-	if (nvram_match("enable_ftp", "0")) return;
 
 	write_ftpd_conf();
 
 	killall("vsftpd", SIGHUP);
 
 	if (!pids("vsftpd"))
-		system("vsftpd /etc/vsftpd.conf &");
+		_eval(vsftpd_argv, NULL, 0, &pid);
 
 	if (pids("vsftpd"))
 		logmessage("FTP server", "daemon is started");
