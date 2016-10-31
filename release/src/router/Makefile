@@ -1402,8 +1402,14 @@ ftp_dep=openssl
 else
 ftp_dep=
 endif
+
 vsftpd: $(ftp_dep)
 	@$(SEP)
+ifeq ($(RTCONFIG_FTP_SSL),y)
+	-cp vsftpd/builddefs-ssl.h vsftpd/builddefs.h
+else
+	-cp vsftpd/builddefs-nossl.h vsftpd/builddefs.h
+endif
 	$(MAKE) -C vsftpd
 
 vsftpd-install: vsftpd
