@@ -567,13 +567,13 @@ void stop_usb(void)
 	if (disabled || nvram_get_int("usb_uhci") != 1) modprobe_r(USBUHCI_MOD);
 	if (disabled || nvram_get_int("usb_usb2") != 1) modprobe_r(USB20_MOD);
 #if defined (RTCONFIG_USB_XHCI)
-#if defined(RTN65U)
-	if (disabled) modprobe_r(USB30_MOD);
-#elif defined(RTCONFIG_XHCIMODE)
-	modprobe_r(USB30_MOD);
-#else
+//#if defined(RTN65U)
+//	if (disabled) modprobe_r(USB30_MOD);
+//#elif defined(RTCONFIG_XHCIMODE)
+//	modprobe_r(USB30_MOD);
+//#else
 	if (disabled || nvram_get_int("usb_usb3") != 1) modprobe_r(USB30_MOD);
-#endif
+//#endif
 #endif
 
 	// only unload core modules if usb is disabled
