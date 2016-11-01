@@ -113,8 +113,8 @@ function change_wan_unit(obj){
 	
 	if(obj.options[obj.selectedIndex].text == "USB") {
 		document.form.current_page.value = "Advanced_Modem_Content.asp";
-	}else if(obj.options[obj.selectedIndex].text == "WAN"|| obj.options[obj.selectedIndex].text == "Ethernet LAN"){
-		return false;					
+//	}else if(obj.options[obj.selectedIndex].text == "WAN"|| obj.options[obj.selectedIndex].text == "Ethernet LAN"){
+//		return false;					
 	}
 
 	FormActions("apply.cgi", "change_wan_unit", "", "");
