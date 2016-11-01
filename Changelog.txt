@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20E9j9527  (2-November-2016)
+* CHANGED: ipv6: provide separate rapid-commit nvram options for client and server
+* CHANGED: sys: add export TZ to spawned shell
+* FIXED: usb: only remove usb3 modules at start of reboot if disabled
+* FIXED: webui: fix option display for dual wan with ethernet
+
+
 374.43_2-20E8j9527  (31-October-2016)
 - CHANGED: usb: update ftp daemon start method
 - CHANGED: vsftpd: (backport) add ssl support
