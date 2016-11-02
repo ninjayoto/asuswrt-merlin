@@ -1178,7 +1178,7 @@ void start_dhcp6s(void)
 		fprintf(fp,	"option domain-name \"%s\";\n", p);
 
 	/* set interface options */
-	if ((nvram_get_int("ipv6_isp_opt") & 8) == 0) {
+	if ((nvram_get_int("ipv6_isp_opt") & 16) == 0) {
 		fprintf(fp,	"interface %s {\n", nvram_safe_get("lan_ifname"));
 		fprintf(fp,	"	allow rapid-commit;\n");
 		fprintf(fp,	"};\n");
