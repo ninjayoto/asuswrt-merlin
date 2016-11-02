@@ -74,6 +74,10 @@ static char mac_clone[MAX_MAC_NUM][18];
 
 void convert_wan_nvram(char *prefix, int unit);
 
+#ifdef RTCONFIG_IPV6
+static int ipv6_force_complete = 0;
+#endif
+
 #if defined(DSL_N55U) || defined(DSL_N55U_B)
 int classATargetTable[]={
 	1,
@@ -1975,7 +1979,6 @@ int update_resolvconf(void)
 }
 
 #ifdef RTCONFIG_IPV6
-static ipv6_force_complete = 0;
 void wan6_up(const char *wan_ifname)
 {
 	char addr6[INET6_ADDRSTRLEN + 4];
