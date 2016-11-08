@@ -920,8 +920,8 @@ function pass_checked(obj){
 			<tr id="dnssec_tr" style="display:none;">
 				<th>Enable DNSSEC support</th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="dnssec_enable" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="dnssec_enable" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="wan_dnssec_enable" <% nvram_match("wan_dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="wan_dnssec_enable" <% nvram_match("wan_dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
         		</table>

@@ -696,6 +696,11 @@ struct nvram_tuple router_defaults[] = {
 	{ "wan_dhcpc_options",""},  // Optional arguments for udhcpc
 	{ "wan_mtu", "1500"},		// WAN MTU (non-PPP based)
 
+	// DNSSEC option for dnsmasq
+#ifdef RTCONFIG_DNSSEC
+	{ "wan_dnssec_enable", "0" },
+#endif
+
 	// VPN+DHCP, a sperated nvram to control this function
 	{ "wan_vpndhcp", "1"},
 
@@ -1036,9 +1041,6 @@ struct nvram_tuple router_defaults[] = {
 	{ "dnsfilter_custom1", "8.8.8.8"},	/* User-defined DNS filter 1 */
 	{ "dnsfilter_custom2", "8.8.8.8"},     /* User-defined DNS filter 2 */
 	{ "dnsfilter_custom3", "8.8.8.8"},     /* User-defined DNS filter 3 */
-#endif
-#ifdef RTCONFIG_DNSSEC
-	{ "dnssec_enable", "0" },
 #endif
 	{ "fw_enable_x", "1" },
 	{ "fw_dos_x", "0" },

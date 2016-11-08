@@ -78,7 +78,12 @@ static void ntp_service()
 #endif
 
 #ifdef RTCONFIG_DNSSEC
-		if (nvram_match("dnssec_enable", "1")) {
+		int unit;
+		char tmp1[32], prefix[] = "wanXXXXXXXXXX_";
+
+		unit = wan_primary_ifunit();
+		snprintf(prefix, sizeof(prefix), "wan%d_", unit);
+		if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1")) {
 			reload_dnsmasq();
 		}
 #endif

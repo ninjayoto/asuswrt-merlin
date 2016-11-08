@@ -571,6 +571,9 @@ void start_dnsmasq(int force)
 	char *lan_ipaddr;
 	char *nv, *nv2;
 	int i, n;
+	int unit;
+	char tmp1[32], prefix[] = "wanXXXXXXXXXX_";
+	char nvram_name[16], wan_proto[16];
 
 	TRACE_PT("begin\n");
 
@@ -827,7 +830,9 @@ void start_dnsmasq(int force)
 #endif
 
 #ifdef RTCONFIG_DNSSEC
-	if (nvram_match("dnssec_enable", "1")) {
+	unit = wan_primary_ifunit();
+	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
+	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1")) {
 		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
 		            "dnssec\n");
 
@@ -871,8 +876,8 @@ void start_dnsmasq(int force)
 	}
 
 /* TODO: remove it for here !!!*/
-	int unit;
-	char prefix[8], nvram_name[16], wan_proto[16];
+//	int unit;
+//	char prefix[8], nvram_name[16], wan_proto[16];
 
 	for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){ // Multipath
 		if(unit != wan_primary_ifunit()
@@ -927,7 +932,12 @@ void restart_dnsmasq(int force)
 void reload_dnsmasq(void)
 {
 #ifdef RTCONFIG_DNSSEC
-	if (nvram_match("dnssec_enable", "1") && (!nvram_match("ntp_ready","1"))) {
+	int unit;
+	char tmp1[32], prefix[] = "wanXXXXXXXXXX_";
+
+	unit = wan_primary_ifunit();
+	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
+	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1") && (!nvram_match("ntp_ready","1"))) {
 		/* Don't reload, as it would prematurely enable timestamp validation */
 		stop_dnsmasq(0);
 		sleep(1);
