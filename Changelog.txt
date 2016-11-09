@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20EAj9527  (9-November-2016)
+* CHANGED: dnssec: add separate settings for dual wan environments
+* FIXED: ftp: add missing builddef files for ssl support
+
+
 374.43_2-20E9j9527  (2-November-2016)
 * CHANGED: ipv6: provide separate rapid-commit nvram options for client and server
 * CHANGED: sys: add export TZ to spawned shell
