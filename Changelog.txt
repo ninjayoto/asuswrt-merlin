@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20EBj9527  (16-November-2016)
+* CHANGED: ipv6: (MIPS) add debug logs for processes adding ipv6 routes
+* CHANGED: ipv6: (ARM) add debug logs for processes adding ipv6 routes
+* FIXED: webui: fix router address display in ipv6 log page
+* FIXED: dnsmasq: only add dualwan nameservers if second wan active
+* FIXED: qis: iptv options display during setup
+* FIXED: qis: hang when setting internet type during setup
+
+
 374.43_2-20EAj9527  (9-November-2016)
 * CHANGED: dnssec: add separate settings for dual wan environments
 * FIXED: ftp: add missing builddef files for ssl support
