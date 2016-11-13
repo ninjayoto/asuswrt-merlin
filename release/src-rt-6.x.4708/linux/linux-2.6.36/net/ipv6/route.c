@@ -1850,6 +1850,14 @@ int ipv6_route_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 
 		rtmsg_to_fib6_config(net, &rtmsg, &cfg);
 
+		printk(KERN_DEBUG "IPV6 ROUTE %S via IOCTL\n",
+			(cmd == SIOCADDRT) ? "ADD" : "REMOVE"); 
+		printk(KERN_DEBUG "SOURCE is %pI6c\n", &cfg.fc_src);
+		printk(KERN_DEBUG "DST is %pI6c\n", &cfg.fc_dst);
+		printk(KERN_DEBUG "PROCESS is %d(%s)\n", current->pid, current->comm);
+		printk(KERN_DEBUG "PARENT PROCESS is %d(%s)\n", current->parent->pid,
+							       current->parent->comm);
+
 		rtnl_lock();
 		switch (cmd) {
 		case SIOCADDRT:
@@ -2161,6 +2169,13 @@ static int inet6_rtm_newroute(struct sk_buff *skb, struct nlmsghdr* nlh, void *a
 	err = rtm_to_fib6_config(skb, nlh, &cfg);
 	if (err < 0)
 		return err;
+
+	printk(KERN_DEBUG "IPV6 ROUTE ADD via NETLINK\n");
+	printk(KERN_DEBUG "SOURCE is %pI6c\n", &cfg.fc_src);
+	printk(KERN_DEBUG "DST is %pI6c\n", &cfg.fc_dst);
+	printk(KERN_DEBUG "PROCESS is %d(%s)\n", current->pid, current->comm);
+	printk(KERN_DEBUG "PARENT PROCESS is %d(%s)\n", current->parent->pid,
+						       current->parent->comm);
 
 	return ip6_route_add(&cfg);
 }
