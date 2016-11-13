@@ -190,10 +190,10 @@ int copy_routes(int table){
 
 /*
  * the priority of routing rules:
- * pref 100: user's routes.
- * pref 200: from wan's ip, from wan's DNS.
- * pref 300: ISP's routes.
- * pref 400: to wan's gateway, to wan's DNS.
+ * pref 20100: user's routes.
+ * pref 20200: from wan's ip, from wan's DNS.
+ * pref 20300: ISP's routes.
+ * pref 20400: to wan's gateway, to wan's DNS.
  */
 int add_multi_routes(void)
 {
@@ -279,19 +279,19 @@ int add_multi_routes(void)
 
 			// set the rules of wan[X]'s ip and gateway for multi routing tables.
 			memset(cmd2, 0, 2048);
-			sprintf(cmd2, "ip rule del pref 200 from %s table %d", wan_ip, table);
+			sprintf(cmd2, "ip rule del pref 20200 from %s table %d", wan_ip, table);
 			system(cmd2);
 
 			memset(cmd2, 0, 2048);
-			sprintf(cmd2, "ip rule add pref 200 from %s table %d", wan_ip, table);
+			sprintf(cmd2, "ip rule add pref 20200 from %s table %d", wan_ip, table);
 			system(cmd2);
 
 			memset(cmd2, 0, 2048);
-			sprintf(cmd2, "ip rule del pref 400 to %s table %d", wan_gate, table);
+			sprintf(cmd2, "ip rule del pref 20400 to %s table %d", wan_gate, table);
 			system(cmd2);
 
 			memset(cmd2, 0, 2048);
-			sprintf(cmd2, "ip rule add pref 400 to %s table %d", wan_gate, table);
+			sprintf(cmd2, "ip rule add pref 20400 to %s table %d", wan_gate, table);
 			system(cmd2);
 
 			// set the routes for multi routing tables.
@@ -328,11 +328,11 @@ int add_multi_routes(void)
 
 					if(rtable == table){
 						memset(cmd2, 0, 2048);
-						sprintf(cmd2, "ip rule del pref 100 from %s to %s table %d", rfrom, rto, rtable);
+						sprintf(cmd2, "ip rule del pref 20100 from %s to %s table %d", rfrom, rto, rtable);
 						system(cmd2);
 
 						memset(cmd2, 0, 2048);
-						sprintf(cmd2, "ip rule add pref 100 from %s to %s table %d", rfrom, rto, rtable);
+						sprintf(cmd2, "ip rule add pref 20100 from %s to %s table %d", rfrom, rto, rtable);
 						system(cmd2);
 					}
 	 			}
@@ -355,11 +355,11 @@ int add_multi_routes(void)
 						char *token = strtok(line, "\n");
 
 						memset(cmd2, 0, 2048);
-						sprintf(cmd2, "ip rule del pref 300 %s table %d", token, table);
+						sprintf(cmd2, "ip rule del pref 20300 %s table %d", token, table);
 						system(cmd2);
 
 						memset(cmd2, 0, 2048);
-						sprintf(cmd2, "ip rule add pref 300 %s table %d", token, table);
+						sprintf(cmd2, "ip rule add pref 20300 %s table %d", token, table);
 						system(cmd2);
 					}
 					fclose(fp);
@@ -411,17 +411,17 @@ int add_multi_routes(void)
 				// set the rules for the DNS servers.
 				foreach(word, wan_dns, next) {
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule del pref 200 from %s table %d", word, table);
+					sprintf(cmd2, "ip rule del pref 20200 from %s table %d", word, table);
 					system(cmd2);
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule add pref 200 from %s table %d", word, table);
+					sprintf(cmd2, "ip rule add pref 20200 from %s table %d", word, table);
 					system(cmd2);
 
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule del pref 400 to %s table %d", word, table);
+					sprintf(cmd2, "ip rule del pref 20400 to %s table %d", word, table);
 					system(cmd2);
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule add pref 400 to %s table %d", word, table);
+					sprintf(cmd2, "ip rule add pref 20400 to %s table %d", word, table);
 					system(cmd2);
 				}
 			}
@@ -432,17 +432,17 @@ int add_multi_routes(void)
 				// set the rules for the DNS servers.
 				foreach(word, wan_dns, next) {
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule del pref 200 from %s table %d", word, table);
+					sprintf(cmd2, "ip rule del pref 20200 from %s table %d", word, table);
 					system(cmd2);
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule add pref 200 from %s table %d", word, table);
+					sprintf(cmd2, "ip rule add pref 20200 from %s table %d", word, table);
 					system(cmd2);
 
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule del pref 400 to %s table %d", word, table);
+					sprintf(cmd2, "ip rule del pref 20400 to %s table %d", word, table);
 					system(cmd2);
 					memset(cmd2, 0, 2048);
-					sprintf(cmd2, "ip rule add pref 400 to %s table %d", word, table);
+					sprintf(cmd2, "ip rule add pref 20400 to %s table %d", word, table);
 					system(cmd2);
 				}
 			}
