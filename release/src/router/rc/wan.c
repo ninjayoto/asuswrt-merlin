@@ -1917,6 +1917,10 @@ int update_resolvconf(void)
 	// If dns not set to exclusive
 	if (dnsstrict != 3) {
 #endif
+#ifdef RTCONFIG_DUALWAN
+		char * wans_dualwan;
+		wans_dualwan = nvram_safe_get("wans_dualwan");
+#endif
 		for (unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; unit++) {
 			char *wan_dns, *wan_xdns;
 
@@ -1930,9 +1934,21 @@ int update_resolvconf(void)
 
 			if (!*wan_dns && !*wan_xdns)
 				continue;
+#ifdef RTCONFIG_DUALWAN
+			int i = 0;
+			foreach(word, wans_dualwan, next) {
+				if (i==unit) {
+					if (strcmp(word,"none"))
+						foreach(word, (*wan_dns ? wan_dns : wan_xdns), next)
+							fprintf(fp, "nameserver %s\n", word); 
+				}
+				i++;
+			}
+#else
 
 			foreach(word, (*wan_dns ? wan_dns : wan_xdns), next)
 				fprintf(fp, "nameserver %s\n", word);
+#endif
 		}
 #ifdef RTCONFIG_OPENVPN
 	}
