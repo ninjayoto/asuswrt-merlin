@@ -533,6 +533,9 @@ function check_DUT(){
 	<input type="hidden" name="switch_wan2tagid" value="<% nvram_get("switch_wan2tagid"); %>">
 	<input type="hidden" name="switch_wan2prio" value="<% nvram_get("switch_wan2prio"); %>">
 	<input type="hidden" name="switch_stb_x" value="<% nvram_get("switch_stb_x"); %>">
+	<input type="hidden" name="mr_enable_x" value="<% nvram_get("mr_enable_x"); %>">
+	<input type="hidden" name="emf_enable" value="<% nvram_get("emf_enable"); %>">
+	<input type="hidden" name="ttl_inc_enable" value="<% nvram_get("ttl_inc_enable"); %>">
 	<!-- wireless client -->
 	<input type="hidden" name="wlc_band" value="<% nvram_get("wlc_band"); %>">
 	<input type="hidden" name="wlc_ssid" value="<% nvram_char_to_ascii("", "wlc_ssid"); %>">
