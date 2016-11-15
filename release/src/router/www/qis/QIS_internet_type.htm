@@ -167,147 +167,136 @@ function gotoprev_type(){
 
 function ISP_Profile_Selection(isp){
 	if(isp == "none"){
-//		$("wan_stb_x").style.display = "";
-		$("wan_iptv_x").style.display = "none";
-		$("wan_voip_x").style.display = "none";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "none";
+//		document.getElementById("wan_stb_x").style.display = "";
+		document.getElementById("wan_iptv_x").style.display = "none";
+		document.getElementById("wan_voip_x").style.display = "none";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "none";
 		document.applyForm.switch_stb_x.value = "0";
 	}
   	else if(isp == "unifi_home"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "";
-		$("wan_voip_x").style.display = "none";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "";
+		document.getElementById("wan_voip_x").style.display = "none";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "unifi_home";
 		document.applyForm.switch_stb_x.value = "4";
 	}
 	else if(isp == "unifi_biz"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "none";
-		$("wan_voip_x").style.display = "none";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "none";
+		document.getElementById("wan_voip_x").style.display = "none";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "unifi_biz";
 		document.applyForm.switch_stb_x.value = "0";
 	}
 	else if(isp == "singtel_mio"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";	
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "singtel_mio";
 		document.applyForm.switch_stb_x.value = "6";
 	}
 	else if(isp == "singtel_others"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "";
-		$("wan_voip_x").style.display = "none";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "";
+		document.getElementById("wan_voip_x").style.display = "none";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "singtel_others";
 		document.applyForm.switch_stb_x.value = "4";
 	}
 	else if(isp == "m1_fiber"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "none";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "none";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "m1_fiber";
                 document.applyForm.switch_stb_x.value = "3";
 	}
         else if(isp == "maxis_fiber_sp"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "none";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "none";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
                 document.applyForm.switch_wantag.value = "maxis_fiber_sp";
                 document.applyForm.switch_stb_x.value = "3";
         }
         else if(isp == "maxis_fiber"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "none";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "none";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
                 document.applyForm.switch_wantag.value = "maxis_fiber";
                 document.applyForm.switch_stb_x.value = "3";
         }
         else if(isp == "meo") {
-//		$("wan_stb_x").style.display = "";
-		$("wan_iptv_x").style.display = "";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "";
-		$("wan_iptv_port4_x").style.display = "";
-		$("wan_voip_port3_x").style.display = "";
-		$("mr_enable_x").style.display = "";	
+//		document.getElementById("wan_stb_x").style.display = "";
+		document.getElementById("wan_iptv_x").style.display = "";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "";
+		document.getElementById("wan_iptv_port4_x").style.display = "";
+		document.getElementById("wan_voip_port3_x").style.display = "";
 		document.applyForm.switch_wantag.value = "meo";
 		document.applyForm.switch_stb_x.value = "4";
         }
         else if(isp == "vodafone") {
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "none";
-		$("wan_iptv_port4_x").style.display = "none";
-		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "";	
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "none";
+		document.getElementById("wan_iptv_port4_x").style.display = "none";
+		document.getElementById("wan_voip_port3_x").style.display = "none";
 		document.applyForm.switch_wantag.value = "vodafone";
 		document.applyForm.switch_stb_x.value = "3";
         }
         else if(isp == "hinet") {
-//		$("wan_stb_x").style.display = "";
-		$("wan_iptv_x").style.display = "";
-		$("wan_voip_x").style.display = "";
-		$("wan_internet_x").style.display = "";
-		$("wan_iptv_port4_x").style.display = "";
-		$("wan_voip_port3_x").style.display = "";
-		$("mr_enable_x").style.display = "";	
+//		document.getElementById("wan_stb_x").style.display = "";
+		document.getElementById("wan_iptv_x").style.display = "";
+		document.getElementById("wan_voip_x").style.display = "";
+		document.getElementById("wan_internet_x").style.display = "";
+		document.getElementById("wan_iptv_port4_x").style.display = "";
+		document.getElementById("wan_voip_port3_x").style.display = "";
 		document.applyForm.switch_wantag.value = "hinet";
 		document.applyForm.switch_stb_x.value = "4";
         }
 	else if(isp == "manual"){
-//		$("wan_stb_x").style.display = "none";
-		$("wan_iptv_x").style.display = "none";
-		$("wan_voip_x").style.display = "none";
-		$("wan_internet_x").style.display = "";
-		$("wan_iptv_port4_x").style.display = "";
-		$("wan_voip_port3_x").style.display = "";
-		$("mr_enable_x").style.display = "";
+//		document.getElementById("wan_stb_x").style.display = "none";
+		document.getElementById("wan_iptv_x").style.display = "none";
+		document.getElementById("wan_voip_x").style.display = "none";
+		document.getElementById("wan_internet_x").style.display = "";
+		document.getElementById("wan_iptv_port4_x").style.display = "";
+		document.getElementById("wan_voip_port3_x").style.display = "";
 		document.applyForm.switch_wantag.value = "manual";
 		document.applyForm.switch_stb_x.value = "6";
 	}
 
 	if(isp == "vodafone" || isp == "meo")
-		$("iptv_title").innerHTML = "Bridge Port";
+		document.getElementById("iptv_title").innerHTML = "Bridge Port: ";
 	else
-		$("iptv_title").innerHTML = "IPTV STB Port";
+		document.getElementById("iptv_title").innerHTML = "IPTV STB Port: ";
 
 	if(isp == "vodafone")
-		$("voip_title").innerHTML = "IPTV STB Port";
+		document.getElementById("voip_title").innerHTML = "IPTV STB Port: ";
 	else
-		$("voip_title").innerHTML = "VoIP Port";
+		document.getElementById("voip_title").innerHTML = "VoIP Port: ";
+
 }
 
 function set_ISP_profile(){
@@ -642,11 +631,11 @@ function detect_if_wan_plug(flag){
 		</span>
 -->
 		<span id="wan_iptv_x">
-		<p style="margin-top:5px;"><span style="color:#66CCFF;">IPTV STB Port: </span><b>LAN4</b></p>
+		<p style="margin-top:5px;"><span id="iptv_title" style="color:#66CCFF;">IPTV STB Port: </span><b>LAN4</b></p>
 		</span>
 		
 		<span id="wan_voip_x">
-		<p><span style="color:#66CCFF;">VoIP Port: </span><b>LAN3</b></p>
+		<p><span id="voip_title" style="color:#66CCFF;">VoIP Port: </span><b>LAN3</b></p>
 		</span>
 
 		<span id="wan_internet_x">
