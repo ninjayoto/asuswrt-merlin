@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-20ECj9527  (20-November-2016)
+* CHANGED: iptables: support --set-mark mark[/mask] on MIPS routers
+
+
 374.43_2-20EBj9527  (16-November-2016)
 * CHANGED: ipv6: (MIPS) add debug logs for processes adding ipv6 routes
 * CHANGED: ipv6: (ARM) add debug logs for processes adding ipv6 routes
