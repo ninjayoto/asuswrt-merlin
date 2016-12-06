@@ -503,7 +503,7 @@ tabtitle[6] = new Array("", "<#menu5_1_1#>", "<#menu5_5_2#>", "<#menu5_5_5#>", "
 tabtitle[7] = new Array("", "<#menu5_6_1#>", "<#menu5_6_2#>", "<#menu5_6_3#>", "<#menu5_6_4#>", "Performance tuning", "<#menu_dsl_setting#>", "<#menu_feedback#>");
 tabtitle[8] = new Array("", "<#menu5_7_2#>", "<#menu5_7_4#>", "<#menu5_7_3#>", "IPv6", "<#menu5_7_6#>", "<#menu5_7_5#>", "<#menu_dsl_log#>", "<#Connections#>");
 tabtitle[9] = new Array("", "<#Network_Analysis#>", "Netstat", "<#NetworkTools_WOL#>");
-tabtitle[10] = new Array("", "QoS", "<#traffic_monitor#>", "Spectrum");
+tabtitle[10] = new Array("", "QoS", "QoS Statistics", "<#traffic_monitor#>", "Spectrum");
 tabtitle[11] = new Array("", "<#Parental_Control#>", "<#YandexDNS#>", "DNS Filtering");
 tabtitle[12] = new Array("", "Sysinfo", "Other Settings");
 
@@ -518,7 +518,7 @@ tablink[6] = new Array("", "Advanced_BasicFirewall_Content.asp", "Advanced_URLFi
 tablink[7] = new Array("", "Advanced_OperationMode_Content.asp", "Advanced_System_Content.asp", "Advanced_FirmwareUpgrade_Content.asp", "Advanced_SettingBackup_Content.asp", "Advanced_PerformanceTuning_Content.asp", "Advanced_ADSL_Content.asp", "Advanced_Feedback.asp");
 tablink[8] = new Array("", "Main_LogStatus_Content.asp", "Main_WStatus_Content.asp", "Main_DHCPStatus_Content.asp", "Main_IPV6Status_Content.asp", "Main_RouteStatus_Content.asp", "Main_IPTStatus_Content.asp", "Main_AdslStatus_Content.asp", "Main_ConnStatus_Content.asp");
 tablink[9] = new Array("", "Main_Analysis_Content.asp", "Main_Netstat_Content.asp", "Main_WOL_Content.asp");
-tablink[10] = new Array("", "QoS_EZQoS.asp", "Main_TrafficMonitor_realtime.asp", "Main_Spectrum_Content.asp", "Main_TrafficMonitor_last24.asp", "Main_TrafficMonitor_daily.asp", "Main_TrafficMonitor_monthly.asp", "Main_TrafficMonitor_devrealtime.asp", "Main_TrafficMonitor_devdaily.asp", "Main_TrafficMonitor_devmonthly.asp", "Advanced_QOSUserPrio_Content.asp", "Advanced_QOSUserRules_Content.asp", "Bandwidth_Limiter.asp");
+tablink[10] = new Array("", "QoS_EZQoS.asp", "QoS_Stats.asp", "Main_TrafficMonitor_realtime.asp", "Main_Spectrum_Content.asp", "Main_TrafficMonitor_last24.asp", "Main_TrafficMonitor_daily.asp", "Main_TrafficMonitor_monthly.asp", "Main_TrafficMonitor_devrealtime.asp", "Main_TrafficMonitor_devdaily.asp", "Main_TrafficMonitor_devmonthly.asp", "Advanced_QOSUserPrio_Content.asp", "Advanced_QOSUserRules_Content.asp", "Bandwidth_Limiter.asp");
 tablink[11] = new Array("", "ParentalControl.asp", "YandexDNS.asp", "DNSFilter.asp");
 tablink[12] = new Array("", "Tools_Sysinfo.asp", "Tools_OtherSettings.asp");
 
@@ -815,20 +815,28 @@ function show_menu(){
 
 	// special case for Traffic Manager and Tools menu
 	if(L1 == traffic_L1_dx || L2 == traffic_L2_dx || L1 == tools_L1){
-		if(current_url.indexOf("QoS_EZQoS") == 0 || current_url.indexOf("Advanced_QOSUserRules_Content") == 0 || current_url.indexOf("Advanced_QOSUserPrio_Content") == 0 || current_url.indexOf("Bandwidth_Limiter") == 0){
+		if(current_url.indexOf("QoS_EZQoS") == 0 ||
+			current_url.indexOf("Advanced_QOSUserRules_Content") == 0 ||
+			current_url.indexOf("Advanced_QOSUserPrio_Content") == 0 ||
+			current_url.indexOf("Bandwidth_Limiter") == 0){
 			L1 = traffic_L1_dx;
 			L2 = traffic_L2_dx;
 			L3 = 1;
                 }
+		else if(current_url.indexOf("QoS_Stats") == 0) {
+			L1 = traffic_L1_dx;
+			L2 = traffic_L2_dx;
+			L3 = 2;
+		}
 		else if(current_url.indexOf("Main_TrafficMonitor_") == 0){
 			L1 = traffic_L1_dx; 
 			L2 = traffic_L2_dx; 
-			L3 = 2;
+			L3 = 3;
 		}
 		else if(current_url.indexOf("Main_Spectrum_") == 0){
 			L1 = traffic_L1_dx; 
 			L2 = traffic_L2_dx; 
-			L3 = 3;
+			L3 = 4;
 		}
 		else if(current_url.indexOf("ParentalControl") == 0){
 			L1 = traffic_L1_dx; 

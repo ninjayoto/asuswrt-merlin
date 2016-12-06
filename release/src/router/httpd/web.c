@@ -101,6 +101,7 @@ typedef unsigned long long u64;
 #include <sys/sysinfo.h>
 
 #include "sysinfo.h"
+#include "data_arrays.h"
 
 #ifdef RTCONFIG_QTN
 #include "web-qtn.h"
@@ -9524,6 +9525,7 @@ struct ej_handler ej_handlers[] = {
 	{ "qrate", ej_qos_packet},
 	{ "ctdump", ej_ctdump},
 	{ "netdev", ej_netdev},
+	{ "get_tcclass_array", ej_tcclass_dump_array},
 
 	{ "iptraffic", ej_iptraffic},
 	{ "iptmon", ej_iptmon},
