@@ -163,6 +163,10 @@ else
 obj-y += dproxy
 obj-y += udhcpd
 endif
+ifeq ($(RTCONFIG_DNSCRYPT),y)
+obj-y += libsodium
+obj-y += dnscrypt
+endif
 obj-$(RTCONFIG_DNSSEC) += nettle
 obj-y += etc
 # obj-y += vlan # use Busybox vconfig
@@ -1247,6 +1251,49 @@ dnsmasq:  $(if $(RTCONFIG_DNSSEC),nettle,)
 dnsmasq-install:
 	install -D dnsmasq/src/dnsmasq $(INSTALLDIR)/dnsmasq/usr/sbin/dnsmasq
 	$(STRIP) $(INSTALLDIR)/dnsmasq/usr/sbin/dnsmasq
+
+libsodium/stamp-h1:
+	cd $(TOP)/libsodium && CC=$(CC) STRIP=$(CROSS_COMPILE)strip \
+	autoreconf -i -f && \
+	$(CONFIGURE) --prefix=/usr --disable-ssp --enable-minimal
+	touch libsodium/stamp-h1
+
+libsodium: libsodium/stamp-h1
+	$(MAKE) -C libsodium $(PARALLEL_BUILD)
+
+libsodium-install: libsodium
+	install -d $(INSTALLDIR)/libsodium/usr/lib
+	install -D libsodium/src/libsodium/.libs/libsodium.so.18.1.0 $(INSTALLDIR)/libsodium/usr/lib/libsodium.so.18.1.0
+	$(STRIP) -s $(INSTALLDIR)/libsodium/usr/lib/libsodium.so.18.1.0
+	cd $(INSTALLDIR)/libsodium/usr/lib/ && \
+		ln -sf libsodium.so.18.1.0 libsodium.so.18 && \
+		ln -sf libsodium.so.18.1.0 libsodium.so
+
+libsodium-clean:
+	-$(MAKE) -C libsodium clean
+	@rm -rf libsodium/stamp-h1
+
+dnscrypt/stamp-h1: libsodium
+	cd $(TOP)/dnscrypt && CC=$(CC) AR=$(AR) STRIP=$(CROSS_COMPILE)strip \
+	autoreconf -i -f && \
+	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
+	CPPFLAGS="-I$(TOP)/libsodium/src/libsodium/include" \
+	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/libsodium/src/libsodium/.libs" \
+	$(CONFIGURE) --prefix=/usr --disable-ssp
+	touch dnscrypt/stamp-h1
+
+dnscrypt: dnscrypt/stamp-h1
+	$(MAKE) -C dnscrypt $(PARALLEL_BUILD)
+
+dnscrypt-install: dnscrypt
+	install -D dnscrypt/src/proxy/.libs/dnscrypt-proxy $(INSTALLDIR)/dnscrypt/usr/sbin/dnscrypt-proxy
+	install -D dnscrypt/src/hostip/.libs/hostip $(INSTALLDIR)/dnscrypt/usr/sbin/hostip
+	$(STRIP) -s $(INSTALLDIR)/dnscrypt/usr/sbin/dnscrypt-proxy
+	$(STRIP) -s $(INSTALLDIR)/dnscrypt/usr/sbin/hostip
+
+dnscrypt-clean:
+	-@$(MAKE) -C dnscrypt clean
+	@rm -rf dnscrypt/stamp-h1 dnscrypt/src/dnscrypt-proxy/.deps dnscrypt/Makefile
 
 nettle/stamp-h1:
 	@cd nettle && \

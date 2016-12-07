@@ -255,6 +255,10 @@ config RTCONFIG_DNSSEC
 	bool "dnsmasq: Enable DNSSEC support"
 	default n
 
+config RTCONFIG_DNSCRYPT
+	bool "dnscrypt: Enable DNSCRYPT support"
+	default n
+
 config RTCONFIG_NANO
 	bool "nano text editor"
 	default n
