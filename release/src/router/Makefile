@@ -1279,7 +1279,7 @@ dnscrypt/stamp-h1: libsodium
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 	CPPFLAGS="-I$(TOP)/libsodium/src/libsodium/include" \
 	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/libsodium/src/libsodium/.libs" \
-	$(CONFIGURE) --prefix=/usr --disable-ssp
+	$(CONFIGURE) --prefix=/usr --disable-ssp --enable-plugins --with-included-ltdl
 	touch dnscrypt/stamp-h1
 
 dnscrypt: dnscrypt/stamp-h1
@@ -1288,6 +1288,7 @@ dnscrypt: dnscrypt/stamp-h1
 dnscrypt-install: dnscrypt
 	install -D dnscrypt/src/proxy/.libs/dnscrypt-proxy $(INSTALLDIR)/dnscrypt/usr/sbin/dnscrypt-proxy
 	install -D dnscrypt/src/hostip/.libs/hostip $(INSTALLDIR)/dnscrypt/usr/sbin/hostip
+	install -D -m 0644 dnscrypt/dnscrypt-resolvers.csv $(INSTALLDIR)/rom/rom/dnscrypt-resolvers.csv
 	$(STRIP) -s $(INSTALLDIR)/dnscrypt/usr/sbin/dnscrypt-proxy
 	$(STRIP) -s $(INSTALLDIR)/dnscrypt/usr/sbin/hostip
 
