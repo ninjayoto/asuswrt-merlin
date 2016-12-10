@@ -1245,7 +1245,7 @@ function updateDateTime()
           <td><input type="text" maxlength="15" class="input_15_table" name="log_ipaddr" value="<% nvram_get("log_ipaddr"); %>" onKeyPress="return is_ipaddr(this, event)" ></td>
         </tr>
         <tr>
-	  <th>Default message log level</th>
+	  <th>Default router message log level</th>
 	  <td>
 		<select name="message_loglevel" class="input_option">
 			<option value="0" <% nvram_match("message_loglevel", "0", "selected"); %>>Emergency</option>
@@ -1261,19 +1261,19 @@ function updateDateTime()
 	  </td>
 	</tr>
 	<tr>
-	  <th>Log only messages with priority greater than</th>
+	  <th>Syslog log level</th>
 	  <td>
 		<select name="log_level" class="input_option">
-			<option value="1" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "1", "selected"); %>>Alert</option>
-			<option value="2" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "2", "selected"); %>>Critical&nbsp;</option>
-			<option value="3" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "3", "selected"); %>>Error</option>
-			<option value="4" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "4", "selected"); %>>Warning</option>
-			<option value="5" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "5", "selected"); %>>Notice</option>
-			<option value="6" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "6", "selected"); %>>Info</option>
-			<option value="7" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "7", "selected"); %>>Debug</option>
-			<option value="8" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "8", "selected"); %>>All</option>
+			<option value="1" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "1", "selected"); %>>Emergency</option>
+			<option value="2" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "2", "selected"); %>>Alert</option>
+			<option value="3" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "3", "selected"); %>>Critical</option>
+			<option value="4" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "4", "selected"); %>>Error</option>
+			<option value="5" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "5", "selected"); %>>Warning</option>
+			<option value="6" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "6", "selected"); %>>Notice</option>
+			<option value="7" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "7", "selected"); %>>Info</option>
+			<option value="8" onClick="hide_dhcp_querylog_option(this.value);" <% nvram_match("log_level", "8", "selected"); %>>Debug</option>
 		</select>
-		<span>&nbsp;&nbsp;Default: Debug</span>
+		<span>&nbsp;&nbsp;Default: Info</span>
 	  </td>
 	</tr>
 	<tr>
