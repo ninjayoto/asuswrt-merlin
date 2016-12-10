@@ -600,7 +600,7 @@ void stop_vpnclient(int clientNum)
 	nvram_set(&buffer[0], "0");
 
 	update_resolvconf();
-	start_dnsmasq();
+	start_dnsmasq(0);
 
 	vpnlog(VPN_LOG_INFO,"VPN GUI client backend stopped.");
 }
@@ -1724,6 +1724,24 @@ void write_vpn_dnsmasq_config(FILE* f)
 					fprintf(f, "strict-order\n");
 					break;
 				}
+#ifdef RTCONFIG_DNSCRYPT
+				if ( nvram_get_int(&buf[0]) == 4 )
+				{
+					vpnlog(VPN_LOG_INFO, "Setting DNSCRYPT server to dnsmasq config for client %d", cur);
+					if (nvram_match("dnscrypt_proxy", "1")) {
+					fprintf(f, "no-resolv\n");
+/*
+#ifdef RTCONFIG_IPV6
+					if (ipv6_enabled()) {
+						fprintf(f, "server=::1#%d\n", nvram_get_int("dnscrypt_port"));
+					}
+#endif
+*/
+					fprintf(f, "server=127.0.0.1#%d\n", nvram_get_int("dnscrypt_port"));
+	}
+#endif
+					break;
+				}
 			}
 
 			if ( sscanf(file->d_name, "client%d.con%c", &cur, &ch) == 2 )
@@ -1742,6 +1760,21 @@ void write_vpn_dnsmasq_config(FILE* f)
 				}
 			}
 		}
+	}
+#ifdef RTCONFIG_DNSCRYPT
+	else {
+	if (nvram_match("dnscrypt_proxy", "1")) {
+		fprintf(f, "no-resolv\n");
+/*
+#ifdef RTCONFIG_IPV6
+		if (ipv6_enabled()) {
+			fprintf(f, "server=::1#%d\n", nvram_get_int("dnscrypt_port"));
+		}
+#endif
+*/
+		fprintf(f, "server=127.0.0.1#%d\n", nvram_get_int("dnscrypt_port"));
+	}
+#endif
 	}
 }
 

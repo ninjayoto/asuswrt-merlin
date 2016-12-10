@@ -155,3 +155,114 @@ int tcclass_dump(FILE *fp, webs_t wp) {
 	ret += websWrite(wp, "[]];\n");
 	return ret;
 }
+
+// field offsets of DNSCrypt resolver csv
+#define NAME		0
+#define FULLNAME	1
+#define DESC		2
+#define LOC		3
+#define COORD		4
+#define URL		5
+#define VERSION		6
+#define DNSSEC		7
+#define LOGS		8
+#define NAMECOIN	9
+#define ADDRESS		10
+#define PROVIDER	11
+#define PUBKEY		12
+#define KEYTEXT		13
+#define NUM_FIELDS 	14
+#define BUFFER_SIZE	1024	//longest line
+
+char *pFields[NUM_FIELDS];
+
+int ej_resolver_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
+	FILE *fp;
+	int ret = 0;
+
+	ret += websWrite(wp, "var resolverarray = [\n");
+
+	fp = fopen("/rom/dnscrypt-resolvers.csv","r");
+	if (fp) {
+		ret += resolver_dump(fp, wp);
+		ret += websWrite(wp, "];\n");
+		fclose(fp);
+	} else {
+		ret += websWrite(wp, "[]];\n");
+	}
+	unlink("/rom/dnscrypt-resolvers.csv");
+
+	return ret;
+}
+
+int resolver_dump(FILE *pFile, webs_t wp) {
+	char sInputBuf[BUFFER_SIZE];
+	long lineno = 0L;
+	int ret = 0;
+
+	if(pFile == NULL)
+		return 1;
+
+	while (!feof(pFile)) {
+
+		// load line into static buffer
+		if(fgets(sInputBuf, BUFFER_SIZE-1, pFile)==NULL)
+			break;
+
+		// skip first line (headers)
+		if(++lineno==1)
+			continue;
+
+		// jump over empty lines
+		if(strlen(sInputBuf)==0)
+			continue;
+
+		// set pFields array pointers to null-terminated string fields in sInputBuf
+		if (parse_csv_line(sInputBuf,lineno) == 0)
+			// On return pFields array pointers point to loaded fields ready for load into DB or whatever
+			// Fields can be accessed via pFields
+			ret += websWrite(wp, "[\"%s\", \"%s\", \"%s\"],\n", pFields[NAME], pFields[FULLNAME], pFields[DNSSEC]);
+	}
+	return ret;
+}
+
+int parse_csv_line(char *line, long lineno){
+	char *cptr = line;
+	int fld = 0;
+	int inquote = 0;
+	char ch;
+
+	if(line == NULL)
+		return 1;
+
+	// chop of last char of input if it is a CR or LF (e.g.Windows file loading in Unix env.)
+	// can be removed if sure fgets has removed both CR and LF from end of line
+	if(*(line + strlen(line)-1) == '\r' || *(line + strlen(line)-1) == '\n')
+		*(line + strlen(line)-1) = '\0';
+	if(*(line + strlen(line)-1) == '\r' || *(line + strlen(line)-1 )== '\n')
+		*(line + strlen(line)-1) = '\0';
+
+
+	pFields[fld]=cptr;
+	while((ch=*cptr) != '\0' && fld < NUM_FIELDS){
+		switch(ch) {
+			case '\"':
+				if (!inquote)
+					pFields[fld]=cptr+1;
+				else
+					*cptr = '\0';		// zero out " and jump over it
+				inquote = !inquote;
+				break;
+			case ',':
+				if (!inquote) {
+					*cptr = '\0';		// end of field, null terminate it
+					pFields[++fld]=cptr+1;
+				}
+				break;
+			default:
+				break;
+		}
+		cptr++;
+	}
+	return 0;
+}

@@ -846,6 +846,21 @@ void start_dnsmasq(int force)
 	}
 #endif
 
+#ifndef RTCONFIG_OPENVPN
+#ifdef RTCONFIG_DNSCRYPT
+	if (nvram_match("dnscrypt_proxy", "1")) {
+		fprintf(fp, "no-resolv\n");
+/*
+#ifdef RTCONFIG_IPV6
+		if (ipv6_enabled()) {
+			fprintf(fp, "server=::1#%d\n", nvram_get_int("dnscrypt_port"));
+		}
+#endif
+*/
+		fprintf(fp, "server=127.0.0.1#%d\n", nvram_get_int("dnscrypt_port"));
+	}
+#endif
+#endif
 //#ifdef WEB_REDIRECT
 //	/* Web redirection - all unresolvable will return the router's IP */
 //	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
@@ -875,6 +890,12 @@ void start_dnsmasq(int force)
 		}
 	}
 
+#ifdef RTCONFIG_DNSCRYPT
+	if (nvram_match("dnscrypt_proxy", "1")) {
+		start_dnscrypt(0);
+	}
+#endif
+
 /* TODO: remove it for here !!!*/
 //	int unit;
 //	char prefix[8], nvram_name[16], wan_proto[16];
@@ -898,6 +919,7 @@ void start_dnsmasq(int force)
 			refresh_ntpc();
 		}
 	}
+
 /* TODO: remove it */
 
 	TRACE_PT("end\n");
@@ -918,6 +940,12 @@ void stop_dnsmasq(int force)
 
 	killall_tk("dnsmasq");
 
+#ifdef RTCONFIG_DNSCRYPT
+	if (nvram_match("dnscrypt_proxy", "0")) {
+		stop_dnscrypt(0);
+	}
+#endif
+
 	TRACE_PT("end\n");
 }
 
@@ -937,16 +965,25 @@ void reload_dnsmasq(void)
 
 	unit = wan_primary_ifunit();
 	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1") && (!nvram_match("ntp_ready","1"))) {
+	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1") && (!nvram_match("ntp_sync","1"))) {
 		/* Don't reload, as it would prematurely enable timestamp validation */
 		stop_dnsmasq(0);
 		sleep(1);
 		start_dnsmasq(0);
 	}
-	else
+	else {
+		/* notify dnsmasq */
+		kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
+
+
+	}
 #endif
-	/* notify dnsmasq */
-	kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
+#ifdef RTCONFIG_DNSCRYPT
+	if (nvram_match("dnscrypt_proxy", "1")) {
+		/* restart dnscrypt to update timestamp check */
+		restart_dnscrypt(0);
+	}
+#endif
 }
 
 #ifdef RTCONFIG_IPV6
@@ -965,6 +1002,129 @@ int write_ipv6_dns_servers(FILE *f, const char *prefix, char *dns, const char *s
 	}
 
 	return cnt;
+}
+#endif
+
+#ifdef RTCONFIG_DNSCRYPT
+static int time_valid = -1;
+
+void start_dnscrypt(int force)
+{
+	char *argv[] = { "dnscrypt-proxy",
+		NULL, 		// -d daemonize
+		NULL, NULL, 	// -a local address
+		NULL, NULL, 	// -m loglevel
+		NULL, NULL, 	// -L resolvers csv
+		NULL, NULL, 	// -R resolver
+		NULL, NULL, 	// -Z syslog msg
+		NULL, NULL, 	// -p pidfile
+		NULL, 		// -I ignore-timestamps
+		NULL, NULL,	// -X plugin
+		NULL };
+	int argc, pid, rc;
+	int ntp_sync;
+	char tmp[64];
+
+	// Only start on first call or clock sync
+	ntp_sync = nvram_get_int("ntp_sync");
+	if (time_valid == ntp_sync)
+		return;
+
+	if(!force && getpid() != 1){
+		notify_rc("start_dnscrypt");
+		return;
+	}
+
+//	stop_dnscrypt(0);
+	time_valid = ntp_sync;
+
+	argc = 1;
+	argv[argc++] = "-d";
+	argv[argc++] = "-a";
+	snprintf(tmp, sizeof(tmp), "127.0.0.1:%d", nvram_get_int("dnscrypt_port"));
+	argv[argc++] = tmp;
+	argv[argc++] = "-m";
+	argv[argc++] = nvram_safe_get("dnscrypt_log");
+	argv[argc++] = "-L";
+	argv[argc++] = "/rom/dnscrypt-resolvers.csv";
+	argv[argc++] = "-R";
+	argv[argc++] = nvram_safe_get("dnscrypt_resolver");
+	argv[argc++] = "-Z";
+	argv[argc++] = "dnscrypt-proxy-ipv4:";
+	argv[argc++] = "-p";
+	argv[argc++] = "/var/run/dnscrypt-proxy-ipv4.pid";
+	if (nvram_match("ntp_sync", "0"))
+		argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
+//	if (nvram_match("dnscrypt_noipv6", "1")) {
+//		argv[argc++] = "-X";
+//		argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
+//	}
+
+	rc = _eval(argv, NULL, 0, &pid);
+	logmessage("dnscrypt-proxy", "start dnscrypt-proxy-ipv4 (%d)", rc);
+/*
+#ifdef RTCONFIG_IPV6
+	if (ipv6_enabled()) {
+		argc = 1;
+		argv[argc++] = "-d";
+		argv[argc++] = "-a";
+		snprintf(tmp, sizeof(tmp), "[::1]:%d", nvram_get_int("dnscrypt_port"));
+		argv[argc++] = tmp;
+		argv[argc++] = "-m";
+		argv[argc++] = nvram_safe_get("dnscrypt_log");
+		argv[argc++] = "-L";
+		argv[argc++] = "/rom/dnscrypt-resolvers.csv";
+		argv[argc++] = "-R";
+		argv[argc++] = nvram_safe_get("dnscrypt_resolver");
+		argv[argc++] = "-Z";
+		argv[argc++] = "dnscrypt-proxy-ipv6:";
+		argv[argc++] = "-p";
+		argv[argc++] = "/var/run/dnscrypt-proxy-ipv6.pid";
+		if (nvram_match("ntp_sync", "0"))
+			argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
+		if (nvram_match("dnscrypt_noipv6", "1")) {
+			argv[argc++] = "-X";
+			argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
+		}
+
+		rc = _eval(argv, NULL, 0, &pid);
+		logmessage("dnscrypt-proxy", "start dnscrypt-proxy-ipv6 (%d)", rc);
+	}
+#endif
+*/
+}
+
+void stop_dnscrypt(int force)
+{
+	if(!force && getpid() != 1){
+		notify_rc("stop_dnscrypt");
+		return;
+	}
+
+	killall_tk("dnscrypt-proxy");
+	unlink("/var/run/dnscrypt-proxy-ipv4.pid");
+	time_valid = -1;
+	logmessage("dnscrypt-proxy", "stop dnscrypt-proxy");
+/*
+#ifdef RTCONFIG_IPV6
+	unlink("/var/run/dnscrypt-proxy-ipv6.pid");
+#endif
+*/
+}
+
+void restart_dnscrypt(int force)
+{
+	int ntp_sync;
+
+	// Only restart on first call or clock sync
+	ntp_sync = nvram_get_int("ntp_sync");
+	if ((time_valid == ntp_sync) && !force)
+		return;
+
+	if (pids("dnscrypt-proxy"))
+		stop_dnscrypt(force);
+
+	start_dnscrypt(force);
 }
 #endif
 
@@ -3846,6 +4006,9 @@ stop_services(void)
 	stop_dns();
 	stop_dhcpd();
 #endif
+#ifdef RTCONFIG_DNSCRYPT
+	stop_dnscrypt(0);
+#endif
 #if defined(RTCONFIG_MDNS)
 	stop_mdns();
 #endif
@@ -4353,6 +4516,9 @@ again:
 #elif defined(RTCONFIG_TEMPROOTFS)
 				stop_lan_wl();
 				stop_dnsmasq(0);
+#ifdef RTCONFIG_DNSCRYPT
+				stop_dnscrypt(0);
+#endif
 				stop_networkmap();
 				stop_wpsaide();
 #endif
@@ -4408,6 +4574,9 @@ again:
 		stop_dns();
 		stop_dhcpd();
 #endif
+#ifdef RTCONFIG_DNSCRYPT
+	stop_dnscrypt(0);
+#endif
 #if defined(RTCONFIG_MDNS)
 		stop_mdns();
 #endif
@@ -4428,6 +4597,9 @@ again:
 #else
 			stop_dns();
 			stop_dhcpd();
+#endif
+#ifdef RTCONFIG_DNSCRYPT
+			stop_dnscrypt(0);
 #endif
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
@@ -4498,6 +4670,9 @@ again:
 #else
 			stop_dns();
 			stop_dhcpd();
+#endif
+#ifdef RTCONFIG_DNSCRYPT
+			stop_dnscrypt(0);
 #endif
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
@@ -4579,6 +4754,9 @@ again:
 #else
 			stop_dns();
 			stop_dhcpd();
+#endif
+#ifdef RTCONFIG_DNSCRYPT
+			stop_dnscrypt(0);
 #endif
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
@@ -5151,6 +5329,13 @@ check_ddr_done:
 		if(action&RC_SERVICE_STOP) stop_dnsmasq(0);
 		if(action&RC_SERVICE_START) start_dnsmasq(0);
 	}
+#ifdef RTCONFIG_DNSCRYPT
+	else if (strcmp(script, "dnscrypt") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_dnscrypt(0);
+		if(action&RC_SERVICE_START) start_dnscrypt(0);
+	}
+#endif
 	else if (strcmp(script, "upnp") == 0)
 	{
 		if(action&RC_SERVICE_STOP) stop_upnp();
@@ -5361,6 +5546,9 @@ check_ddr_done:
 			stop_networkmap();
 			stop_httpd();
 			stop_dnsmasq(0);
+#ifdef RTCONFIG_DNSCRYPT
+			stop_dnscrypt(0);
+#endif
 			stop_lan_wlc();
 			stop_lan_port();
 			stop_lan_wlport();

@@ -701,6 +701,19 @@ struct nvram_tuple router_defaults[] = {
 	{ "wan_dnssec_enable", "0" },
 #endif
 
+	// DNSCRYPT option for dnsmasq
+#ifdef RTCONFIG_DNSCRYPT
+	{ "dnscrypt_proxy", "0" },
+	{ "dnscrypt_port", "65053"}, 		// local port
+	{ "dnscrypt_resolver", "cisco"},	// default resolver
+	{ "dnscrypt_log", "4"},			// log level
+//	{ "dnscrypt_noipv6", "0"},		// block AAAA records plugin
+//	{ "dnscrypt_manual", "0"},		// Set manual resolver
+//	{ "dnscrypt_provider_name", ""},	// Set manual provider name
+//	{ "dnscrypt_provider_key", ""},		// Set manual provider key
+//	{ "dnscrypt_resolver_address", ""},	// Set manual resolver address
+#endif
+
 	// VPN+DHCP, a sperated nvram to control this function
 	{ "wan_vpndhcp", "1"},
 

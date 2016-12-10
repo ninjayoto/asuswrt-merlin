@@ -77,8 +77,8 @@ static void ntp_service()
 		notify_rc("restart_diskmon");
 #endif
 
-#ifdef RTCONFIG_DNSSEC
-		if (nvram_match("dnssec_enable", "1")) {
+#if defined(RTCONFIG_DNSSEC) || defined(RTCONFIG_DNSCRYPT)
+		if (nvram_match("dnssec_enable", "1") || nvram_match("dnscrypt_proxy", "1")) {
 			reload_dnsmasq();
 		}
 #endif

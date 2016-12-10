@@ -3426,6 +3426,14 @@ int init_nvram(void)
         if(nvram_get("wan_vendorid") == NULL)
                 nvram_set("wan_vendorid", "");
 
+	// Initialize DNSCRYPT support
+        if(nvram_get("dnscrypt_proxy") == NULL) {
+                nvram_set("dnscrypt_proxy", "0");
+		nvram_set("dnscrypt_port", "65053");
+		nvram_set("dnscrypt_resolver", "cisco");
+		nvram_set("dnscrypt_log", "4");
+	}
+
 // End Custom variables
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
@@ -3627,6 +3635,10 @@ int init_nvram(void)
 
 #ifdef RTCONFIG_DNSSEC
 	add_rc_support("dnssec");
+#endif
+
+#ifdef RTCONFIG_DNSCRYPT
+	add_rc_support("dnscrypt");
 #endif
 
 #ifdef RTCONFIG_WPSMULTIBAND
