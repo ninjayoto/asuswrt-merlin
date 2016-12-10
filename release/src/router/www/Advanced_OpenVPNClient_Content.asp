@@ -132,6 +132,7 @@ var $j = jQuery.noConflict();
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
+dnscrypt_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
 <% vpn_client_get_parameter(); %>;
 
 openvpn_unit = '<% nvram_get("vpn_client_unit"); %>';
@@ -357,7 +358,8 @@ function update_visibility(){
 	showhide("clientlist_Block", (rgw == 2));
 	showhide("selectiveTable", (rgw == 2));
 	showhide("client_enforce", (rgw == 2));
-	showhide("enable_dns_span", (adns == 3 && rgw == 2));
+	showhide("enable_dns_span", (adns >= 3 && rgw == 2));
+	showhide("dnscrypt_adns", (dnscrypt_proxy == 1));
 
 // Since instancing certs/keys would waste many KBs of nvram,
 // we instead handle these at the webui level, loading both instances.
@@ -492,7 +494,7 @@ function applyRule(){
 	     (!service_state))
 		document.form.action_script.value += "start_vpnrouting"+openvpn_unit;
 
-	document.form.vpn_dns_mode.value = ((document.form.vpn_client_adns.value == 3 && document.form.vpn_client_rgw.value == 2) ? ((document.form.enable_dns_ckb.checked) ? 1 : 0) : 0);
+	document.form.vpn_dns_mode.value = ((document.form.vpn_client_adns.value >= 3 && document.form.vpn_client_rgw.value == 2) ? ((document.form.enable_dns_ckb.checked) ? 1 : 0) : 0);
 
 	$("vpn_client_password").type = "text"; // workaround for password save prompt in firefox
 
@@ -1095,6 +1097,7 @@ function defaultSettings() {
 								<option value="1" onclick="update_visibility();" <% nvram_match("vpn_client_adns","1","selected"); %> >Relaxed</option>
 								<option value="2" onclick="update_visibility();" <% nvram_match("vpn_client_adns","2","selected"); %> >Strict</option>
 								<option value="3" onclick="update_visibility();" <% nvram_match("vpn_client_adns","3","selected"); %> >Exclusive</option>
+								<option id="dnscrypt_adns" value="4" onclick="update_visibility();" <% nvram_match("vpn_client_adns","4","selected"); %> >DNSCrypt</option>
 							</select>
 							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;"> Only VPN clients use VPN DNS**</input></span>
 			   			</td>

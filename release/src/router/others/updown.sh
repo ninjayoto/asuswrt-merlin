@@ -26,6 +26,13 @@ then
 else
 	ISPserver=$(nvram get wan0_dns1_x)
 fi
+isp_dnscrypt=0
+# Override if DNSCRYPT is active and exclusive (currently not working)
+#if [ $(nvram get dnscrypt_proxy) == 1 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 ]
+#then
+#	ISPserver=127.0.0.1:$(nvram get dnscrypt_port)
+#	isp_dnscrypt=1
+#fi
 
 create_client_list(){
 	server=$1
@@ -54,13 +61,25 @@ create_client_list(){
 				echo iptables -t nat -A DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $VPNserver >> $dnsscript
 				logger -t "openvpn-updown" "Setting $VPN_IP to use VPN DNS servers `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
 			else
-				echo iptables -t nat -I DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
+				if [ isp_dnscrypt == 1 ]
+				then
+					echo iptables -t nat -I DNSVPN$instance -p tcp -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
+					echo iptables -t nat -I DNSVPN$instance -p udp -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
+				else
+					echo iptables -t nat -I DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
+				fi
 				logger -t "openvpn-updown" "Setting $VPN_IP to use ISP DNS server"
 			fi
 		fi
 	done
 
-	echo iptables -t nat -A DNSVPN$instance -j DNAT --to-destination $ISPserver >> $dnsscript
+	if [ isp_dnscrypt == 1 ]
+	then
+		echo iptables -t nat -A DNSVPN$instance -p tcp -j DNAT --to-destination $ISPserver >> $dnsscript
+		echo iptables -t nat -A DNSVPN$instance -p udp -j DNAT --to-destination $ISPserver >> $dnsscript
+	else
+		echo iptables -t nat -A DNSVPN$instance -j DNAT --to-destination $ISPserver >> $dnsscript
+	fi
 
 	IFS=$OLDIFS
 }
@@ -72,7 +91,7 @@ if [ -f $resolvfile ]; then rm $resolvfile; fileexists=1; fi
 
 if [ $script_type == 'up' ]
 then
-	if [ $instance != 0 -a $(nvram get vpn_client$(echo $instance)_rgw) == 2 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 -a $vpn_dns_mode == 1 ]
+	if [ $instance != 0 -a $(nvram get vpn_client$(echo $instance)_rgw) == 2 -a $(nvram get vpn_client$(echo $instance)_adns) -ge 3 -a $vpn_dns_mode == 1 ]
 	then
 		setdns=0
 		if [ -f $dnsscript ]; then rm $resolvfile; fi

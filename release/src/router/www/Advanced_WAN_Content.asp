@@ -55,6 +55,9 @@ if(dualWAN_support && ( wans_dualwan.search("wan") >= 0 || wans_dualwan.search("
 <% login_state_hook(); %>
 <% wan_get_parameter(); %>
 
+// [Name, Fullname, DNSSEC]
+<% get_resolver_array(); %>
+
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var original_wan_type = wan_proto;
 var original_wan_dhcpenable = parseInt('<% nvram_get("wan_dhcpenable_x"); %>');
@@ -69,7 +72,7 @@ function initial(){
 			document.wanUnit_form.submit();
 		}
 	}
-	
+
 	show_menu();			
 	change_wan_type(document.form.wan_proto.value, 0);	
 	fixed_change_wan_type(document.form.wan_proto.value);
@@ -90,7 +93,34 @@ function initial(){
 		document.getElementById("dnssec_tr").style.display = "";
 	}
 
+	if (isSupport("dnscrypt")){
+		document.getElementById("dnscrypt_tr").style.display = "";
+		display_dnscrypt_opt();
+	}
+
+	update_resolverlist();
 	display_upnp_range();
+}
+
+function update_resolverlist(){
+// Resolver list
+	free_options(document.form.dnscrypt_resolver);
+	currentresolver = "<% nvram_get("dnscrypt_resolver"); %>";
+	add_option(document.form.dnscrypt_resolver, "Not Defined","none",(currentresolver == "none"));
+
+	var dnssec_enabled = document.form.wan_dnssec_enable[0].checked;
+	for(var i = 0; i < resolverarray.length; i++){
+		if ((dnssec_enabled == 1 && resolverarray[i][2] == "yes") || dnssec_enabled == 0)
+			add_option(document.form.dnscrypt_resolver,
+				resolverarray[i][1], resolverarray[i][0],
+				(currentresolver == resolverarray[i][0]));
+	}
+}
+
+function display_dnscrypt_opt(){
+	$("dnscrypt_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt_log_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 }
 
 function display_upnp_range(){
@@ -157,6 +187,12 @@ function applyRule(){
 
 		if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
 			document.form.action_script += ";restart_firewall";
+
+		if((document.form.dnscrypt_proxy[0].checked != "<% nvram_get("dnscrypt_proxy"); %>") ||
+		   (document.form.dnscrypt_resolver.value != "<% nvram_get("dnscrypt_proxy"); %>") ||
+		   (document.form.dnscrypt_port.value != "<% nvram_get("dnscrypt_port"); %>") ||
+		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
+			document.form.action_script += ";restart_dnsmasq";
 
 		document.form.submit();	
 	}
@@ -732,7 +768,7 @@ function pass_checked(obj){
 <input type="hidden" name="modified" value="0">
 <input type="hidden" name="action_mode" value="apply">
 <input type="hidden" name="action_script" value="restart_wan_if">
-<input type="hidden" name="action_wait" value="5">
+<input type="hidden" name="action_wait" value="60">
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
@@ -920,8 +956,44 @@ function pass_checked(obj){
 			<tr id="dnssec_tr" style="display:none;">
 				<th>Enable DNSSEC support</th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="wan_dnssec_enable" <% nvram_match("wan_dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="wan_dnssec_enable" <% nvram_match("wan_dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="wan_dnssec_enable" onclick="update_resolverlist();" <% nvram_match("wan_dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="wan_dnssec_enable" onclick="update_resolverlist();" <% nvram_match("wan_dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
+			<tr id="dnscrypt_tr" style="display:none;">
+				<th>Enable DNSCRYPT support</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
+			<tr id="dnscrypt_resolv_tr" style="display:none;">
+				<th>DNSCRYPT Resolver</th>
+				<td colspan="2" style="text-align:left;">
+					<select id="dnscrypt_resolver" class="input_option" name="dnscrypt_resolver">
+						<option value="<% nvram_get("dnscrypt_resolver"); %>" selected><% nvram_get("dnscrypt_resolver"); %></option>
+					</select>
+				</td>
+			</tr>
+			<tr id="dnscrypt_port_tr" style="display:none;">
+				<th>DNSCRYPT Port</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="text" maxlength="5" name="dnscrypt_port" class="input_6_table" value="<% nvram_get("dnscrypt_port"); %>" onKeyPress="return is_number(this,event);"/>
+				</td>
+			</tr>
+			<tr id="dnscrypt_log_tr" style="display:none;">
+				<th>DNSCRYPT Loglevel</th>
+				<td colspan="2" style="text-align:left;">
+					<select id="dnscrypt_log" class="input_option" name="dnscrypt_log">
+						<option value="0" <% nvram_match("dnscrypt_log", "0", "selected"); %>>Emergency</option>
+						<option value="1" <% nvram_match("dnscrypt_log", "1", "selected"); %>>Alert</option>
+						<option value="2" <% nvram_match("dnscrypt_log", "2", "selected"); %>>Critical</option>
+						<option value="3" <% nvram_match("dnscrypt_log", "3", "selected"); %>>Error</option>
+						<option value="4" <% nvram_match("dnscrypt_log", "4", "selected"); %>>Warning</option>
+						<option value="5" <% nvram_match("dnscrypt_log", "5", "selected"); %>>Notice</option>
+						<option value="6" <% nvram_match("dnscrypt_log", "6", "selected"); %>>Info</option>
+						<option value="7" <% nvram_match("dnscrypt_log", "7", "selected"); %>>Debug</option>
+					</select>
 				</td>
 			</tr>
         		</table>

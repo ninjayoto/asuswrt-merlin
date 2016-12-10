@@ -9526,6 +9526,7 @@ struct ej_handler ej_handlers[] = {
 	{ "ctdump", ej_ctdump},
 	{ "netdev", ej_netdev},
 	{ "get_tcclass_array", ej_tcclass_dump_array},
+	{ "get_resolver_array", ej_resolver_dump_array},
 
 	{ "iptraffic", ej_iptraffic},
 	{ "iptmon", ej_iptmon},
