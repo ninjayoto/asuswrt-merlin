@@ -478,6 +478,8 @@ send_headers( int status, char* title, char* extra_header, char* mime_type )
 
     (void) fprintf( conn_fp, "%s %d %s\r\n", PROTOCOL, status, title );
     (void) fprintf( conn_fp, "Server: %s\r\n", SERVER_NAME );
+    (void) fprintf( conn_fp, "x-frame-options: SAMEORIGIN\r\n");
+    (void) fprintf( conn_fp, "x-xss-protection: 1; mode=block\r\n");
     now = time( (time_t*) 0 );
     (void) strftime( timebuf, sizeof(timebuf), RFC1123FMT, gmtime( &now ) );
     (void) fprintf( conn_fp, "Date: %s\r\n", timebuf );
