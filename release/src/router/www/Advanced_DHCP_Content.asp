@@ -123,6 +123,8 @@ function initial(){
 		}
 	}
 
+	document.form.lan_domain.value = '<% nvram_get("lan_domain"); %>';
+
 	addOnlineHelp($("faq"), ["set", "up", "specific", "IP", "address"]);
 }
 
@@ -352,13 +354,27 @@ function validate_dhcp_range(ip_obj){
 
 function validForm(){	
 	var re = new RegExp('^[a-zA-Z0-9][a-zA-Z0-9\.\-]*[a-zA-Z0-9]$','gi');
+	var domainlength = document.form.lan_domain.value.length;
   if(!re.test(document.form.lan_domain.value) && document.form.lan_domain.value != ""){
       alert("<#JS_validchar#>");                
       document.form.lan_domain.focus();
       document.form.lan_domain.select();
 	 	return false;
   }
-	
+
+	if((document.form.lan_domain.value.indexOf("local") == (domainlength-5)) ||
+	   (document.form.lan_domain.value.indexOf("localhost") == (domainlength-9)) ||
+	   (document.form.lan_domain.value.indexOf("onion") == (domainlength-5)) ||
+	   (document.form.lan_domain.value.indexOf("test") == (domainlength-4)) ||
+	   (document.form.lan_domain.value.indexOf(".in-addr.arpa.") != -1) ||
+	   (document.form.lan_domain.value.indexOf(".ip6.arpaa.") != -1) ||
+	   (document.form.lan_domain.value.indexOf("example.") != -1)) {
+		alert("Domain name cannot be a registered domain!");
+		document.form.lan_domain.focus();
+		document.form.lan_domain.select();
+		return false;
+	}
+
 	if(!validate_ipaddr_final(document.form.dhcp_gateway_x, 'dhcp_gateway_x') ||
 			!validate_ipaddr_final(document.form.dhcp_dns1_x, 'dhcp_dns1_x') ||
 			!validate_ipaddr_final(document.form.dhcp_dns2_x, 'dhcp_dns2_x') ||
