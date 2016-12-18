@@ -258,7 +258,7 @@ function addRow_Group(upper){
 		addRow(document.form.qos_port_x_0, 0);
 		addRow(document.form.qos_proto_x_0, 0);
 		document.form.qos_proto_x_0.value="tcp/udp";
-		if(document.form.qos_transferred_x_0.value == "~")
+		if((document.form.qos_transferred_x_0.value == "~") || (document.form.qos_transferred_x_0.value == "0~"))
 			document.form.qos_transferred_x_0.value = "";
 		addRow(document.form.qos_transferred_x_0, 0);
 		addRow(document.form.qos_prio_x_0, 0);
