@@ -2757,7 +2757,7 @@ stop_wan(void)
 		stop_wan_if(unit);
 
 #ifdef RTCONFIG_OPENVPN
-	stop_vpn_eas();
+	stop_vpn_all();
 #endif
 
 	/* Remove dynamically created links */
