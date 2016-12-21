@@ -425,28 +425,10 @@ void start_vpnclient(int clientNum)
 	}
 	vpnlog(VPN_LOG_EXTRA,"Done writing certs/keys");
 
-        // Run postconf customs cript on it if it exists
+        // Run postconf custom script on it if it exists
         sprintf(&buffer[0], "openvpnclient%d.postconf", clientNum);
         sprintf(&buffer2[0], "/etc/openvpn/client%d/config.ovpn", clientNum);
         run_postconf(&buffer[0], &buffer2[0]);
-
-	// Start the VPN client
-#ifdef RTCONFIG_BCMARM
-        if (cpu_num > 1)
-		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", (clientNum % 2 ? 1 : 0), clientNum, clientNum);
-	else
-#endif
-		sprintf(&buffer[0], "/etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", clientNum, clientNum);
-
-	vpnlog(VPN_LOG_INFO,"Starting OpenVPN: %s",&buffer[0]);
-	for (argv[argc=0] = strtok(&buffer[0], " "); argv[argc] != NULL; argv[++argc] = strtok(NULL, " "));
-	if ( _eval(argv, NULL, 0, &pid) )
-	{
-		vpnlog(VPN_LOG_ERROR,"Starting OpenVPN failed...");
-		stop_vpnclient(clientNum);
-		return;
-	}
-	vpnlog(VPN_LOG_EXTRA,"Done starting openvpn");
 
 	// Handle firewall rules if appropriate
 	sprintf(&buffer[0], "vpn_client%d_firewall", clientNum);
@@ -483,6 +465,24 @@ void start_vpnclient(int clientNum)
 		_eval(argv, NULL, 0, NULL);
 		vpnlog(VPN_LOG_EXTRA,"Done running firewall rules");
 	}
+
+	// Start the VPN client
+#ifdef RTCONFIG_BCMARM
+        if (cpu_num > 1)
+		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", (clientNum % 2 ? 1 : 0), clientNum, clientNum);
+	else
+#endif
+		sprintf(&buffer[0], "/etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", clientNum, clientNum);
+
+	vpnlog(VPN_LOG_INFO,"Starting OpenVPN: %s",&buffer[0]);
+	for (argv[argc=0] = strtok(&buffer[0], " "); argv[argc] != NULL; argv[++argc] = strtok(NULL, " "));
+	if ( _eval(argv, NULL, 0, &pid) )
+	{
+		vpnlog(VPN_LOG_ERROR,"Starting OpenVPN failed...");
+		stop_vpnclient(clientNum);
+		return;
+	}
+	vpnlog(VPN_LOG_EXTRA,"Done starting openvpn");
 
 	// Set up cron job
 	sprintf(&buffer[0], "vpn_client%d_poll", clientNum);
@@ -1381,22 +1381,10 @@ void start_vpnserver(int serverNum)
 	fclose(fp_client);
 	vpnlog(VPN_LOG_EXTRA,"Done writing client config file");
 
-#ifdef RTCONFIG_BCMARM
-        if (cpu_num > 1)
-		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", (serverNum % 2 ? 1 : 0), serverNum, serverNum);
-	else
-#endif
-		sprintf(&buffer[0], "/etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", serverNum, serverNum);
-
-	vpnlog(VPN_LOG_INFO,"Starting OpenVPN: %s",&buffer[0]);
-	for (argv[argc=0] = strtok(&buffer[0], " "); argv[argc] != NULL; argv[++argc] = strtok(NULL, " "));
-	if ( _eval(argv, NULL, 0, &pid) )
-	{
-		vpnlog(VPN_LOG_ERROR,"Starting VPN instance failed...");
-		stop_vpnserver(serverNum);
-		return;
-	}
-	vpnlog(VPN_LOG_EXTRA,"Done starting openvpn");
+	// Run postconf custom script on it if it exists
+        sprintf(&buffer[0], "openvpnserver%d.postconf", serverNum);
+        sprintf(&buffer2[0], "/etc/openvpn/server%d/config.ovpn", serverNum);
+        run_postconf(&buffer[0], &buffer2[0]);
 
 	// Handle firewall rules if appropriate
 	sprintf(&buffer[0], "vpn_server%d_firewall", serverNum);
@@ -1439,6 +1427,24 @@ void start_vpnserver(int serverNum)
 		_eval(argv, NULL, 0, NULL);
 		vpnlog(VPN_LOG_EXTRA,"Done running firewall rules");
 	}
+
+// Start the VPN server
+#ifdef RTCONFIG_BCMARM
+        if (cpu_num > 1)
+		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", (serverNum % 2 ? 1 : 0), serverNum, serverNum);
+	else
+#endif
+		sprintf(&buffer[0], "/etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", serverNum, serverNum);
+
+	vpnlog(VPN_LOG_INFO,"Starting OpenVPN: %s",&buffer[0]);
+	for (argv[argc=0] = strtok(&buffer[0], " "); argv[argc] != NULL; argv[++argc] = strtok(NULL, " "));
+	if ( _eval(argv, NULL, 0, &pid) )
+	{
+		vpnlog(VPN_LOG_ERROR,"Starting VPN instance failed...");
+		stop_vpnserver(serverNum);
+		return;
+	}
+	vpnlog(VPN_LOG_EXTRA,"Done starting openvpn");
 
 	// Set up cron job
 	sprintf(&buffer[0], "vpn_server%d_poll", serverNum);
