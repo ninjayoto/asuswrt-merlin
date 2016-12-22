@@ -985,7 +985,7 @@ struct nvram_tuple router_defaults[] = {
 	// NVRAM for start_firewall/start_qos
 	// QOS
 	// Maybe removed later
-	{ "qos_rulelist", "<Web Surf>>80>tcp>0~512>0<HTTPS>>443>tcp>0~512>0<File Transfer>>80>tcp>512~>3<File Transfer>>443>tcp>512~>3"},
+	{ "qos_rulelist", "<Web Surf>>80>tcp>0~1536>0<HTTPS>>443>tcp>0~1536>0<File Transfer>>80>tcp>1536~>3<File Transfer>>443>tcp>1536~>3"},
 
 	{ "qos_orates",	"80-100,10-100,5-100,3-100,2-95,0-0,0-0,0-0,0-0,0-0"},
 	{ "qos_irates",	"100,100,100,100,100,0,0,0,0,0"},
