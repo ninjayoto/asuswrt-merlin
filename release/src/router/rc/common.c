@@ -1116,7 +1116,7 @@ void killall_tk(const char *name)
 	int n;
 
 	if (killall(name, SIGTERM) == 0) {
-		n = 10;
+		n = 20;
 		while ((killall(name, 0) == 0) && (n-- > 0)) {
 			_dprintf("%s: waiting name=%s n=%d\n", __FUNCTION__, name, n);
 			usleep(100 * 1000);
