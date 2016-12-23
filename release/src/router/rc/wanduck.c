@@ -354,14 +354,18 @@ int do_ping_detect(int wan_unit){
 		}
 	}
 #elif defined(RTCONFIG_DUALWAN)
-	sprintf(cmd, "ping -c 1  -w 2 -s 32 %s >/dev/null && touch %s", wandog_target, PING_RESULT_FILE);
-	system(cmd);
+	if(nvram_get_int("wandog_enable") == 1) {
+		sprintf(cmd, "ping -c 1  -w 2 -s 32 %s >/dev/null && touch %s", wandog_target, PING_RESULT_FILE);
+		system(cmd);
 
-	if(check_if_file_exist(PING_RESULT_FILE)){
-		csprintf("wanduck: %s %s...ok\n", __FUNCTION__, wandog_target);
-		unlink(PING_RESULT_FILE);
-		return 1;
+		if(check_if_file_exist(PING_RESULT_FILE)){
+			csprintf("wanduck: %s %s...ok\n", __FUNCTION__, wandog_target);
+			unlink(PING_RESULT_FILE);
+			return 1;
+		}
 	}
+	else
+		return 1;
 #else
 	return 1;
 #endif
