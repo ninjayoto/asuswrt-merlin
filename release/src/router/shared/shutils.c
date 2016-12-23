@@ -592,7 +592,7 @@ void cprintf(const char *format, ...)
 		}
 	}
 #endif
-#if 0
+#if 1
 	if (nvram_match("debug_cprintf_log", "1")) {
 		char s[512];
 		
