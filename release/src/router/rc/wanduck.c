@@ -327,6 +327,12 @@ char *organize_tcpcheck_cmd(char *dns_list, char *cmd, int size){
 int do_ping_detect(int wan_unit){
 #ifdef RTCONFIG_DUALWAN
 	char cmd[256];
+
+	/* Check for valid domain to avoid shell escaping */
+	if (!is_valid_domainname(wandog_target)) {
+		csprintf("wanduck: %s %s...invalid target\n", __FUNCTION__, wandog_target);
+		return -1;
+	}
 #endif
 #if 0
 	char buf[16], *next;
@@ -348,19 +354,18 @@ int do_ping_detect(int wan_unit){
 		}
 	}
 #elif defined(RTCONFIG_DUALWAN)
-	csprintf("wanduck: ping...", wandog_target, PING_RESULT_FILE);
-	sprintf(cmd, "ping -c 1 %s >/dev/null && touch %s", wandog_target, PING_RESULT_FILE);
+	sprintf(cmd, "ping -c 1  -w 2 -s 32 %s >/dev/null && touch %s", wandog_target, PING_RESULT_FILE);
 	system(cmd);
 
 	if(check_if_file_exist(PING_RESULT_FILE)){
-		csprintf("ok.\n");
+		csprintf("wanduck: %s %s...ok\n", __FUNCTION__, wandog_target);
 		unlink(PING_RESULT_FILE);
 		return 1;
 	}
 #else
 	return 1;
 #endif
-	csprintf("failed.\n");
+	csprintf("wanduck: %s %s...failed\n", __FUNCTION__, wandog_target);
 
 	return 0;
 }
