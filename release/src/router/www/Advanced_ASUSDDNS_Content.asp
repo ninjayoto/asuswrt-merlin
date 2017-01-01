@@ -53,6 +53,11 @@ function force_update() {
     var r = confirm("IP address, server and hostname\n\thave not changed since the last update.\nIf you want to update, please click 'OK'\nIf you want to change options without updating, please click 'Cancel'");
 	if(r == false)
 		document.form.action_script.value = "";
+	else {
+		//force update
+		document.form.ddns_ipaddr.value = "";
+		document.form.ddns_cache.value = "";
+	}
 
 	showLoading();
 	document.form.submit();
@@ -385,6 +390,8 @@ function onSubmitApply(s){
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
+<input type="hidden" name="ddns_ipaddr" value="<% nvram_get("ddns_ipaddr"); %>">
+<input type="hidden" name="ddns_cache" value="<% nvram_get("ddns_cache"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
 	<tr>
