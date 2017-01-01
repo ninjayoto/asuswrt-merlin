@@ -1359,10 +1359,10 @@ void regular_ddns_check(void)
 	if(hostinfo) {
 		ip_addr.s_addr = *(unsigned long *)hostinfo -> h_addr_list[0];
 		//_dprintf("  %s ?= %s\n", nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr));
-		if(strcmp(nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr))) {
+		if(strcmp(nvram_safe_get("wan0_ipaddr"), inet_ntoa(ip_addr))) {
 			//_dprintf("WAN IP change!\n");
 			nvram_set("ddns_update_by_wdog", "1");
-			//unlink("/tmp/ddns.cache");
+			unlink("/tmp/ddns.cache"); // force update
 			logmessage("watchdog", "Hostname/IP mapping error! WAN: %s HOST: %s (ddns-check)", nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr) ? : "NA");
 		}
 		else
