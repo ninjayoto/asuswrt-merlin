@@ -711,6 +711,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "dnscrypt2_port", "65054"}, 		// local port
 	{ "dnscrypt2_ipv6", "0"}, 		// protocol
 	{ "dnscrypt_log", "4"},			// log level
+	{ "dnscrypt_csv","/rom/dnscrypt-resolvers.csv"},	// list of resolvers
 //	{ "dnscrypt_noipv6", "0"},		// block AAAA records plugin
 //	{ "dnscrypt_manual", "0"},		// Set manual resolver
 //	{ "dnscrypt_provider_name", ""},	// Set manual provider name

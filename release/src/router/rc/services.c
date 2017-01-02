@@ -1069,7 +1069,7 @@ void start_dnscrypt(int force)
 		argv[argc++] = "-m";
 		argv[argc++] = nvram_safe_get("dnscrypt_log");
 		argv[argc++] = "-L";
-		argv[argc++] = "/rom/dnscrypt-resolvers.csv";
+		argv[argc++] = nvram_safe_get("dnscrypt_csv");
 		argv[argc++] = "-R";
 		argv[argc++] = nvram_safe_get("dnscrypt1_resolver");
 		argv[argc++] = "-Z";
@@ -1102,7 +1102,7 @@ void start_dnscrypt(int force)
 		argv[argc++] = "-m";
 		argv[argc++] = nvram_safe_get("dnscrypt_log");
 		argv[argc++] = "-L";
-		argv[argc++] = "/rom/dnscrypt-resolvers.csv";
+		argv[argc++] = nvram_safe_get("dnscrypt_csv");
 		argv[argc++] = "-R";
 		argv[argc++] = nvram_safe_get("dnscrypt2_resolver");
 		argv[argc++] = "-Z";
