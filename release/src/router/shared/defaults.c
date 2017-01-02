@@ -704,19 +704,25 @@ struct nvram_tuple router_defaults[] = {
 	// DNSCRYPT option for dnsmasq
 #ifdef RTCONFIG_DNSCRYPT
 	{ "dnscrypt_proxy", "0" },
-	{ "dnscrypt1_resolver", "cisco"},	// default resolver
+	{ "dnscrypt1_resolver", "none"},	// default resolver
 	{ "dnscrypt1_port", "65053"}, 		// local port
 	{ "dnscrypt1_ipv6", "0"}, 		// protocol
+//	{ "dnscrypt1_noipv6", "0"},		// block AAAA records plugin
+//	{ "dnscrypt1_manual", "0"},		// Set manual resolver
+//	{ "dnscrypt1_provider_name", ""},	// Set manual provider name
+//	{ "dnscrypt1_provider_key", ""},		// Set manual provider key
+//	{ "dnscrypt1_resolver_address", ""},	// Set manual resolver address
 	{ "dnscrypt2_resolver", "none"},	// default resolver
 	{ "dnscrypt2_port", "65054"}, 		// local port
 	{ "dnscrypt2_ipv6", "0"}, 		// protocol
+//	{ "dnscrypt2_noipv6", "0"},		// block AAAA records plugin
+//	{ "dnscrypt2_manual", "0"},		// Set manual resolver
+//	{ "dnscrypt2_provider_name", ""},	// Set manual provider name
+//	{ "dnscrypt2_provider_key", ""},		// Set manual provider key
+//	{ "dnscrypt2_resolver_address", ""},	// Set manual resolver address
 	{ "dnscrypt_log", "4"},			// log level
 	{ "dnscrypt_csv","/rom/dnscrypt-resolvers.csv"},	// list of resolvers
-//	{ "dnscrypt_noipv6", "0"},		// block AAAA records plugin
-//	{ "dnscrypt_manual", "0"},		// Set manual resolver
-//	{ "dnscrypt_provider_name", ""},	// Set manual provider name
-//	{ "dnscrypt_provider_key", ""},		// Set manual provider key
-//	{ "dnscrypt_resolver_address", ""},	// Set manual resolver address
+
 #endif
 #ifdef RTCONFIG_BCMARM
 	{ "allow_routelocal", "1" },		// allow routing to localhost for ARM
@@ -1849,7 +1855,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_rtr_addr_s",	""		},	// for ipv6 other
 	{ "ipv6_dhcp6s_enable",	"1"		},	// DHCP6 Server for LAN
 	{ "ipv6_neighsol_drop", "0"		},	// Filter out neighbour solicitation flood on Comcast network
-	{ "ipv6_isp_opt",	"0"		},	// Option to set default IPv6 route for PPP connections
+	{ "ipv6_isp_opt",	"0"		},	// bitmask options for ipv6
 	{ "ipv6_pd_vlifetime",	""		},	// The valid lifetime for the prefix obtained via DHCPv6-PD
 	{ "ipv6_pd_plifetime",	""		},	// The preferred lifetime for the prefix obtained via DHCPv6-PD
 	{ "ipv6_radvd_dp",	"1"		},	// Fast release of IPv6 prefix

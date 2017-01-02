@@ -3275,180 +3275,20 @@ int init_nvram(void)
 		break;
 	}
 
-// Init added fork variables to avoid factory reset required
+// Init special fork processing
 
-	// Initialize working variable name for max DSCP fix
-	if(nvram_get("DSCP_fix_enable") == NULL)
-		nvram_set("DSCP_fix_enable", "0");
-
-	// Initialize working variable name for lan subnet fwd & change name
-	nvram_unset("lan_fwd_enable"); // remove obsolete var
-	if(nvram_get("lan_invalid_enable") == NULL)
-		nvram_set("lan_invalid_enable", "0");
-
-	// Initialize working variable name for rstats_units
-	if(nvram_get("rstats_units") == NULL)
-		nvram_set("rstats_units", "0");
-
-	// Initialize working variable name ttl_inc
-	if(nvram_get("ttl_inc_enable") == NULL)
-		nvram_set("ttl_inc_enable", "0");
-
-	// Initialize ipv6 dhcp forward working variable name
-	if(nvram_get("ipv6_dhcp_forward") == NULL) {
-		nvram_set("ipv6_dhcp_forward", "0");
-		nvram_unset("ipv6_dhcp_forward_disable");
-	}
-
-	// Initialize working variables for DDNS check
-	if(nvram_get("ddns_regular_check") == NULL){
-		nvram_set("ddns_regular_check", "0");
-		nvram_set("ddns_regular_period", "60");
-		nvram_set("ddns_transfer", "");
-	}
-
-	// Initialize working variables for cron logging
-	if(nvram_get("cron_loglevel") == NULL){
-//		nvram_set("cron_logfile", "0");
-		nvram_set("cron_loglevel", "8");
-	}
-
-	// Initialize working variable for ipt lock
-	if(nvram_get("nat_iptlock") == NULL)
-                nvram_set("nat_iptlock", "0");
-
-	// Initialize working variables for OpenVPN selective routing
-        if(nvram_get("vpn_client_enforce") == NULL){
-		nvram_set("vpn_client_clientlist", "");
-		nvram_set("vpn_client_enforce", "0");
-		nvram_set("vpn_client1_clientlist", "");
-		nvram_set("vpn_client1_enforce", "0");
-		nvram_set("vpn_client2_clientlist", "");
-		nvram_set("vpn_client2_enforce", "0");
-        }
-
-	// Initialize working variable for ipv6 default route option
-	if(nvram_get("ipv6_isp_opt") == NULL)
-		nvram_set("ipv6_isp_opt", "0");
-
-	// Initialize radvd options
-	if(nvram_get("ipv6_radvd_dp") == NULL)
-		nvram_set("ipv6_radvd_dp", "1");
-	if(nvram_get("ipv6_radvd_dlx") == NULL) {
-		nvram_set("ipv6_radvd_dlx", "0");
-		nvram_unset("ipv6_radvd_dl");
-	}
-	if(nvram_get("ipv6_radvd_mtu") == NULL)
-		nvram_set("ipv6_radvd_mtu", "1");
-
-	// Initialize save variables for ipv6
-	if(nvram_get("ipv6_rtr_addr_s") == NULL){
-		nvram_set("ipv6_prefix_s", "");
-		nvram_set("ipv6_prefix_length_s","64");
-		nvram_set("ipv6_rtr_addr_s","");
-	}
-
-	// Initialize ipv6 dns option
-	if(nvram_get("ipv6_dns_router") == NULL)
-		nvram_set("ipv6_dns_router", "1");
-
-	// Set default lan_hostname
-	if(nvram_get("lan_hostname") == NULL)
-		nvram_set("lan_hostname", "asusrouter");
-
-	// Set default http port
-        if(nvram_get("http_lanport") == NULL)
-                nvram_set("http_lanport", "80");
+	// remove obsolete fork variables to avoid factory reset required
+	nvram_unset("lan_fwd_enable");
+	nvram_unset("ipv6_dhcp_forward_disable");
+	nvram_unset("ipv6_radvd_dl");
+	nvram_unset("ntp_log");
+	nvram_unset("qos_limitbw");
 
 	// Turn on user scripts after fw load w/o factory reset
 	if(nvram_get("jffs2_scripts") == NULL)
 		nvram_set("jffs2_scripts", "1");
 
-	// Initialize working variables for OpenVPN selective routing
-	if(nvram_get("vpn_crt_client1_crl") == NULL){
-		nvram_set("vpn_crt_client1_crl", "");
-		nvram_set("vpn_crt_client2_crl", "");
-	}
-	if(nvram_get("vpn_crt_server1_crl") == NULL){
-		nvram_set("vpn_crt_server1_crl", "");
-		nvram_set("vpn_crt_server2_crl", "");
-	}
-
-	// Initialize NTP options
-	if(nvram_get("ntpd_server") == NULL)
-		nvram_set("ntpd_server", "0");
-	if(nvram_get("ntp_log_x") == NULL){
-                nvram_set("ntp_log_x", "1");
-		nvram_unset("ntp_log");
-	}
-	if(nvram_get("ntp_update") == NULL)
-		nvram_set("ntp_update", "1");
-
-	// Initialize Connection Status option
-        if(nvram_get("connstat_opt") == NULL)
-                nvram_set("connstat_opt", "0");
-
-	// Initialize save variables for bandwidth limiter
-	if(nvram_get("qos_type") == NULL){
-		nvram_set("qos_type", "0");
-		nvram_set("qos_bw_rulelist", "");
-	}
-
-	// Initialize native IPv6 MTU
-	if(nvram_get("ipv6_mtu") == NULL)
-		nvram_set("ipv6_mtu", "1280");
-
-	// Initialize VPN dns parms
-        if(nvram_get("vpn_dns_mode") == NULL)
-                nvram_set("vpn_dns_mode", "0");
-
-	// Initialize default NAT loopback to ASUS
-	if(nvram_get("fw_nat_loopback") == NULL)
-		nvram_set("fw_nat_loopback", "1");
-
-	// Initialize qos bandwidth limiting
-	if(nvram_get("qos_ibwopt") == NULL) {
-		nvram_set("qos_ibwopt", "1");
-		nvram_unset("qos_limitbw");
-	}
-
-	// Initialize special ipv6 options
-	if(nvram_get("ipv6_dhcp6c_force") == NULL) {
-		nvram_set("ipv6_dhcp6c_force", "0");
-		nvram_set("ipv6_dhcp6c_release", "1");
-	}
-
-	// Initialize new IPv6 parm
-        if(nvram_get("ipv6_slaid") == NULL)
-                nvram_set("ipv6_slaid", "0");
-
-	// Initialize DHCP vendor class
-        if(nvram_get("wan_vendorid") == NULL)
-                nvram_set("wan_vendorid", "");
-
-	// Initialize DNSCRYPT support
-        if(nvram_get("dnscrypt1_resolver") == NULL) {
-                nvram_set("dnscrypt_proxy", "0");
-		nvram_set("dnscrypt1_resolver", "cisco");
-		nvram_set("dnscrypt1_port", "65053");
-		nvram_set("dnscrypt1_ipv6", "0");
-		nvram_set("dnscrypt2_resolver", "none");
-		nvram_set("dnscrypt2_port", "65054");
-		nvram_set("dnscrypt2_ipv6", "0");
-		nvram_set("dnscrypt_log", "4");
-		nvram_unset("dnscrypt_resolver");
-		nvram_unset("dnscrypt_port");
-	}
-
-	// Initialize route_localnet
-        if(nvram_get("allow_routelocal") == NULL)
-#ifdef RTCONFIG_BCMARM
-                nvram_set("allow_routelocal", "1");
-#else
-		nvram_set("allow_routelocal", "0");
-#endif
-
-// End Custom variables
+// End special fork processing
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
 	if(nvram_get("switch_wantag") && !nvram_match("switch_wantag", "none")&&!nvram_match("switch_wantag", "")){
