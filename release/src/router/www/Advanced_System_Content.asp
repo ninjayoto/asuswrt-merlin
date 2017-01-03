@@ -1183,7 +1183,7 @@ function updateDateTime()
               </td> 
           </tr>
           <tr style="display:none;" id="jffs2log">
-              <th>Save syslog to JFFS**</i></th>
+              <th>Save syslog to JFFS</i></th>
               <td>
                   <input type="radio" name="jffs2_log" class="input" value="1" <% nvram_match("jffs2_log", "1", "checked"); %> onchange="update_jffs2_msg();"><#checkbox_Yes#>
                   <input type="radio" name="jffs2_log" class="input" value="0" <% nvram_match("jffs2_log", "0", "checked"); %> onchange="update_jffs2_msg();"><#checkbox_No#>
@@ -1287,14 +1287,14 @@ function updateDateTime()
 	  </td>
 	</tr>
 	<tr>
-	  <th>Log NTP updates**</th>
+	  <th>Log NTP updates</th>
 	  <td>
 			<input type="radio" name="ntp_log_x" class="input" value="1" <% nvram_match_x("LANHostConfig", "ntp_log_x", "1", "checked"); %>><#checkbox_Yes#>
 			<input type="radio" name="ntp_log_x" class="input" value="0" <% nvram_match_x("LANHostConfig", "ntp_log_x", "0", "checked"); %>><#checkbox_No#>
 	  </td>
 	</tr>
 	<tr>
-	  <th>Smaller log output**</th>
+	  <th>Smaller log output</th>
 	  <td>
 			<input type="radio" name="log_small" class="input" value="1" <% nvram_match_x("LANHostConfig", "log_small", "1", "checked"); %>><#checkbox_Yes#>
 			<input type="radio" name="log_small" class="input" value="0" <% nvram_match_x("LANHostConfig", "log_small", "0", "checked"); %>><#checkbox_No#>
@@ -1348,20 +1348,20 @@ function updateDateTime()
 			</td>
         </tr>
 	<tr>
-		<th><#LANHostConfig_x_NTPServer_itemname#> (Alternate)**</th>
+		<th><#LANHostConfig_x_NTPServer_itemname#> (Alternate)</th>
 		<td>
 				<input type="text" maxlength="256" class="input_32_table" name="ntp_server1" value="<% nvram_get("ntp_server1"); %>" onKeyPress="return is_string(this,event);">
 		</td>
 	</tr>
 	<tr id="ntp_interval">
-		<th>Router NTP update interval (hours)**</th>
+		<th>Router NTP update interval (hours)</th>
 		<td>
 			<input type="text" maxlength="2" class="input_6_table" name="ntp_update" onKeyPress="return is_number(this,event);" onblur="validate_number_range(this, 0, 24); ntp_chk(this);" value="<% nvram_get("ntp_update"); %>">
 			<span id="ntpd_upd_hint">&nbsp;&nbsp;Default: 1 hour (0 disables NTP updates)</span>
 		</td>
 	</tr>
 	<tr>
-		<th>Enable router as local SNTP server**</th>
+		<th>Enable router as local SNTP server</th>
 		<td>
 			<input type="radio" name="ntpd_server" class="input" value="1" onClick="hide_ntpd_hint(0);" <% nvram_match_x("LANHostConfig", "ntpd_server", "1", "checked"); %>><#checkbox_Yes#>
 			<input type="radio" name="ntpd_server" class="input" value="0" onClick="hide_ntpd_hint(1);" <% nvram_match_x("LANHostConfig", "ntpd_server", "0", "checked"); %>><#checkbox_No#>
@@ -1455,7 +1455,7 @@ function updateDateTime()
 		  	</tr>
 
 			<tr id="http_lanport">
-                                        <th>HTTP Lan port**</th>
+                                        <th>HTTP Lan port</th>
           <td>
                                                 <input type="text" maxlength="5" class="input_6_table" name="http_lanport" value="<% nvram_get("http_lanport"); %>" onKeyPress="return is_number(this,event);" onBlur="change_url(this.value, 'http_lan');">
                                                 <span id="http_access_page"></span>
@@ -1471,7 +1471,7 @@ function updateDateTime()
 		  	</tr>
 
 			<tr id="https_cert">
-					<th>Save HTTPS certificate**<br><i>Requires approx 1KB NVRAM space</i></th>
+					<th>Save HTTPS certificate<br><i>Requires approx 1KB NVRAM space</i></th>
 					<td>
 						<input type="radio" name="https_crt_save" class="input" value="1" <% nvram_match_x("", "https_crt_save", "1", "checked"); %>><#checkbox_Yes#>
 						<input type="radio" name="https_crt_save" class="input" value="0" <% nvram_match_x("", "https_crt_save", "0", "checked"); %>><#checkbox_No#>

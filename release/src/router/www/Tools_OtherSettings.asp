@@ -782,7 +782,7 @@ function done_validating(action){
 						</td>
 					</tr>
 					<tr id="rstats_units_tr">
-						<th>Traffic Monitor graph units**</th>
+						<th>Traffic Monitor graph units</th>
 						<td>
 							<select name="rstats_units" class="input_option">
 								<option value="0"<% nvram_match("rstats_units", "0","selected"); %>>KB/s (Default)</option>
@@ -832,7 +832,7 @@ function done_validating(action){
 						<th>Stealth Mode (disable all LEDs)</th>
 						<td>
 							<input type="radio" name="led_disable" class="input" value="1" <% nvram_match_x("", "led_disable", "1", "checked"); %>><#checkbox_Yes#>
-							<input type="radio" name="led_disable" class="input" value="2" <% nvram_match_x("", "led_disable", "2", "checked"); %>>Show power status only**
+							<input type="radio" name="led_disable" class="input" value="2" <% nvram_match_x("", "led_disable", "2", "checked"); %>>Show power status only
 							<input type="radio" name="led_disable" class="input" value="0" <% nvram_match_x("", "led_disable", "0", "checked"); %>><#checkbox_No#>
 						</td>
 					</tr>

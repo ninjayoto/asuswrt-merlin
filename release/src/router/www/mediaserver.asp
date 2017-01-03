@@ -962,7 +962,7 @@ else if(v == "dms"){
 					</td>
       	</tr>
 	<tr>
-		<th>Scan media at every boot**</th>
+		<th>Scan media at every boot</th>
 			<td>
 				<input type="radio" value="1" name="dms_rescan" class="input" <% nvram_match("dms_rescan", "1", "checked"); %>><#checkbox_Yes#>
 				<input type="radio" value="0" name="dms_rescan" class="input" <% nvram_match("dms_rescan", "0", "checked"); %>><#checkbox_No#>

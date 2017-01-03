@@ -546,7 +546,7 @@ function showqos_bw_rulelist(){
 										</tr>
 
 										<tr id="qos_default">
-											<th>Default Priority Level**</th>
+											<th>Default Priority Level</th>
 											<td>
 												<select name="qos_default" class="input_option">
 													<option value="0"<% nvram_match("qos_default", "0","selected"); %> onclick="changeButton();">Highest</option>

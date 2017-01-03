@@ -196,7 +196,7 @@ function done_validating(action){
 							</td>
 		</tr>
                 <tr>
-                        <th>Filter IPv6 Neighbor Solicitation**</th>
+                        <th>Filter IPv6 Neighbor Solicitation</th>
                         <td>
                                                                 <input type="radio" value="1" name="ipv6_neighsol_drop" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ipv6_neighsol_drop', '1')" <% nvram_match("ipv6_neighsol_drop", "1", "checked"); %>><#checkbox_Yes#>
                                                                 <input type="radio" value="0" name="ipv6_neighsol_drop" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ipv6_neighsol_drop', '0')" <% nvram_match("ipv6_neighsol_drop", "0", "checked"); %>><#checkbox_No#>
@@ -204,21 +204,21 @@ function done_validating(action){
                 </tr>
 		<tr>
 			<!-- <th><a class="hintstyle" href="javascript:void(0);" onClick=""><#Extend_TTL_Value#></a></th> -->
-			<th>Extend TTL Value**</th>
+			<th>Extend TTL Value</th>
 			<td>
 								<input type="radio" value="1" name="ttl_inc_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ttl_inc_enable', '1')" <% nvram_match("ttl_inc_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="ttl_inc_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ttl_inc_enable', '0')" <% nvram_match("ttl_inc_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
 		<tr>
-			<th>Enable DSCP override**</th>
+			<th>Enable DSCP override</th>
 			<td>
 								<input type="radio" value="1" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '1')" <% nvram_match("DSCP_fix_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '0')" <% nvram_match("DSCP_fix_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
 <!--		<tr>
-			<th>Enable local subnet forwarding**</th>
+			<th>Enable local subnet forwarding</th>
 			<td>
 								<input type="radio" value="1" name="lan_fwd_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'lan_fwd_enable', '1')" <% nvram_match("lan_invalid_enable", "0", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="lan_fwd_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'lan_fwd_enable', '0')" <% nvram_match("lan_invalid_enable", "1", "checked"); %>><#checkbox_No#>
