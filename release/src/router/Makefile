@@ -2888,8 +2888,9 @@ curl-7.21.7/stamp-h1:
 	cd curl-7.21.7 && \
 	$(CONFIGURE) CC=$(CC) \
 	--prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
-	--enable-http --with-ssl=$(TOP)/openssl LDFLAGS="-ldl"
+	--enable-http --with-ssl=$(TOP)/openssl/ssl LDFLAGS="-ldl" \
 	$(if $(RTCONFIG_IPV6),--enable-ipv6) \
+	--disable-gopher --disable-dict --disable-telnet \
 	--with-ca-bundle=/rom/ca-bundle.crt
 	touch $@
 
@@ -2901,6 +2902,8 @@ curl-7.21.7-install: curl-7.21.7
 	install -D curl-7.21.7/lib/.libs/libcurl.so.4.2.0 $(INSTALLDIR)/curl-7.21.7/usr/lib/libcurl.so.4.2.0
 	$(STRIP) $(INSTALLDIR)/curl-7.21.7/usr/lib/libcurl.so.4.2.0
 	cd $(INSTALLDIR)/curl-7.21.7/usr/lib && ln -sf libcurl.so.4.2.0 libcurl.so && ln -sf libcurl.so.4.2.0 libcurl.so.4
+	install -D curl-7.21.7/src/.libs/curl $(INSTALLDIR)/curl/usr/sbin/curl
+	$(STRIP) $(INSTALLDIR)/curl/usr/sbin/curl
 	
 curl-7.21.7-clean:
 	-@$(MAKE) -C curl-7.21.7 clean
