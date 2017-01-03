@@ -99,6 +99,8 @@ function initial(){
 
 	if (isSupport("dnssec")){
 		document.getElementById("dnssec_tr").style.display = "";
+		document.getElementById("dnssec_strict_span").style.display = "";
+		document.form.dnssec_strict_ckb.checked = ('<% nvram_get("dnssec_check_unsigned"); %>' == 1) ? true : false;
 	}
 
 	if (isSupport("dnscrypt")){
@@ -873,6 +875,7 @@ function pass_checked(obj){
 <input type="hidden" name="vpn_client2_adns" value="<% nvram_get("vpn_client2_adns"); %>" />
 <input type="hidden" name="dnscrypt1_ipv6" value="<% nvram_get("dnscrypt1_ipv6"); %>" />
 <input type="hidden" name="dnscrypt2_ipv6" value="<% nvram_get("dnscrypt2_ipv6"); %>" />
+<input type="hidden" name="dnssec_check_unsigned" value="<% nvram_get("dnssec_check_unsigned"); %>" />
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -1055,6 +1058,7 @@ function pass_checked(obj){
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="wan_dnssec_enable" onclick="update_resolverlist();" <% nvram_match("wan_dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="wan_dnssec_enable" onclick="update_resolverlist();" <% nvram_match("wan_dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned"); %>" onclick="document.form.dnssec_check_unsigned.value=(this.checked==true)?1:0;"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>
 			<tr id="dnscrypt_tr" style="display:none;">
