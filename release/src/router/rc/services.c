@@ -2576,13 +2576,6 @@ start_dns(void)
 	}
 
 	fprintf(fp, "127.0.0.1 localhost.localdomain localhost\n");
-	fprintf(fp, "%s	my.router\n", nvram_safe_get("lan_ipaddr"));
-	fprintf(fp, "%s	my.%s\n", nvram_safe_get("lan_ipaddr"), get_productid());
-	fprintf(fp, "%s %s\n", nvram_safe_get("lan_ipaddr"), get_productid());
-
-	if (strcmp(get_productid(), nvram_safe_get("computer_name")) && is_valid_hostname(nvram_safe_get("computer_name")))
-		fprintf(fp, "%s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("computer_name"));
-
 	if (nvram_invmatch("lan_hostname", ""))
 	{
 		fprintf(fp, "%s %s.%s %s\n", nvram_safe_get("lan_ipaddr"),
@@ -2590,6 +2583,12 @@ start_dns(void)
 					nvram_safe_get("lan_domain"),
 					nvram_safe_get("lan_hostname"));
 	}
+	if (strcmp(get_productid(), nvram_safe_get("computer_name")) && is_valid_hostname(nvram_safe_get("computer_name")))
+		fprintf(fp, "%s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("computer_name"));
+	fprintf(fp, "%s	my.router\n", nvram_safe_get("lan_ipaddr"));
+	fprintf(fp, "%s	my.%s\n", nvram_safe_get("lan_ipaddr"), get_productid());
+	fprintf(fp, "%s %s\n", nvram_safe_get("lan_ipaddr"), get_productid());
+
 
 #ifdef RTCONFIG_IPV6
 	const char *s;
