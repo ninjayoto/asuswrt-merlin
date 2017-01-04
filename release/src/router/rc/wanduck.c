@@ -437,6 +437,11 @@ int detect_internet(int wan_unit){
 	memset(wan_ifname, 0, 16);
 	strcpy(wan_ifname, get_wan_ifname(wan_unit));
 
+#ifdef RTCONFIG_DUALWAN
+	char * wans_dualwan;
+	wans_dualwan = nvram_safe_get("wans_dualwan");
+#endif
+
 	if(
 #ifdef RTCONFIG_DUALWAN
 			strcmp(dualwan_mode, "lb") &&
@@ -462,7 +467,11 @@ int detect_internet(int wan_unit){
 		nvram_set_int("link_internet", 0);
 		record_wan_state_nvram(wan_unit, -1, -1, WAN_AUXSTATE_NO_INTERNET_ACTIVITY);
 
-		if(!(nvram_get_int("web_redirect")&WEBREDIRECT_FLAG_NOINTERNET)) {
+		if(!(nvram_get_int("web_redirect")&WEBREDIRECT_FLAG_NOINTERNET)
+#ifdef RTCONFIG_DUALWAN
+			&& (strstr(wans_dualwan, "none") != NULL)
+#endif
+		) {
 			nvram_set_int("link_internet", 1);
 			link_internet = CONNED;
 		}
