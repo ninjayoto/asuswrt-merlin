@@ -179,10 +179,12 @@ char *pFields[NUM_FIELDS];
 int ej_resolver_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
 	FILE *fp;
 	int ret = 0;
+	char fcsv[128];
 
 	ret += websWrite(wp, "var resolverarray = [\n");
 
-	fp = fopen("/rom/dnscrypt-resolvers.csv","r");
+	sprintf(fcsv, "%s", nvram_safe_get("dnscrypt_csv"));
+	fp = fopen(fcsv, "r");
 	if (fp) {
 		ret += resolver_dump(fp, wp);
 		ret += websWrite(wp, "];\n");
@@ -190,7 +192,7 @@ int ej_resolver_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
 	} else {
 		ret += websWrite(wp, "[]];\n");
 	}
-	unlink("/rom/dnscrypt-resolvers.csv");
+//	unlink(fcsv);
 
 	return ret;
 }
