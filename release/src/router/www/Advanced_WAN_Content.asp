@@ -64,6 +64,7 @@ var original_wan_dhcpenable = parseInt('<% nvram_get("wan_dhcpenable_x"); %>');
 var original_dnsenable = parseInt('<% nvram_get("wan_dnsenable_x"); %>');
 var wan_unit_flag = '<% nvram_get("wan_unit"); %>';
 var dnscrypt_proxy_orig = '<% nvram_get("dnscrypt_proxy"); %>';
+var dnscrypt_csv = '<% nvram_get("dnscrypt_csv"); %>';
 var vpn_client1_adns = '<% nvram_get("vpn_client1_adns"); %>';
 var vpn_client2_adns = '<% nvram_get("vpn_client2_adns"); %>';
 var vpn_client1_state = '<% nvram_get("vpn_client1_state"); %>';
@@ -106,7 +107,10 @@ function initial(){
 	if (isSupport("dnscrypt")){
 		document.getElementById("dnscrypt_tr").style.display = "";
 		display_dnscrypt_opt();
-		check_vpn(0);
+		if (dnscrypt_csv != "/rom/dnscrypt-resolvers.csv")  // warn if not using rom csv file
+			showhide("dnscrypt_csvwarn", true);
+		else
+			showhide("dnscrypt_csvwarn", false);
 	}
 
 	update_resolverlist();
@@ -166,7 +170,6 @@ function display_dnscrypt_opt(){
 	$("dnscrypt2_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt2_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt_log_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
-	check_vpn(0);
 }
 
 function display_upnp_range(){
@@ -471,25 +474,7 @@ function validForm(){
 		}
 	}
 
-	check_vpn(1);
-
 	return true;
-}
-
-function check_vpn(notify) {
-	if ((((vpn_client1_state != 0) && ((vpn_client1_adns == 1) || (vpn_client1_adns == 2) || (vpn_client1_adns == 3))) ||
-	     ((vpn_client2_state != 0) && ((vpn_client2_adns == 1) || (vpn_client2_adns == 2) || (vpn_client2_adns == 3)))) &&
-	      document.form.dnscrypt_proxy.value == 1 ) {
-		if (!allow_routelocal) {
-//			if (notify == 0 && document.form.dnscrypt_proxy[0].checked)
-//				alert("WARNING:\nThe settings for one or more of your OpenVPN Clients prevent the use of DNSCrypt");
-			showhide("dnscrypt_notused", true);
-		}
-		else {
-			showhide("dnscrypt_notused", false);
-		}
-	} else
-		showhide("dnscrypt_notused", false);
 }
 
 function done_validating(action){
@@ -1066,7 +1051,7 @@ function pass_checked(obj){
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
-				<span id="dnscrypt_notused">&nbsp;&nbsp;(DNSCrypt unavailable due to OpenVPN DNS option)</span>
+				<span id="dnscrypt_csvwarn" style="padding-left:42px;">Using updated resolver file</span>
 				</td>
 			</tr>
 			<tr id="dnscrypt1_resolv_tr" style="display:none;">
