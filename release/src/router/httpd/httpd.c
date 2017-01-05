@@ -871,7 +871,7 @@ handle_request(void)
 	if(strncmp(url, APPLYAPPSTR, strlen(APPLYAPPSTR))==0)  fromapp=1;
 	else if(strncmp(url, GETAPPSTR, strlen(GETAPPSTR))==0)  {
 		fromapp=1;
-		strcpy(url, url+strlen(GETAPPSTR));
+		strlcpy(url, url+strlen(GETAPPSTR), sizeof(url));
 		file += strlen(GETAPPSTR);
 	}
 

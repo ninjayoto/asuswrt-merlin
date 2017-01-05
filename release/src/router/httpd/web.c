@@ -3596,7 +3596,7 @@ static void find_hostname_by_mac(char *mac, char *hostname)
 
 		if (strncasecmp(macaddr, mac, 17) == 0) {
 			fclose(fp);
-			strcpy(hostname, host_name);
+			strlcpy(hostname, host_name, sizeof(hostname));
 			return;
 		}
 
@@ -5032,7 +5032,7 @@ int ej_shown_language_option(int eid, webs_t wp, int argc, char **argv){
 #endif
 
 	memset(lang, 0, 4);
-	strcpy(lang, nvram_safe_get("preferred_lang"));
+	strlcpy(lang, nvram_safe_get("preferred_lang"), sizeof(lang));
 
 	while (1) {
 		memset(buffer, 0, sizeof(buffer));
