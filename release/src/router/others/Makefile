@@ -28,8 +28,12 @@ endif
 # chpasswd script
 	install -m 0700 chpasswd.sh $(INSTALLDIR)/usr/sbin
 
-# Easy-rsa scripts (for OpenVPN)
+# dnscrypt resolver updater
+ifeq ($(RTCONFIG_DNSCRYPT),y)
+	install -m 0700 dnscrypt-update-resolvers.sh $(INSTALLDIR)/usr/sbin
+endif
 
+# Easy-rsa scripts (for OpenVPN)
 ifeq ($(RTCONFIG_OPENVPN),y)
 	install -m 0700 setuprsa.sh $(INSTALLDIR)/usr/sbin
 	install -m 0700 -D updown.sh $(INSTALLDIR)/usr/sbin
