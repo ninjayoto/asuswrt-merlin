@@ -91,10 +91,10 @@ function init(){
 function updateOptions(){
 	if(document.form.cmdMethod.value == "netstat-nat" && document.form.NetOption.value == "-s"){
 		document.form.SystemCmd.value = "netstat-nat " + document.form.NetOption.value + " "
-																		+ document.form.targetip.value + " " + document.form.ExtOption.value +" -n";
+		+ document.form.targetip.value + " " + document.form.ExtOption.value +" -n";
 	}else if(document.form.cmdMethod.value == "netstat-nat"){
 		document.form.SystemCmd.value = "netstat-nat " + document.form.NetOption.value + " "
-																		+document.form.ExtOption.value +" -n";
+		+ document.form.ExtOption.value +" -n";
 	}else{
 		document.form.SystemCmd.value = "netstat " + document.form.NetOption.value;
 		if (document.form.ResolveName.value != "1")
@@ -272,7 +272,7 @@ function validForm(){
 <div id="TopBanner"></div>
 <div id="Loading" class="popup_bg"></div>
 <iframe name="hidden_frame" id="hidden_frame" src="" width="0" height="0" frameborder="0"></iframe>
-<form method="GET" name="form" action="/apply.cgi" target="hidden_frame"> 
+<form method="POST" name="form" action="/apply.cgi" target="hidden_frame">
 <input type="hidden" name="current_page" value="Main_Netstat_Content.asp">
 <input type="hidden" name="next_page" value="Main_Netstat_Content.asp">
 <input type="hidden" name="group_id" value="">
