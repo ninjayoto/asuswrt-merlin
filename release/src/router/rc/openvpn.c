@@ -1694,6 +1694,8 @@ void write_vpn_dnsmasq_config(FILE* f)
 	DIR *dir;
 	struct dirent *file;
 	FILE *dnsf;
+	char *dnscrypt1_lanip;
+	char *dnscrypt2_lanip;
 
 	strlcpy(&buf[0], nvram_safe_get("vpn_serverx_dns"), sizeof(buf));
 	for ( pos = strtok(&buf[0],","); pos != NULL; pos=strtok(NULL, ",") )
@@ -1729,16 +1731,27 @@ void write_vpn_dnsmasq_config(FILE* f)
 				{
 					vpnlog(VPN_LOG_INFO, "Setting DNSCRYPT server to dnsmasq config for client %d", cur);
 					if (nvram_match("dnscrypt_proxy", "1")) {
-					fprintf(f, "no-resolv\n");
-/*
+						fprintf(f, "no-resolv\n");
+
 #ifdef RTCONFIG_IPV6
-					if (ipv6_enabled()) {
-						fprintf(f, "server=::1#%d\n", nvram_get_int("dnscrypt_port"));
-					}
+						if (ipv6_enabled() && nvram_get_int("dnscrypt1_ipv6"))
+							dnscrypt1_lanip = "::1";
+						else
+							dnscrypt1_lanip = "127.0.0.1";
+						if (ipv6_enabled() && nvram_get_int("dnscrypt2_ipv6"))
+							dnscrypt2_lanip = "::1";
+						else
+							dnscrypt2_lanip = "127.0.0.1";
+#else
+						dnscrypt1_lanip = "127.0.0.1";
+						dnscrypt2_lanip = "127.0.0.1";
 #endif
-*/
-					fprintf(f, "server=127.0.0.1#%d\n", nvram_get_int("dnscrypt_port"));
-	}
+
+						if (!nvram_match("dnscrypt2_resolver", "none"))
+							fprintf(f, "server=%s#%d\n", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
+						if (!nvram_match("dnscrypt1_resolver","none"))
+							fprintf(f, "server=%s#%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
+						}
 #endif
 					break;
 				}
@@ -1763,19 +1776,30 @@ void write_vpn_dnsmasq_config(FILE* f)
 	}
 #ifdef RTCONFIG_DNSCRYPT
 	else {
-	if (nvram_match("dnscrypt_proxy", "1")) {
-		fprintf(f, "no-resolv\n");
-/*
+		if (nvram_match("dnscrypt_proxy", "1")) {
+			fprintf(f, "no-resolv\n");
+
 #ifdef RTCONFIG_IPV6
-		if (ipv6_enabled()) {
-			fprintf(f, "server=::1#%d\n", nvram_get_int("dnscrypt_port"));
+			if (ipv6_enabled() && nvram_get_int("dnscrypt1_ipv6"))
+				dnscrypt1_lanip = "::1";
+			else
+				dnscrypt1_lanip = "127.0.0.1";
+			if (ipv6_enabled() && nvram_get_int("dnscrypt2_ipv6"))
+				dnscrypt2_lanip = "::1";
+			else
+				dnscrypt2_lanip = "127.0.0.1";
+#else
+			dnscrypt1_lanip = "127.0.0.1";
+			dnscrypt2_lanip = "127.0.0.1";
+#endif
+
+			if (!nvram_match("dnscrypt2_resolver", "none"))
+				fprintf(f, "server=%s#%d\n", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
+			if (!nvram_match("dnscrypt1_resolver","none"))
+				fprintf(f, "server=%s#%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
 		}
-#endif
-*/
-		fprintf(f, "server=127.0.0.1#%d\n", nvram_get_int("dnscrypt_port"));
 	}
 #endif
-	}
 }
 
 int write_vpn_resolv(FILE* f)

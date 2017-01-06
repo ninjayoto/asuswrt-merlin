@@ -63,6 +63,14 @@ var original_wan_type = wan_proto;
 var original_wan_dhcpenable = parseInt('<% nvram_get("wan_dhcpenable_x"); %>');
 var original_dnsenable = parseInt('<% nvram_get("wan_dnsenable_x"); %>');
 var wan_unit_flag = '<% nvram_get("wan_unit"); %>';
+var dnscrypt_proxy_orig = '<% nvram_get("dnscrypt_proxy"); %>';
+var vpn_client1_adns = '<% nvram_get("vpn_client1_adns"); %>';
+var vpn_client2_adns = '<% nvram_get("vpn_client2_adns"); %>';
+var vpn_client1_state = '<% nvram_get("vpn_client1_state"); %>';
+var vpn_client2_state = '<% nvram_get("vpn_client2_state"); %>';
+var ipv6_enabled = '<% nvram_get("ipv6_service"); %>';
+var machine_name = '<% get_machine_name(); %>';
+var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && ('<% nvram_get("allow_routelocal"); %>' ? true : false));
 
 function initial(){
 	if(!dualWAN_support){
@@ -96,6 +104,7 @@ function initial(){
 	if (isSupport("dnscrypt")){
 		document.getElementById("dnscrypt_tr").style.display = "";
 		display_dnscrypt_opt();
+		check_vpn(0);
 	}
 
 	update_resolverlist();
@@ -104,23 +113,58 @@ function initial(){
 
 function update_resolverlist(){
 // Resolver list
-	free_options(document.form.dnscrypt_resolver);
-	currentresolver = "<% nvram_get("dnscrypt_resolver"); %>";
-	add_option(document.form.dnscrypt_resolver, "Not Defined","none",(currentresolver == "none"));
+	free_options(document.form.dnscrypt1_resolver);
+	currentresolver1 = "<% nvram_get("dnscrypt1_resolver"); %>";
+	add_option(document.form.dnscrypt1_resolver, "Not Defined","none",(currentresolver1 == "none"));
+
+	free_options(document.form.dnscrypt2_resolver);
+	currentresolver2 = "<% nvram_get("dnscrypt2_resolver"); %>";
+	add_option(document.form.dnscrypt2_resolver, "Not Defined","none",(currentresolver2 == "none"));
 
 	var dnssec_enabled = document.form.wan_dnssec_enable[0].checked;
 	for(var i = 0; i < resolverarray.length; i++){
-		if ((dnssec_enabled == 1 && resolverarray[i][2] == "yes") || dnssec_enabled == 0)
-			add_option(document.form.dnscrypt_resolver,
-				resolverarray[i][1], resolverarray[i][0],
-				(currentresolver == resolverarray[i][0]));
+		// Exclude non-dnssec resolvers if dnssec is enabled
+//		if ((dnssec_enabled == 1 && resolverarray[i][2] == "yes") || dnssec_enabled == 0) {
+			if ((resolverarray[i][0].indexOf('ipv6') != -1) && (ipv6_enabled != "disabled")) { //ipv6
+				add_option(document.form.dnscrypt1_resolver,
+					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+					(currentresolver1 == resolverarray[i][0]));
+				add_option(document.form.dnscrypt2_resolver,
+					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+					(currentresolver2 == resolverarray[i][0]));
+			} else if (resolverarray[i][0].indexOf('ipv6') == -1) { //ipv4
+				add_option(document.form.dnscrypt1_resolver,
+					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+					(currentresolver1 == resolverarray[i][0]));
+				add_option(document.form.dnscrypt2_resolver,
+					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+					(currentresolver2 == resolverarray[i][0]));
+			}
+//		}
 	}
 }
 
+function set_dnscrypt_protocol(instance, name){
+	if (instance == 1) {
+	if (name.indexOf('ipv6') == -1)
+		document.form.dnscrypt1_ipv6.value = 0;
+	else
+		document.form.dnscrypt1_ipv6.value = 1;
+	}
+	if (instance == 2) {
+	if (name.indexOf('ipv6') == -1)
+		document.form.dnscrypt2_ipv6.value = 0;
+	else
+		document.form.dnscrypt2_ipv6.value = 1;
+	}
+}
 function display_dnscrypt_opt(){
-	$("dnscrypt_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
-	$("dnscrypt_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt1_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt1_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt2_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt2_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt_log_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	check_vpn(0);
 }
 
 function display_upnp_range(){
@@ -185,14 +229,24 @@ function applyRule(){
 			inputCtrl(document.form.wan_dns2_x, 1);
 		}
 
+		// Reset VPN Client DNSCrypt option when turning off DNSCrypt
+		if(!document.form.dnscrypt_proxy[0].checked && (dnscrypt_proxy_orig == 1)) {
+			if(document.form.vpn_client1_adns.value == 4)
+				document.form.vpn_client1_adns.value = 3;
+			if(document.form.vpn_client2_adns.value == 4)
+				document.form.vpn_client2_adns.value = 3;
+		}
+
 		if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
 			document.form.action_script += ";restart_firewall";
 
+/* Should not need this since restarting wan_if
 		if((document.form.dnscrypt_proxy[0].checked != "<% nvram_get("dnscrypt_proxy"); %>") ||
 		   (document.form.dnscrypt_resolver.value != "<% nvram_get("dnscrypt_proxy"); %>") ||
 		   (document.form.dnscrypt_port.value != "<% nvram_get("dnscrypt_port"); %>") ||
 		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
 			document.form.action_script += ";restart_dnsmasq";
+*/
 
 		document.form.submit();	
 	}
@@ -394,7 +448,46 @@ function validForm(){
 	if(document.form.wan_heartbeat_x.value.length > 0)
 		 if(!validate_string(document.form.wan_heartbeat_x))
 		 	return false;
+
+	if (document.form.dnscrypt_proxy[0].checked) {
+		if ((document.form.dnscrypt1_resolver.value != "none") && (!validate_number_range(document.form.dnscrypt1_port, 1, 65535)))
+			return false;
+		if ((document.form.dnscrypt2_resolver.value != "none") && (!validate_number_range(document.form.dnscrypt2_port, 1, 65535)))
+			return false;
+	}
+
+	if (document.form.dnscrypt_proxy[0].checked) {
+		if ((document.form.dnscrypt1_resolver.value != "none") && (document.form.dnscrypt2_resolver.value != "none")) {
+			if (document.form.dnscrypt1_port.value == document.form.dnscrypt2_port.value) {
+				alert("DNSCrypt port conflict!  Both DNSCrypt resolvers cannot use the same port.");
+				return false;
+			}
+			if (document.form.dnscrypt1_resolver.value == document.form.dnscrypt2_resolver.value) {
+				alert("DNSCrypt resolver conflict!  Both DNSCrypt resolvers cannot be set to the same server.");
+				return false;
+			}
+		}
+	}
+
+	check_vpn(1);
+
 	return true;
+}
+
+function check_vpn(notify) {
+	if ((((vpn_client1_state != 0) && ((vpn_client1_adns == 1) || (vpn_client1_adns == 2) || (vpn_client1_adns == 3))) ||
+	     ((vpn_client2_state != 0) && ((vpn_client2_adns == 1) || (vpn_client2_adns == 2) || (vpn_client2_adns == 3)))) &&
+	      document.form.dnscrypt_proxy.value == 1 ) {
+		if (!allow_routelocal) {
+//			if (notify == 0 && document.form.dnscrypt_proxy[0].checked)
+//				alert("WARNING:\nThe settings for one or more of your OpenVPN Clients prevent the use of DNSCrypt");
+			showhide("dnscrypt_notused", true);
+		}
+		else {
+			showhide("dnscrypt_notused", false);
+		}
+	} else
+		showhide("dnscrypt_notused", false);
 }
 
 function done_validating(action){
@@ -776,6 +869,10 @@ function pass_checked(obj){
 <input type="hidden" name="lan_netmask" value="<% nvram_get("lan_netmask"); %>" />
 <input type="hidden" name="wan_pppoe_username_org" value="<% nvram_char_to_ascii("", "wan_pppoe_username"); %>" />
 <input type="hidden" name="wan_pppoe_passwd_org" value="<% nvram_char_to_ascii("", "wan_pppoe_passwd"); %>" />
+<input type="hidden" name="vpn_client1_adns" value="<% nvram_get("vpn_client1_adns"); %>" />
+<input type="hidden" name="vpn_client2_adns" value="<% nvram_get("vpn_client2_adns"); %>" />
+<input type="hidden" name="dnscrypt1_ipv6" value="<% nvram_get("dnscrypt1_ipv6"); %>" />
+<input type="hidden" name="dnscrypt2_ipv6" value="<% nvram_get("dnscrypt2_ipv6"); %>" />
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -965,24 +1062,38 @@ function pass_checked(obj){
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
+				<span id="dnscrypt_notused">&nbsp;&nbsp;(DNSCrypt unavailable due to OpenVPN DNS option)</span>
 				</td>
 			</tr>
-			<tr id="dnscrypt_resolv_tr" style="display:none;">
-				<th>DNSCRYPT Resolver</th>
+			<tr id="dnscrypt1_resolv_tr" style="display:none;">
+				<th>DNSCRYPT Resolver1</th>
 				<td colspan="2" style="text-align:left;">
-					<select id="dnscrypt_resolver" class="input_option" name="dnscrypt_resolver">
-						<option value="<% nvram_get("dnscrypt_resolver"); %>" selected><% nvram_get("dnscrypt_resolver"); %></option>
+					<select id="dnscrypt1_resolver" class="input_option" name="dnscrypt1_resolver" onclick="set_dnscrypt_protocol(1,this.value);">
+						<option value="<% nvram_get("dnscrypt1_resolver"); %>" selected><% nvram_get("dnscrypt1_resolver"); %></option>
 					</select>
 				</td>
 			</tr>
-			<tr id="dnscrypt_port_tr" style="display:none;">
-				<th>DNSCRYPT Port</th>
+			<tr id="dnscrypt1_port_tr" style="display:none;">
+				<th>DNSCRYPT Port1</th>
 				<td colspan="2" style="text-align:left;">
-					<input type="text" maxlength="5" name="dnscrypt_port" class="input_6_table" value="<% nvram_get("dnscrypt_port"); %>" onKeyPress="return is_number(this,event);"/>
+					<input type="text" maxlength="5" name="dnscrypt1_port" class="input_6_table" value="<% nvram_get("dnscrypt1_port"); %>" onKeyPress="return is_number(this,event);"/>
+				</td>
+			<tr id="dnscrypt2_resolv_tr" style="display:none;">
+				<th>DNSCRYPT Resolver2</th>
+				<td colspan="2" style="text-align:left;">
+					<select id="dnscrypt2_resolver" class="input_option" name="dnscrypt2_resolver" onclick="set_dnscrypt_protocol(2,this.value);">
+						<option value="<% nvram_get("dnscrypt2_resolver"); %>" selected><% nvram_get("dnscrypt2_resolver"); %></option>
+					</select>
+				</td>
+			</tr>
+			<tr id="dnscrypt2_port_tr" style="display:none;">
+				<th>DNSCRYPT Port2</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="text" maxlength="5" name="dnscrypt2_port" class="input_6_table" value="<% nvram_get("dnscrypt2_port"); %>" onKeyPress="return is_number(this,event);"/>
 				</td>
 			</tr>
 			<tr id="dnscrypt_log_tr" style="display:none;">
-				<th>DNSCRYPT Loglevel</th>
+				<th>DNSCRYPT log level</th>
 				<td colspan="2" style="text-align:left;">
 					<select id="dnscrypt_log" class="input_option" name="dnscrypt_log">
 						<option value="0" <% nvram_match("dnscrypt_log", "0", "selected"); %>>Emergency</option>

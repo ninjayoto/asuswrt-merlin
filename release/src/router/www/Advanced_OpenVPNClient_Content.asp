@@ -129,13 +129,16 @@
 var $j = jQuery.noConflict();
 <% login_state_hook(); %>
 
-wan_route_x = '<% nvram_get("wan_route_x"); %>';
-wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
-wan_proto = '<% nvram_get("wan_proto"); %>';
-dnscrypt_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
-<% vpn_client_get_parameter(); %>;
+var wan_route_x = '<% nvram_get("wan_route_x"); %>';
+var wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
+var wan_proto = '<% nvram_get("wan_proto"); %>';
+var dnscrypt_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
+var machine_name = '<% get_machine_name(); %>';
+var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && (('<% nvram_get("allow_routelocal"); %>' == 1)? true : false));
 
-openvpn_unit = '<% nvram_get("vpn_client_unit"); %>';
+<% vpn_client_get_parameter(); %>
+
+var openvpn_unit = '<% nvram_get("vpn_client_unit"); %>';
 
 if (openvpn_unit == 1)
 	service_state = (<% sysinfo("pid.vpnclient1"); %> > 0);
@@ -144,8 +147,9 @@ else if (openvpn_unit == 2)
 else
 	service_state = false;
 
-enforce_orig = "<% nvram_get("vpn_client_enforce"); %>";
-policy_orig = "<% nvram_get("vpn_client_rgw"); %>";
+var enforce_orig = "<% nvram_get("vpn_client_enforce"); %>";
+var policy_orig = "<% nvram_get("vpn_client_rgw"); %>";
+var adns_orig = "<% nvram_get("vpn_client_adns"); %>";
 
 ciphersarray = [
 		["AES-128-CBC"],
@@ -270,6 +274,7 @@ function initial()
 	//disable policy based routing option for tap connections
 	update_rgw_options();
 	document.form.vpn_client_rgw.value = policy_orig;
+	document.form.vpn_client_adns.value = adns_orig;
 
 	// Decode into editable format
 	openvpn_decodeKeys(0);
@@ -358,8 +363,27 @@ function update_visibility(){
 	showhide("clientlist_Block", (rgw == 2));
 	showhide("selectiveTable", (rgw == 2));
 	showhide("client_enforce", (rgw == 2));
-	showhide("enable_dns_span", (adns >= 3 && rgw == 2));
+
 	showhide("dnscrypt_adns", (dnscrypt_proxy == 1));
+	showhide("enable_dns_span", (adns >= 3 && rgw == 2));
+	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2));
+	if (rgw == 2) {
+		if (adns == 3) {
+			if (dnscrypt_proxy == 1 && allow_routelocal)
+				$('dnscrypt_opt').innerHTML = "DNSCrypt Resolver";
+			else
+				$('dnscrypt_opt').innerHTML = "WAN DNS Server";
+			showhide("dnscrypt_opt", true);
+		} else if (adns == 4) {
+			$('dnscrypt_opt').innerHTML = "WAN DNS Server";
+			showhide("dnscrypt_opt", true);
+		}
+		else
+			showhide("dnscrypt_opt", false);
+
+		if (!allow_routelocal)
+			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;(DNSCrypt unavailable)";
+	}
 
 // Since instancing certs/keys would waste many KBs of nvram,
 // we instead handle these at the webui level, loading both instances.
@@ -373,6 +397,12 @@ function update_visibility(){
 	showhide("edit_vpn_crt_client2_crl", (openvpn_unit == "2"));
 	showhide("edit_vpn_crt_client2_key",(openvpn_unit == "2"));
 	showhide("edit_vpn_crt_client2_static",(openvpn_unit == "2"));
+}
+
+function dnscrypt_warn(){
+	var adns = document.form.vpn_client_adns.value;
+	if (dnscrypt_proxy == 1 && (adns == 1 || adns == 2 || adns == 3) && !allow_routelocal)
+		alert("WARNING:\nThis DNS configuration will prevent the use of DNSCrypt");
 }
 
 function set_Keys(auth){
@@ -1092,14 +1122,15 @@ function defaultSettings() {
 					<tr id="client_adns">
 						<th>Accept DNS Configuration</th>
 						<td>
-							<select name="vpn_client_adns" class="input_option">
-								<option value="0" onclick="update_visibility();" <% nvram_match("vpn_client_adns","0","selected"); %> >Disabled</option>
-								<option value="1" onclick="update_visibility();" <% nvram_match("vpn_client_adns","1","selected"); %> >Relaxed</option>
-								<option value="2" onclick="update_visibility();" <% nvram_match("vpn_client_adns","2","selected"); %> >Strict</option>
-								<option value="3" onclick="update_visibility();" <% nvram_match("vpn_client_adns","3","selected"); %> >Exclusive</option>
-								<option id="dnscrypt_adns" value="4" onclick="update_visibility();" <% nvram_match("vpn_client_adns","4","selected"); %> >DNSCrypt</option>
+							<select name="vpn_client_adns" class="input_option" onclick="update_visibility();dnscrypt_warn();">
+								<option value="0" <% nvram_match("vpn_client_adns","0","selected"); %> >Disabled</option>
+								<option value="1" <% nvram_match("vpn_client_adns","1","selected"); %> >Relaxed</option>
+								<option value="2" <% nvram_match("vpn_client_adns","2","selected"); %> >Strict</option>
+								<option value="3" <% nvram_match("vpn_client_adns","3","selected"); %> >Exclusive</option>
+								<option id="dnscrypt_adns" value="4" <% nvram_match("vpn_client_adns","4","selected"); %> >DNSCrypt</option>
 							</select>
-							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;"> Only VPN clients use VPN DNS**</input></span>
+							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;">WAN clients use</input></span>
+							<span id="dnscrypt_opt">Unknown</span>
 			   			</td>
 					</tr>
 

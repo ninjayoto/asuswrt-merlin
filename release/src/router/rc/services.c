@@ -574,6 +574,8 @@ void start_dnsmasq(int force)
 	int unit;
 	char tmp1[32], prefix[] = "wanXXXXXXXXXX_";
 	char nvram_name[16], wan_proto[16];
+	char *dnscrypt1_lanip;
+	char *dnscrypt2_lanip;
 
 	TRACE_PT("begin\n");
 
@@ -850,14 +852,25 @@ void start_dnsmasq(int force)
 #ifdef RTCONFIG_DNSCRYPT
 	if (nvram_match("dnscrypt_proxy", "1")) {
 		fprintf(fp, "no-resolv\n");
-/*
+
 #ifdef RTCONFIG_IPV6
-		if (ipv6_enabled()) {
-			fprintf(fp, "server=::1#%d\n", nvram_get_int("dnscrypt_port"));
-		}
+		if (ipv6_enabled() && nvram_get_int("dnscrypt1_ipv6"))
+			dnscrypt1_lanip = "::1";
+		else
+			dnscrypt1_lanip = "127.0.0.1";
+		if (ipv6_enabled() && nvram_get_int("dnscrypt2_ipv6"))
+			dnscrypt2_lanip = "::1";
+		else
+			dnscrypt2_lanip = "127.0.0.1";
+#else
+		dnscrypt1_lanip = "127.0.0.1";
+		dnscrypt2_lanip = "127.0.0.1";
 #endif
-*/
-		fprintf(fp, "server=127.0.0.1#%d\n", nvram_get_int("dnscrypt_port"));
+
+		if (!nvram_match("dnscrypt2_resolver", "none"))
+			fprintf(fp, "server=%s#%d\n", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
+		if (!nvram_match("dnscrypt1_resolver","none"))
+			fprintf(fp, "server=%s#%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
 	}
 #endif
 #endif
@@ -941,7 +954,7 @@ void stop_dnsmasq(int force)
 	killall_tk("dnsmasq");
 
 #ifdef RTCONFIG_DNSCRYPT
-	if (nvram_match("dnscrypt_proxy", "0")) {
+	if ((nvram_match("dnscrypt_proxy", "0")) && (pids("dnscrypt-proxy"))) {
 		stop_dnscrypt(0);
 	}
 #endif
@@ -1024,6 +1037,8 @@ void start_dnscrypt(int force)
 	int argc, pid, rc;
 	int ntp_sync;
 	char tmp[64];
+	char *dnscrypt1_lanip;
+	char *dnscrypt2_lanip;
 
 	// Only start on first call or clock sync
 	ntp_sync = nvram_get_int("ntp_sync");
@@ -1038,60 +1053,71 @@ void start_dnscrypt(int force)
 //	stop_dnscrypt(0);
 	time_valid = ntp_sync;
 
-	argc = 1;
-	argv[argc++] = "-d";
-	argv[argc++] = "-a";
-	snprintf(tmp, sizeof(tmp), "127.0.0.1:%d", nvram_get_int("dnscrypt_port"));
-	argv[argc++] = tmp;
-	argv[argc++] = "-m";
-	argv[argc++] = nvram_safe_get("dnscrypt_log");
-	argv[argc++] = "-L";
-	argv[argc++] = "/rom/dnscrypt-resolvers.csv";
-	argv[argc++] = "-R";
-	argv[argc++] = nvram_safe_get("dnscrypt_resolver");
-	argv[argc++] = "-Z";
-	argv[argc++] = "dnscrypt-proxy-ipv4:";
-	argv[argc++] = "-p";
-	argv[argc++] = "/var/run/dnscrypt-proxy-ipv4.pid";
-	if (nvram_match("ntp_sync", "0"))
-		argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
-//	if (nvram_match("dnscrypt_noipv6", "1")) {
-//		argv[argc++] = "-X";
-//		argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
-//	}
-
-	rc = _eval(argv, NULL, 0, &pid);
-	logmessage("dnscrypt-proxy", "start dnscrypt-proxy-ipv4 (%d)", rc);
-/*
 #ifdef RTCONFIG_IPV6
-	if (ipv6_enabled()) {
+	if (ipv6_enabled() && nvram_get_int("dnscrypt1_ipv6"))
+		dnscrypt1_lanip = "[::1]";
+	else
+#endif
+		dnscrypt1_lanip = "127.0.0.1";
+
+	if (!nvram_match("dnscrypt1_resolver", "none")) {
 		argc = 1;
 		argv[argc++] = "-d";
 		argv[argc++] = "-a";
-		snprintf(tmp, sizeof(tmp), "[::1]:%d", nvram_get_int("dnscrypt_port"));
+		snprintf(tmp, sizeof(tmp), "%s:%d", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
 		argv[argc++] = tmp;
 		argv[argc++] = "-m";
 		argv[argc++] = nvram_safe_get("dnscrypt_log");
 		argv[argc++] = "-L";
 		argv[argc++] = "/rom/dnscrypt-resolvers.csv";
 		argv[argc++] = "-R";
-		argv[argc++] = nvram_safe_get("dnscrypt_resolver");
+		argv[argc++] = nvram_safe_get("dnscrypt1_resolver");
 		argv[argc++] = "-Z";
-		argv[argc++] = "dnscrypt-proxy-ipv6:";
+		argv[argc++] = "dnscrypt-proxy1:";
 		argv[argc++] = "-p";
-		argv[argc++] = "/var/run/dnscrypt-proxy-ipv6.pid";
+		argv[argc++] = "/var/run/dnscrypt-proxy1.pid";
 		if (nvram_match("ntp_sync", "0"))
 			argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
-		if (nvram_match("dnscrypt_noipv6", "1")) {
-			argv[argc++] = "-X";
-			argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
-		}
-
+//		if (nvram_match("dnscrypt_noipv6", "1")) {
+//			argv[argc++] = "-X";
+//			argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
+//		}
 		rc = _eval(argv, NULL, 0, &pid);
-		logmessage("dnscrypt-proxy", "start dnscrypt-proxy-ipv6 (%d)", rc);
+		logmessage("dnscrypt-proxy", "start dnscrypt-proxy1 (%d)", rc);
 	}
+
+#ifdef RTCONFIG_IPV6
+	if (ipv6_enabled() && nvram_get_int("dnscrypt2_ipv6"))
+		dnscrypt2_lanip = "[::1]";
+	else
 #endif
-*/
+		dnscrypt2_lanip = "127.0.0.1";
+
+	if (!nvram_match("dnscrypt2_resolver", "none")) {
+		argc = 1;
+		argv[argc++] = "-d";
+		argv[argc++] = "-a";
+		snprintf(tmp, sizeof(tmp), "%s:%d", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
+		argv[argc++] = tmp;
+		argv[argc++] = "-m";
+		argv[argc++] = nvram_safe_get("dnscrypt_log");
+		argv[argc++] = "-L";
+		argv[argc++] = "/rom/dnscrypt-resolvers.csv";
+		argv[argc++] = "-R";
+		argv[argc++] = nvram_safe_get("dnscrypt2_resolver");
+		argv[argc++] = "-Z";
+		argv[argc++] = "dnscrypt-proxy2:";
+		argv[argc++] = "-p";
+		argv[argc++] = "/var/run/dnscrypt-proxy2.pid";
+		if (nvram_match("ntp_sync", "0"))
+			argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
+//		if (nvram_match("dnscrypt_noipv6", "1")) {
+//			argv[argc++] = "-X";
+//			argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
+//		}
+		rc = _eval(argv, NULL, 0, &pid);
+		logmessage("dnscrypt-proxy", "start dnscrypt-proxy2 (%d)", rc);
+	}
 }
 
 void stop_dnscrypt(int force)
@@ -1102,14 +1128,12 @@ void stop_dnscrypt(int force)
 	}
 
 	killall_tk("dnscrypt-proxy");
-	unlink("/var/run/dnscrypt-proxy-ipv4.pid");
-	time_valid = -1;
 	logmessage("dnscrypt-proxy", "stop dnscrypt-proxy");
-/*
+	time_valid = -1;
+	unlink("/var/run/dnscrypt-proxy-ipv4.pid");
 #ifdef RTCONFIG_IPV6
 	unlink("/var/run/dnscrypt-proxy-ipv6.pid");
 #endif
-*/
 }
 
 void restart_dnscrypt(int force)

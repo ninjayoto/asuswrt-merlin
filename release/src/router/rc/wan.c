@@ -1914,8 +1914,8 @@ int update_resolvconf(void)
 	/* Add DNS from VPN clients, others if non-exclusive */
 #ifdef RTCONFIG_OPENVPN
 	dnsstrict = write_vpn_resolv(fp);
-	// If dns not set to exclusive
-	if (dnsstrict != 3) {
+	// If dns not set to exclusive/dnscrypt
+	if (dnsstrict < 3) {
 #endif
 #ifdef RTCONFIG_DUALWAN
 		char * wans_dualwan;
@@ -1959,7 +1959,7 @@ int update_resolvconf(void)
 	if (ipv6_enabled()) {
 		if (nvram_match("ipv6_dns_router", "1")
 #ifdef RTCONFIG_OPENVPN
-		    && (dnsstrict != 3)
+		    && (dnsstrict < 3)
 #endif
 		) {
 			if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && nvram_get_int("ipv6_dnsenable")) {

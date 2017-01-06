@@ -3427,12 +3427,26 @@ int init_nvram(void)
                 nvram_set("wan_vendorid", "");
 
 	// Initialize DNSCRYPT support
-        if(nvram_get("dnscrypt_proxy") == NULL) {
+        if(nvram_get("dnscrypt1_resolver") == NULL) {
                 nvram_set("dnscrypt_proxy", "0");
-		nvram_set("dnscrypt_port", "65053");
-		nvram_set("dnscrypt_resolver", "cisco");
+		nvram_set("dnscrypt1_resolver", "cisco");
+		nvram_set("dnscrypt1_port", "65053");
+		nvram_set("dnscrypt1_ipv6", "0");
+		nvram_set("dnscrypt2_resolver", "none");
+		nvram_set("dnscrypt2_port", "65054");
+		nvram_set("dnscrypt2_ipv6", "0");
 		nvram_set("dnscrypt_log", "4");
+		nvram_unset("dnscrypt_resolver");
+		nvram_unset("dnscrypt_port");
 	}
+
+	// Initialize route_localnet
+        if(nvram_get("allow_routelocal") == NULL)
+#ifdef RTCONFIG_BCMARM
+                nvram_set("allow_routelocal", "1");
+#else
+		nvram_set("allow_routelocal", "0");
+#endif
 
 // End Custom variables
 
