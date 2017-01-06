@@ -4,7 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_2-22E0j9527  (5-January-2016)
+374.43_2-22E2j9527  (7-January-2017)
+* FIXED: httpd: fix error in buffer overflow prevention
+* FIXED: watchdog: do not restart ntpd if detected as down during reboot
+* FIXED: dnsmasq: stop dnsmasq on update_resolvconf if during reboot
+* FIXED: dnscrypt: do not allow ARM WAN clients to use dnscrypt if primary resolver is ipv6
+
+
+374.43_2-22E1j9527  (5-January-2017)
 * NEW: qos: new traditional qos implementation
 * NEW: dnscrypt: add dnscrypt support 1.9.0
 * NEW: dnscrypt: add support for second dnscrypt resolver and ipv6
@@ -28,6 +35,7 @@ Changelog
 * CHANGED: webui: convert qos rules with specified any byte count to rules with no byte count
 * CHANGED: webui: don't explicity restart_dnsmasq if dnscrypt parms change
 * CHANGED: webui: prevent use of registered domain names for router domain
+* CHANGED: wanduck: ignore web_redirect when setting link internet status in dualwan mode
 - FIXED: httpd: (ASUS) fixed security vulnerabilities regarding XSS and CSRF
 - FIXED: rc: (backport) merge host and domain names when building the OpenVPN exportable client config if using Namecheap as DDNS
 - FIXED: webui: add chart.min.js to mime handler
@@ -41,6 +49,8 @@ Changelog
 * FIXED: qos: fix qos_stats to not round bytes transferred
 * FIXED: updown: block ipv6 dns queries with vpn active based on ipv6 dns mode
 * FIXED: dropbear: upstream fixes for variable initialization
+* FIXED: webui: fix option to force ddns update if no change detected
+* FIXED: watchdog: force ddns update if host ip not equal to wan ip
 
 
 374.43_2-20ECj9527  (20-November-2016)
