@@ -3419,6 +3419,7 @@ ej_lan_leases(int eid, webs_t wp, int argc, char_t **argv)
 #define	HOSTNAME		2
 #define	IPV6_ADDRESS		3
 #define BUFSIZE			8192
+#define HOSTSIZE		64
 
 static int compare_back(FILE *fp, int current_line, char *buffer);
 static int check_mac_previous(char *mac);
@@ -3596,7 +3597,7 @@ static void find_hostname_by_mac(char *mac, char *hostname)
 
 		if (strncasecmp(macaddr, mac, 17) == 0) {
 			fclose(fp);
-			strlcpy(hostname, host_name, sizeof(hostname));
+			strlcpy(hostname, host_name, HOSTSIZE);
 			return;
 		}
 
@@ -3612,7 +3613,7 @@ END:
 static void get_ipv6_client_info()
 {
 	FILE *fp;
-	char buffer[128], ipv6_addr[128], mac[32];
+	char buffer[256], ipv6_addr[128], mac[32];
 	char *ptr_end, hostname[64];
 	doSystem("ip -f inet6 neigh show dev %s > %s", nvram_safe_get("lan_ifname"), IPV6_CLIENT_NEIGH);
 	usleep(1000);
@@ -3626,7 +3627,7 @@ static void get_ipv6_client_info()
 	}
 
 	init_file(IPV6_CLIENT_INFO);
-	while (fgets(buffer, 128, fp)) {
+	while (fgets(buffer, sizeof(buffer), fp)) {
 		int temp_len = strlen(buffer);
 		if (temp_len && buffer[temp_len-1] == '\n')
 			buffer[temp_len-1] = '\0';
@@ -3638,6 +3639,7 @@ static void get_ipv6_client_info()
 			ptr_end = ptr_end + 8;
 			memset(mac, 0, sizeof(mac));
 			strncpy(mac, ptr_end, 17);
+			memset(hostname, 0, sizeof(hostname));
 			find_hostname_by_mac(mac, hostname);
 			if ( (ipv6_addr[0] == '2' || ipv6_addr[0] == '3')
 				&& ipv6_addr[0] != ':' && ipv6_addr[1] != ':'
