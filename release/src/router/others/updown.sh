@@ -41,7 +41,7 @@ fi
 
 create_client_list(){
 	server=$1
-	if [ "$VPNserver" = "" ]
+	if [ "$VPNserver" == "" ]
 	then
 		VPNserver=$server
 	fi
@@ -61,7 +61,7 @@ create_client_list(){
 		if [ "$VPN_IP" != "0.0.0.0" ]
 		then
 			TARGET_ROUTE=$(echo $ENTRY | cut -d ">" -f 4)
-			if [ "$TARGET_ROUTE" = "VPN" ]
+			if [ "$TARGET_ROUTE" == "VPN" ]
 			then
 				echo iptables -t nat -A DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $VPNserver >> $dnsscript
 				logger -t "openvpn-updown" "Setting $VPN_IP to use `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo 'DNSCrypt'; else echo 'VPN'; fi` DNS servers `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
