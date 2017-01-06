@@ -367,6 +367,24 @@ Ability force a DHCPv6 request during IPv6 prefix delegation
 	Notes:			Some ISPs will not send an IPv6 prefix without an address REQUEST.  
 					Sky UK is known to require this option.
 ---------------------------------------------------------------------------------------------------------------
+Special IPv6 options
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set ipv6_isp_opt=xx
+				nvram commit & reboot
+
+	Routers Supported:	All
+	Released:		Update-20
+	Reboot Required:	Yes
+	Notes:			ipv6_isp_opt is a mask with the following options
+					ipv6_isp_opt=16 : Disable rapid-commit for dhcp6 server
+					ipv6_isp_opt=8  : Disable rapid-commit for dhcp6c client
+					ipv6_isp_opt=4  : Send generic ia-na=0 (default is calculated value based on MAC)
+					ipv6_isp_opt=2  : Don't send prefix length, preferred lifetime hint (this may be invalid)
+					ipv6_isp_opt=1  : Force default ipv6 route if not set by ISP
+
+					The default value is ipv6_isp_opt=0. Add the values to select multiple options.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
