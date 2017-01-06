@@ -133,8 +133,9 @@ var wan_route_x = '<% nvram_get("wan_route_x"); %>';
 var wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 var wan_proto = '<% nvram_get("wan_proto"); %>';
 var dnscrypt_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
+var dnscrypt_ipv6 = '<% nvram_get("dnscrypt1_ipv6"); %>';
 var machine_name = '<% get_machine_name(); %>';
-var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && (('<% nvram_get("allow_routelocal"); %>' == 1)? true : false));
+var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && (('<% nvram_get("allow_routelocal"); %>' == 1) ? true : false));
 
 <% vpn_client_get_parameter(); %>
 
@@ -359,7 +360,7 @@ function update_visibility(){
 	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2));
 	if (rgw == 2) {
 		if (adns == 3) {
-			if (dnscrypt_proxy == 1 && allow_routelocal)
+			if (dnscrypt_proxy == 1 && dnscrypt_ipv6 == 0 && allow_routelocal)
 				$('dnscrypt_opt').innerHTML = "DNSCrypt Resolver";
 			else
 				$('dnscrypt_opt').innerHTML = "WAN DNS Server";
@@ -371,7 +372,7 @@ function update_visibility(){
 		else
 			showhide("dnscrypt_opt", false);
 
-		if (!allow_routelocal)
+		if (!allow_routelocal || dnscrypt_ipv6 == 1)
 			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;(DNSCrypt unavailable)";
 	}
 

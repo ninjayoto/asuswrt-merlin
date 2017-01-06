@@ -32,7 +32,7 @@ fi
 
 # Override if DNSCRYPT is active and exclusive
 allow_dnscrypt=0
-if [ $(nvram get dnscrypt_proxy) == 1 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 -a $allow_routelocal == 1 ]
+if [ $(nvram get dnscrypt_proxy) == 1 -a $(nvram get dnscrypt1_ipv6) == 0 -a $(nvram get vpn_client$(echo $instance)_adns) == 3 -a $allow_routelocal == 1 ]
 then
 	echo 1 > /proc/sys/net/ipv4/conf/br0/route_localnet
 	ISPserver=127.0.0.1:$dnscrypt_port
