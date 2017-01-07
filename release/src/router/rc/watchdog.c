@@ -1476,7 +1476,7 @@ void sshd_check()
 static int ntpflag = 0;
 void ntpd_check()
 {
-	if (nvram_match("ntp_sync", "1")) {
+	if (nvram_match("ntp_sync", "1") && !g_reboot) {
 		if (!pids("ntpd")){
 			ntpflag = 0;
 			logmessage("watchdog", "restart ntpd");
