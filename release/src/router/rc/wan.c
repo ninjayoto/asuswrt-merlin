@@ -1903,6 +1903,11 @@ int update_resolvconf(void)
 	int dnsstrict = 0;
 #endif
 
+	if (g_reboot) {  //don't update if rebooting
+		stop_dnsmasq(0);
+		return -1;
+	}
+
 	lock = file_lock("resolv");
 
 	if (!(fp = fopen("/tmp/resolv.conf", "w+"))) {
