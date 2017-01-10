@@ -2933,7 +2933,7 @@ stop_syslogd(void)
 
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 		if ((j2l == 1) && running)
-			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
+			eval("cp", "-f", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 }
 
@@ -2998,7 +2998,7 @@ start_syslogd(void)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 	if (j2l == 1) {
 		eval("touch", "-c", "/jffs/syslog.log", "/jffs/syslog.log-1");
-		eval("cp", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
+		eval("cp", "-f", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
 	}
 #endif
 
@@ -4408,7 +4408,7 @@ again:
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 		if (j2l == 1)
-			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
+			eval("cp", "-f", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 		if(strcmp(script,"rebootandrestore")==0) {
 			for(i=1;i<count;i++) {
