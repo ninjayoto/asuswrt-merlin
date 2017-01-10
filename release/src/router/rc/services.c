@@ -2926,23 +2926,21 @@ stop_syslogd(void)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 	int j2l = 0;
 	if (nvram_match("jffs2_log", "1")) j2l = 1;
+	int running = pids("syslogd");
 #endif
 
-	if (pids("syslogd"))
-	{
-		killall("syslogd", SIGTERM);
+	killall_tk("syslogd");
+
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-		if (j2l == 1)
+		if ((j2l == 1) && running)
 			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
-	}
 }
 
 void
 stop_klogd(void)
 {
-	if (pids("klogd"))
-		killall("klogd", SIGTERM);
+	killall_tk("klogd");
 }
 
 int 
@@ -2998,8 +2996,10 @@ start_syslogd(void)
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	if (j2l == 1)
+	if (j2l == 1) {
+		eval("touch", "-c", "/jffs/syslog.log", "/jffs/syslog.log-1");
 		eval("cp", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
+	}
 #endif
 
 	// TODO: make sure is it necessary?
