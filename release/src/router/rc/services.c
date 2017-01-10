@@ -2674,6 +2674,7 @@ int
 start_ddns(void)
 {
 	FILE *fp;
+	FILE *time_fp;
 	char *wan_ip, *wan_ifname;
 	char *ddns_cache;
 	char *server;
@@ -2685,6 +2686,7 @@ start_ddns(void)
 	int wild = nvram_get_int("ddns_wildcard_x");
 	int unit, asus_ddns = 0;
 	char tmp[32], prefix[] = "wanXXXXXXXXXX_";
+	time_t now;
 
 	if (!is_routing_enabled()) {
 		_dprintf("return -1\n");
@@ -2771,6 +2773,9 @@ start_ddns(void)
                 service = "";
 	else if (strcmp(server, "WWW.ASUS.COM")==0) {
 		service = "dyndns", asus_ddns = 1;
+	}
+	else if (strcmp(server, "WWW.GOOGLE-DDNS.COM")==0) {
+		service = "dyndns", asus_ddns=3;
 	} else {
 		logmessage("start_ddns", "Error ddns server name: %s\n", server);
 		return 0;
@@ -2792,7 +2797,15 @@ start_ddns(void)
 	nvram_unset("ddns_status");
 	nvram_unset("ddns_updated");
 
-	if (asus_ddns) {
+	if (asus_ddns == 3) {
+		if((time_fp=fopen("/tmp/ddns.cache","w")))
+		{
+			fprintf(time_fp,"%ld,%s",time(&now),wan_ip);
+			fclose(time_fp);
+		}
+		eval("GoogleDNS_Update.sh", user, passwd, host, wan_ip);
+	}
+	else if (asus_ddns == 1) {
 		char *nserver = nvram_invmatch("ddns_serverhost_x", "") ?
 			nvram_safe_get("ddns_serverhost_x") :
 			"ns1.asuscomm.com";

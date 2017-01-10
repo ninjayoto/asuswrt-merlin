@@ -73,6 +73,9 @@ else
 endif
 #	cp -f others/usbtest.sh $(INSTALLDIR)/usr/sbin/usbtest.sh
 
+#	DDNS scripts
+	install -m 0755 webs_scripts/GoogleDNS_Update.sh $(INSTALLDIR)/usr/sbin
+
 #	Used by Curl
 	cp -f --preserve=timestamps others/ca-bundle.crt $(INSTALLDIR)/rom/ca-bundle.crt
 
