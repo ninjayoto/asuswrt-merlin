@@ -5280,6 +5280,16 @@ check_ddr_done:
 		if(action&RC_SERVICE_STOP) stop_httpd();
 		if(action&RC_SERVICE_START) start_httpd();
 	}
+	else if (strcmp(script, "telnetd") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_telnetd();
+		if(action&RC_SERVICE_START) start_telnetd();
+	}
+	else if (strcmp(script, "sshd") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_sshd();
+		if(action&RC_SERVICE_START) start_sshd();
+	}
 #ifdef RTCONFIG_IPV6
 	else if (strcmp(script, "ipv6") == 0) {
 		if (action & RC_SERVICE_STOP)
