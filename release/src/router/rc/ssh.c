@@ -30,6 +30,18 @@ void start_sshd(void)
 {
 	int dirty = 0;
 	char buf[3500];
+	char *argv[16];
+	int j, argc;
+	char *p, *str, *token, *saveptr;
+	char saddr[128];
+
+	if (!nvram_get_int("sshd_enable"))
+		return 0;
+
+	if (getpid() != 1) {
+		notify_rc("start_sshd");
+		return 0;
+	}
 
 	mkdir("/etc/dropbear", 0700);
 	mkdir("/root/.ssh", 0700);
@@ -45,12 +57,6 @@ void start_sshd(void)
 /*
 	xstart("dropbear", "-a", "-p", nvram_safe_get("sshd_port"), nvram_get_int("sshd_pass") ? "" : "-s");
 */
-
-	char *argv[16];
-	int j, argc;
-	char *p, *str, *token, *saveptr;
-	char saddr[128];
-
 	argv[0] = "dropbear";
 	argc = 1;
 

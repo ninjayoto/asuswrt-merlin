@@ -1467,10 +1467,12 @@ void httpd_check()
 
 void sshd_check()
 {
-        if (!pids("dropbear")){
-                logmessage("watchdog", "restart sshd");
-                start_sshd();
-        }
+	if (nvram_get_int("sshd_enable") == 1) {
+	        if (!pids("dropbear")){
+		        logmessage("watchdog", "restart sshd");
+		        start_sshd();
+		}
+	}
 }
 
 static int ntpflag = 0;
