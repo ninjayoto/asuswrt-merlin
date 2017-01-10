@@ -2323,7 +2323,7 @@ TRACE_PT("writing Parental Control\n");
 #endif
 
 		// Open ssh to WAN
-		if ((nvram_match("sshd_wan", "1")) && (nvram_get_int("sshd_port"))) {
+		if ((nvram_match("sshd_enable", "1")) && (nvram_match("sshd_wan", "1"))) {
 			if (nvram_match("sshd_bfp", "1")) {
 				fprintf(fp,"-N SSHBFP\n");
 				fprintf(fp, "-A SSHBFP -m recent --set --name SSH --rsource\n");
