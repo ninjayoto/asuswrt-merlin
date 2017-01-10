@@ -66,7 +66,7 @@ void start_sshd(void)
 				break;
 		}
 	} else {
-		if (is_routing_enabled()) {
+		if (is_routing_enabled() && nvram_get_int("sshd_wan") != 1) {
 			snprintf(saddr, sizeof(saddr), "%s:%d", nvram_safe_get("lan_ipaddr"), nvram_get_int("sshd_port") ? : 22);
 			p = saddr;
 		} else
