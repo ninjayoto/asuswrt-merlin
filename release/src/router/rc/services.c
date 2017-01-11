@@ -3987,6 +3987,11 @@ start_services(void)
 void
 stop_logger(void)
 {
+//#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
+#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
+	if (nvram_match("jffs2_log", "1"))
+		eval("cp", "-f", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
+#endif
 	if (pids("klogd"))
 		killall("klogd", SIGTERM);
 	if (pids("syslogd"))
