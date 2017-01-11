@@ -1994,10 +1994,6 @@ period_chk_cnt()
 void watchdog(int sig)
 {
 	int period;
-#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	int j2l = 0;
-	if (nvram_match("jffs2_log", "1")) j2l = 1;
-#endif
 
 #ifdef RTCONFIG_PUSH_EMAIL
 	push_mail();
@@ -2089,7 +2085,7 @@ void watchdog(int sig)
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	if (j2l == 1)
+	if (nvram_match("jffs2_log", "1"))
 		syslog_commit_check();
 #endif
 //	auto_firmware_check();

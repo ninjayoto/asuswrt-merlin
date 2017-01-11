@@ -2925,15 +2925,13 @@ void
 stop_syslogd(void)
 {
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	int j2l = 0;
-	if (nvram_match("jffs2_log", "1")) j2l = 1;
 	int running = pids("syslogd");
 #endif
 
 	killall_tk("syslogd");
 
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-		if ((j2l == 1) && running)
+		if ((nvram_match("jffs2_log", "1")) && running)
 			eval("cp", "-f", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 }
@@ -2961,10 +2959,6 @@ start_syslogd(void)
 		NULL,					/* -L log locally too */
 		NULL};
 	char tmp[64];
-#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	int j2l = 0;
-	if (nvram_match("jffs2_log", "1")) j2l = 1;
-#endif
 
 	strcpy(syslog_path, get_syslog_fname(0));
 
@@ -2997,7 +2991,7 @@ start_syslogd(void)
 
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	if (j2l == 1) {
+	if (nvram_match("jffs2_log", "1")) {
 		eval("touch", "-c", "/jffs/syslog.log", "/jffs/syslog.log-1");
 		eval("cp", "-f", "/jffs/syslog.log", "/jffs/syslog.log-1", "/tmp");
 	}
@@ -4352,10 +4346,6 @@ void handle_notifications(void)
 	int action = 0;
 	int count;
 	int i, j;
-#if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-	int j2l = 0;
-	if (nvram_match("jffs2_log", "1")) j2l = 1;
-#endif
 
 	// handle command one by one only
 	// handle at most 7 parameters only
@@ -4413,7 +4403,7 @@ again:
 #endif
 //#if defined(RTCONFIG_JFFS2LOG) && defined(RTCONFIG_JFFS2)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
-		if (j2l == 1)
+		if (nvram_match("jffs2_log", "1"))
 			eval("cp", "-f", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 #endif
 		if(strcmp(script,"rebootandrestore")==0) {

@@ -179,8 +179,6 @@ void stop_jffs2(int stop)
 	struct statfs sf;
 #if defined(RTCONFIG_PSISTLOG) || defined(RTCONFIG_JFFS2LOG)
 	int restart_syslogd = 0;
-	int j2l = 0;
-	if (nvram_match("jffs2_log", "1")) j2l = 1;
 #endif
 
 	if (!wait_action_idle(10)) return;
@@ -192,7 +190,7 @@ void stop_jffs2(int stop)
 	}
 
 #if defined(RTCONFIG_PSISTLOG) || defined(RTCONFIG_JFFS2LOG)
-	if (j2l == 1 ) {
+	if (nvram_match("jffs2_log", "1")) {
 		if (!stop && !strncmp(get_syslog_fname(0), "/jffs/", 6)) {
 			restart_syslogd = 1;
 			stop_syslogd();
@@ -208,7 +206,7 @@ void stop_jffs2(int stop)
 		modprobe_r(JFFS_NAME);
 
 #if defined(RTCONFIG_PSISTLOG) || defined(RTCONFIG_JFFS2LOG)
-	if (j2l == 1) {
+	if (nvram_match("jffs2_log", "1")) {
 		if (restart_syslogd)
 			start_syslogd();
 	}
