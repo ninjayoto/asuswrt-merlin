@@ -4,14 +4,31 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_2-22E2j9527  (7-January-2017)
+374.43_2-22E3j9527  (12-January-2016)
+- NEW: ddns: (backport) add support for Google-DDNS
+- CHANGED: services: (backport) improve start/stop of syslogd
+- CHANGED: rc: (backport) add support for telnetd and sshd
+- CHANGED: httpd: (backport) instruct browser to cache jquery and chart JS files
+* CHANGED: dnssec: only enable strict mode after NTP sync completes
+* CHANGED: dnssec: only one setting in dual-wan environments (reverts e2f3610a)
+* CHANGED: ntp: set ntp_sync when setting ntp_ready in ntpclient
+- FIXED: firewall: only add sshd rules if sshd is enabled
+- FIXED: sshd: only start sshd and enable watchdog if ssh access is enabled
+* FIXED: services: save syslogs to jffs on stop_logger
+* FIXED: services: add copy force flag when saving and restoring syslog
+* FIXED: sshd: fix df7a3b3 only bind to lan_ipaddr if wan access is not enabled
+* FIXED: dnscrypt: add explicit paths to commands in update resolvers script
+* FIXED: curl https broken on MIPS
+
+
+374.43_2-22E2j9527  (6-January-2016)
 * FIXED: httpd: fix error in buffer overflow prevention
 * FIXED: watchdog: do not restart ntpd if detected as down during reboot
 * FIXED: dnsmasq: stop dnsmasq on update_resolvconf if during reboot
 * FIXED: dnscrypt: do not allow ARM WAN clients to use dnscrypt if primary resolver is ipv6
 
 
-374.43_2-22E1j9527  (5-January-2017)
+374.43_2-22E1j9527  (5-January-2016)
 * NEW: qos: new traditional qos implementation
 * NEW: dnscrypt: add dnscrypt support 1.9.0
 * NEW: dnscrypt: add support for second dnscrypt resolver and ipv6
@@ -35,7 +52,6 @@ Changelog
 * CHANGED: webui: convert qos rules with specified any byte count to rules with no byte count
 * CHANGED: webui: don't explicity restart_dnsmasq if dnscrypt parms change
 * CHANGED: webui: prevent use of registered domain names for router domain
-* CHANGED: wanduck: ignore web_redirect when setting link internet status in dualwan mode
 - FIXED: httpd: (ASUS) fixed security vulnerabilities regarding XSS and CSRF
 - FIXED: rc: (backport) merge host and domain names when building the OpenVPN exportable client config if using Namecheap as DDNS
 - FIXED: webui: add chart.min.js to mime handler
@@ -49,8 +65,6 @@ Changelog
 * FIXED: qos: fix qos_stats to not round bytes transferred
 * FIXED: updown: block ipv6 dns queries with vpn active based on ipv6 dns mode
 * FIXED: dropbear: upstream fixes for variable initialization
-* FIXED: webui: fix option to force ddns update if no change detected
-* FIXED: watchdog: force ddns update if host ip not equal to wan ip
 
 
 374.43_2-20ECj9527  (20-November-2016)
