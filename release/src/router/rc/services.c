@@ -838,13 +838,14 @@ void start_dnsmasq(int force)
 		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
 		            "dnssec\n");
 
-		/* Force checking of unsigned replies */
-		if (nvram_match("dnssec_check_unsigned","1"))
-			fprintf(fp, "dnssec-check-unsigned\n");
-
 		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
-		if (!nvram_match("ntp_ready","1"))
+		if (!nvram_match("ntp_sync","1"))
 			fprintf(fp, "dnssec-no-timecheck\n");
+		else {
+			/* Force checking of unsigned replies only when NTP set */
+			if (nvram_match("dnssec_check_unsigned","1"))
+				fprintf(fp, "dnssec-check-unsigned\n");
+		}
 	}
 #endif
 
