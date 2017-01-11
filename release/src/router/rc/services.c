@@ -1155,7 +1155,7 @@ void restart_dnscrypt(int force)
 
 // -----------------------------------------------------------------------------
 #ifdef RTCONFIG_IPV6
-static void add_ip6_lanaddr(void)
+void add_ip6_lanaddr(void)
 {
 	char ip[INET6_ADDRSTRLEN + 4];
 	const char *p;
