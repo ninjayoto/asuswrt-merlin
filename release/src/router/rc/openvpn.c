@@ -1765,8 +1765,8 @@ void write_vpn_dnsmasq_config(FILE* f)
 #ifdef RTCONFIG_DNSCRYPT
 				if ( nvram_get_int(&buf[0]) == 4 )
 				{
-					vpnlog(VPN_LOG_INFO, "Setting DNSCRYPT server to dnsmasq config for client %d", cur);
 					if (nvram_match("dnscrypt_proxy", "1")) {
+						vpnlog(VPN_LOG_INFO, "Setting DNSCRYPT server to dnsmasq config for client %d", cur);
 						fprintf(f, "no-resolv\n");
 
 #ifdef RTCONFIG_IPV6
