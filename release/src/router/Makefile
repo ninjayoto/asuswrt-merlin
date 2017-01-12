@@ -2888,7 +2888,7 @@ curl-7.21.7/stamp-h1:
 	cd curl-7.21.7 && \
 	$(CONFIGURE) CC=$(CC) \
 	--prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
-	--enable-http --with-ssl=$(TOP)/openssl/ssl LDFLAGS="-ldl" \
+	--enable-http --with-ssl=$(TOP)/openssl LDFLAGS="-ldl" \
 	$(if $(RTCONFIG_IPV6),--enable-ipv6) \
 	--disable-gopher --disable-dict --disable-telnet \
 	--with-ca-bundle=/rom/ca-bundle.crt
