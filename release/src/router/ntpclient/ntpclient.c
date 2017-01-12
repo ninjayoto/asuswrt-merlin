@@ -531,6 +531,7 @@ int main(int argc, char *argv[]) {
 
 		if (!primary_loop(usd, probe_count, cycle_time)) {
 			nvram_set("ntp_ready", "1");
+			nvram_set("ntp_sync", "1");
 			doSystem("kill -SIGTSTP `cat %s`", "/var/run/ntp.pid");
 			close(usd);
 			break;

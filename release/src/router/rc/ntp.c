@@ -78,9 +78,7 @@ static void ntp_service()
 #endif
 
 #if defined(RTCONFIG_DNSSEC) || defined(RTCONFIG_DNSCRYPT)
-		if (nvram_match("dnssec_enable", "1") || nvram_match("dnscrypt_proxy", "1")) {
-			reload_dnsmasq();
-		}
+		reload_dnsmasq();
 #endif
 	}
 }
@@ -205,7 +203,6 @@ int ntp_main(int argc, char *argv[])
 		{ //handle the delayed ntpclient process
 			if ((nvram_match("ntp_log_x", "1") || fflag == 1) && tot_attempts != 0)
 				logmessage("ntp", "NTP update successful after %d attempt(s)", tot_attempts);
-			nvram_set("ntp_sync", "1");
 			attempts = 0;
 			tot_attempts = 0;
 			fflag = 0;
@@ -248,7 +245,6 @@ int ntp_main(int argc, char *argv[])
 			{
 				if (nvram_match("ntp_log_x", "1") || fflag == 1)
 					logmessage("ntp", "NTP update successful after %d attempt(s)", tot_attempts);
-				nvram_set("ntp_sync", "1");
 				attempts = 0;
 				tot_attempts = 0;
 				fflag = 0;
