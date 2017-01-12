@@ -18,10 +18,10 @@ else
 	mkdir -p "${RESOLVERS_PATH}"
 
 	echo "Updating the list of public DNSCrypt resolvers..."
-	curl -L -R "$RESOLVERS_URL" -o "$RESOLVERS_FILE_TMP" || (echo "Download failed" && exit 1)
+	/usr/sbin/curl -L -R "$RESOLVERS_URL" -o "$RESOLVERS_FILE_TMP" || (echo "Download failed" && exit 1)
 	if $(which minisign > /dev/null 2>&1); then
-	  curl -L -o "$RESOLVERS_FILE_TMP.minisig" "$RESOLVERS_SIG_URL" || (echo "Failed to retrieve minisig" && exit 1)
-	  minisign -V -P "$RESOLVERS_SIG_PUBKEY" -m "$RESOLVERS_FILE_TMP" || (echo "Signature verification failed" && exit 1)
+	  /usr/sbin/curl -L -o "$RESOLVERS_FILE_TMP.minisig" "$RESOLVERS_SIG_URL" || (echo "Failed to retrieve minisig" && exit 1)
+	  /usr/sbin/minisign -V -P "$RESOLVERS_SIG_PUBKEY" -m "$RESOLVERS_FILE_TMP" || (echo "Signature verification failed" && exit 1)
 	  mv -f "${RESOLVERS_FILE_TMP}.minisig" "${RESOLVERS_FILE}.minisig"
 	fi
 	mv -f "$RESOLVERS_FILE_TMP" "$RESOLVERS_FILE"
