@@ -857,9 +857,7 @@ void start_dnsmasq(int force)
 #endif
 
 #ifdef RTCONFIG_DNSSEC
-	unit = wan_primary_ifunit();
-	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1")) {
+	if (nvram_match("dnssec_enable", "1")) {
 		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
 		            "dnssec\n");
 
@@ -978,9 +976,7 @@ void reload_dnsmasq(void)
 	int unit;
 	char tmp1[32], prefix[] = "wanXXXXXXXXXX_";
 
-	unit = wan_primary_ifunit();
-	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1") && (!nvram_match("ntp_sync","1"))) {
+	if (nvram_match("dnssec_enable", "1") && (!nvram_match("ntp_sync","1"))) {
 		/* Don't reload, as it would prematurely enable timestamp validation */
 		stop_dnsmasq(0);
 		sleep(1);

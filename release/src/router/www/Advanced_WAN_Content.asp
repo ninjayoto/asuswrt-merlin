@@ -127,7 +127,7 @@ function update_resolverlist(){
 	currentresolver2 = "<% nvram_get("dnscrypt2_resolver"); %>";
 	add_option(document.form.dnscrypt2_resolver, "Not Defined","none",(currentresolver2 == "none"));
 
-	var dnssec_enabled = document.form.wan_dnssec_enable[0].checked;
+	var dnssec_enabled = document.form.dnssec_enable[0].checked;
 	for(var i = 0; i < resolverarray.length; i++){
 		// Exclude non-dnssec resolvers if dnssec is enabled
 //		if ((dnssec_enabled == 1 && resolverarray[i][2] == "yes") || dnssec_enabled == 0) {
@@ -1041,8 +1041,8 @@ function pass_checked(obj){
 			<tr id="dnssec_tr" style="display:none;">
 				<th>Enable DNSSEC support</th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="wan_dnssec_enable" onclick="update_resolverlist();" <% nvram_match("wan_dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="wan_dnssec_enable" onclick="update_resolverlist();" <% nvram_match("wan_dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
 					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned"); %>" onclick="document.form.dnssec_check_unsigned.value=(this.checked==true)?1:0;"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>
