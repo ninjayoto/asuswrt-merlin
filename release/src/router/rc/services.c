@@ -829,29 +829,7 @@ void start_dnsmasq(int force)
 
 #ifdef RTCONFIG_OPENVPN
 	write_vpn_dnsmasq_config(fp);
-#endif
-
-#ifdef RTCONFIG_DNSSEC
-	unit = wan_primary_ifunit();
-	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
-	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1")) {
-		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
-		            "dnssec\n");
-
-		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
-		if (!nvram_match("ntp_sync","1"))
-			fprintf(fp, "dnssec-no-timecheck\n");
-		else {
-			/* Force checking of unsigned replies only when NTP set */
-			if (nvram_match("dnssec_check_unsigned","1")) {
-				fprintf(fp, "dnssec-check-unsigned\n");
-				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned enabled");
-			}
-		}
-	}
-#endif
-
-#ifndef RTCONFIG_OPENVPN
+#else
 #ifdef RTCONFIG_DNSCRYPT
 	if (nvram_match("dnscrypt_proxy", "1")) {
 		fprintf(fp, "no-resolv\n");
@@ -877,6 +855,27 @@ void start_dnsmasq(int force)
 	}
 #endif
 #endif
+
+#ifdef RTCONFIG_DNSSEC
+	unit = wan_primary_ifunit();
+	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
+	if (nvram_match(strcat_r(prefix, "dnssec_enable", tmp1), "1")) {
+		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
+		            "dnssec\n");
+
+		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
+		if (!nvram_match("ntp_sync","1"))
+			fprintf(fp, "dnssec-no-timecheck\n");
+		else {
+			/* Force checking of unsigned replies only when NTP set */
+			if (nvram_match("dnssec_check_unsigned","1")) {
+				fprintf(fp, "dnssec-check-unsigned\n");
+				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned enabled");
+			}
+		}
+	}
+#endif
+
 //#ifdef WEB_REDIRECT
 //	/* Web redirection - all unresolvable will return the router's IP */
 //	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
@@ -908,7 +907,7 @@ void start_dnsmasq(int force)
 
 #ifdef RTCONFIG_DNSCRYPT
 	if (nvram_match("dnscrypt_proxy", "1")) {
-		start_dnscrypt(0);
+		restart_dnscrypt(0);
 	}
 #endif
 
