@@ -1039,7 +1039,7 @@ function pass_checked(obj){
             		<td><input type="text" maxlength="15" class="input_15_table" name="wan_dns2_x" value="<% nvram_get("wan_dns2_x"); %>" onkeypress="return is_ipaddr(this, event)" ></td>
           		</tr>
 			<tr id="dnssec_tr" style="display:none;">
-				<th>Enable DNSSEC support</th>
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,32);">Enable DNSSEC support<br><i>DNS servers must support DNSSEC</i></a></th>
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
@@ -1047,7 +1047,7 @@ function pass_checked(obj){
 				</td>
 			</tr>
 			<tr id="dnscrypt_tr" style="display:none;">
-				<th>Enable DNSCRYPT support</th>
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,33);">Enable DNSCRYPT support<br><i>DNSCRYPT becomes primary DNS server(s)</i></a></th>
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
