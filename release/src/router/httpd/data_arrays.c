@@ -60,7 +60,7 @@ int ej_tcclass_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
 	int len = 0;
 #endif
 	char tmp[64];
-	char wan_ifname[12];
+	char *wan_ifname;
 
 	if (nvram_get_int("qos_enable") == 0) {
 		ret += websWrite(wp, "var tcdata_lan_array = [[]];\nvar tcdata_wan_array = [[]];\n");
@@ -94,8 +94,10 @@ int ej_tcclass_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
 		if (len)
 			strncpy(wan_ifname, tmp, sizeof(wan_ifname));
 		else
-#endif
+
 			strcpy(wan_ifname, "eth0");     // Default fallback
+#endif
+		wan_ifname = (nvram_get("qos_iface") ? : get_wan_ifname(wan_primary_ifunit())); // judge WAN interface
 
 		snprintf(tmp, sizeof(tmp), "tc -s class show dev %s > /tmp/tcclass.txt", wan_ifname);
 		system(tmp);
