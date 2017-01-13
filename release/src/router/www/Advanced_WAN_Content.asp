@@ -252,7 +252,7 @@ function applyRule(){
 		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
 			document.form.action_script += ";restart_dnsmasq";
 */
-
+		document.form.action_wait.value = eval("<% get_default_reboot_time(); %> / 2");
 		document.form.submit();	
 	}
 }
