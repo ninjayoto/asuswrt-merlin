@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-22E4j9527  (13-January-2016)
+- CHANGED: openvpn: (backport) improve DDNS usage when generating ovpn client config
+- CHANGED: nano: update to 2.7.4
+* CHANGED: webui: change wait time for WAN page changes to 50% of reboot time
+* CHANGED: webui: add hints and popup help for dnssec and dnscrypt options
+- FIXED: rc: (backport) fix compile warnings in rc/openvpn.c
+* FIXED: qos: use actual wan_ifname for chart upload data retrieve (different from Merlin)
+
+
 374.43_2-22E3j9527  (12-January-2016)
 - NEW: ddns: (backport) add support for Google-DDNS
 - CHANGED: services: (backport) improve start/stop of syslogd
