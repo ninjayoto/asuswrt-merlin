@@ -549,6 +549,7 @@ extern const char *default_wanif(void);
 extern void simple_unlock(const char *name);
 extern void simple_lock(const char *name);
 extern void killall_tk(const char *name);
+extern void killall_tk_period_wait(const char *name, int wait);
 extern void kill_pidfile_tk(const char *pidfile);
 extern long fappend(FILE *out, const char *fname);
 extern long fappend_file(const char *path, const char *fname);
