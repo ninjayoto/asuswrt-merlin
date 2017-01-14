@@ -345,6 +345,8 @@ function update_visibility(){
 		ccd = getRadioValue(document.openvpn_form.vpn_server_ccd);
 	dns = getRadioValue(document.openvpn_form.vpn_server_x_dns);
 
+	ncp = document.openvpn_form.vpn_server_ncp_enable.value;
+
 	showhide("server_snnm", ((auth == "tls") && (iface == "tun")));
 	showhide("server_plan", ((auth == "tls") && (iface == "tun")));
 	showhide("server_local", ((auth == "secret") && (iface == "tun")));
@@ -361,6 +363,9 @@ function update_visibility(){
 	showhide("server_tls_crypto_text", (auth != "custom"));		//add by Viz
 	showhide("server_custom_crypto_text", (auth == "custom"));
 	showhide("server_igncrt", (userpass == 1));
+	showhide("server_cipher", (ncp != 2));
+	showhide("ncp_enable", (auth == "tls"));
+	showhide("ncp_ciphers", ((ncp > 0) && (auth == "tls")));
 
 // Since instancing certs/keys would waste many KBs of nvram,
 // we instead handle these at the webui level, loading both instances.
@@ -1344,7 +1349,6 @@ function defaultSettings() {
 										</td>
  									</tr>
 
-
 									<tr id="server_pdns">
 										<th>Advertise DNS to clients</th>
 										<td>
@@ -1353,8 +1357,24 @@ function defaultSettings() {
 										</td>
  									</tr>
 
-									<tr>
-										<th>Encryption cipher</th>
+									<tr id="ncp_enable">
+										<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(48,1);">Cipher Negotiation</a></th>
+										<td>
+											<select name="vpn_server_ncp_enable" onclick="update_visibility();" class="input_option">
+												<option value="0" <% nvram_match("vpn_server_ncp_enable","0","selected"); %> >Disabled</option>
+												<option value="1" <% nvram_match("vpn_server_ncp_enable","1","selected"); %> >Enable (with fallback)</option>
+												<option value="2" <% nvram_match("vpn_server_ncp_enable","2","selected"); %> >Enable</option>
+											</select>
+										</td>
+									</tr>
+									<tr id="ncp_ciphers">
+										<th>Negotiable ciphers</th>
+										<td>
+											<input type="text" maxlength="255" class="input_32_table" name="vpn_server_ncp_ciphers" value="<% nvram_get("vpn_server_ncp_ciphers"); %>" >
+										</td>
+									</tr>
+									<tr id="server_cipher">
+										<th>Legacy/fallback cipher</th>
 				        					<td>
 			        							<select name="vpn_server_cipher" class="input_option">
 												<option value="<% nvram_get("vpn_server_cipher"); %>" selected><% nvram_get("vpn_server_cipher"); %></option>
@@ -1373,12 +1393,13 @@ function defaultSettings() {
 
 									<tr>
 										<th>Compression</th>
-			        					<td>
-			        						<select name="vpn_server_comp" class="input_option">
+				        					<td>
+				        						<select name="vpn_server_comp" class="input_option">
 												<option value="-1" <% nvram_match("vpn_server_comp","-1","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
 												<option value="no" <% nvram_match("vpn_server_comp","no","selected"); %> ><#wl_securitylevel_0#></option>
-												<option value="yes" <% nvram_match("vpn_server_comp","yes","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
-												<option value="adaptive" <% nvram_match("vpn_server_comp","adaptive","selected"); %> >Adaptive</option>
+												<option value="yes" <% nvram_match("vpn_server_comp","yes","selected"); %> >LZO</option>
+												<option value="adaptive" <% nvram_match("vpn_server_comp","adaptive","selected"); %> > LZO Adaptive</option>
+												<option value="lz4" <% nvram_match("vpn_server_comp","lz4","selected"); %> >LZ4</option>
 											</select>
 			   							</td>
 									</tr>

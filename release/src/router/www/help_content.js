@@ -268,3 +268,7 @@ helpcontent[26] = new Array("",
 							"<#dualwan_pingtime_delay#>",
 							"<#dualwan_pingtime_upper#>", 
 							"Once switched to secondary wan, firmware can still detect the primary wan. When primary wan keep IP over the set value (Interval+delay)*failback count, the connection switched back to primary wan.");
+
+//OpenVPN
+helpcontent[48] = new Array("",
+				"OpenVPN can automatically negotiate the cipher based on a list.  Requires OpenVPN 2.4.  For older remote client/servers, disable it, or use Enabled with Fallback mode, which will use the legacy cipher parameter when connecting to older remotes.");
