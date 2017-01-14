@@ -1987,8 +1987,8 @@ int update_resolvconf(void)
 
 #ifdef RTCONFIG_DNSMASQ
 #ifdef RTCONFIG_OPENVPN
-	if (dnsstrict == 2)
-		restart_dnsmasq(0);	// add strict-order
+	if ((dnsstrict == 2) || (nvram_match("dnscrypt_proxy", "1")))
+		restart_dnsmasq(0);	// add strict-order or no-resolv
 	else
 #endif
 		reload_dnsmasq();
