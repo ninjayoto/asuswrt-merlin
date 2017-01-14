@@ -346,6 +346,7 @@ function update_visibility(){
 	dns = getRadioValue(document.openvpn_form.vpn_server_x_dns);
 
 	ncp = document.openvpn_form.vpn_server_ncp_enable.value;
+	comp = document.openvpn_form.vpn_server_comp.value;
 
 	showhide("server_snnm", ((auth == "tls") && (iface == "tun")));
 	showhide("server_plan", ((auth == "tls") && (iface == "tun")));
@@ -366,6 +367,10 @@ function update_visibility(){
 	showhide("server_cipher", (ncp != 2));
 	showhide("ncp_enable", (auth == "tls"));
 	showhide("ncp_ciphers", ((ncp > 0) && (auth == "tls")));
+
+/* Warn if exported ovpn requires OpenVPN 2.4.0 */
+	showhide("ncp_24_warn", (ncp > 0));
+	showhide("comp_24_warn", (comp == "lz4"));
 
 // Since instancing certs/keys would waste many KBs of nvram,
 // we instead handle these at the webui level, loading both instances.
@@ -1365,6 +1370,7 @@ function defaultSettings() {
 												<option value="1" <% nvram_match("vpn_server_ncp_enable","1","selected"); %> >Enable (with fallback)</option>
 												<option value="2" <% nvram_match("vpn_server_ncp_enable","2","selected"); %> >Enable</option>
 											</select>
+											<span id="ncp_24_warn"><br>The exported client ovpn file will require OpenVPN 2.4.0 or newer.</span>
 										</td>
 									</tr>
 									<tr id="ncp_ciphers">
@@ -1394,13 +1400,14 @@ function defaultSettings() {
 									<tr>
 										<th>Compression</th>
 				        					<td>
-				        						<select name="vpn_server_comp" class="input_option">
+				        						<select name="vpn_server_comp" class="input_option" onclick="update_visibility();">
 												<option value="-1" <% nvram_match("vpn_server_comp","-1","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
 												<option value="no" <% nvram_match("vpn_server_comp","no","selected"); %> ><#wl_securitylevel_0#></option>
 												<option value="yes" <% nvram_match("vpn_server_comp","yes","selected"); %> >LZO</option>
 												<option value="adaptive" <% nvram_match("vpn_server_comp","adaptive","selected"); %> > LZO Adaptive</option>
 												<option value="lz4" <% nvram_match("vpn_server_comp","lz4","selected"); %> >LZ4</option>
 											</select>
+											<span id="comp_24_warn"><br>The exported client ovpn file will require OpenVPN 2.4.0 or newer.</span>
 			   							</td>
 									</tr>
 
