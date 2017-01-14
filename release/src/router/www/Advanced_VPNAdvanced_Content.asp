@@ -371,6 +371,7 @@ function update_visibility(){
 /* Warn if exported ovpn requires OpenVPN 2.4.0 */
 	showhide("ncp_24_warn", (ncp > 0));
 	showhide("comp_24_warn", (comp == "lz4"));
+	showhide("tlscrypt_24_warn", (hmac == 3));
 
 // Since instancing certs/keys would waste many KBs of nvram,
 // we instead handle these at the webui level, loading both instances.
@@ -1272,14 +1273,16 @@ function defaultSettings() {
 									</tr>
 
 									<tr>
-										<th>Extra HMAC authorization<br><i>(tls-auth)</i></th>
+										<th>Extra HMAC authorization<br><i>(tls-auth / tls-crypt)</i></th>
 			        					<td>
-			        						<select name="vpn_server_hmac" class="input_option">
+			        						<select name="vpn_server_hmac" onclick="update_visibility();" class="input_option">
 												<option value="-1" <% nvram_match("vpn_server_hmac","-1","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
-												<option value="2" <% nvram_match("vpn_server_hmac","2","selected"); %> >Bi-directional</option>
-												<option value="0" <% nvram_match("vpn_server_hmac","0","selected"); %> >Incoming (0)</option>
-												<option value="1" <% nvram_match("vpn_server_hmac","1","selected"); %> >Outgoing (1)</option>
-											</select>
+												<option value="2" <% nvram_match("vpn_server_hmac","2","selected"); %> >Bi-directional Auth</option>
+												<option value="0" <% nvram_match("vpn_server_hmac","0","selected"); %> >Incoming Auth (0)</option>
+												<option value="1" <% nvram_match("vpn_server_hmac","1","selected"); %> >Incoming Auth (1)</option>
+												<option value="3" <% nvram_match("vpn_server_hmac","3","selected"); %> >Encrypt channel</option>
+										</select>
+										<span id="tlscrypt_24_warn"><br>The exported client ovpn file will require OpenVPN 2.4.0 or newer.</span>
 			   							</td>
 									</tr>
 									
