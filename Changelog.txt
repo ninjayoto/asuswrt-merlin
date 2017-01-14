@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23A1j9527  (14-January-2016)
+- CHANGED: openvpn: update to 2.4.0 and support new options
+* CHANGED: kernel: backport allow configuring ipv4 subnets as local addresses
+* CHANGED: kernel: backport ipv6 AnyIP support from 2.6.37
+
+
 374.43_2-22E4j9527  (13-January-2016)
 - CHANGED: openvpn: (backport) improve DDNS usage when generating ovpn client config
 - CHANGED: nano: update to 2.7.4
