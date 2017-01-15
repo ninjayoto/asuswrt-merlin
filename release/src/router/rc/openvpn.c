@@ -628,7 +628,7 @@ void stop_vpnclient(int clientNum)
 	sprintf(&buffer[0], "vpn_client%d_errno", clientNum);
 	nvram_set(&buffer[0], "0");
 
-	update_resolvconf();
+	//update_resolvconf();	//dnsmasq handled in updown.sh
 	//start_dnsmasq(0);
 
 	vpnlog(VPN_LOG_INFO,"VPN GUI client backend stopped.");
