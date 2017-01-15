@@ -160,7 +160,7 @@ then
 			/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
 			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
 			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
-#			logger -t "openvpn-updown" "Removed VPN IPv6 DNS leak protection"
+			logger -t "openvpn-updown" "Removed VPN IPv6 DNS blocking"
 		fi
 	fi
 fi
