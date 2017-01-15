@@ -5380,6 +5380,7 @@ check_ddr_done:
 		if(action&RC_SERVICE_STOP) stop_upnp();
 		if(action&RC_SERVICE_START) start_upnp();
 	}
+//QoS
 	else if (strcmp(script, "qos") == 0)
 	{
 		if(action&RC_SERVICE_STOP) {
@@ -5392,6 +5393,11 @@ check_ddr_done:
 			start_iQos();
 		}
 	}
+	else if (strncmp(script, "resetqosstats", 13) == 0)
+	{
+		reset_qos_stats();
+	}
+//QoS end
 	else if (strcmp(script, "logger") == 0)
 	{
 		if(action&RC_SERVICE_STOP) stop_logger();

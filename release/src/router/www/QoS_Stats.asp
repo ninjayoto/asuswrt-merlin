@@ -180,6 +180,14 @@ function setup_data(data_array, ctx) {
 	return code;
 }
 
+function resetCounters() {
+	document.form.action_script.value = "resetqosstats";
+	document.form.action_wait.value="2";
+	showLoading();
+	document.form.submit();
+
+}
+
 </script>
 </head>
 <body onload="initial();">
@@ -189,8 +197,8 @@ function setup_data(data_array, ctx) {
 <form method="post" name="form" action="/start_apply.htm" target="hidden_frame">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
-<input type="hidden" name="current_page" value="/QoS_stats.asp">
-<input type="hidden" name="next_page" value="/QoS_Stats.asp">
+<input type="hidden" name="current_page" value="QoS_Stats.asp">
+<input type="hidden" name="next_page" value="QoS_Stats.asp">
 <input type="hidden" name="action_mode" value="apply">
 <input type="hidden" name="action_script" value="">
 <input type="hidden" name="action_wait" value="5">
@@ -229,7 +237,10 @@ function setup_data(data_array, ctx) {
                                         <td><span id="legend_ul"></span></td>
                                 </tr>
 			</table>
-			<div class="apply_gen" style="padding-top: 25px;"><input type="button" onClick="location.href=location.href" value="<#CTL_refresh#>" class="button_gen"></div>
+			<div class="apply_gen" style="padding-top: 25px;">
+				<input type="button" class="button_gen" value="<#CTL_refresh#>" onClick="location.href=location.href">
+				<input type="button" id="resetButton" class="button_gen" value="Reset" onclick="resetCounters();">
+			</div>
 		</td>
 		</tr>
 	        </tbody>

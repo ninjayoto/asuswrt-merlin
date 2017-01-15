@@ -444,6 +444,7 @@ extern int start_iQos(void);
 extern void stop_iQos(void);
 extern void del_iQosRules(void);
 extern int add_iQosRules(char *pcWANIF);
+extern void reset_qos_stats(void);
 
 /* rtstate.c */
 extern void add_rc_support(char *feature);

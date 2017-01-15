@@ -1883,3 +1883,14 @@ int start_iQos(void)
 
 	return status;
 }
+
+void reset_qos_stats(void)
+{
+	char cmd[16];
+
+	//stop and restart tc setup
+	sprintf(cmd, "%s %s", qosfn, "start");
+	system(cmd);
+	//run custom script
+	run_custom_script("qos-start", "init");
+}
