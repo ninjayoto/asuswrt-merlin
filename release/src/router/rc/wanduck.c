@@ -327,46 +327,34 @@ char *organize_tcpcheck_cmd(char *dns_list, char *cmd, int size){
 int do_ping_detect(int wan_unit){
 #ifdef RTCONFIG_DUALWAN
 	char cmd[256];
+	char prefix_wan[8], wan_iface[32], nvram_name[32];
 
 	/* Check for valid domain to avoid shell escaping */
 	if (!is_valid_domainname(wandog_target)) {
 		csprintf("wanduck: %s %s...invalid target\n", __FUNCTION__, wandog_target);
 		return -1;
 	}
-#endif
-#if 0
-	char buf[16], *next;
-	char prefix_wan[8], nvram_name[16], wan_dns[256];
 
+	/* Get wan interface */
 	memset(prefix_wan, 0, 8);
 	sprintf(prefix_wan, "wan%d_", wan_unit);
+	memset(wan_iface, 0, 32);
+	strcpy(wan_iface, nvram_safe_get(strcat_r(prefix_wan, "ipaddr", nvram_name)));
+	if (!strcmp(wan_iface, "0.0.0.0"))
+		return 0;
 
-	memset(wan_dns, 0, 256);
-	strcpy(wan_dns, nvram_safe_get(strcat_r(prefix_wan, "dns", nvram_name)));
-
-	foreach(buf, wan_dns, next){
-		sprintf(cmd, "ping -c 1 -W %d %s && touch %s", TCPCHECK_TIMEOUT, buf, PING_RESULT_FILE);
-		system(cmd);
-
-		if(check_if_file_exist(PING_RESULT_FILE)){
-			unlink(PING_RESULT_FILE);
-			return 1;
-		}
-	}
-#elif defined(RTCONFIG_DUALWAN)
-	sprintf(cmd, "ping -c 1  -w 2 -s 32 %s >/dev/null && touch %s", wandog_target, PING_RESULT_FILE);
+	sprintf(cmd, "ping -c 1 -W 4 -I %s %s >/dev/null && touch %s", wan_iface, wandog_target, PING_RESULT_FILE);
 	system(cmd);
 
 	if(check_if_file_exist(PING_RESULT_FILE)){
-		csprintf("wanduck: %s %s...ok\n", __FUNCTION__, wandog_target);
+		csprintf("wanduck: %s %s from %s...ok\n", __FUNCTION__, wandog_target, wan_iface);
 		unlink(PING_RESULT_FILE);
 		return 1;
 	}
 #else
 	return 1;
 #endif
-	csprintf("wanduck: %s %s...failed\n", __FUNCTION__, wandog_target);
-
+	csprintf("wanduck: %s %s from %s...failed\n", __FUNCTION__, wandog_target, wan_iface);
 	return 0;
 }
 
