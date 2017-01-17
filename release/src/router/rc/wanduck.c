@@ -450,8 +450,8 @@ int detect_internet(int wan_unit){
 	if(link_internet == DISCONN){
 		nvram_set_int("link_internet", 0);
 		record_wan_state_nvram(wan_unit, -1, -1, WAN_AUXSTATE_NO_INTERNET_ACTIVITY);
-
-		if(!(nvram_get_int("web_redirect")&WEBREDIRECT_FLAG_NOINTERNET)
+/*
+		if(!(nvram_get_int("web_redirect") & WEBREDIRECT_FLAG_NOINTERNET)
 #ifdef RTCONFIG_DUALWAN
 			&& (strstr(wans_dualwan, "none") != NULL)
 #endif
@@ -459,6 +459,7 @@ int detect_internet(int wan_unit){
 			nvram_set_int("link_internet", 1);
 			link_internet = CONNED;
 		}
+*/
 	}
 	else{
 		nvram_set_int("link_internet", 1);
