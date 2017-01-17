@@ -307,6 +307,7 @@ int get_packets_of_net_dev(const char *net_dev, unsigned long *rx_packets, unsig
 
 char *organize_tcpcheck_cmd(char *dns_list, char *cmd, int size){
 	char buf[256], *next;
+	int port;
 
 	if(cmd == NULL || size <= 0)
 		return NULL;
@@ -316,7 +317,8 @@ char *organize_tcpcheck_cmd(char *dns_list, char *cmd, int size){
 	sprintf(cmd, "/sbin/tcpcheck %d", TCPCHECK_TIMEOUT);
 
 	foreach(buf, dns_list, next){
-		sprintf(cmd, "%s %s:53", cmd, buf);
+		port = (nvram_match("dnscrypt_proxy", "1") ? nvram_get_int("dnscrypt1_port") : 53);
+		sprintf(cmd, "%s %s:%d", cmd, buf, port);
 	}
 
 	sprintf(cmd, "%s >>%s", cmd, DETECT_FILE);
@@ -382,7 +384,14 @@ int do_tcp_dns_detect(int wan_unit){
 	sprintf(prefix_wan, "wan%d_", wan_unit);
 
 	memset(wan_dns, 0, 256);
-	strcpy(wan_dns, nvram_safe_get(strcat_r(prefix_wan, "dns", nvram_name)));
+	if (nvram_match("dnscrypt_proxy", "1")) {
+		if (nvram_match("dnscrypt1_ipv6", "0"))
+			strcpy(wan_dns, "127.0.0.1");
+		else
+			return 1;  //if can't test, assume up
+	}
+	else
+		strcpy(wan_dns, nvram_safe_get(strcat_r(prefix_wan, "dns", nvram_name)));
 
 	remove(DETECT_FILE);
 
