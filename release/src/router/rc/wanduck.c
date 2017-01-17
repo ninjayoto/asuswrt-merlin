@@ -1306,7 +1306,7 @@ void record_conn_status(int wan_unit){
 		//logmessage(log_title, "timenow=%ld system_uptime=%ld wan_t0=%ld wan_uptime=%ld", timenow, s_info.uptime, wan_t0, wan_uptime);
 		sprintf(buf, "wan_uptime=%ld", wan_uptime);
 		eval("nvram", "set", buf);
-		sprintf(buf, "wan_t0=%ld", -1);
+		sprintf(buf, "wan_t0=%d", -1);
 		eval("nvram", "set", buf);
 		return;
 	}
@@ -1339,7 +1339,7 @@ void record_conn_status(int wan_unit){
 		else {
 			sprintf(buf, "wan_bootdly=%ld", wan_bootdelay + s_info.uptime);
 			eval("nvram", "set", buf);
-			sprintf(buf, "wan_t0=%ld", 0);
+			sprintf(buf, "wan_t0=%d", 0);
 			eval("nvram", "set", buf);
 		}
 	}
