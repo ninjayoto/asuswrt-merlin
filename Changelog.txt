@@ -4,13 +4,30 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_2-23A1j9527  (14-January-2016)
+374.43_2-23A4j9527  (17-January-2017)
+* FIXED: wanduck: reset disconnect counter on failover/failback
+* FIXED: wanduck: do not reset internet state based on web_redirect
+* FIXED: wanduck: direct ping test to specified wan interface
+* FIXED: wanduck: update dns check to support dnscrypt
+* FIXED: build: fix openvpn make for MIPS
+
+
+374.43_2-23A3j9527  (15-January-2017)
+* CHANGED: openvpn: support PIA specific options (remap to openvpn 2.4.x)
+
+374.43_2-23A2j9527  (14-January-2017)
+* NEW: webui: add reset button to qos stats charts
+* CHANGED: openvpn: eliminate unecessary restart of dnsmasq when stopping client
+* FIXED: wan: update_resolvconf restarts dnsmasq if dnscrypt is active but not in use
+
+
+374.43_2-23A1j9527  (14-January-2017)
 - CHANGED: openvpn: update to 2.4.0 and support new options
 * CHANGED: kernel: backport allow configuring ipv4 subnets as local addresses
 * CHANGED: kernel: backport ipv6 AnyIP support from 2.6.37
 
 
-374.43_2-22E4j9527  (13-January-2016)
+374.43_2-22E4j9527  (13-January-2017)
 - CHANGED: openvpn: (backport) improve DDNS usage when generating ovpn client config
 - CHANGED: nano: update to 2.7.4
 * CHANGED: webui: change wait time for WAN page changes to 50% of reboot time
@@ -19,7 +36,7 @@ Changelog
 * FIXED: qos: use actual wan_ifname for chart upload data retrieve (different from Merlin)
 
 
-374.43_2-22E3j9527  (12-January-2016)
+374.43_2-22E3j9527  (12-January-2017)
 - NEW: ddns: (backport) add support for Google-DDNS
 - CHANGED: services: (backport) improve start/stop of syslogd
 - CHANGED: rc: (backport) add support for telnetd and sshd
@@ -36,14 +53,14 @@ Changelog
 * FIXED: curl https broken on MIPS
 
 
-374.43_2-22E2j9527  (6-January-2016)
+374.43_2-22E2j9527  (6-January-2017)
 * FIXED: httpd: fix error in buffer overflow prevention
 * FIXED: watchdog: do not restart ntpd if detected as down during reboot
 * FIXED: dnsmasq: stop dnsmasq on update_resolvconf if during reboot
 * FIXED: dnscrypt: do not allow ARM WAN clients to use dnscrypt if primary resolver is ipv6
 
 
-374.43_2-22E1j9527  (5-January-2016)
+374.43_2-22E1j9527  (5-January-2017)
 * NEW: qos: new traditional qos implementation
 * NEW: dnscrypt: add dnscrypt support 1.9.0
 * NEW: dnscrypt: add support for second dnscrypt resolver and ipv6
