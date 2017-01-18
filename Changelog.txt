@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23B1j9527  (18-January-2017)
+- CHANGED: webui: (backport) improved layout of OpenVPN statistic display on the VPN Status page
+* CHANGED: webui: reorder openvpn client stats table entries
+* CHANGED: build: expand jffs for ARM from 32MB to 64MB
+* CHANGED: openvpn: add syslog for vpn client WAN address
+* FIXED: webui: remove passwd entry length limit so check routine can detect too long passwd
+
+
 374.43_2-23A4j9527  (17-January-2017)
 * FIXED: wanduck: reset disconnect counter on failover/failback
 * FIXED: wanduck: do not reset internet state based on web_redirect
