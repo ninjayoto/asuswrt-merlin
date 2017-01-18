@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23B2j9527  (18-January-2017)
+* CHANGED: debug: reduce debug messages for killall_tk
+* FIXED: webui: update alert management for added alerts
+
+
 374.43_2-23B1j9527  (18-January-2017)
 - CHANGED: webui: (backport) improved layout of OpenVPN statistic display on the VPN Status page
 * CHANGED: webui: reorder openvpn client stats table entries
