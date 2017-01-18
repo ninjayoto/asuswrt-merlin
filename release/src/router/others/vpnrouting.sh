@@ -202,6 +202,10 @@ then
 		ip route del default table $VPN_TBL
 		ip route add default via $route_vpn_gateway table $VPN_TBL
 		logger -t "openvpn-routing" "Setting default VPN route via $route_vpn_gateway"
+		if [ "$trusted_ip" != "" ]
+		then
+			logger -t "openvpn-routing" "VPN WAN address is $trusted_ip"
+		fi
 	fi
 
 	if [ "$route_net_gateway" != "" ]
