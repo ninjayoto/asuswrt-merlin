@@ -1104,12 +1104,6 @@ function show_menu(){
         else
                 notification.low_nvram = 0;
 
-	if( notification.acpw || notification.upgrade || notification.wifi_2g || notification.wifi_5g || notification.ftp || notification.samba || notification.loss_sync || notification.low_nvram ){
-		notification.stat = "on";
-		notification.flash = "on";
-		notification.run();
-	}
-
 	//firewall disabled
 	if(firewall_enabled == 0){	//case8
 		notification.array[8] = 'noti_no_firewall';
@@ -2767,13 +2761,15 @@ var notification = {
 	ftp: 0,
 	samba: 0,
 	loss_sync: 0,
+	low_nvram: 0,
+	no_firewall: 0,
 	clicking: 0,
 	redirectftp:function(){location.href = 'Advanced_AiDisk_ftp.asp';},
 	redirectsamba:function(){location.href = 'Advanced_AiDisk_samba.asp';},
 	clickCallBack: [],
 	notiClick: function(){
 		// stop flashing after the event is checked.
-		cookie_help.set("notification_history", [notification.upgrade, notification.wifi_2g ,notification.wifi_5g ,notification.ftp ,notification.samba ,notification.loss_sync].join(), 1000);
+		cookie_help.set("notification_history", [notification.upgrade, notification.wifi_2g ,notification.wifi_5g ,notification.ftp ,notification.samba ,notification.loss_sync ,notification.low_nvram].join(), 1000);
 		clearInterval(notification.flashTimer);
 		document.getElementById("notification_status").className = "notification_on";
 
@@ -2841,6 +2837,8 @@ var notification = {
 		this.ftp = 0;
 		this.samba = 0;
 		this.loss_sync = 0;
+		this.low_nvram = 0;
+		this.no_firewall = 0;
 		this.action_desc = [];
 		this.desc = [];
 		this.array = [];
