@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23B3j9527  (20-January-2017)
+* FIXED: wanduck: wan uptime timer only reflects primary wan when dual wan set to lb
+* FIXED: wanduck: in dual wan fo/fb only set wan timer based on current wan
+
+
 374.43_2-23B2j9527  (18-January-2017)
 * CHANGED: debug: reduce debug messages for killall_tk
 * FIXED: webui: update alert management for added alerts
