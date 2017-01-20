@@ -1297,22 +1297,24 @@ void record_conn_status(int wan_unit){
 			logmessage(log_title, "WAN was exceptionally disconnected.");
 		}
 		//mark wan as down
-		timenow = (long int) (time(0));
-		wan_uptime = atol(nvram_get("wan_uptime"));
-		wan_t0 = atol(nvram_get("wan_t0"));
-		sysinfo(&s_info);
-		if(wan_t0 > 0){
-			wan_uptime = wan_uptime + (timenow - wan_t0);
+		if(wan_unit == current_wan_unit){
+			timenow = (long int) (time(0));
+			wan_uptime = atol(nvram_get("wan_uptime"));
+			wan_t0 = atol(nvram_get("wan_t0"));
+			sysinfo(&s_info);
+			if(wan_t0 > 0){
+				wan_uptime = wan_uptime + (timenow - wan_t0);
+			}
+			else if(wan_t0 == 0){
+				wan_uptime = wan_uptime + s_info.uptime;
+			}
+		//logmessage(log_title, "wan_unit=%d current_wan_unit=%d timenow=%ld system_uptime=%ld wan_t0=%ld wan_uptime=%ld", wan_unit, current_wan_unit, timenow, s_info.uptime, wan_t0, wan_uptime);
+			sprintf(buf, "wan_uptime=%ld", wan_uptime);
+			eval("nvram", "set", buf);
+			sprintf(buf, "wan_t0=%d", -1);
+			eval("nvram", "set", buf);
+			return;
 		}
-		else if(wan_t0 == 0){
-			wan_uptime = wan_uptime + s_info.uptime;
-		}
-		//logmessage(log_title, "timenow=%ld system_uptime=%ld wan_t0=%ld wan_uptime=%ld", timenow, s_info.uptime, wan_t0, wan_uptime);
-		sprintf(buf, "wan_uptime=%ld", wan_uptime);
-		eval("nvram", "set", buf);
-		sprintf(buf, "wan_t0=%d", -1);
-		eval("nvram", "set", buf);
-		return;
 	}
 	else if(conn_changed_state[wan_unit] == D2C){
 		if(disconn_case_old[wan_unit] == 10)
@@ -1332,7 +1334,7 @@ void record_conn_status(int wan_unit){
 	}
 
 	// save new wan start time
-	if(conn_wanup) {
+	if(conn_wanup && (wan_unit == current_wan_unit)) {
 		timenow = (long int) (time(0));
 		wan_bootdelay = atol(nvram_get("wan_bootdly"));
 		sysinfo(&s_info);
