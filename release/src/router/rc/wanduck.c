@@ -1297,7 +1297,11 @@ void record_conn_status(int wan_unit){
 			logmessage(log_title, "WAN was exceptionally disconnected.");
 		}
 		//mark wan as down
-		if(wan_unit == current_wan_unit){
+		if((wan_unit == current_wan_unit)
+#ifdef RTCONFIG_DUALWAN
+			|| ((!strcmp(dualwan_mode, "lb") && (wan_unit == WAN_UNIT_FIRST)))
+#endif
+		){
 			timenow = (long int) (time(0));
 			wan_uptime = atol(nvram_get("wan_uptime"));
 			wan_t0 = atol(nvram_get("wan_t0"));
@@ -1334,7 +1338,11 @@ void record_conn_status(int wan_unit){
 	}
 
 	// save new wan start time
-	if(conn_wanup && (wan_unit == current_wan_unit)) {
+	if(conn_wanup && ((wan_unit == current_wan_unit)
+#ifdef RTCONFIG_DUALWAN
+		|| ((!strcmp(dualwan_mode, "lb") && (wan_unit == WAN_UNIT_FIRST))))
+#endif
+	){
 		timenow = (long int) (time(0));
 		wan_bootdelay = atol(nvram_get("wan_bootdly"));
 		sysinfo(&s_info);
