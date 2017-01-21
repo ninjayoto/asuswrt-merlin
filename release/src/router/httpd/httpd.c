@@ -1101,9 +1101,18 @@ void http_login(unsigned int ip, char *url) {
 }
 
 int http_client_ip_check(void) {
-
+	struct in_addr tmp_access_addr;
+	char tmp_access_ip[32];
 	int i = 0;
+
 	if(nvram_match("http_client", "1")) {
+		//always allow router
+		sprintf(tmp_access_ip, "%s", nvram_get("lan_ipaddr"));
+		inet_aton(tmp_access_ip, &tmp_access_addr);
+		if(login_ip_tmp==(unsigned int)tmp_access_addr.s_addr);
+			return 1;
+
+		//user specified ip
 		while(i<ARRAY_SIZE(access_ip)) {
 			if(access_ip[i]!=0) {
 				if(login_ip_tmp==access_ip[i])
