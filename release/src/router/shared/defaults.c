@@ -325,7 +325,7 @@ struct nvram_tuple router_defaults[] = {
 // open/shared/psk/wpa/radius
 	{ "wl_wep_x", 			"0"	},
 // WEP data encryption 0, 1, 2 : disabled/5/13
-	{ "wl_timesched", 		"1"	},
+	{ "wl_timesched", 		"0"	},
 	{ "wl_radio_date_x",	"1111111"	},
 	{ "wl_radio_time_x",	"00002359"	},
 	{ "wl_radio_time2_x",	"00002359"	},
