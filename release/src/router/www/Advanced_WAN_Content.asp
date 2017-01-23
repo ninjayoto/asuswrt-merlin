@@ -217,8 +217,6 @@ function genWANSoption(){
 function applyRule(){
 
 	if(validForm()){
-		showLoading();
-		
 		inputCtrl(document.form.wan_dhcpenable_x[0], 1);
 		inputCtrl(document.form.wan_dhcpenable_x[1], 1);
 		if(!document.form.wan_dhcpenable_x[0].checked){
@@ -253,6 +251,8 @@ function applyRule(){
 			document.form.action_script += ";restart_dnsmasq";
 */
 		document.form.action_wait.value = eval("<% get_default_reboot_time(); %> / 2");
+		document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1"; //force progress bar to always be shown
+		showLoading();
 		document.form.submit();	
 	}
 }
@@ -852,6 +852,7 @@ function pass_checked(obj){
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
+<input type="hidden" name="showloading_x" value="<% nvram_get("showloading_x"); %>">
 <input type="hidden" name="lan_ipaddr" value="<% nvram_get("lan_ipaddr"); %>" />
 <input type="hidden" name="lan_netmask" value="<% nvram_get("lan_netmask"); %>" />
 <input type="hidden" name="wan_pppoe_username_org" value="<% nvram_char_to_ascii("", "wan_pppoe_username"); %>" />

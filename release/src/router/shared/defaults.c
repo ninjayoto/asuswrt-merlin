@@ -40,6 +40,9 @@ struct nvram_tuple router_defaults[] = {
 	//{ "vlan2ports", "" },
 	/* Guest H/W parameters */
 
+	/* WebUI parameters */
+	{ "showloading_x", "0" },		//dummy var to force progress bar
+
 	// NVRAM for switch	
 	{ "switch_stb_x", "0"}, 		// oleg patch
 	{ "switch_wantag", "none"},		//for IPTV/VoIP case

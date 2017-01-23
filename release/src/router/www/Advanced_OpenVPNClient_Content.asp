@@ -476,8 +476,6 @@ function cal_panel_block(){
 
 function applyRule(){
 
-	showLoading();
-
 	if (service_state) {
 		document.form.action_wait.value = 15;
 		document.form.action_script.value = "restart_vpnclient"+openvpn_unit;
@@ -523,6 +521,8 @@ function applyRule(){
 
 	$("vpn_client_password").type = "text"; // workaround for password save prompt in firefox
 
+	document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1"; //force progress bar to always be shown
+	showLoading();
 	document.form.submit();
 }
 
@@ -856,6 +856,7 @@ function defaultSettings() {
 <input type="hidden" name="SystemCmd" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
+<input type="hidden" name="showloading_x" value="<% nvram_get("showloading_x"); %>">
 <input type="hidden" name="vpn_clientx_eas" value="<% nvram_clean_get("vpn_clientx_eas"); %>">
 <input type="hidden" name="vpn_dns_mode" value="<% nvram_clean_get("vpn_dns_mode"); %>">
 <input type="hidden" name="vpn_crt_client1_ca" value="<% nvram_clean_get("vpn_crt_client1_ca"); %>">
@@ -927,6 +928,7 @@ function defaultSettings() {
 									 function() {
 										document.form.action_wait.value = 15;
 										document.form.action_script.value = "start_vpnclient" + openvpn_unit;
+										document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1";
 										parent.showLoading();
 										document.form.submit();
 										return true;
@@ -934,6 +936,7 @@ function defaultSettings() {
 									 function() {
 										document.form.action_wait.value = 15;
 										document.form.action_script.value = "stop_vpnclient" + openvpn_unit;
+										document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1";
 										parent.showLoading();
 										document.form.submit();
 										return true;
