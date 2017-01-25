@@ -195,6 +195,11 @@ if(based_modelid == "RT-AC56U" || based_modelid == "RT-AC56S"
 	rrsut_support = true;
 }	
 
+if(based_modelid == "RT-N16")	//minimum free nvram MODELDEP
+	var nvram_free = 1536;
+else
+	var nvram_free = 3072;
+
 var ufsd_support = isSupport("ufsd");
 var reboot_schedule_support = isSupport("reboot_schedule");
 
@@ -1092,7 +1097,7 @@ function show_menu(){
 
 	//nvram low
         if(nvram_total){
-                if((nvram_total - nvram_used) < 3072){         //case7
+                if((nvram_total - nvram_used) < nvram_free){         //case7
                         notification.array[7] = 'noti_low_nvram';
                         notification.low_nvram = 1;
                         notification.desc[7] = Untranslated.ASUSGATE_note7;
