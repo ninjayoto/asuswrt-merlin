@@ -1448,13 +1448,20 @@ function search_supportsite(obj){
 }
 
 var isFirefox = navigator.userAgent.search("Firefox") > -1;
+var isChrome = navigator.userAgent.search("Chrome") > -1;
+var isChrome56 = isChrome;
+if(isChrome){
+	var major = navigator.userAgent.match("Chrome\/([0-9]*)\.");	//check for major version
+	if(parseInt(major[1], 10) < 56)
+		isChrome56 = false;
+}
 var isOpera = navigator.userAgent.search("Opera") > -1;
 var isIE8 = navigator.userAgent.search("MSIE 8") > -1; 
 var isiOS = navigator.userAgent.search("iP") > -1; 
 function browser_compatibility(){
 	var obj_inputBtn;
 
-	if((isFirefox || isOpera) && document.getElementById("FormTitle")){
+	if((isFirefox || isOpera || isChrome56) && document.getElementById("FormTitle")){
 		document.getElementById("FormTitle").className = "FormTitle_firefox";
 		if(current_url.indexOf("Guest_network") == 0)
 			document.getElementById("FormTitle").style.marginTop = "-140px";
