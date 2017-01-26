@@ -33,6 +33,12 @@ ifeq ($(RTCONFIG_DNSCRYPT),y)
 	install -m 0700 dnscrypt-update-resolvers.sh $(INSTALLDIR)/usr/sbin
 endif
 
+# ipv6 hosts updater
+ifeq ($(RTCONFIG_DNSMASQ),y)
+	install -m 0700 -D v6hosts.sh $(INSTALLDIR)/usr/sbin
+	install -m 0700 -D updatehosts.sh $(INSTALLDIR)/usr/sbin
+endif
+
 # Easy-rsa scripts (for OpenVPN)
 ifeq ($(RTCONFIG_OPENVPN),y)
 	install -m 0700 setuprsa.sh $(INSTALLDIR)/usr/sbin
