@@ -363,6 +363,7 @@ function update_visibility(){
 	showhide("enable_dns_span", (adns >= 3 && rgw == 2));
 	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2));
 	if (rgw == 2) {
+		$('dnscrypt_opt').innerHTML = "";
 		if (adns == 3) {
 			if (dnscrypt_proxy == 1 && dnscrypt_ipv6 == 0 && allow_routelocal)
 				$('dnscrypt_opt').innerHTML = "DNSCrypt Resolver";
@@ -376,8 +377,10 @@ function update_visibility(){
 		else
 			showhide("dnscrypt_opt", false);
 
-		if (!allow_routelocal || dnscrypt_ipv6 == 1)
+		if ((!allow_routelocal || dnscrypt_ipv6 == 1 || adns == 1 || adns == 2) && dnscrypt_proxy == 1) {
 			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;(DNSCrypt unavailable)";
+			showhide("dnscrypt_opt", true);
+		}
 	}
 
 // Since instancing certs/keys would waste many KBs of nvram,
