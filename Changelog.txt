@@ -4,6 +4,37 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23B7j9527  (28-January-2017)
+- CHANGED:  openssl: update to 1.0.2k
+- FIXED: kernel-arm: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
+- FIXED: kernel-mips: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
+* FIXED: dnsmasq: add openvpn client adns state change detection to update_resolvconf
+
+374.43_2-23B6j9527  (27-January-2017)
+* NEW: ipv6: add scripts for ipv6 hosts auto update
+- CHANGED: openvpn: (backport) default port for server 2 changed to 1195
+* CHANGED: webui: update for Chrome version 56 changes
+* CHANGED: openvpn: do not set persist-tun if dual wan
+* CHANGED: webui: add dnscrypt unavailable message if openvpn dns option is relaxed or strict
+- FIXED: avahi: (backport) reject access from secondary WAN
+
+
+374.43_2-23D5j9527  (25-January-2017)
+* CHANGED: wanduck: modify 46e43af to set S_COUNT instead of S_IDLE
+* FIXED: openvpn: Openvpn bridge mode on r5638 #457 (backport from wl500g - ARM)
+* FIXED: openvpn: Openvpn bridge mode on r5638 #457 (wl500g port - MIPS)
+
+
+374.43_2-23B4j9527  (25-January-2017)
+* CHANGED: defaults: change wireless scheduler default to off
+* CHANGED: webui: allow forcing progess count and apply to serveral pages
+* CHANGED: webui: change low nvram threshold for N16 to 1.5K (no openvpn certs)
+- FIXED: cstats/rstats: fix rollover calculation to handle 32/64 bit
+- FIXED: samba: fix CVE-2013-4124 Denial of service - CPU loop and memory allocation
+* FIXED: httpd: always allow router address login if specified address only option is selected
+* FIXED: watchdog: add test for valid time before curl status check
+
+
 374.43_2-23B3j9527  (20-January-2017)
 * FIXED: wanduck: wan uptime timer only reflects primary wan when dual wan set to lb
 * FIXED: wanduck: in dual wan fo/fb only set wan timer based on current wan
