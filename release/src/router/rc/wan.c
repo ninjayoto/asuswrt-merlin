@@ -1901,6 +1901,7 @@ int update_resolvconf(void)
 	int unit;
 #ifdef RTCONFIG_OPENVPN
 	int dnsstrict = 0;
+	static int dnsstrict_last = 0;
 #endif
 
 	if (g_reboot) {  //don't update if rebooting
@@ -1987,15 +1988,17 @@ int update_resolvconf(void)
 
 #ifdef RTCONFIG_DNSMASQ
 #ifdef RTCONFIG_OPENVPN
-	if ((dnsstrict == 2) || (nvram_match("dnscrypt_proxy", "1")))
+	if ((dnsstrict == 2) || (dnsstrict != dnsstrict_last) || (nvram_match("dnscrypt_proxy", "1"))) {
 		restart_dnsmasq(0);	// add strict-order or no-resolv
+		dnsstrict_last = dnsstrict;
+	}
 	else
 #endif
 		reload_dnsmasq();
 #else
 	restart_dns();
 #endif
-
+	
 	return 0;
 }
 
