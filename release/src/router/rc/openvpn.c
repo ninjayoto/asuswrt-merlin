@@ -1750,7 +1750,7 @@ void stop_vpn_all()
 	int i;
 
 	// stop servers
-	for( i = 1; i <= 4; i++ )
+	for( i = 1; i <= 2; i++ )
 	{
 		sprintf(&buffer[0], "vpnserver%d", i);
 		if ( pidof(&buffer[0]) >= 0 )
@@ -1761,7 +1761,7 @@ void stop_vpn_all()
 	}
 
 	// stop clients
-	for( i = 0; i <= 4; i++ )
+	for( i = 1; i <= 2; i++ )
 	{
 		sprintf(&buffer[0], "vpnclient%d", i);
 		if ( pidof(&buffer[0]) >= 0 )
