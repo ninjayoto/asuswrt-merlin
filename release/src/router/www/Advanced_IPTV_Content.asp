@@ -175,7 +175,7 @@ function ISP_Profile_Selection(isp){
 		$("wan_internet_x").style.display = "none";
 		$("wan_iptv_port4_x").style.display = "none";
 		$("wan_voip_port3_x").style.display = "none";
-		$("mr_enable_x").style.display = "none";
+		$("mr_enable_x").style.display = "";
 		document.form.switch_wantag.value = "none";
 		document.form.switch_stb_x.value = "0";
 	}
