@@ -176,7 +176,7 @@ void del_iQosRules(void)
 			}
 		}
 		else {
-			logmessage("qos","error removing ipv4 rules, flushing table");
+			logmessage("qos-rules","error removing ipv4 rules, flushing table");
 			eval("iptables", "-t", "mangle", "-F");
 		}
 	}
@@ -196,7 +196,7 @@ void del_iQosRules(void)
 			}
 		}
 		else {
-			logmessage("qos","error removing ipv6 rules, flushing table");
+			logmessage("qos-rules","error removing ipv6 rules, flushing table");
 	                eval("ip6tables", "-t", "mangle", "-F");
 		}
 	}
@@ -720,19 +720,19 @@ int add_qos_rules(char *pcWANIF)
 		g = buf = strdup(nvram_safe_get("lan_ipaddr"));
 		if((vstrsep(g, ".", &a, &b, &c, &d)) != 4){
 			fprintf(stderr,"[qos] lan_ipaddr doesn't exist!!\n");
-			//logmessage("qos","ipv4_lan_ipaddr doesn't exist, retrying");
+			//logmessage("qos-rules","ipv4_lan_ipaddr doesn't exist, retrying");
 			sleep(1);
 		}
 		else{
 			sprintf(lan_addr, "%s.%s.%s.0/24", a, b, c);
 			fprintf(stderr,"[qos] lan_addr=%s\n", lan_addr);
-			logmessage("qos","using ipv4_lan_ipaddr %s", lan_addr);
+			logmessage("qos-rules","using ipv4_lan_ipaddr %s", lan_addr);
 			ipv4_err = 0;
 			i = MAX_RETRY + 1;
 		}
 	}
 	if (ipv4_err > 0)
-		logmessage("qos","error setting ipv4_lan_ipaddr!");
+		logmessage("qos-rules","error setting ipv4_lan_ipaddr!");
 	free(buf);
 
 #ifdef RTCONFIG_IPV6
@@ -742,7 +742,7 @@ int add_qos_rules(char *pcWANIF)
 			g = buf = strdup(nvram_safe_get("ipv6_prefix"));
 			if (!strlen(g)){
 				fprintf(stderr,"[qos] ipv6_lan_ipaddr doesn't exist!!\n");
-				//logmessage("qos","ipv6_lan_ipaddr doesn't exist, retrying");
+				//logmessage("qos-rules","ipv6_lan_ipaddr doesn't exist, retrying");
 				sleep(1);
 			}
 			else{
@@ -750,13 +750,13 @@ int add_qos_rules(char *pcWANIF)
                                 strlcpy(wan6face, get_wan6face(), IFNAMSIZ+1);  //refresh ipv6 ifname
 				nvram_set("ipv6_ifname", wan6face);
 				fprintf(stderr,"[qos] ipv6_lan_addr=%s\n", ipv6_lan_addr);
-				logmessage("qos","using ipv6_lan_ipaddr %s on interface %s", ipv6_lan_addr, wan6face);
+				logmessage("qos-rules","using ipv6_lan_ipaddr %s on interface %s", ipv6_lan_addr, wan6face);
 				ipv6_err = 0;
 				i = MAX_RETRY + 1;
 			}
 		}
 		if (ipv6_err > 0)
-			logmessage("qos","error setting ipv6_lan_ipaddr!");
+			logmessage("qos-rules","error setting ipv6_lan_ipaddr!");
 		free(buf);
 	}
 	else{
@@ -933,15 +933,15 @@ int add_qos_rules(char *pcWANIF)
 			if (eval("iptables-restore", "-n", (char*)mangle_fn)) {
 				_dprintf("iptables-restore failed - attempt: %d ...\n", i);
 				if (i == MAX_RETRY)
-					logmessage("qos", "apply rules (%s) failed!", mangle_fn);
+					logmessage("qos-rules", "apply rules (%s) failed!", mangle_fn);
 				sleep(1);
 			} else {
-				logmessage("qos", "apply rules (%s) success!", mangle_fn);
+				logmessage("qos-rules", "apply rules (%s) success!", mangle_fn);
 				i = MAX_RETRY + 1;
 			}
 		}
 	} else {
-		logmessage("qos", "ipv4_lan_addr not available - skipping rules (%s)", mangle_fn);
+		logmessage("qos-rules", "ipv4_lan_addr not available - skipping rules (%s)", mangle_fn);
 	}
 
 #ifdef RTCONFIG_IPV6
@@ -957,15 +957,15 @@ int add_qos_rules(char *pcWANIF)
 				if (eval("ip6tables-restore", "-n", (char*)mangle_fn_ipv6)) {
 					_dprintf("ip6tables-restore failed - attempt: %d ...\n", i);
 					if (i == MAX_RETRY)
-						logmessage("qos", "apply rules (%s) failed!", mangle_fn_ipv6);
+						logmessage("qos-rules", "apply rules (%s) failed!", mangle_fn_ipv6);
 					sleep(1);
 				} else {
-					logmessage("qos", "apply rules (%s) success!", mangle_fn_ipv6);
+					logmessage("qos-rules", "apply rules (%s) success!", mangle_fn_ipv6);
 					i = MAX_RETRY + 1;
 				}
 			}
 		} else {
-			logmessage("qos", "ipv6_lan_addr not available - skipping rules (%s)", mangle_fn_ipv6);
+			logmessage("qos-rules", "ipv6_lan_addr not available - skipping rules (%s)", mangle_fn_ipv6);
 		}
 	}
 #endif
@@ -1424,7 +1424,7 @@ int start_tqos(void)
 	fclose(f);
 	chmod(qosfn, 0700);
 	eval((char *)qosfn, "start");
-	logmessage("qos", "tqos start complete");
+	logmessage("qos-init", "tqos start complete");
 
 	run_custom_script("qos-start", "init");
 	fprintf(stderr,"[qos] tc done!\n");
@@ -1870,7 +1870,7 @@ static int start_bandwidth_limiter(void)
 	fclose(f);
 	chmod(qosfn, 0700);
 	eval((char *)qosfn, "start");
-	logmessage("qos", "bwl start complete");
+	logmessage("qos-init", "bwl start complete");
 	_dprintf("[BWLIT] %s: create bandwidth limiter\n", __FUNCTION__);
 
 	return 0;
