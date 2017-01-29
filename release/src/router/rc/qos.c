@@ -1490,7 +1490,7 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 	char *enable, *addr, *dlc, *upc, *prio;
 	char lan_addr[32];
 	char addr_new[32];
-	int addr_type;
+	int i, addr_type;
 	char *action = NULL;
 	char mssid_mark[4];
 
@@ -1616,7 +1616,17 @@ static int add_bandwidth_limiter_rules(char *pcWANIF)
 	fprintf(fn, "COMMIT\n");
 	fclose(fn);
 	chmod(mangle_fn, 0700);
-	eval("iptables-restore", "-n", (char*)mangle_fn);
+	for ( i = 1; i <= MAX_RETRY; i++ ) {
+		if (eval("iptables-restore", "-n", (char*)mangle_fn)) {
+			_dprintf("iptables-restore failed - attempt: %d ...\n", i);
+			if (i == MAX_RETRY)
+				logmessage("qos-rules", "apply rules (%s) failed!", mangle_fn);
+			sleep(1);
+		} else {
+			logmessage("qos-rules", "apply rules (%s) success!", mangle_fn);
+			i = MAX_RETRY + 1;
+		}
+	}
 	_dprintf("[BWLIT] %s: create rules\n", __FUNCTION__);
 
 	return 0;
