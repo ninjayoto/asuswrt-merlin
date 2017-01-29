@@ -1506,6 +1506,7 @@ void qos_check()
 
 	if ((errno & 1) || ((errno & 2) && ipv6_enabled() && (wan6valid)) || (errno & 4)) {
 		logmessage("watchdog", "restart qos");
+		_dprintf("watchdog restart qos errno %d", errno);
 		system("rc rc_service restart_qos");
 	}
 }

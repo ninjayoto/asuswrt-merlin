@@ -995,6 +995,7 @@ int start_tqos(void)
 {
 	int i;
 	char *buf, *g, *p;
+	char *wan_ifname;
 	unsigned int rate, irate_min;
 	unsigned int ceil;
 	unsigned int ibw, obw, bw;
@@ -1027,12 +1028,22 @@ int start_tqos(void)
 
 	if (!nvram_match("qos_enable", "1")) return -1;
 
+	wan_ifname = get_wan_ifname(wan_primary_ifunit());
+	if (!wan_ifname || (strlen(wan_ifname) <= 0)) {
+		logmessage("qos-init", "wan_ifname not defined!");
+		nvram_set("qos_addr_err", "4");
+		return -2;
+	}
+	else
+		logmessage("qos-init", "using wan_ifname %s", wan_ifname);
+
 	ibw = strtoul(nvram_safe_get("qos_ibw"), NULL, 10);
 	obw = strtoul(nvram_safe_get("qos_obw"), NULL, 10);
 	if(ibw==0||obw==0) return -1;
 	ibw_max = obw_max = 10240000; //10Gb
 	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10) + 14; //add 14 bytes for hardware header
 
+	stop_iQos();  // remove existing tc classes
 	if ((f = fopen(qosfn, "w")) == NULL) return -2;
 
 	fprintf(stderr, "[qos] tc START!\n");
@@ -1620,11 +1631,22 @@ static int start_bandwidth_limiter(void)
 	char bw_iface[128] = " ";
 	char word[8], *next;
 	char *enable, *addr, *dlc, *upc, *prio;
+	char *wan_ifname;
 	int class = 0;
 	int s[6]; // strip mac address
 	int addr_type;
 	char addr_new[30];
 	char qsched[32];
+
+	if (!nvram_match("qos_enable", "1")) return -1;
+
+	wan_ifname = get_wan_ifname(wan_primary_ifunit());
+	if (!wan_ifname || (strlen(wan_ifname) <= 0)) {
+		logmessage("qos-init", "wan_ifname not defined!");
+		return -2;
+	}
+	else
+		logmessage("qos-init", "using wan_ifname %s", wan_ifname);
 
 	// init guest 3: ~ 12: (9 guestnetwork), start number = 3
 	guest = 3;
