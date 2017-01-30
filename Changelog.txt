@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23B8j9527  (29-January-2017)
+* CHANGED: qos: update logmessages to show qos stage
+* CHANGED: qos: add retries when applying bandwidth limiter rules
+* CHANGED: webui: show igmp proxy option when no iptv profile selected
+* FIXED: qos: handle case of qos starting before wan is up
+
+
 374.43_2-23B7j9527  (28-January-2017)
 - CHANGED:  openssl: update to 1.0.2k
 - FIXED: kernel-arm: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
