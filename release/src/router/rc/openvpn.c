@@ -534,7 +534,7 @@ void start_vpnclient(int clientNum)
 		argv[1] = "a";	
 		sprintf(&buffer[0], "CheckVPNClient%d", clientNum);
 		argv[2] = &buffer[0];
-		sprintf(&buffer[strlen(&buffer[0])+1], "*/%d * * * * service vpnclient%d start", nvi, clientNum);
+		sprintf(&buffer[strlen(&buffer[0])+1], "*/%d * * * * service start_vpnclient%d", nvi, clientNum);
 		argv[3] = &buffer[strlen(&buffer[0])+1];
 		argv[4] = NULL;
 		_eval(argv, NULL, 0, NULL);
@@ -1538,7 +1538,7 @@ void start_vpnserver(int serverNum)
 		argv[1] = "a";	
 		sprintf(&buffer[0], "CheckVPNServer%d", serverNum);
 		argv[2] = &buffer[0];
-		sprintf(&buffer[strlen(&buffer[0])+1], "*/%d * * * * service vpnserver%d start", nvi, serverNum);
+		sprintf(&buffer[strlen(&buffer[0])+1], "*/%d * * * * service start_vpnserver%d", nvi, serverNum);
 		argv[3] = &buffer[strlen(&buffer[0])+1];
 		argv[4] = NULL;
 		_eval(argv, NULL, 0, NULL);
