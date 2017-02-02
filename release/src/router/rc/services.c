@@ -2772,7 +2772,7 @@ start_ddns(void)
 	else if (strcmp(server, "WWW.ASUS.COM")==0) {
 		service = "dyndns", asus_ddns = 1;
 	}
-	else if (strcmp(server, "WWW.GOOGLE-DDNS.COM")==0) {
+	else if (strcmp(server, "DOMAINS.GOOGLE.COM")==0) {
 		service = "dyndns", asus_ddns=3;
 	} else {
 		logmessage("start_ddns", "Error ddns server name: %s\n", server);
