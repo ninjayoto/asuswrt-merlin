@@ -2372,10 +2372,7 @@ TRACE_PT("writing Parental Control\n");
 	{
 		if (nvram_match("ipv6_fw_enable", "1"))
 		{
-			if (nvram_match("lan_invalid_enable", "1"))
-				fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
-			else
-				fprintf(fp_ipv6, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
+			fprintf(fp_ipv6, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
 			fprintf(fp_ipv6, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
 		}
 		fprintf(fp_ipv6,"-A FORWARD -m rt --rt-type 0 -j DROP\n");
@@ -2394,10 +2391,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // ~ oleg patch
-	if (nvram_match("lan_invalid_enable", "1"))
-		fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
-	else
-		fprintf(fp, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
+	fprintf(fp, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
 	fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
 #ifndef RTCONFIG_PARENTALCTRL
 	if (strlen(macaccept)>0)
@@ -2440,10 +2434,7 @@ TRACE_PT("writing Parental Control\n");
 #endif
 	if (strlen(macaccept)>0)
 	{
-		if (nvram_match("lan_invalid_enable", "1"))
-			fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
-		else
-			fprintf(fp, "-A %s -i %s -m state --state INVALID -j %s\n", macaccept, wan_if, logdrop);
+		fprintf(fp, "-A %s -i %s -m state --state INVALID -j %s\n", macaccept, wan_if, logdrop);
 #if 0
 #ifdef RTCONFIG_IPV6
 		if (ipv6_enabled())
@@ -3348,10 +3339,7 @@ TRACE_PT("writing Parental Control\n");
 	{
 		if (nvram_match("ipv6_fw_enable", "1"))
 		{
-			if (nvram_match("lan_invalid_enable", "1"))
-				fprintf(fp_ipv6, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
-			else
-				fprintf(fp_ipv6, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
+			fprintf(fp_ipv6, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
 			fprintf(fp_ipv6, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
 		}
 		fprintf(fp_ipv6,"-A FORWARD -m rt --rt-type 0 -j DROP\n");
@@ -3399,10 +3387,7 @@ TRACE_PT("writing Parental Control\n");
 	}
 
 // ~ oleg patch
-	if (nvram_match("lan_invalid_enable", "1"))
-		fprintf(fp, "-A FORWARD -m state --state INVALID -j %s\n", logdrop);
-	else
-		fprintf(fp, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
+	fprintf(fp, "-A FORWARD -i %s -m state --state INVALID -j %s\n", wan_if, logdrop);
 	fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j %s\n", logaccept);
 #ifndef RTCONFIG_PARENTALCTRL
 	if (strlen(macaccept)>0)
@@ -3447,10 +3432,7 @@ TRACE_PT("writing Parental Control\n");
 #endif
 	if (strlen(macaccept)>0)
 	{
-		if (nvram_match("lan_invalid_enable", "1"))
-			fprintf(fp, "-A %s -m state --state INVALID -j %s\n", macaccept, logdrop);
-		else
-			fprintf(fp, "-A %s -i %s -m state --state INVALID -j %s\n", macaccept, wan_if, logdrop);
+		fprintf(fp, "-A %s -i %s -m state --state INVALID -j %s\n", macaccept, wan_if, logdrop);
 #if 0
 #ifdef RTCONFIG_IPV6
 		if (ipv6_enabled())
