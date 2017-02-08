@@ -2279,7 +2279,7 @@ int wanduck_main(int argc, char *argv[]){
 					csprintf("# Switching the connect to the first WAN line...\n");
 				else
 					csprintf("# Switching the connect to the second WAN line...\n");
-				set_disconn_count(other_wan_unit, S_COUNT);
+				set_disconn_count(other_wan_unit, S_IDLE);
 				switch_wan_line(other_wan_unit);
 			}
 		}
@@ -2293,7 +2293,7 @@ int wanduck_main(int argc, char *argv[]){
 				&& get_disconn_count(other_wan_unit) >= max_fb_count
 				){
 			csprintf("# wanduck: returning the connect to the %d WAN line...\n", other_wan_unit);
-			set_disconn_count(other_wan_unit, S_COUNT);
+			set_disconn_count(other_wan_unit, S_IDLE);
 			switch_wan_line(other_wan_unit);
 		}
 #endif
