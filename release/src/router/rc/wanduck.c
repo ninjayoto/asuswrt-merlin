@@ -139,6 +139,7 @@ void get_related_nvram(){
 #ifdef RTCONFIG_DUALWAN
 	memset(dualwan_mode, 0, 8);
 	strcpy(dualwan_mode, nvram_safe_get("wans_mode"));
+	wans_dualwan = (strstr(nvram_safe_get("wans_dualwan"), "none") != NULL) ? 0 : 1;
 
 	memset(wandog_target, 0, PATH_MAX);
 	if(sw_mode == SW_MODE_ROUTER){
@@ -431,10 +432,6 @@ int detect_internet(int wan_unit){
 	memset(wan_ifname, 0, 16);
 	strcpy(wan_ifname, get_wan_ifname(wan_unit));
 
-#ifdef RTCONFIG_DUALWAN
-	char * wans_dualwan;
-	wans_dualwan = nvram_safe_get("wans_dualwan");
-#endif
 
 	if(
 #ifdef RTCONFIG_DUALWAN

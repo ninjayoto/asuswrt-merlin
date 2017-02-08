@@ -156,12 +156,12 @@ char router_name[PATHLEN];
 int sw_mode, isFirstUse;
 #ifdef RTCONFIG_DUALWAN
 char dualwan_mode[8];
-
 char wandog_target[PATH_MAX];
 int wandog_delay, delay_detect;
 int WAN_FB_UNIT;
 #endif
 
+int wans_dualwan;
 int scan_interval;
 int wandog_enable, wandog_maxfail;
 int max_disconn_count;
