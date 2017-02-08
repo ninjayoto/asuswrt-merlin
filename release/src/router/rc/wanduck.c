@@ -171,6 +171,20 @@ void get_related_nvram(){
 	max_disconn_count = DEFAULT_MAX_DISCONN_COUNT;
 #endif
 	max_wait_time = scan_interval*max_disconn_count;
+
+#ifdef RTCONFIG_DUALWAN
+	if(nvram_match("wanduck_debug", "1") && wans_dualwan == 1){
+		csprintf("# wanduck: Got dualwan information:\n", current_lan_unit);
+		csprintf("# wanduck:       wans_dualwan=%d.\n", wans_dualwan);
+		csprintf("# wanduck:      wandog_enable=%d.\n", wandog_enable);
+		csprintf("# wanduck:      wandog_target=%d.\n", wandog_target);
+		csprintf("# wanduck:  max_disconn_count=%d.\n", max_disconn_count);
+		csprintf("# wanduck:       wandog_delay=%d.\n", wandog_delay);
+		csprintf("# wanduck:      scan_interval=%d.\n", scan_interval);
+		csprintf("# wanduck:      max_wait_time=%d.\n", max_wait_time);
+	}
+#endif
+
 }
 
 void get_lan_nvram(){
@@ -367,11 +381,12 @@ int do_dns_detect(){
 	char word[64], *next;
 
 	foreach(word, test_url, next){
-		_dprintf("do_dns_detect: %s.\n", word);
 		if(gethostbyname(word) != NULL){
+			_dprintf("wanduck: %s checking %s...success.\n", __FUNCTION__, word);
 			nvram_set_int("link_internet", 1);
 			return 1;
 		}
+		_dprintf("wanduck: %s checking %s...failed.\n", __FUNCTION__, word);
 	}
 
 	return 0;
@@ -410,6 +425,7 @@ int do_tcp_dns_detect(int wan_unit){
 
 	while(fgets(line, sizeof(line), fp) != NULL){
 		if(strstr(line, "alive")){
+			csprintf("wanduck: %s WAN(%d) %s", __FUNCTION__, wan_unit, line);
 			fclose(fp);
 			return 1;
 		}
@@ -432,6 +448,18 @@ int detect_internet(int wan_unit){
 	memset(wan_ifname, 0, 16);
 	strcpy(wan_ifname, get_wan_ifname(wan_unit));
 
+#ifdef RTCONFIG_DUALWAN
+	if(wan_unit != current_wan_unit && wans_dualwan == 1)
+		csprintf("wanduck: %s current WAN unit WAN(%d), checking WAN(%d)\n", __FUNCTION__, current_wan_unit, wan_unit);
+	else
+#endif
+		csprintf("wanduck: %s checking WAN(%d)\n", __FUNCTION__, wan_unit);
+
+	if(nvram_match("wanduck_debug", "2")) {
+		do_dns_detect();
+		do_tcp_dns_detect(wan_unit);
+		do_ping_detect(wan_unit);
+	}
 
 	if(
 #ifdef RTCONFIG_DUALWAN
@@ -451,10 +479,10 @@ int detect_internet(int wan_unit){
 	}
 #endif
 #ifdef RTCONFIG_DUALWAN
-	else if((!strcmp(dualwan_mode, "fo") || !strcmp(dualwan_mode, "fb"))
-			&& wandog_enable == 1 && !isFirstUse && !do_ping_detect(wan_unit)) {
+	else if((!strcmp(dualwan_mode, "fo") || !strcmp(dualwan_mode, "fb")) && ((wans_dualwan == 1 && wandog_enable == 1) || nvram_match("ping_debug", "1"))
+			&& !isFirstUse && !do_ping_detect(wan_unit)) {
 		link_internet = DISCONN;
-		csprintf("wanduck: dual wan (%d) disconnect by wandog.\n", wan_unit);
+		csprintf("wanduck: %sWAN(%d) disconnect by wandog.\n", (wans_dualwan == 1 ? "dualwan " : ""), wan_unit);
 	}
 #endif
 	else
@@ -479,6 +507,7 @@ int detect_internet(int wan_unit){
 		record_wan_state_nvram(wan_unit, -1, -1, WAN_AUXSTATE_NONE);
 	}
 
+	csprintf("wanduck: link_internet=%d.\n", link_internet);
 	return link_internet;
 }
 
