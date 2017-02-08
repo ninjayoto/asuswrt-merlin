@@ -1460,10 +1460,10 @@ TRACE_PT("%s.\n", cmd);
 
 	// restart the primary line.
 	memset(cmd, 0, 32);
-	if(get_wan_state(wan_unit) == WAN_STATE_CONNECTED)
+	if(get_wan_state(wan_unit) == WAN_STATE_CONNECTED && wans_dualwan == 0)
 		sprintf(cmd, "restart_wan_line %d", wan_unit);
 	else
-		sprintf(cmd, "restart_wan_if %d", wan_unit);
+		sprintf(cmd, "restart_wan_if %d", wan_unit);  // always restart wan_if for dualwan
 TRACE_PT("%s.\n", cmd);
 	notify_rc_and_wait(cmd);
 
