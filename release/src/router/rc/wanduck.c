@@ -346,6 +346,7 @@ int do_ping_detect(int wan_unit){
 #ifdef RTCONFIG_DUALWAN
 	char cmd[256];
 	char prefix_wan[8], wan_iface[32], nvram_name[32];
+	static int last_status = 1;
 
 	/* Check for valid domain to avoid shell escaping */
 	if (!is_valid_domainname(wandog_target)) {
@@ -367,13 +368,19 @@ int do_ping_detect(int wan_unit){
 	if(check_if_file_exist(PING_RESULT_FILE)){
 		csprintf("wanduck: %s %s from %s...ok\n", __FUNCTION__, wandog_target, wan_iface);
 		unlink(PING_RESULT_FILE);
+		last_status = 1;
 		return 1;
 	}
 #else
 	return 1;
 #endif
 	csprintf("wanduck: %s %s from %s...failed\n", __FUNCTION__, wandog_target, wan_iface);
-	return 0;
+	if (last_status == 1) {
+		last_status = 0;
+		return 1;
+	}
+	else
+		return 0;
 }
 
 int do_dns_detect(){
