@@ -907,7 +907,8 @@ void handle_wan_line(int wan_unit, int action){
 	 * it means dissolve the default state.
 	 */
 	else if(conn_changed_state[wan_unit] == D2C || conn_changed_state[wan_unit] == CONNED){
-		start_nat_rules();
+//		start_nat_rules();
+		start_firewall(wan_unit, 0);  //must restart firewall to handle vpn and dnscrypt
 
 		memset(prefix_wan, 0, 8);
 		sprintf(prefix_wan, "wan%d_", wan_unit);
