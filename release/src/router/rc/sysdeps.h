@@ -18,5 +18,6 @@ extern void reinit_hwnat(int unit);
 static inline void reinit_hwnat(int unit) { }
 #endif
 extern char *get_wlifname(int unit, int subunit, int subunit_x, char *buf);
+extern char *wlc_nvname(char *keyword);
 extern int wl_exist(char *ifname, int band);
 #endif
