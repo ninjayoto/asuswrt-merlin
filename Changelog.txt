@@ -4,6 +4,30 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23BAj9527  (8-February-2017)
+* CHANGED: wanduck: start_firewall instead of nat_rules when switching or restoring wan line
+* CHANGED: wanduck: add additional diagnostic messages and capabilities
+* CHANGED: wanduck: add global variable for dualwan status
+* CHANGED: wanduck: add wan unit number to ping detect diagnostic log
+* CHANGED: firewall: deprecate lan_invalid_enable option
+* CHANGED: ddns: (backport) update url for google ddns
+* CHANGED: services: only stop dnsmasq on start if already running
+* CHANGED: wanduck: require two successive ping detect cycles for fail
+* CHANGED: wanduck: change ping detect to use wan ifname instead of ipaddr
+* CHANGED: common: change diagnostics print for killall_tk to show elapsed time
+* CHANGED: wanduck: always restart wan interface on switch
+* CHANGED: wanduck: revert 3baff67 and return to setting S_IDLE on switch
+- FIXED: openvpn: fix cron job for openvpn polling
+* FIXED: build: fix misc compiler warnings
+* FIXED: dnsmasq: update failed query debug log to get correct reason code
+* FIXED: wanduck: correctly show wandog_target in debug output
+* FIXED: wanduck: revert d6394ac/5887523 to honor internet state change based on web_redirect
+
+
+374.43_2-23B9j9527  (31-January-2017)
+Build reset/killed
+
+
 374.43_2-23B8j9527  (29-January-2017)
 * CHANGED: qos: update logmessages to show qos stage
 * CHANGED: qos: add retries when applying bandwidth limiter rules
@@ -70,6 +94,7 @@ Changelog
 
 374.43_2-23A3j9527  (15-January-2017)
 * CHANGED: openvpn: support PIA specific options (remap to openvpn 2.4.x)
+
 
 374.43_2-23A2j9527  (14-January-2017)
 * NEW: webui: add reset button to qos stats charts
