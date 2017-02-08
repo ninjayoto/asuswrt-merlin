@@ -358,8 +358,8 @@ int do_ping_detect(int wan_unit){
 	memset(prefix_wan, 0, 8);
 	sprintf(prefix_wan, "wan%d_", wan_unit);
 	memset(wan_iface, 0, 32);
-	strcpy(wan_iface, nvram_safe_get(strcat_r(prefix_wan, "ipaddr", nvram_name)));
-	if (!strcmp(wan_iface, "0.0.0.0"))
+	strcpy(wan_iface, nvram_safe_get(strcat_r(prefix_wan, "ifname", nvram_name)));
+	if (!strcmp(wan_iface, "\0"))
 		return 0;
 
 	sprintf(cmd, "ping -c 1 -W 4 -I %s %s >/dev/null && touch %s", wan_iface, wandog_target, PING_RESULT_FILE);
