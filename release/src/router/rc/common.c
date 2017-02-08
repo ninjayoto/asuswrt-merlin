@@ -1121,14 +1121,14 @@ void killall_tk(const char *name)
 			//_dprintf("%s: waiting name=%s n=%d\n", __FUNCTION__, name, n);
 			usleep(100 * 1000);
 		}
-		_dprintf("%s: waiting name=%s wait=%d\n", __FUNCTION__, name, wait-n);
+		_dprintf("%s: waiting name=%s wait=%d sec\n", __FUNCTION__, name, (wait-n+1)/10);
 		if (n < 0) {
 			wait = 10;  n = wait;
 			while ((killall(name, SIGKILL) == 0) && (n-- > 0)) {
 				//_dprintf("%s: SIGKILL name=%s n=%d\n", __FUNCTION__, name, n);
 				usleep(100 * 1000);
 			}
-			_dprintf("%s: SIGKILL name=%s wait=%d\n", __FUNCTION__, name, wait-n);
+			_dprintf("%s: SIGKILL name=%s wait=%d sec\n", __FUNCTION__, name, (wait-n+1)/10);
 		}
 	}
 }
@@ -1143,14 +1143,14 @@ void killall_tk_period_wait(const char *name, int wait)
 			//_dprintf("%s: waiting name=%s n=%d\n", __FUNCTION__, name, n);
 			sleep(1);
 		}
-		_dprintf("%s: waiting name=%s wait=%d\n", __FUNCTION__, name, wait-n);
+		_dprintf("%s: waiting name=%s wait=%d sec\n", __FUNCTION__, name, (wait-n+1));
 		if (n < 0) {
 			n = wait;
 			while ((killall(name, SIGKILL) == 0) && (n-- > 0)) {
 				//_dprintf("%s: SIGKILL name=%s n=%d\n", __FUNCTION__, name, n);
 				sleep(1);
 			}
-			_dprintf("%s: SIGKILL name=%s wait=%d\n", __FUNCTION__, name, wait-n);
+			_dprintf("%s: SIGKILL name=%s wait=%d sec\n", __FUNCTION__, name, (wait-n+1));
 		}
 	}
 }
