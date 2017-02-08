@@ -366,7 +366,7 @@ int do_ping_detect(int wan_unit){
 	system(cmd);
 
 	if(check_if_file_exist(PING_RESULT_FILE)){
-		csprintf("wanduck: %s %s from %s...ok\n", __FUNCTION__, wandog_target, wan_iface);
+		csprintf("wanduck: %s %s from WAN(%d) %s...ok\n", __FUNCTION__, wandog_target, wan_unit, wan_iface);
 		unlink(PING_RESULT_FILE);
 		last_status = 1;
 		return 1;
@@ -374,7 +374,7 @@ int do_ping_detect(int wan_unit){
 #else
 	return 1;
 #endif
-	csprintf("wanduck: %s %s from %s...failed\n", __FUNCTION__, wandog_target, wan_iface);
+	csprintf("wanduck: %s %s from WAN(%d) %s...failed\n", __FUNCTION__, wandog_target, wan_unit, wan_iface);
 	if (last_status == 1) {
 		last_status = 0;
 		return 1;
