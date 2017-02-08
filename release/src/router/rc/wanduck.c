@@ -177,7 +177,7 @@ void get_related_nvram(){
 		csprintf("# wanduck: Got dualwan information:\n", current_lan_unit);
 		csprintf("# wanduck:       wans_dualwan=%d.\n", wans_dualwan);
 		csprintf("# wanduck:      wandog_enable=%d.\n", wandog_enable);
-		csprintf("# wanduck:      wandog_target=%d.\n", wandog_target);
+		csprintf("# wanduck:      wandog_target=%s.\n", wandog_target);
 		csprintf("# wanduck:  max_disconn_count=%d.\n", max_disconn_count);
 		csprintf("# wanduck:       wandog_delay=%d.\n", wandog_delay);
 		csprintf("# wanduck:      scan_interval=%d.\n", scan_interval);
