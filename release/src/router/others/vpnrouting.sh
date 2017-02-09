@@ -82,7 +82,7 @@ init_table(){
 	ip route flush table $VPN_TBL
 
 # Fill it with copy of existing main table
-	ip route show table main | while read ROUTE
+	ip route show table main | grep -v "tun1" | while read ROUTE # Prevent vpn routes already in table main from being copied
 	do
 		ip route add table $VPN_TBL $ROUTE
 	done
