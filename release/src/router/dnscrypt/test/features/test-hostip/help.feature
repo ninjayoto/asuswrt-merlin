@@ -1,16 +1,16 @@
 Feature: Show help and version for the hostip utility
 
   Display the help when the -h switch is given.
-
+  
   Scenario: start with the -h switch.
-
+  
     When I run `hostip -h`
     Then the output should contain:
     """
     Usage:
     """
     And the exit status should be 0
-
+    
   Scenario: start with the --help switch
 
     When I run `hostip --help`

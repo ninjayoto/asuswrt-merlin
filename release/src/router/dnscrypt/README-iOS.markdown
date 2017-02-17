@@ -20,5 +20,5 @@ change `LocalCache` to `no`.
 4) Reboot or type:
 
     launchctl load org.dnscrypt.osx.DNSCryptProxy.plist
-
+    
 5) Edit your Wifi settings to use `127.0.0.1` as a DNS resolver.

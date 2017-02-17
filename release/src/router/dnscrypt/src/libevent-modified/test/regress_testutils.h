@@ -63,3 +63,4 @@ int regress_get_listener_addr(struct evconnlistener *lev,
     struct sockaddr *sa, ev_socklen_t *socklen);
 
 #endif /* _TESTUTILS_H */
+

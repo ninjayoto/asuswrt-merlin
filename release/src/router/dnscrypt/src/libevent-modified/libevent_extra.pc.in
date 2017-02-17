@@ -13,3 +13,4 @@ Conflicts:
 Libs: -L${libdir} -levent_extra
 Libs.private: @LIBS@
 Cflags: -I${includedir}
+

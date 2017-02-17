@@ -150,7 +150,7 @@ util_ntohl(uint32_t * const xp)
 
     memcpy(p, xp, 4U);
     *xp = (((uint32_t) p[0]) << 24) | (((uint32_t) p[1]) << 16) |
-          (((uint32_t) p[2]) << 16) | (((uint32_t) p[3]));
+          (((uint32_t) p[2]) <<  8) | (((uint32_t) p[3]));
 }
 
 static int
@@ -256,6 +256,8 @@ dcplugin_sync_pre_filter(DCPlugin *dcplugin, DCPluginDNSPacket *dcp_packet)
         fprintf(logging->fp, "PTR\n"); break;
     case 0x0f:
         fprintf(logging->fp, "MX\n"); break;
+    case 0x10:
+        fprintf(logging->fp, "TXT\n"); break;
     case 0x1c:
         fprintf(logging->fp, "AAAA\n"); break;
     case 0x21:

@@ -223,7 +223,7 @@ thread_basic(void *arg)
 			    base->th_notify_fd[0], EV_READ|EV_PERSIST,
 			    notify_fd_cb, NULL);
 			event_add(notification_event, NULL);
-			goto child;
+	 		goto child;
 		}
 
 		event_base_dispatch(base);
@@ -508,3 +508,4 @@ struct testcase_t thread_testcases[] = {
 	TEST(deferred_cb_skew),
 	END_OF_TESTCASES
 };
+

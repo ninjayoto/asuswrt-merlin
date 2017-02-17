@@ -332,12 +332,12 @@ dcplugin_sync_pre_filter(DCPlugin *dcplugin, DCPluginDNSPacket *dcp_packet)
     }
     question = ldns_rr_list_rr(questions, 0U);
     if ((owner_str = ldns_rdf2str(ldns_rr_owner(question))) == NULL) {
-        ldns_pkt_free(query);
+        ldns_pkt_free(query);        
         return DCP_SYNC_FILTER_RESULT_FATAL;
     }
     if (has_matching_domain(forwarder->domains, owner_str) == 0) {
         free(owner_str);
-        ldns_pkt_free(query);
+        ldns_pkt_free(query);        
         return DCP_SYNC_FILTER_RESULT_OK;
     }
     free(owner_str);

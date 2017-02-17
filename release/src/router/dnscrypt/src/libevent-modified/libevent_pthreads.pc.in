@@ -13,3 +13,4 @@ Conflicts:
 Libs: -L${libdir} -levent_pthreads
 Libs.private: @LIBS@ @PTHREAD_LIBS@
 Cflags: -I${includedir} @PTHREAD_CFLAGS@
+

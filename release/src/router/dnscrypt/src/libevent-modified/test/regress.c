@@ -2051,7 +2051,7 @@ test_base_environ(void *arg)
 
 	/* Can we disable the method with EVENT_NOfoo ? */
 	if (!strcmp(defaultname, "epoll (with changelist)")) {
-		setenv("EVENT_NOEPOLL", "1", 1);
+ 		setenv("EVENT_NOEPOLL", "1", 1);
 		ignoreenvname = "epoll";
 	} else {
 		methodname_to_envvar(defaultname, varbuf, sizeof(varbuf));
@@ -2486,3 +2486,4 @@ struct testcase_t signal_testcases[] = {
 #endif
 	END_OF_TESTCASES
 };
+

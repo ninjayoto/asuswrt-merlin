@@ -1313,7 +1313,7 @@ event_persist_closure(struct event_base *base, struct event *ev)
         evcb_arg = ev->ev_arg;
 
 	// Release the lock
-	EVBASE_RELEASE_LOCK(base, th_base_lock);
+ 	EVBASE_RELEASE_LOCK(base, th_base_lock);
 
 	// Execute the callback
         (evcb_callback)(evcb_fd, evcb_res, evcb_arg);

@@ -39,8 +39,8 @@
 #include "util-internal.h"
 #include "evthread-internal.h"
 
-#ifdef _EVENT_HAVE_ARC4RANDOM
 #include <stdlib.h>
+#ifdef _EVENT_HAVE_ARC4RANDOM
 #include <string.h>
 int
 evutil_secure_rng_set_urandom_device_file(char *fname)
@@ -184,3 +184,4 @@ evutil_secure_rng_add_bytes(const char *buf, size_t n)
     (void) n;
 #endif
 }
+

@@ -13,3 +13,4 @@ Conflicts:
 Libs: -L${libdir} -levent_openssl
 Libs.private: @LIBS@ -lssl -lcrypto
 Cflags: -I${includedir}
+

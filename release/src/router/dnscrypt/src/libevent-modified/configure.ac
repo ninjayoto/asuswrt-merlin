@@ -13,6 +13,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_INIT([libevent],[2.0.23-stable])
 AC_CONFIG_SRCDIR([evdns.c])
 AM_INIT_AUTOMAKE
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_HEADERS(config.h)
 AC_DEFINE(NUMERIC_VERSION, 0x02001700, [Numeric representation of the version])
 
@@ -394,7 +395,7 @@ haveselect=no
 if test x$bwin32 != xtrue; then
     AC_CHECK_FUNCS(select, [haveselect=yes], )
     if test "x$haveselect" = "xyes" ; then
-	needsignal=yes
+ 	needsignal=yes
     fi
 fi
 AM_CONDITIONAL(SELECT_BACKEND, [test "x$haveselect" = "xyes"])

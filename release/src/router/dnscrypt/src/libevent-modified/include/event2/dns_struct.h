@@ -77,3 +77,4 @@ struct evdns_server_question {
 #endif
 
 #endif /* _EVENT2_DNS_STRUCT_H_ */
+

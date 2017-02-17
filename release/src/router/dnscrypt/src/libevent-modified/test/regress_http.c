@@ -2412,7 +2412,7 @@ http_uriencode_test(void *ptr)
 	} while (0)
 
 
-	ENC("Hello", "Hello",0);
+      	ENC("Hello", "Hello",0);
 	ENC("99", "99",0);
 	ENC("", "",0);
 	ENC(
@@ -3659,3 +3659,4 @@ struct testcase_t http_testcases[] = {
 
 	END_OF_TESTCASES
 };
+

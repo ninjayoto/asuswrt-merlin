@@ -97,3 +97,4 @@ void event_deferred_cb_queue_init(struct deferred_cb_queue *);
 struct deferred_cb_queue *event_base_get_deferred_cb_queue(struct event_base *);
 
 #endif /* _EVENT_INTERNAL_H_ */
+

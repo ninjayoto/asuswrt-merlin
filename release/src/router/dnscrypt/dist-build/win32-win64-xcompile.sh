@@ -1,9 +1,11 @@
 #! /bin/sh
 
 set -x
+cd $(dirname $(readlink -f "$0"))
 
 setup() {
 
+  pacman -Syu --noconfirm
   pacman -Sy --noconfirm \
     base-devel git libtool autoconf automake \
     mingw-w64-toolchain \
@@ -43,11 +45,11 @@ fetch_src() {
     cd dnscrypt-proxy
     ./autogen.sh
   )
-
+    
 }
 
 compile() {
-
+    
   ARCH_DIR=${BASE_DIR}/${TARGET}
   mkdir -p $ARCH_DIR
 
@@ -109,6 +111,7 @@ compile() {
       --host=$TARGET \
       --bindir="$RELEASE_DIR" \
       --datarootdir="$RELEASE_DIR" \
+      --docdir="${RELEASE_DIR}/doc" \
       --exec-prefix="$RELEASE_DIR" \
       --prefix="$RELEASE_DIR" \
       --sbindir="$RELEASE_DIR" \
@@ -121,6 +124,8 @@ compile() {
     rm -fr ${RELEASE_DIR}/lib
     rm -fr ${RELEASE_DIR}/man
     rm -fr ${RELEASE_DIR}/pkgconfig
+    cp README-WINDOWS.markdown "${RELEASE_DIR}/doc"
+    rm -f "${RELEASE_DIR}/doc/dnscrypt-proxy.conf"
     cp ${DEPS_DIR}/bin/*.dll $RELEASE_DIR
     rm ${RELEASE_DIR}/libtls-*.dll
     rm ${RELEASE_DIR}/libssl-*.dll
@@ -140,12 +145,12 @@ setup
 
 fetch_src
 
-export CFLAGS="-Os -fomit-frame-pointer -m64 -mtune=westmere"
+export CFLAGS="-Os -m64 -mtune=westmere"
 export LDFLAGS="-mtune=westmere -static-libgcc -Wl,--dynamicbase -Wl,--high-entropy-va -Wl,--nxcompat -static-libgcc"
 export TARGET=x86_64-w64-mingw32
 compile dnscrypt-proxy-win64
 
-export CFLAGS="-Os -fomit-frame-pointer -m32 -march=pentium3 -mtune=core2"
+export CFLAGS="-Os -m32 -march=pentium3 -mtune=core2"
 export LDFLAGS="-march=pentium3 -static-libgcc -Wl,--dynamicbase -Wl,--nxcompat -static-libgcc"
 export TARGET=i686-w64-mingw32
 compile dnscrypt-proxy-win32

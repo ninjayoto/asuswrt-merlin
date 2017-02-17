@@ -1091,3 +1091,4 @@ struct testcase_t util_testcases[] = {
 #endif
 	END_OF_TESTCASES,
 };
+
