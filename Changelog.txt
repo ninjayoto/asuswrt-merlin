@@ -4,6 +4,17 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23BDj9527  (16-February-2017)
+* CHANGED: dnscrypt: update to 1.9.4
+* CHANGED: dnscrypt: update resolvers csv to 13 Feb 2017 version
+* CHANGED: defaults: remove deprecated lan_invalid_enable
+* CHANGED: v6hosts: prevent ping test fail during dnsmasq start
+* FIXED: samba-arm: security update for CVE-2015-5252; insufficient symlink verification in smbd
+* FIXED: samba-arm: security update for CVE-2012-0870; remote code execution vulnerability in smbd
+* FIXED: samba-mips: security update for CVE-2015-5252; insufficient symlink verification in smbd
+* FIXED: samba-mips: security update for CVE-2012-0870; remote code execution vulnerability in smbd
+
+
 374.43_2-23BCj9527  (9-February-2017)
 * CHANGED: openvpn: increase wait time for time sync complete to accomodate dualwan
 * FIXED: vpnrouting: prevent vpn routes already in table main from being copied to vpn table
