@@ -32,7 +32,8 @@ echo "$(date) $1 $2 '$4' '$DNSMASQ_SUPPLIED_HOSTNAME' '$DNSMASQ_OLD_HOSTNAME' ($
 
 DEL_NEEDED=0
 if grep -qi  " ${HNAME}" "$V6HOSTS"; then
-    if ping6 -q -c 1 -w 6 $HNAME; then
+    v6addr=$(grep -i " ${HNAME}" "$V6HOSTS" | awk '{ print $1 }')
+    if ping -6 -q -c 1 -W 6 $v6addr; then
         echo "$(date) known name, valid addr $HNAME" >> "$LOGA"
         exit 0
     else
@@ -68,7 +69,7 @@ else
     exit 1
 fi
 
-ping6 -q -c 1 -w 6 $V6ADDR > /tmp/ping
+ping -6 -q -c 1 -W 6 $V6ADDR > /tmp/ping
 
 if ip -6 neigh | grep -qi "$V6ADDR .* lladdr $2"; then
     if [ $DEL_NEEDED -eq 1 ]; then
@@ -92,7 +93,7 @@ if ip -6 neigh | grep -qi "$V6ADDR .* lladdr $2"; then
 	fi
     fi
 else
-    echo "$(date) no ping response from $V6ADDR  $HNAME" >> "$LOGA"
+    echo "$(date) no ping response from $V6ADDR $HNAME" >> "$LOGA"
 fi
 
 exit
