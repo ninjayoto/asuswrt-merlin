@@ -1711,7 +1711,7 @@ void hotplug_usb(void)
 				if (mount_partition(devname, host, NULL, device, EFH_HP_ADD)) {
 _dprintf("restart_nas_services(%d): test 5.\n", getpid());
 					//restart_nas_services(1, 1); // restart all NAS applications
-					notify_rc_and_wait("restart_nasapps");
+					notify_rc_and_period_wait("restart_nasapps", 30);
 				}
 				TRACE_PT(" end of mount\n");
 			}
