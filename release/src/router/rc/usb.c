@@ -3248,12 +3248,12 @@ static void start_diskscan(int usb_port)
 
 	memset(usbport, 0, 4);
 	if(usb_port == -1){
-		port_num = atoi(usbport);
 		sprintf(usbport, "%s", nvram_safe_get("diskmon_usbport"));
+		port_num = atoi(usbport);
 	}
 	else{
+		sprintf(usbport, "%d", usb_port);
 		port_num = usb_port;
-		sprintf(usbport, "%d", port_num);
 	}
 
 	disk_list = read_disk_data();
