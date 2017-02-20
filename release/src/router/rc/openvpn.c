@@ -1809,7 +1809,7 @@ void write_vpn_dnsmasq_config(FILE* f)
 	char nv[16];
 	char buf[24];
 	char *pos, ch;
-	int cur, ch2;
+	int cur, ch2, adns;
 	DIR *dir;
 	struct dirent *file;
 	FILE *dnsf;
@@ -1839,14 +1839,15 @@ void write_vpn_dnsmasq_config(FILE* f)
 			{
 				vpnlog(VPN_LOG_EXTRA, "Checking ADNS settings for client %d", cur);
 				snprintf(&buf[0], sizeof(buf), "vpn_client%d_adns", cur);
-				if ( nvram_get_int(&buf[0]) == 2 )
+				adns = nvram_get_int(&buf[0]);
+				if ( adns == 2 )
 				{
 					vpnlog(VPN_LOG_INFO, "Adding strict-order to dnsmasq config for client %d", cur);
 					fprintf(f, "strict-order\n");
 					break;
 				}
 #ifdef RTCONFIG_DNSCRYPT
-				if ( nvram_get_int(&buf[0]) == 4 )
+				if ( adns == 4 )
 				{
 					if (nvram_match("dnscrypt_proxy", "1")) {
 						vpnlog(VPN_LOG_INFO, "Setting DNSCRYPT server to dnsmasq config for client %d", cur);
@@ -1921,20 +1922,20 @@ void write_vpn_dnsmasq_config(FILE* f)
 #endif
 }
 
-int write_vpn_resolv(FILE* f)
+int get_dnslevel()
 {
 	DIR *dir;
 	struct dirent *file;
 	char *fn, ch, num, buf[24];
 	FILE *dnsf;
-	int strictlevel = 0, ch2, level;
+	int strictlevel = 0, level;
 
 	if ( chdir("/etc/openvpn/dns") )
 		return 0;
 
 	dir = opendir("/etc/openvpn/dns");
 
-	vpnlog(VPN_LOG_EXTRA, "Adding DNS entries...");
+	vpnlog(VPN_LOG_EXTRA, "Getting max DNS level...");
 	while ( (file = readdir(dir)) != NULL )
 	{
 		fn = file->d_name;
@@ -1951,7 +1952,39 @@ int write_vpn_resolv(FILE* f)
 			// will override a relaxed client.
 			if( level > strictlevel)
 				strictlevel = level;
+		}
+	}
 
+	closedir(dir);
+
+	return strictlevel;
+}
+
+
+
+int write_vpn_resolv(FILE* f)
+{
+	DIR *dir;
+	struct dirent *file;
+	char *fn, ch, num;
+	FILE *dnsf;
+	int ch2;
+
+	if ( chdir("/etc/openvpn/dns") )
+		return 0;
+
+	dir = opendir("/etc/openvpn/dns");
+
+	vpnlog(VPN_LOG_EXTRA, "Adding DNS entries...");
+	while ( (file = readdir(dir)) != NULL )
+	{
+		fn = file->d_name;
+
+		if ( fn[0] == '.' )
+			continue;
+
+		if ( sscanf(fn, "client%c.resol%c", &num, &ch) == 2 )
+		{
 			if ( (dnsf = fopen(fn, "r")) == NULL )
 				continue;
 
@@ -1971,7 +2004,7 @@ int write_vpn_resolv(FILE* f)
 
 	closedir(dir);
 
-	return strictlevel;
+	return 1;
 }
 
 void create_openvpn_passwd()

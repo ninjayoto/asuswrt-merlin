@@ -681,6 +681,7 @@ extern void stop_vpn_eas(void);
 extern void run_vpn_firewall_scripts();
 extern void write_vpn_dnsmasq_config(FILE*);
 extern int write_vpn_resolv(FILE*);
+extern int get_dnslevel(void);
 extern void create_openvpn_passwd();
 extern int check_ovpn_server_enabled(int unit);
 extern int check_ovpn_client_enabled(int unit);
