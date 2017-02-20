@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23BFj9527  (20-February-2017)
+* NEW: openvpn: add nvram option to force reverse strict
+* CHANGED: openvpn: show dnsfilter message if active for WAN client option
+* FIXED: usb: fix manual disk scan w/usb hub
+
+
+374.43_2-23BEj9527  (19-February-2017)
+* FIXED: usb: increase wait time for rc restart_nasapps
+
+
 374.43_2-23BDj9527  (16-February-2017)
 * CHANGED: dnscrypt: update to 1.9.4
 * CHANGED: dnscrypt: update resolvers csv to 13 Feb 2017 version
