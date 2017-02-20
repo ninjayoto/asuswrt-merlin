@@ -325,6 +325,7 @@ function update_visibility(){
 	adns = document.form.vpn_client_adns.value;
 	ncp = document.form.vpn_client_ncp_enable.value;
 	dnsf = document.form.dnsfilter_enable_x.value;
+	rstrict = document.form.vpn_reverse_strict.value;
 
 	showhide("client_userauth", (auth == "tls"));
 	showhide("client_hmac", (auth == "tls"));
@@ -381,15 +382,20 @@ function update_visibility(){
 			showhide("dnscrypt_opt", false);
 
 		if ((!allow_routelocal || dnscrypt_ipv6 == 1 || adns == 1 || adns == 2) && dnscrypt_proxy == 1) {
-			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;(DNSCrypt unavailable)";
+			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;&nbsp;(DNSCrypt unavailable)";
 			showhide("dnscrypt_opt", true);
 		}
 
-		if (dnsf == 1 && (adns == 3 || adns == 4)) {
+		if (dnsf == 1) {
 			showhide("enable_dns_span", false);
 			showhide("dnscrypt_opt", false);
 			showhide("dnsfilter_opt", true);
 		}
+	}
+
+	if (rstrict == 1 && adns == 2) {
+		showhide("dnscrypt_opt", true);
+		$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;&nbsp;Reverse Strict set";
 	}
 
 // Since instancing certs/keys would waste many KBs of nvram,
@@ -887,6 +893,7 @@ function defaultSettings() {
 <input type="hidden" name="vpn_client_local" value="<% nvram_get("vpn_client_local"); %>">
 <input type="hidden" name="vpn_client_clientlist" value="<% nvram_clean_get("vpn_client_clientlist"); %>">
 <input type="hidden" name="dnsfilter_enable_x" value="<% nvram_get("dnsfilter_enable_x"); %>">
+<input type="hidden" name="vpn_reverse_strict" value="<% nvram_get("vpn_reverse_strict"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -1143,7 +1150,7 @@ function defaultSettings() {
 							</select>
 							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;">WAN clients use</input></span>
 							<span id="dnscrypt_opt">Unknown</span>
-							<span id="dnsfilter_opt" style="margin-left:20px;">Clients use DNSFilter options</span>
+							<span id="dnsfilter_opt">&nbsp;&nbsp;Clients use DNSFilter</span>
 			   			</td>
 					</tr>
 
