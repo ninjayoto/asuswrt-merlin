@@ -324,6 +324,7 @@ function update_visibility(){
 	useronly = userauth && getRadioValue(document.form.vpn_client_useronly);
 	adns = document.form.vpn_client_adns.value;
 	ncp = document.form.vpn_client_ncp_enable.value;
+	dnsf = document.form.dnsfilter_enable_x.value;
 
 	showhide("client_userauth", (auth == "tls"));
 	showhide("client_hmac", (auth == "tls"));
@@ -360,8 +361,10 @@ function update_visibility(){
 	showhide("ncp_ciphers", ((ncp > 0) && (auth == "tls")));
 
 	showhide("dnscrypt_adns", (dnscrypt_proxy == 1));
-	showhide("enable_dns_span", (adns >= 3 && rgw == 2));
-	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2));
+	showhide("enable_dns_span", (adns >= 3 && rgw == 2 && dnsf == 0));
+	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2 && dnsf == 0));
+	showhide("dnsfilter_opt", (adns >= 3 && rgw == 2 && dnsf == 1));
+
 	if (rgw == 2) {
 		$('dnscrypt_opt').innerHTML = "";
 		if (adns == 3) {
@@ -380,6 +383,12 @@ function update_visibility(){
 		if ((!allow_routelocal || dnscrypt_ipv6 == 1 || adns == 1 || adns == 2) && dnscrypt_proxy == 1) {
 			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;(DNSCrypt unavailable)";
 			showhide("dnscrypt_opt", true);
+		}
+
+		if (dnsf == 1 && (adns == 3 || adns == 4)) {
+			showhide("enable_dns_span", false);
+			showhide("dnscrypt_opt", false);
+			showhide("dnsfilter_opt", true);
 		}
 	}
 
@@ -520,7 +529,7 @@ function applyRule(){
 	     (!service_state))
 		document.form.action_script.value += "start_vpnrouting"+openvpn_unit;
 
-	document.form.vpn_dns_mode.value = ((document.form.vpn_client_adns.value >= 3 && document.form.vpn_client_rgw.value == 2) ? ((document.form.enable_dns_ckb.checked) ? 1 : 0) : 0);
+	document.form.vpn_dns_mode.value = ((document.form.vpn_client_adns.value >= 3 && document.form.vpn_client_rgw.value == 2 && document.form.dnsfilter_enable_x.value == 0) ? ((document.form.enable_dns_ckb.checked) ? 1 : 0) : 0);
 
 	$("vpn_client_password").type = "text"; // workaround for password save prompt in firefox
 
@@ -877,6 +886,7 @@ function defaultSettings() {
 <input type="hidden" name="vpn_client_if" value="<% nvram_get("vpn_client_if"); %>">
 <input type="hidden" name="vpn_client_local" value="<% nvram_get("vpn_client_local"); %>">
 <input type="hidden" name="vpn_client_clientlist" value="<% nvram_clean_get("vpn_client_clientlist"); %>">
+<input type="hidden" name="dnsfilter_enable_x" value="<% nvram_get("dnsfilter_enable_x"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -1133,6 +1143,7 @@ function defaultSettings() {
 							</select>
 							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;">WAN clients use</input></span>
 							<span id="dnscrypt_opt">Unknown</span>
+							<span id="dnsfilter_opt" style="margin-left:20px;">Clients use DNSFilter options</span>
 			   			</td>
 					</tr>
 
