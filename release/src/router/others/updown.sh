@@ -7,6 +7,7 @@ dnsscript=$(echo /etc/openvpn/fw/$(echo $dev)-dns\.sh | sed 's/\(tun\|tap\)1/cli
 fileexists=
 instance=$(echo $dev | sed "s/tun1//;s/tun2*/0/")
 lan_if=$(nvram get lan_ifname)
+lan_ip=$(nvram get lan_ipaddr)
 dnscrypt_port=$(nvram get dnscrypt1_port)
 vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
 vpn_allow_ipv6=$(nvram get vpn_allow_ipv6); if [ "$vpn_allow_ipv6" == "" ]; then vpn_allow_ipv6=0; fi
@@ -28,6 +29,12 @@ then
 	ISPserver=$(nvram get wan0_dns | awk -F" " '{ print $1; }')
 else
 	ISPserver=$(nvram get wan0_dns1_x)
+fi
+
+# Assume if DNS server and router address first octet are the same the DNS server is local
+if [ ${ISPserver%%.*} == ${lan_ip%%.*} -a $allow_routelocal == 1 ]
+then
+	echo 1 > /proc/sys/net/ipv4/conf/br0/route_localnet
 fi
 
 # Override if DNSCRYPT is active and exclusive
