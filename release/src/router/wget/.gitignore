@@ -2,9 +2,8 @@ src/*.o
 autom4te.cache
 config.log
 config.status
-doc/*
-doc
-lib/
+#doc/
+#lib/
 md5/
 po/
 src/.deps/
@@ -14,10 +13,11 @@ src/config.h
 src/stamp-h1
 src/version.c
 src/wget
-tests/
-util/
+#tests/
+#util/
+msdos/
 windows/
-m4/*
+#m4/*
 INSTALL
 Makefile
 Makefile.in
