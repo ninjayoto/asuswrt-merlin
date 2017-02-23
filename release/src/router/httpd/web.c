@@ -1856,7 +1856,8 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 		}
 	}
 	else if(!strcmp(apiName, "portforward")){
-		char *name, *rport, *lip, *lport, *proto;
+		char *name, *rport, *srcip, *lip, *lport, *proto;
+		int cnt;
 
 		if(!strcmp(apiAction, "enable")){
 			if(nvram_match("vts_enable_x", "0")){
@@ -1878,6 +1879,7 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 			webVar_3 = websGetVar(wp, "lip", "");
 			webVar_4 = websGetVar(wp, "lport", "");
 			webVar_5 = websGetVar(wp, "proto", "");
+			webVar_6 = websGetVar(wp, "src", "");
 
 			if(!strcmp(webVar_1, "") || !strcmp(webVar_2, "") || !strcmp(webVar_3, "") ||
 			   !strcmp(webVar_4, "") || !strcmp(webVar_5, "")){
@@ -1903,11 +1905,14 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 				g = buf = strdup(nvram_safe_get("vts_rulelist"));
 				while (g) {
 					if ((p = strsep(&g, "<")) == NULL) break;
-					if((vstrsep(p, ">", &name, &rport, &lip, &lport, &proto)) != 5) continue;
+					if ((cnt = vstrsep(p, ">", &name, &rport, &lip, &lport, &proto, &srcip)) < 5)
+						continue;
+					else if (cnt < 6)
+						srcip = "";
 
 					if(!strcmp(webVar_1, name) && !strcmp(webVar_2, rport) &&
 					   !strcmp(webVar_3, lip) && !strcmp(webVar_4, lport) &&
-					   !strcmp(webVar_5, proto)
+					   !strcmp(webVar_5, proto) && !strcmp(webVar_6, srcip)
 					){
 						retStatus = 1;
 						break;
@@ -1926,6 +1931,8 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 					strcat(nvramTmp, webVar_4);
 					strcat(nvramTmp, ">");
 					strcat(nvramTmp, webVar_5);
+					strcat(nvramTmp, ">");
+					strcat(nvramTmp, webVar_6);
 
 					nvram_set("vts_rulelist", nvramTmp);
 					nvram_commit();
@@ -1939,6 +1946,7 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 			webVar_3 = websGetVar(wp, "lip", "");
 			webVar_4 = websGetVar(wp, "lport", "");
 			webVar_5 = websGetVar(wp, "proto", "");
+			webVar_6 = websGetVar(wp, "src", "");
 
 			if(!strcmp(webVar_1, "") && !strcmp(webVar_2, "") && !strcmp(webVar_3, "") &&
 			   !strcmp(webVar_4, "") && !strcmp(webVar_5, "")){
@@ -1949,11 +1957,14 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 				g = buf = strdup(nvram_safe_get("vts_rulelist"));
 				while (g) {
 					if ((p = strsep(&g, "<")) == NULL) break;
-					if((vstrsep(p, ">", &name, &rport, &lip, &lport, &proto)) != 5) continue;
+					if ((cnt = vstrsep(p, ">", &name, &rport, &lip, &lport, &proto, &srcip)) < 5)
+						continue;
+					else if (cnt < 6)
+						srcip = "";
 
 					if(!strcmp(webVar_1, name) && !strcmp(webVar_2, rport) &&
 					   !strcmp(webVar_3, lip) && !strcmp(webVar_4, lport) &&
-					   !strcmp(webVar_5, proto)
+					   !strcmp(webVar_5, proto) && !strcmp(webVar_6, srcip)
 					){
 						retStatus = 0;
 						continue;
@@ -1969,6 +1980,8 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 						strcat(nvramTmp, lport);
 						strcat(nvramTmp, ">");
 						strcat(nvramTmp, proto);
+						strcat(nvramTmp, ">");
+						strcat(nvramTmp, srcip);
 					}
 				}
 
@@ -1984,7 +1997,10 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 			strcat(retList, "<list>\n");
 			while (g) {
 				if ((p = strsep(&g, "<")) == NULL) break;
-				if((vstrsep(p, ">", &name, &rport, &lip, &lport, &proto)) != 5) continue;
+				if ((cnt = vstrsep(p, ">", &name, &rport, &lip, &lport, &proto, &srcip)) < 5)
+					continue;
+				else if (cnt < 6)
+					srcip = "";
 
 				strcat(retList, "<item>\n");
 				sprintf(strTmp, "<name>%s</name>\n", name);
@@ -1996,6 +2012,8 @@ static int ej_set_variables(int eid, webs_t wp, int argc, char_t **argv) {
 				sprintf(strTmp, "<lport>%s</lport>\n", lport);
 				strcat(retList, strTmp);
 				sprintf(strTmp, "<proto>%s</proto>\n", proto);
+				strcat(retList, strTmp);
+				sprintf(strTmp, "<src>%s</src>\n", srcip);
 				strcat(retList, strTmp);
 				strcat(retList, "</item>\n");
 			}
@@ -9727,8 +9745,8 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 	char *nat_argv[] = {"iptables", "-t", "nat", "-nxL", NULL};
 	char line[256], tmp[256];
 	char target[16], proto[16];
-	char src[sizeof("255.255.255.255")];
-	char dst[sizeof("255.255.255.255")];
+	char src[19];
+	char dst[19];
 	char *range, *host, *port, *ptr, *val;
 	int ret = 0;
 	char chain[16];
@@ -9738,7 +9756,8 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 
 	ret += websWrite(wp,
 #ifdef NATSRC_SUPPORT
-		"Source          "
+		"Source             "
+/*		 255.255.255.255/32 */
 #endif
 		"Destination     Proto. Port range  Redirect to     Local port  Chain\n");
 	/*	 255.255.255.255 other  65535:65535 255.255.255.255 65535:65535 VUPNP*/
@@ -9761,10 +9780,10 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 		    "%15s%*[ \t]"		// target
 		    "%15s%*[ \t]"		// prot
 		    "%*s%*[ \t]"		// opt
-		    "%15[^/]/%*d%*[ \t]"	// source
-		    "%15[^/]/%*d%*[ \t]"	// destination
+		    "%18s%*[ \t]"		// source
+		    "%18s%*[ \t]"		// destination
 		    "%255[^\n]",		// options
-		    target, proto, src, dst, tmp) < 4) continue;
+		    target, proto, src, dst, tmp) < 5) continue;
 
 		/* TODO: add port trigger, portmap, etc support */
 		if (strcmp(target, "DNAT") != 0)
@@ -9783,11 +9802,11 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 			*ptr = toupper(*ptr);
 #ifdef NATSRC_SUPPORT
 		/* parse source */
-		if (strcmp(src, "0.0.0.0") == 0)
+		if (strcmp(src, "0.0.0.0/0") == 0)
 			strcpy(src, "ALL");
 #endif
 		/* parse destination */
-		if (strcmp(dst, "0.0.0.0") == 0)
+		if (strcmp(dst, "0.0.0.0/0") == 0)
 			strcpy(dst, "ALL");
 
 		/* parse options */
@@ -9806,7 +9825,7 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 
 		ret += websWrite(wp,
 #ifdef NATSRC_SUPPORT
-			"%-15s "
+			"%-18s "
 #endif
 			"%-15s %-6s %-11s %-15s %-11s %-15s\n",
 #ifdef NATSRC_SUPPORT

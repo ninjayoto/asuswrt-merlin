@@ -43,6 +43,11 @@
 #define WEBSTRFILTER 1
 #define CONTENTFILTER 1
 
+/* addr types */
+#define TYPE_IP      0
+#define TYPE_MAC     1
+#define TYPE_IPRANGE 2
+
 #define foreach_x(x)	for (i=0; i<nvram_get_int(x); i++)
 
 #ifdef RTCONFIG_IPV6
@@ -197,6 +202,51 @@ void nvram_unsets(char *name, int count)
 	}
 }
 */
+
+static int addr_type_parse(const char *src, char *dst, int size)
+{
+	char addr[100], *next = addr;
+	struct in_addr min_addr, max_addr;
+	int c;
+
+	if (!src || *src == '\0' || strcmp(src, "ALL") == 0)
+		return -1;
+
+	/* XX:XX:XX:XX:XX:XX */
+	if (sscanf(src, "%2x:%2x:%2x:%2x:%2x:%2x", &c, &c, &c, &c, &c, &c) == 6) {
+		strlcpy(dst, src, size);
+		return TYPE_MAC;
+	}
+
+	strlcpy(addr, src, sizeof(addr));
+
+	/* 0.0.0.0-255
+	 * 0.0.0.0-255.255.255.255 */
+	next = addr, strsep(&next, "-");
+	if (next && *next) {
+		min_addr.s_addr = inet_addr_(addr);
+		max_addr.s_addr = (strchr(next, '.') != NULL) ? inet_addr_(next) :
+			(min_addr.s_addr & htonl(0xffffff00)) | htonl(atoi(next) & 0xff);
+		if (min_addr.s_addr == max_addr.s_addr &&
+		    min_addr.s_addr == INADDR_ANY)
+			return -1;
+		if (ntohl(min_addr.s_addr) > ntohl(max_addr.s_addr))
+			return -1;
+
+		strlcpy(addr, inet_ntoa(min_addr), sizeof(addr));
+		snprintf(dst, size, "%s-%s", addr, inet_ntoa(max_addr));
+		return TYPE_IPRANGE;
+	}
+
+	/* 255.255.255.255
+	 * 255.255.255.255/32 */
+	next = addr, strsep(&next, "/");
+	if (inet_addr_(addr) == INADDR_ANY)
+		return -1;
+
+	strlcpy(dst, src, size);
+	return TYPE_IP;
+}
 
 char *proto_conv(char *proto, char *buf)
 {
@@ -1062,10 +1112,12 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 	char lan_class[32];     // oleg patch
 	int wan_port;
 	char dstips[64];
-	char *proto, *protono, *port, *lport, *dstip, *desc;
+	char srcips[64];
+	char *proto, *protono, *port, *lport, *dstip, *srcip, *desc;
 	char *nv, *nvp, *b;
 	char name[PATH_MAX];
 	int wan_unit;
+	int cnt;
 
 	sprintf(name, "%s_%s_%s", NAT_RULES, wan_if, wanx_if);
 	remove_slash(name + strlen(NAT_RULES));
@@ -1167,8 +1219,23 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 		while (nv && (b = strsep(&nvp, "<")) != NULL) {
 			char *portv, *portp, *c;
 
-			if ((vstrsep(b, ">", &desc, &port, &dstip, &lport, &proto) != 5))
+			if ((cnt = vstrsep(b, ">", &desc, &port, &dstip, &lport, &proto, &srcip)) < 5)
 				continue;
+			else if (cnt < 6)
+				srcip = "";
+
+			// Handle source type format
+			srcips[0] = '\0';
+			if (srcip && *srcip) {
+				char srcAddr[32];
+				int src_type = addr_type_parse(srcip, srcAddr, sizeof(srcAddr));
+				if (src_type == TYPE_IP)
+					snprintf(srcips, sizeof(srcips), "-s %s", srcAddr);
+				else if (src_type == TYPE_MAC)
+					snprintf(srcips, sizeof(srcips), "-m mac --mac-source %s", srcAddr);
+				else if (src_type == TYPE_IPRANGE)
+					snprintf(srcips, sizeof(srcips), "-m iprange --src-range %s", srcAddr);
+			}
 
 			// Handle port1,port2,port3 format
 			portp = portv = strdup(port);
@@ -1178,19 +1245,19 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 				else
 					snprintf(dstips, sizeof(dstips), "--to %s", dstip);
 
-				if (strcmp(proto, "TCP") == 0 || strcmp(proto, "BOTH") == 0){
-					fprintf(fp, "-A VSERVER -p tcp -m tcp --dport %s -j DNAT %s\n", c, dstips);
-
-					if(!strcmp(c, "21") && local_ftpport != 0 && local_ftpport != 21)
-						fprintf(fp, "-A VSERVER -p tcp -m tcp --dport %d -j DNAT --to-destination %s:21\n", local_ftpport, nvram_safe_get("lan_ipaddr"));
+				if (strcmp(proto, "TCP") == 0 || strcmp(proto, "BOTH") == 0) {
+					fprintf(fp, "-A VSERVER %s -p tcp -m tcp --dport %s -j DNAT %s\n", srcips, c, dstips);
+					if (local_ftpport != 0 && local_ftpport != 21 && atoi(c) == 21)
+						fprintf(fp, "-A VSERVER %s -p tcp -m tcp --dport %d -j DNAT --to-destination %s:21\n", srcips, local_ftpport, lan_ip);
 				}
 				if (strcmp(proto, "UDP") == 0 || strcmp(proto, "BOTH") == 0)
-					fprintf(fp, "-A VSERVER -p udp -m udp --dport %s -j DNAT %s\n", c, dstips);
+					fprintf(fp, "-A VSERVER %s -p udp -m udp --dport %s -j DNAT %s\n", srcips, c, dstips);
 				// Handle raw protocol in port field, no val1:val2 allowed
 				if (strcmp(proto, "OTHER") == 0) {
 					protono = strsep(&c, ":");
-					fprintf(fp, "-A VSERVER -p %s -j DNAT --to %s\n", protono, dstip);
+					fprintf(fp, "-A VSERVER %s -p %s -j DNAT --to %s\n", srcips, protono, dstip);
 				}
+
 			}
 			free(portv);
 		}
@@ -1302,11 +1369,13 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 	char lan_class[32];     // oleg patch
 	int wan_port;
 	char dstips[64];
-	char *proto, *protono, *port, *lport, *dstip, *desc;
+	char srcips[64];
+	char *proto, *protono, *port, *lport, *dstip, *srcip, *desc;
 	char *nv, *nvp, *b;
 	char *wan_if, *wan_ip;
 	char *wanx_if, *wanx_ip;
 	int unit;
+	int cnt;
 	char tmp[100], prefix[] = "wanXXXXXXXXXX_";
 	char name[PATH_MAX];
 
@@ -1422,8 +1491,23 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 		while (nv && (b = strsep(&nvp, "<")) != NULL) {
 			char *portv, *portp, *c;
 
-			if ((vstrsep(b, ">", &desc, &port, &dstip, &lport, &proto) != 5))
+			if ((cnt = vstrsep(b, ">", &desc, &port, &dstip, &lport, &proto, &srcip)) < 5)
 				continue;
+			else if (cnt < 6)
+				srcip = "";
+
+			// Handle source type format
+			srcips[0] = '\0';
+			if (srcip && *srcip) {
+				char srcAddr[32];
+				int src_type = addr_type_parse(srcip, srcAddr, sizeof(srcAddr));
+				if (src_type == TYPE_IP)
+					snprintf(srcips, sizeof(srcips), "-s %s", srcAddr);
+				else if (src_type == TYPE_MAC)
+					snprintf(srcips, sizeof(srcips), "-m mac --mac-source %s", srcAddr);
+				else if (src_type == TYPE_IPRANGE)
+					snprintf(srcips, sizeof(srcips), "-m iprange --src-range %s", srcAddr);
+			}
 
 			// Handle port1,port2,port3 format
 			portp = portv = strdup(port);
@@ -1433,19 +1517,19 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 				else
 					snprintf(dstips, sizeof(dstips), "--to %s", dstip);
 
-				if (strcmp(proto, "TCP") == 0 || strcmp(proto, "BOTH") == 0){
-					fprintf(fp, "-A VSERVER -p tcp -m tcp --dport %s -j DNAT %s\n", c, dstips);
-
-					if(!strcmp(c, "21") && local_ftpport != 0 && local_ftpport != 21)
-						fprintf(fp, "-A VSERVER -p tcp -m tcp --dport %d -j DNAT --to-destination %s:21\n", local_ftpport, nvram_safe_get("lan_ipaddr"));
+				if (strcmp(proto, "TCP") == 0 || strcmp(proto, "BOTH") == 0) {
+					fprintf(fp, "-A VSERVER %s -p tcp -m tcp --dport %s -j DNAT %s\n", srcips, c, dstips);
+					if (local_ftpport != 0 && local_ftpport != 21 && atoi(c) == 21)
+						fprintf(fp, "-A VSERVER %s -p tcp -m tcp --dport %d -j DNAT --to-destination %s:21\n", srcips, local_ftpport, lan_ip);
 				}
 				if (strcmp(proto, "UDP") == 0 || strcmp(proto, "BOTH") == 0)
-					fprintf(fp, "-A VSERVER -p udp -m udp --dport %s -j DNAT %s\n", c, dstips);
+					fprintf(fp, "-A VSERVER %s -p udp -m udp --dport %s -j DNAT %s\n", srcips, c, dstips);
 				// Handle raw protocol in port field, no val1:val2 allowed
 				if (strcmp(proto, "OTHER") == 0) {
 					protono = strsep(&c, ":");
-					fprintf(fp, "-A VSERVER -p %s -j DNAT --to %s\n", protono, dstip);
+					fprintf(fp, "-A VSERVER %s -p %s -j DNAT --to %s\n", srcips, protono, dstip);
 				}
+
 			}
 			free(portv);
 		}
@@ -1981,13 +2065,16 @@ err:
 
 int ruleHasFTPport(void)
 {
-	char *nvp = NULL, *nv = NULL, *b = NULL, *desc = NULL, *port = NULL, *dstip = NULL, *lport = NULL, *proto = NULL;
+	char *nvp = NULL, *nv = NULL, *b = NULL, *desc = NULL, *port = NULL, *dstip = NULL, *srcip = NULL, *lport = NULL, *proto = NULL;
 	char *portv, *portp, *c;
+	int cnt;
 
 	nvp = nv = strdup(nvram_safe_get("vts_rulelist"));
 	while(nv && (b = strsep(&nvp, "<")) != NULL){
-		if((vstrsep(b, ">", &desc, &port, &dstip, &lport, &proto) != 5))
+		if ((cnt = vstrsep(b, ">", &desc, &port, &dstip, &lport, &proto, &srcip)) < 5)
 			continue;
+		else if (cnt < 6)
+			srcip = "";
 
 #if 0
 		if(strstr(port, "21"))
