@@ -1110,6 +1110,10 @@ void start_vpnserver(int serverNum)
 			fprintf(fp, "ca ca.crt\n");
 		//sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
 		//if ( !nvram_is_empty(&buffer[0]) )
+		sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
+		if ( !strncmp(get_parsed_crt(&buffer[0], buffer2), "none", 4))
+			fprintf(fp, "dh none\n");
+		else
 			fprintf(fp, "dh dh.pem\n");
 		//sprintf(&buffer[0], "vpn_crt_server%d_crt", serverNum);
 		//if ( !nvram_is_empty(&buffer[0]) )
@@ -1364,24 +1368,27 @@ void start_vpnserver(int serverNum)
 
 			// Validate dh strength
 			valid = 1;      // Tentative state
-			vpnlog(VPN_LOG_EXTRA,"Start dh length check");
-			sprintf(&buffer[0], "/usr/sbin/openssl dhparam -in /etc/openvpn/server%d/dh.pem -text | grep \"DH Parameters:\" > /tmp/dhtest.txt", serverNum);
-			system(&buffer[0]);
-			ret = f_read_string("/tmp/dhtest.txt", &buffer[0], 64);
 
-			if(ret) {
-				if (sscanf(strstr(&buffer[0],"DH Parameters"),"DH Parameters: (%d bit)", &i)) {
-					if (i < 1024) {
-						valid = 0;      // Not valid after all, must regenerate
-						logmessage("openvpn", "WARNING: DH for server %d is too weak (%d bit, must be at least 1024 bit)", serverNum, i);
-						logmessage("openvpn", "INFO: Server %d using a pre-generated 2048-bit DH PEM", serverNum);
-					} else {
-						vpnlog(VPN_LOG_EXTRA,"Valid dh >= 1024 bits found");
+			if (strncmp(buffer2, "none", 4)) {	// If not set to "none" then validate it
+				vpnlog(VPN_LOG_EXTRA,"Start dh length check");
+				sprintf(&buffer[0], "/usr/sbin/openssl dhparam -in /etc/openvpn/server%d/dh.pem -text | grep \"DH Parameters:\" > /tmp/dhtest.txt", serverNum);
+				system(&buffer[0]);
+				ret = f_read_string("/tmp/dhtest.txt", &buffer[0], 64);
+
+				if(ret) {
+					if (sscanf(strstr(&buffer[0],"DH Parameters"),"DH Parameters: (%d bit)", &i)) {
+						if (i < 1024) {
+							valid = 0;      // Not valid after all, must regenerate
+							logmessage("openvpn", "WARNING: DH for server %d is too weak (%d bit, must be at least 1024 bit)", serverNum, i);
+							logmessage("openvpn", "INFO: Server %d using a pre-generated 2048-bit DH PEM", serverNum);
+						} else {
+							vpnlog(VPN_LOG_EXTRA,"Valid dh >= 1024 bits found");
+						}
 					}
+				} else {
+					valid = 0;
+					vpnlog(VPN_LOG_EXTRA,"Error testing dh length!");
 				}
-			} else {
-				valid = 0;
-				vpnlog(VPN_LOG_EXTRA,"Error testing dh length!");
 			}
 		}
 
