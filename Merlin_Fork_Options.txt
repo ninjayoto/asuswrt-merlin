@@ -278,7 +278,7 @@ Set preferred interface for bandwidth limiter
 
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set qos_iface=[iface]
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-17
@@ -291,7 +291,7 @@ Use alternate NAT Loopback implementation (ASUS)
 
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set fw_nat_loopback=1
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-17
@@ -307,7 +307,7 @@ Ability to disable DNSSEC permissive mode
 
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set dnssec_check_unsigned=1
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-17
@@ -320,7 +320,7 @@ Ability to enable DFS channels for N66U EU routers
 
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set wl_dfs_enable=1
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	N66U/R/W
 	Released:		Update-18
@@ -334,7 +334,7 @@ Ability to set the Site Level Aggregation identifier (sla-id)
 
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set ipv6_slaid=[number]
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-19
@@ -347,7 +347,7 @@ Control release of IPv6 Addresses on exit
 
 	Can be set in gui:	Yes
 	Enable via NVRAM:	nvram set ipv6_dhcp6c_release=[1 release,  0 no release]
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-19
@@ -359,7 +359,7 @@ Ability force a DHCPv6 request during IPv6 prefix delegation
 
 	Can be set in gui:	Yes
 	Enable via NVRAM:	nvram set ipv6_dhcp6c_force=1
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-19
@@ -371,7 +371,7 @@ Special IPv6 options
 
 	Can be set in gui:	No
 	Enable via NVRAM:	nvram set ipv6_isp_opt=xx
-				nvram commit & reboot
+				nvram commit && reboot
 
 	Routers Supported:	All
 	Released:		Update-20
@@ -384,6 +384,21 @@ Special IPv6 options
 					ipv6_isp_opt=1  : Force default ipv6 route if not set by ISP
 
 					The default value is ipv6_isp_opt=0. Add the values to select multiple options.
+---------------------------------------------------------------------------------------------------------------
+OpenVPN Client Reverse Strict DNS
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set vpn_reverse_strict=1
+				nvram commit && reboot
+
+	Routers Supported:	All
+	Released:		Update-23
+	Reboot Required:	No - alternatively can restart the VPN Client
+	Notes:			The OpenVPN DNS strict option causes dnsmasq to access the DNS servers in order, first to last,
+					with the DNS servers provided by the VPN added BEFORE the defined WAN servers.
+				Setting this option causes the VPN DNS servers to be appended to the list of servers AFTER the WAN
+					defined servers, so they will be accessed only if the WAN defined servers are unavailable.
+					This may be useful if you are running a DNS server on your local LAN.
 ---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:

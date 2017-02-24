@@ -4,33 +4,19 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_2-23BFj9527  (20-February-2017)
+374.43_2-23E1j9527  (27-February-2017)
 * NEW: openvpn: add nvram option to force reverse strict
-* CHANGED: openvpn: show dnsfilter message if active for WAN client option
-* FIXED: usb: fix manual disk scan w/usb hub
-
-
-374.43_2-23BEj9527  (19-February-2017)
-* FIXED: usb: increase wait time for rc restart_nasapps
-
-
-374.43_2-23BDj9527  (16-February-2017)
+- CHANGED: openvpn: (backport) allow disable DH usage by entering none in the DH field
+- CHANGED: kernel: (backport) fix reuse-after-free in DCCP
+- CHANGED: build: (backport) openssl now requires makedepend to be installed - pkg xutils-dev
+- CHANGED: openssl: (backport) remove rc4 support
+* CHANGED: vserver: add support for source ip on port forward rules
 * CHANGED: dnscrypt: update to 1.9.4
 * CHANGED: dnscrypt: update resolvers csv to 13 Feb 2017 version
 * CHANGED: defaults: remove deprecated lan_invalid_enable
 * CHANGED: v6hosts: prevent ping test fail during dnsmasq start
-* FIXED: samba-arm: security update for CVE-2015-5252; insufficient symlink verification in smbd
-* FIXED: samba-arm: security update for CVE-2012-0870; remote code execution vulnerability in smbd
-* FIXED: samba-mips: security update for CVE-2015-5252; insufficient symlink verification in smbd
-* FIXED: samba-mips: security update for CVE-2012-0870; remote code execution vulnerability in smbd
-
-
-374.43_2-23BCj9527  (9-February-2017)
+* CHANGED: openvpn: show dnsfilter message if active for WAN client option
 * CHANGED: openvpn: increase wait time for time sync complete to accomodate dualwan
-* FIXED: vpnrouting: prevent vpn routes already in table main from being copied to vpn table
-
-
-374.43_2-23BAj9527  (8-February-2017)
 * CHANGED: wanduck: start_firewall instead of nat_rules when switching or restoring wan line
 * CHANGED: wanduck: add additional diagnostic messages and capabilities
 * CHANGED: wanduck: add global variable for dualwan status
@@ -44,94 +30,67 @@ Changelog
 * CHANGED: wanduck: always restart wan interface on switch
 * CHANGED: wanduck: revert 3baff67 and return to setting S_IDLE on switch
 - FIXED: openvpn: fix cron job for openvpn polling
+* FIXED: updown: check for local dns server and allow routing
+* FIXED: wget: update .gitignore, tracked files
+* FIXED: usb: fix manual disk scan w/usb hub
+* FIXED: usb: increase wait time for rc restart_nasapps
+* FIXED: samba-arm: security update for CVE-2015-5252; insufficient symlink verification in smbd
+* FIXED: samba-arm: security update for CVE-2012-0870; remote code execution vulnerability in smbd
+* FIXED: samba-mips: security update for CVE-2015-5252; insufficient symlink verification in smbd
+* FIXED: samba-mips: security update for CVE-2012-0870; remote code execution vulnerability in smbd
+* FIXED: vpnrouting: prevent vpn routes already in table main from being copied to vpn table
 * FIXED: build: fix misc compiler warnings
 * FIXED: dnsmasq: update failed query debug log to get correct reason code
 * FIXED: wanduck: correctly show wandog_target in debug output
 * FIXED: wanduck: revert d6394ac/5887523 to honor internet state change based on web_redirect
 
 
-374.43_2-23B9j9527  (31-January-2017)
-Build reset/killed
-
-
 374.43_2-23B8j9527  (29-January-2017)
+* NEW: ipv6: add scripts for ipv6 hosts auto update
+* NEW: webui: add reset button to qos stats charts
+- CHANGED:  openssl: update to 1.0.2k
+- CHANGED: openvpn: update to 2.4.0 and support new options
+- CHANGED: openvpn: (backport) default port for server 2 changed to 1195
+- CHANGED: webui: (backport) improved layout of OpenVPN statistic display on the VPN Status page
 * CHANGED: qos: update logmessages to show qos stage
 * CHANGED: qos: add retries when applying bandwidth limiter rules
 * CHANGED: webui: show igmp proxy option when no iptv profile selected
-* FIXED: qos: handle case of qos starting before wan is up
-
-
-374.43_2-23B7j9527  (28-January-2017)
-- CHANGED:  openssl: update to 1.0.2k
-- FIXED: kernel-arm: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
-- FIXED: kernel-mips: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
-* FIXED: dnsmasq: add openvpn client adns state change detection to update_resolvconf
-
-374.43_2-23B6j9527  (27-January-2017)
-* NEW: ipv6: add scripts for ipv6 hosts auto update
-- CHANGED: openvpn: (backport) default port for server 2 changed to 1195
 * CHANGED: webui: update for Chrome version 56 changes
 * CHANGED: openvpn: do not set persist-tun if dual wan
 * CHANGED: webui: add dnscrypt unavailable message if openvpn dns option is relaxed or strict
-- FIXED: avahi: (backport) reject access from secondary WAN
-
-
-374.43_2-23D5j9527  (25-January-2017)
 * CHANGED: wanduck: modify 46e43af to set S_COUNT instead of S_IDLE
-* FIXED: openvpn: Openvpn bridge mode on r5638 #457 (backport from wl500g - ARM)
-* FIXED: openvpn: Openvpn bridge mode on r5638 #457 (wl500g port - MIPS)
-
-
-374.43_2-23B4j9527  (25-January-2017)
 * CHANGED: defaults: change wireless scheduler default to off
 * CHANGED: webui: allow forcing progess count and apply to serveral pages
 * CHANGED: webui: change low nvram threshold for N16 to 1.5K (no openvpn certs)
-- FIXED: cstats/rstats: fix rollover calculation to handle 32/64 bit
-- FIXED: samba: fix CVE-2013-4124 Denial of service - CPU loop and memory allocation
-* FIXED: httpd: always allow router address login if specified address only option is selected
-* FIXED: watchdog: add test for valid time before curl status check
-
-
-374.43_2-23B3j9527  (20-January-2017)
-* FIXED: wanduck: wan uptime timer only reflects primary wan when dual wan set to lb
-* FIXED: wanduck: in dual wan fo/fb only set wan timer based on current wan
-
-
-374.43_2-23B2j9527  (18-January-2017)
 * CHANGED: debug: reduce debug messages for killall_tk
-* FIXED: webui: update alert management for added alerts
-
-
-374.43_2-23B1j9527  (18-January-2017)
-- CHANGED: webui: (backport) improved layout of OpenVPN statistic display on the VPN Status page
 * CHANGED: webui: reorder openvpn client stats table entries
 * CHANGED: build: expand jffs for ARM from 32MB to 64MB
 * CHANGED: openvpn: add syslog for vpn client WAN address
+* CHANGED: openvpn: support PIA specific options (remap to openvpn 2.4.x)
+* CHANGED: openvpn: eliminate unecessary restart of dnsmasq when stopping client
+* CHANGED: kernel: backport allow configuring ipv4 subnets as local addresses
+* CHANGED: kernel: backport ipv6 AnyIP support from 2.6.37
+- FIXED: kernel-arm: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
+- FIXED: kernel-mips: Fix access to unitialized pointer (ported from DD-WRT, Broadcom bug)
+- FIXED: avahi: (backport) reject access from secondary WAN
+- FIXED: cstats/rstats: fix rollover calculation to handle 32/64 bit
+- FIXED: samba: fix CVE-2013-4124 Denial of service - CPU loop and memory allocation
+* FIXED: qos: handle case of qos starting before wan is up
+* FIXED: dnsmasq: add openvpn client adns state change detection to update_resolvconf
+* FIXED: openvpn: Openvpn bridge mode on r5638 #457 (backport from wl500g - ARM)
+* FIXED: openvpn: Openvpn bridge mode on r5638 #457 (wl500g port - MIPS)
+* FIXED: httpd: always allow router address login if specified address only option is selected
+* FIXED: watchdog: add test for valid time before curl status check
+* FIXED: wanduck: wan uptime timer only reflects primary wan when dual wan set to lb
+* FIXED: wanduck: in dual wan fo/fb only set wan timer based on current wan
+* FIXED: webui: update alert management for added alerts
 * FIXED: webui: remove passwd entry length limit so check routine can detect too long passwd
-
-
-374.43_2-23A4j9527  (17-January-2017)
 * FIXED: wanduck: reset disconnect counter on failover/failback
 * FIXED: wanduck: do not reset internet state based on web_redirect
 * FIXED: wanduck: direct ping test to specified wan interface
 * FIXED: wanduck: update dns check to support dnscrypt
 * FIXED: build: fix openvpn make for MIPS
-
-
-374.43_2-23A3j9527  (15-January-2017)
-* CHANGED: openvpn: support PIA specific options (remap to openvpn 2.4.x)
-
-
-374.43_2-23A2j9527  (14-January-2017)
-* NEW: webui: add reset button to qos stats charts
-* CHANGED: openvpn: eliminate unecessary restart of dnsmasq when stopping client
 * FIXED: wan: update_resolvconf restarts dnsmasq if dnscrypt is active but not in use
-
-
-374.43_2-23A1j9527  (14-January-2017)
-- CHANGED: openvpn: update to 2.4.0 and support new options
-* CHANGED: kernel: backport allow configuring ipv4 subnets as local addresses
-* CHANGED: kernel: backport ipv6 AnyIP support from 2.6.37
 
 
 374.43_2-22E4j9527  (13-January-2017)
