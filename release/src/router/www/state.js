@@ -459,7 +459,7 @@ function show_banner(L3){// L3 = The third Level of Menu
 	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;" id="ssidTitle">SSID:&nbsp;&nbsp;(2.4GHz)</span>';
 	banner_code +='<span onclick="change_wl_unit_status(0)" id="elliptic_ssid_2g" class="title_link"></span>';
 	banner_code +='<span style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;" id="ssidTitle">(5GHz)</span>';
-	banner_code +='<span onclick="change_wl_unit_status(1)" id="elliptic_ssid_5g" class="title_link"></span><div style="display:inline;float:right;font-size:10px;">(Merlin fork)</div>\n';
+	banner_code +='<span onclick="change_wl_unit_status(1)" id="elliptic_ssid_5g" class="title_link"></span><div style="display:inline;float:right;font-size:10px;">(Merlin LTS fork)</div>\n';
 	banner_code +='</td>\n';
 
 	banner_code +='<td width="30"><div id="notification_desc" class=""></div></td>\n';

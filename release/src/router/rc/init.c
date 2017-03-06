@@ -3288,6 +3288,9 @@ int init_nvram(void)
 	if(nvram_get("jffs2_scripts") == NULL)
 		nvram_set("jffs2_scripts", "1");
 
+	// update features for script support
+	add_rc_support("jffs2_scripts");
+
 // End special fork processing
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
