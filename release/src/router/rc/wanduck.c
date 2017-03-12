@@ -1368,10 +1368,11 @@ void record_conn_status(int wan_unit){
 	}
 
 	// save new wan start time
-	if(conn_wanup && ((wan_unit == current_wan_unit)
-#ifdef RTCONFIG_DUALWAN
-		|| ((!strcmp(dualwan_mode, "lb") && (wan_unit == WAN_UNIT_FIRST))))
-#endif
+	if(conn_wanup 
+		// && ((wan_unit == current_wan_unit)
+//#ifdef RTCONFIG_DUALWAN
+//		|| ((!strcmp(dualwan_mode, "lb") && (wan_unit == WAN_UNIT_FIRST))))
+//#endif
 	){
 		timenow = (long int) (time(0));
 		wan_bootdelay = atol(nvram_get("wan_bootdly"));
