@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23E2j9527  (11-March-2017)
+* CHANGED: info: update branding for LTS fork (uname, features, banner)
+- FIXED: networkmap: fix CVE-2017-6548 - remote code execution
+* FIXED: wanduck: always update wan uptime regardless of current wan unit
+
+
 374.43_2-23E1j9527  (27-February-2017)
 * NEW: openvpn: add nvram option to force reverse strict
 - CHANGED: openvpn: (backport) allow disable DH usage by entering none in the DH field
