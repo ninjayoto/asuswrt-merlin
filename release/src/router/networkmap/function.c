@@ -780,15 +780,22 @@ int process_device_response(char *msg)
         // get the destination ip
         location += 7;
 	i = 0;
-	while( (*location != ':') && (*location != '/')) {
+	while( (*location != ':') && (*location != '/') && (i < sizeof(host)) ) {
                 host[i] = *location++;
 		i++;
 	}
-        host[i] = '\0';
+	if(i >= sizeof(host))
+		goto error;
+	else
+		host[i] = '\0';
         //get the destination port
         if(*location == ':') {
-            	for(location++, i =0; *location != '/'; i++)
-                	port[i] = *location++;
+		for(location++, i =0; *location != '/'; i++) {
+			if(i < (sizeof(port)-1))
+				port[i] = *location++;
+			else
+				goto error;
+		}
             	port[i] = '\0';
             	destport = (ushort)atoi(port);
 	}
