@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23E3j9527  (13-March-2017)
+* NEW: ipv6: add v6hosts support to gui
+* CHANGED: services: free kernel page caches on firmware upgrade
+* FIXED: v6hosts: add delay before first ping check to allow client to connect
+
+
 374.43_2-23E2j9527  (11-March-2017)
 * CHANGED: info: update branding for LTS fork (uname, features, banner)
 - FIXED: networkmap: fix CVE-2017-6548 - remote code execution
