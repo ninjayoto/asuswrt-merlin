@@ -1852,6 +1852,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ipv6_dns1",		""		},
 	{ "ipv6_dns2",		""		},
 	{ "ipv6_dns3",		""		},
+	{ "ipv6_hosts",		"0"		},	// Provide EUI-64 name resolution
 #endif
 	{ "ipv6_get_dns",	""		},	// DNS IP address which got by dhcp6c
 	{ "ipv6_dnsenable",	"1"		},

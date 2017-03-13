@@ -101,6 +101,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		inputCtrl(document.form.ipv6_hosts[0], 0);
+		inputCtrl(document.form.ipv6_hosts[1], 0);
 		$("auto_config").style.display="";
 		$("special_config").style.display="";
 		$("radvd_mtu_tr").style.display="";
@@ -167,8 +169,11 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 0);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		var autoconf_type = (document.form.ipv6_autoconf_type[1].checked) ? '0' : '1';
+		inputCtrl(document.form.ipv6_hosts[0], autoconf_type);
+		inputCtrl(document.form.ipv6_hosts[1], autoconf_type);
 		var enable_pd = (document.form.ipv6_dhcp_pd[1].checked) ? '0' : '1';
-		showInputfield2('ipv6_dhcp_pd', enable_pd);
+		showInputfield2('ipv6_dhcp_pd', enable_pd);	
 		var enable_dns = (document.form.ipv6_dnsenable[1].checked) ? '0' : '1';
 		showInputfield2('ipv6_dnsenable', enable_dns);
 		$("auto_config").style.display="";
@@ -228,6 +233,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		inputCtrl(document.form.ipv6_hosts[0], 0);
+		inputCtrl(document.form.ipv6_hosts[1], 0);
 		$("auto_config").style.display="";
 		$("special_config").style.display="";
 		$("radvd_mtu_tr").style.display="";
@@ -283,6 +290,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		inputCtrl(document.form.ipv6_hosts[0], 0);
+		inputCtrl(document.form.ipv6_hosts[1], 0);
 		$("auto_config").style.display="";
 		$("special_config").style.display="";
 		$("radvd_mtu_tr").style.display="";
@@ -332,6 +341,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		inputCtrl(document.form.ipv6_hosts[0], 0);
+		inputCtrl(document.form.ipv6_hosts[1], 0);
 		$("auto_config").style.display="";
 		$("special_config").style.display="";
 		document.form.ipv6_radvd_mtu.value = "1";
@@ -399,6 +410,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 1);
 		inputCtrl(document.form.ipv6_dns_router[0], 1);
 		inputCtrl(document.form.ipv6_dns_router[1], 1);
+		inputCtrl(document.form.ipv6_hosts[0], 0);
+		inputCtrl(document.form.ipv6_hosts[1], 0);
 		$("auto_config").style.display="";
 		$("special_config").style.display="";
 		$("radvd_mtu_tr").style.display="";
@@ -445,6 +458,8 @@ function showInputfield(v){
 		inputCtrl(document.form.ipv6_dns3, 0);
 		inputCtrl(document.form.ipv6_dns_router[0], 0);
 		inputCtrl(document.form.ipv6_dns_router[1], 0);
+		inputCtrl(document.form.ipv6_hosts[0], 0);
+		inputCtrl(document.form.ipv6_hosts[1], 0);
 		$("auto_config").style.display="none";
 		$("special_config").style.display="none";
 		document.form.ipv6_radvd_mtu.value = "1";
@@ -514,7 +529,10 @@ function showInputfield2(s, v){
 			$("ipv6_prefix_span").innerHTML = "";
 		inputCtrl(document.form.ipv6_dhcp_start_start, !enable);
 		inputCtrl(document.form.ipv6_dhcp_end_end, !enable);
-		
+
+		inputCtrl(document.form.ipv6_hosts[0], enable);
+		inputCtrl(document.form.ipv6_hosts[1], enable);
+
 		if(!document.form.ipv6_dhcp_pd[0].checked){
 			if(document.form.ipv6_rtr_addr.value != "")
 				var IPv6_rtr_addr_split = GetIPv6_split(document.form.ipv6_rtr_addr.value);			
@@ -829,7 +847,15 @@ function applyRule(){
 						document.form.ipv6_dhcp_start.value = document.form.ipv6_prefix_span_for_start.value +"::"+document.form.ipv6_dhcp_start_start.value;
 						document.form.ipv6_dhcp_end.disabled = false;
 						document.form.ipv6_dhcp_end.value = document.form.ipv6_prefix_span_for_end.value +"::"+document.form.ipv6_dhcp_end_end.value;
+						document.form.ipv6_hosts.value = 0;  // turn off v6hosts if stateful
+				}else{
+						if(document.form.ipv6_hosts[0].checked)		// v6hosts option if stateless
+							document.form.ipv6_hosts.value = 1;
+						else
+							document.form.ipv6_hosts.value = 0;
 				}
+		}else{
+				document.form.ipv6_hosts.value = 0;	// v6hosts only valid for dhcp6
 		}
 				
 		if(document.form.ipv6_ifdev_select.disabled){		// set ipv6_ifdev="eth" while interface is disabled.
@@ -1264,6 +1290,14 @@ function showInfo(){
                                                                 <input type="radio" name="ipv6_dns_router" class="input" value="0" <% nvram_match("ipv6_dns_router", "0","checked"); %>><#checkbox_No#>
                                 </td>
                         </tr>
+					<tr style="display:none;">
+                                                <th>Enable name resolution for fixed addresses</th>
+                                <td>
+                                                                <input type="radio" name="ipv6_hosts" class="input" value="1" <% nvram_match("ipv6_hosts", "1","checked"); %>><#checkbox_Yes#>
+                                                                <input type="radio" name="ipv6_hosts" class="input" value="0" <% nvram_match("ipv6_hosts", "0","checked"); %>><#checkbox_No#>
+                                </td>
+                        </tr>
+
 
 			</table>
 			<!--=================================== IPv6 DNS setting end ===================================-->

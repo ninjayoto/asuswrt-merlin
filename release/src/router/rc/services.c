@@ -785,10 +785,11 @@ void start_dnsmasq(int force)
 				(*nv2 && inet_addr(nv2) ? nv2 : ""),
 				(nvram_match("dhcpd_dns_router","1") ? ",0.0.0.0" : ""));
 		}
+#ifdef RTCONFIG_IPV6
 		/* IPv6 DNS server */
 		if (ipv6_enabled() && nvram_match("ipv6_dns_router", "1"))
 			fprintf(fp, "dhcp-option=lan,option6:23,[::]\n");
-
+#endif
 		/* WINS server */
 		nv = nvram_safe_get("dhcp_wins_x");
 		if (*nv && inet_addr(nv)) {
@@ -875,6 +876,16 @@ void start_dnsmasq(int force)
 	}
 #endif
 
+#ifdef RTCONFIG_IPV6
+	/* Support local ipv6 name resolution for EUI-64 addresses */
+	if (ipv6_enabled() && nvram_get_int("ipv6_hosts")) {
+		if ((get_ipv6_service() == IPV6_NATIVE_DHCP) && !nvram_get_int("ipv6_autoconf_type")) {
+			fprintf(fp, "dhcp-script=/usr/sbin/v6hosts.sh\n");
+			fprintf(fp, "addn-hosts=/etc/hosts.autov6\n");
+		}
+	}
+#endif
+		
 //#ifdef WEB_REDIRECT
 //	/* Web redirection - all unresolvable will return the router's IP */
 //	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
