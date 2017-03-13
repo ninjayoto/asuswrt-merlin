@@ -32,6 +32,7 @@ echo "$(date) $1 $2 '$4' '$DNSMASQ_SUPPLIED_HOSTNAME' '$DNSMASQ_OLD_HOSTNAME' ($
 
 DEL_NEEDED=0
 if grep -qi  " ${HNAME}" "$V6HOSTS"; then
+    sleep 2
     v6addr=$(grep -i " ${HNAME}" "$V6HOSTS" | awk '{ print $1 }')
     if ping -6 -q -c 1 -W 6 $v6addr; then
         echo "$(date) known name, valid addr $HNAME" >> "$LOGA"
