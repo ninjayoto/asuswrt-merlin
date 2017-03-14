@@ -4505,6 +4505,9 @@ again:
 			stop_jffs2(1);
 			stop_networkmap();
 			// TODO free necessary memory here
+			// Free kernel page cache
+			system("echo 1 > /proc/sys/vm/drop_caches");
+			sleep(2);
 		}
 		if(action&RC_SERVICE_START) {
 			int sw = 0, r;
