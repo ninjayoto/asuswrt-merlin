@@ -143,6 +143,11 @@ _dprintf("%s: unit=%d.\n", __FUNCTION__, unit);
 				nvram_safe_get(strcat_r(prefix, "pppoe_ac", tmp)));
 		}
 
+		if (nvram_invmatch(strcat_r(prefix, "pppoe_hostuniq", tmp), "")) {
+			fprintf(fp, "host-uniq '%s'\n",
+				nvram_safe_get(strcat_r(prefix, "pppoe_hostuniq", tmp)));
+		}
+
 #ifdef RTCONFIG_DSL
 		if (nvram_match("dsl0_proto", "pppoa")) {
 			FILE *fp_dsl_mac;

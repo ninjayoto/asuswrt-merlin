@@ -687,6 +687,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "wan_pppoe_mtu", "1492"},	/* Negotiate MTU to the smaller of this value or the peer MRU */
 	{ "wan_pppoe_service", ""},	/* PPPoE service name */
 	{ "wan_pppoe_ac", ""},		/* PPPoE access concentrator name */
+	{ "wan_pppoe_hostuniq", ""},	/* PPPoE host_uniq id */
 	{ "wan_pppoe_options_x", ""},	// oleg patch
 	{ "wan_pptp_options_x", "" },	// oleg patch
 

@@ -403,7 +403,8 @@ function validForm(){
 		}
 		
 		if(!validate_string(document.form.wan_pppoe_service)
-				|| !validate_string(document.form.wan_pppoe_ac))
+				|| !validate_string(document.form.wan_pppoe_ac)
+				|| !validate_string(document.form.wan_pppoe_hostuniq))
 			return false;
 	}
 
@@ -501,6 +502,7 @@ function change_wan_type(wan_type, flag){
 		inputCtrl(document.form.wan_pppoe_mru, 1);
 		inputCtrl(document.form.wan_pppoe_service, 1);
 		inputCtrl(document.form.wan_pppoe_ac, 1);
+		inputCtrl(document.form.wan_pppoe_hostuniq, 1);
 		inputCtrl(document.form.dhcpc_mode, 0);
 		inputCtrl(document.form.wan_mtu, 0);
 		
@@ -525,6 +527,7 @@ function change_wan_type(wan_type, flag){
 		inputCtrl(document.form.wan_pppoe_mru, 0);
 		inputCtrl(document.form.wan_pppoe_service, 0);
 		inputCtrl(document.form.wan_pppoe_ac, 0);
+		inputCtrl(document.form.wan_pppoe_hostuniq, 0);
 		inputCtrl(document.form.dhcpc_mode, 0);
 		inputCtrl(document.form.wan_mtu, 0);
 		
@@ -549,6 +552,7 @@ function change_wan_type(wan_type, flag){
 		inputCtrl(document.form.wan_pppoe_mru, 0);
 		inputCtrl(document.form.wan_pppoe_service, 0);
 		inputCtrl(document.form.wan_pppoe_ac, 0);
+		inputCtrl(document.form.wan_pppoe_hostuniq, 0);
 		inputCtrl(document.form.dhcpc_mode, 0);
 		inputCtrl(document.form.wan_mtu, 0);
 		
@@ -573,6 +577,7 @@ function change_wan_type(wan_type, flag){
 		inputCtrl(document.form.wan_pppoe_mru, 0);
 		inputCtrl(document.form.wan_pppoe_service, 0);
 		inputCtrl(document.form.wan_pppoe_ac, 0);
+		inputCtrl(document.form.wan_pppoe_hostuniq, 0);
 		inputCtrl(document.form.dhcpc_mode, 0);
 		inputCtrl(document.form.wan_mtu, 1);
 		
@@ -599,6 +604,7 @@ function change_wan_type(wan_type, flag){
 		inputCtrl(document.form.wan_pppoe_mru, 0);
 		inputCtrl(document.form.wan_pppoe_service, 0);
 		inputCtrl(document.form.wan_pppoe_ac, 0);
+		inputCtrl(document.form.wan_pppoe_hostuniq, 0);
 		inputCtrl(document.form.dhcpc_mode, 1);
 		inputCtrl(document.form.wan_mtu, 1);
 		
@@ -1150,6 +1156,10 @@ function pass_checked(obj){
               	<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,10);"><#PPPConnection_x_AccessConcentrator_itemname#></a></th>
               	<td><input type="text" maxlength="32" class="input_32_table" name="wan_pppoe_ac" value="<% nvram_get("wan_pppoe_ac"); %>" onkeypress="return is_string(this, event)"/></td>
             	</tr>
+		<tr>
+		<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,10);">Host Unique ID</a></th>
+		<td><input type="text" maxlength="32" class="input_32_table" name="wan_pppoe_hostuniq" value="<% nvram_get("wan_pppoe_hostuniq"); %>" onkeypress="return is_string(this, event)"/></td>
+		</tr>
             	<!-- 2008.03 James. patch for Oleg's patch. { -->
 		<tr>
 		<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,17);"><#PPPConnection_x_PPTPOptions_itemname#></a></th>
