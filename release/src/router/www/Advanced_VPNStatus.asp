@@ -297,13 +297,15 @@ function parseStatus(text, block){
 
 		code += '<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable_table"><thead><tr><td colspan="4">Statistics</td></tr></thead>';
 
-		var order = [ 0, 5, 1, 6, 2, 7, 3, 8, 4, 9, 5, 10 ];
+		var label_order = [ 0, 5, 1, 6, 2, 7, 3, 8, 4, 9 ];
+		var data_order = [ 1, 5, 0, 6, 2, 7, 3, 8, 4, 9 ];
 		for (i = 0; i < staticstatsTableEntries.length; ++i)
 		{
-			j = order[i];
+			j = label_order[i];
+			k = data_order[i];
 			if (i % 2 == 0) code += '<tr>';
 			code += '<th width="80%" style="text-align:left;">' + staticstatsTableEntries[j][0] +'</th>';
-			code += '<td width="20%" align="left" style="text-align:left;">' + Number(staticstatsTableEntries[j][1]).toLocaleString() +'</td>';
+			code += '<td width="20%" align="left" style="text-align:left;">' + Number(staticstatsTableEntries[k][1]).toLocaleString() +'</td>';
 			if (i % 2 == 1) code += '</tr>';
 		}
 		if (i % 2 == 0) code += '</tr>';
