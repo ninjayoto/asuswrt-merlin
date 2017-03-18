@@ -21,6 +21,7 @@
 <script>
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var ctf_support = ('<% nvram_get("ctf_fa_mode"); %>' == '') ? 0 : 1;
+var ctf_fa_cap = "<% nvram_get("ctf_fa_cap"); %>";
 
 function initial(){
 	show_menu();
@@ -29,22 +30,26 @@ function initial(){
 	if(ctf_support == 1){
 		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_buttonname#>", 0, getCtfLevel(0));
 		add_option(document.form.ctf_level, "Level 1 CTF", 1, getCtfLevel(1));
-		add_option(document.form.ctf_level, "Level 2 CTF", 2, getCtfLevel(2));
+		if(ctf_fa_cap == 1)
+			add_option(document.form.ctf_level, "Level 2 CTF", 2, getCtfLevel(2));
 	} else {
 		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_buttonname#>", 0, getCtfLevelM(0));
 		add_option(document.form.ctf_level, "<#WLANConfig11b_WirelessCtrl_button1name#>", 1, getCtfLevelM(1));
 	}
+	
+	update_ctf_status();
 }
 
 function getCtfLevel(val){
 	var curVal;
 
-	if(document.form.ctf_disable_force.value == 0 && document.form.ctf_fa_mode.value == 1)
-		curVal = 1;
-	else if(document.form.ctf_disable_force.value == 0 && document.form.ctf_fa_mode.value == 2)
-		curVal = 2;
-	else
-		curVal = 0;
+	if(document.form.ctf_disable_force.value == 0){
+		if(document.form.ctf_fa_mode.value == 2)
+			curVal = 2;
+		else
+			curVal = 1;
+	} else
+		curval = 0;
 
 	if(curVal == val)
 		return true;
@@ -55,7 +60,7 @@ function getCtfLevel(val){
 function getCtfLevelM(val){
 	var curVal;
 
-	if(document.form.ctf_disable_force.value == 0 && document.form.ctf_disable.value == 0)
+	if(document.form.ctf_disable_force.value == 0)
 		curVal = 1;
 	else
 		curVal = 0;
@@ -67,17 +72,12 @@ function getCtfLevelM(val){
 }
 
 function applyRule(){
-	if(document.form.ctf_level.value == 1){
+	if(document.form.ctf_level.value == 1 || document.form.ctf_level.value ==2){
 		document.form.ctf_disable_force.value = 0;
 		if(ctf_support == 1)
-			document.form.ctf_fa_mode.value = 1;
+			document.form.ctf_fa_mode.value = document.form.ctf_level.value;
 	}
-	else if(document.form.ctf_level.value == 2){
-		document.form.ctf_disable_force.value = 0;
-		if(ctf_support == 1)
-			document.form.ctf_fa_mode.value = 2;
-	}
-	else{
+	else {
 		document.form.ctf_disable_force.value = 1;
 		if(ctf_support == 1)
 			document.form.ctf_fa_mode.value = 0;
@@ -86,6 +86,29 @@ function applyRule(){
 	if(valid_form()){
 			showLoading();
 			document.form.submit();	
+	}
+}
+
+function update_ctf_status(){
+	if(document.form.ctf_disable.value == 1 && document.form.ctf_level.value != 0){
+		var code = "<B>Disabled</B>"
+		code += " <i> - incompatible with:&nbsp;&nbsp;";	// Two trailing spaces
+		if ('<% nvram_get("cstats_enable"); %>' == '1') code += 'IPTraffic, ';
+		if ('<% nvram_get("qos_enable"); %>' == '1') code += 'QoS, ';
+		if ('<% nvram_get("sw_mode"); %>' == '2') code += 'Repeater mode, ';
+		if ('<% nvram_get("ctf_disable_modem"); %>' == '1') code += 'USB modem, ';
+
+		// We're disabled but we don't know why
+		if (code.slice(-6) == "&nbsp;") code += "&lt;unknown&gt;, ";
+
+		// Trim two trailing chars ", "
+		code = code.slice(0,-2) + "</i>";
+		document.getElementById("ctfLevelDesc").innerHTML = code;
+		document.getElementById("ctf_level").style.display = "none";
+	}
+	else {
+		document.getElementById("ctfLevelDesc").innerHTML = "";
+		document.getElementById("ctf_level").style.display = "";
 	}
 }
 
@@ -171,10 +194,11 @@ function valid_form(){
       <tr>
       <th>NAT Acceleration</th>
           <td>
-						<select name="ctf_level" class="input_option">
-							<option class="content_input_fd" value="0" <% nvram_match("ctf_disable_force", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_buttonname#></option>
+						<select name="ctf_level" id="ctf_level" class="input_option">
+							<option class="content_input_fd" value="0" "<% nvram_match("ctf_disable_force", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_buttonname#></option>
 							<option class="content_input_fd" value="1" <% nvram_match("ctf_disable_force", "0","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
 						</select>
+						<span id="ctfLevelDesc"></span>
           </td>
       </tr>     
 	    <tr style="display:none">
