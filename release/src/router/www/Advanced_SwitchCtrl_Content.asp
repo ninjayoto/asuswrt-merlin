@@ -84,6 +84,7 @@ function applyRule(){
 	}
 
 	if(valid_form()){
+			document.form.action_wait.value = Math.max(eval("<% get_default_reboot_time(); %>"), 90);
 			showLoading();
 			document.form.submit();	
 	}
