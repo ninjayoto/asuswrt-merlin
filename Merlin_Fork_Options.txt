@@ -400,6 +400,21 @@ OpenVPN Client Reverse Strict DNS
 					defined servers, so they will be accessed only if the WAN defined servers are unavailable.
 					This may be useful if you are running a DNS server on your local LAN.
 ---------------------------------------------------------------------------------------------------------------
+IPv6 Local Name Resolution
+
+	Can be set in gui:	Yes
+	Enable via NVRAM:	No
+				Enable by adding the following lines to /jffs/configs/dnsmasq.conf.add
+
+				dhcp-script=/usr/sbin/v6hosts.sh
+				addn-hosts=/_etc/hosts.autov6
+
+	Routers Supported:	All
+	Released:		Update-23
+	Reboot Required:	No - if manually configuring restart dnsmasq
+	Notes:			Add script for IPv6 hosts auto update for native/stateless IPv6
+					(adds local ipv6 name resolution to public address)
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 

@@ -26,13 +26,10 @@ The fork does not include
 - All the changes/tweaks that ASUS may have made since the original code was released (and any newly introduced bugs :) )
 
 
-The following routers are supported by this fork:
-
-- N16, N66U, AC66U, AC56U, AC68U (Rev A1,A2,B1 [I]Rev C1 is NOT supported)[/I], AC68P (and the retail and color versions, R and W, of each router)
-
+The following routers are supported by this firmware:
+[*] N16, N66U, AC66U (original MIPS based revs), AC56U, AC68U (Rev A1,A2,B1) and AC68P (and the retail and color versions, R and W, of each router)
 
 The following routers were released after the base code used for this fork was available, and are NOT supported.
-
-- AC1900P, AC87U, AC3100, AC3200, AC88U, AC5300 (and any retail R versions)
+[*] AC66U-B1 (ARM based), AC68U Rev C1 and Rev E1, AC1900, AC1900P, AC87U, AC3100, AC3200, AC88U, AC5300 (and the retail R versions)
 
 See http://www.snbforums.com/threads/18914/ for the latest download information for firmware builds.
