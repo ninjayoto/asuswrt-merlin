@@ -362,10 +362,10 @@ function validForm(){
 	 	return false;
   }
 
-	if((document.form.lan_domain.value.indexOf("local") == (domainlength-5)) ||
-	   (document.form.lan_domain.value.indexOf("localhost") == (domainlength-9)) ||
-	   (document.form.lan_domain.value.indexOf("onion") == (domainlength-5)) ||
-	   (document.form.lan_domain.value.indexOf("test") == (domainlength-4)) ||
+	if((document.form.lan_domain.value.indexOf("local") == Math.max(domainlength-5, 0)) ||
+	   (document.form.lan_domain.value.indexOf("localhost") == Math.max(domainlength-9, 0)) ||
+	   (document.form.lan_domain.value.indexOf("onion") == Math.max(domainlength-5, 0)) ||
+	   (document.form.lan_domain.value.indexOf("test") == Math.max(domainlength-4, 0)) ||
 	   (document.form.lan_domain.value.indexOf(".in-addr.arpa.") != -1) ||
 	   (document.form.lan_domain.value.indexOf(".ip6.arpaa.") != -1) ||
 	   (document.form.lan_domain.value.indexOf("example.") != -1)) {
