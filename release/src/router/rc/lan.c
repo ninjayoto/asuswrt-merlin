@@ -361,7 +361,7 @@ GEN_CONF:
 				if (nvram_get_int("wl_dfs_enable") == 1) {
 					if (((get_model() == MODEL_RTAC66U) &&
 						(nvram_match(strcat_r(prefix, "country_code", tmp), "EU")) &&
-						(nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))) ||
+						(nvram_match(strcat_r(prefix, "country_rev", tmp), "31"))) ||
 					    ((get_model() == MODEL_RTN66U) &&
 						(nvram_match(strcat_r(prefix, "country_code", tmp), "EU")) &&
 						(nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))))
