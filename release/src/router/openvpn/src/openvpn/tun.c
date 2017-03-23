@@ -39,12 +39,6 @@
 #include "syshead.h"
 
 #include "tun.h"
-#ifndef TUNSETOWNER
-#define TUNSETOWNER     _IOW('T', 204, int)
-#endif
-#ifndef TUNSETGROUP
-#define TUNSETGROUP     _IOW('T', 206, int)
-#endif
 #include "fdmisc.h"
 #include "common.h"
 #include "misc.h"
@@ -566,7 +560,9 @@ is_tun_p2p(const struct tuntap *tt)
 {
     bool tun = false;
 
-    if (tt->type == DEV_TYPE_TAP || (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET))
+    if (tt->type == DEV_TYPE_TAP
+          || (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
+          || tt->type == DEV_TYPE_NULL )
     {
         tun = false;
     }
@@ -700,7 +696,8 @@ init_tun(const char *dev,        /* --dev option */
              * make sure they do not clash with our virtual subnet.
              */
 
-            for (curele = local_public; curele; curele = curele->ai_next) {
+            for (curele = local_public; curele; curele = curele->ai_next)
+            {
                 if (curele->ai_family == AF_INET)
                 {
                     check_addr_clash("local",
@@ -711,7 +708,8 @@ init_tun(const char *dev,        /* --dev option */
                 }
             }
 
-            for (curele = remote_public; curele; curele = curele->ai_next) {
+            for (curele = remote_public; curele; curele = curele->ai_next)
+            {
                 if (curele->ai_family == AF_INET)
                 {
                     check_addr_clash("remote",
@@ -905,13 +903,6 @@ do_ifconfig(struct tuntap *tt,
         ifconfig_local = print_in_addr_t(tt->local, 0, &gc);
         ifconfig_remote_netmask = print_in_addr_t(tt->remote_netmask, 0, &gc);
 
-        //Sam.B  2013/10/31
-        if(current_addr(htonl(tt->local))) {
-            msg (M_WARN, "ifconfig addr '%s' conflicted", ifconfig_local);
-            update_nvram_status(ADDR_CONFLICTED);
-        }
-        //Sam.E  2013/10/31
-
         if (tt->did_ifconfig_ipv6_setup)
         {
             ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0, &gc);
@@ -1049,7 +1040,8 @@ do_ifconfig(struct tuntap *tt,
         struct buffer out = alloc_buf_gc(64, &gc);
 
         char *top;
-        switch (tt->topology) {
+        switch (tt->topology)
+        {
             case TOP_NET30:
                 top = "net30";
                 break;
@@ -1848,12 +1840,14 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
 
     /* Prefer IPv6 DNS servers,
      * Android will use the DNS server in the order we specify*/
-    for (int i = 0; i < tt->options.dns6_len; i++) {
+    for (int i = 0; i < tt->options.dns6_len; i++)
+    {
         management_android_control(management, "DNS6SERVER",
                                    print_in6_addr(tt->options.dns6[i], 0, &gc));
     }
 
-    for (int i = 0; i < tt->options.dns_len; i++) {
+    for (int i = 0; i < tt->options.dns_len; i++)
+    {
         management_android_control(management, "DNSSERVER",
                                    print_in_addr_t(tt->options.dns[i], 0, &gc));
     }
@@ -2267,7 +2261,9 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
     {
         ptr = dev;
         while (*ptr && !isdigit((int) *ptr))
+        {
             ptr++;
+        }
         ppa = atoi(ptr);
     }
 
@@ -3290,7 +3286,10 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
     {
         /* ensure that dev name is "tap+<digits>" *only* */
         p = &dev[3];
-        while (isdigit(*p) ) p++;
+        while (isdigit(*p) )
+        {
+            p++;
+        }
         if (*p != '\0')
         {
             msg( M_FATAL, "TAP device name must be '--dev tapNNNN'" );
@@ -5468,7 +5467,9 @@ write_dhcp_u32_array(struct buffer *buf, const int type, const uint32_t *data, c
         buf_write_u8(buf, type);
         buf_write_u8(buf, size);
         for (i = 0; i < len; ++i)
+        {
             buf_write_u32(buf, data[i]);
+        }
     }
 }
 
@@ -6237,10 +6238,7 @@ close_tun(struct tuntap *tt)
         }
 #endif
 
-        if (tt->options.dhcp_release)
-        {
-            dhcp_release(tt);
-        }
+        dhcp_release(tt);
 
         if (tt->hand != NULL)
         {
@@ -6300,10 +6298,12 @@ ascii2ipset(const char *name)
     int i;
     ASSERT(IPW32_SET_N == SIZE(ipset_names));
     for (i = 0; i < IPW32_SET_N; ++i)
+    {
         if (!strcmp(name, ipset_names[i].short_form))
         {
             return i;
         }
+    }
     return -1;
 }
 

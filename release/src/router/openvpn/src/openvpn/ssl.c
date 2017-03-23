@@ -65,9 +65,6 @@
 
 #include "memdbg.h"
 
-extern char *pia_ca_digest;
-extern bool pia_signal_settings;
-
 #ifndef ENABLE_OCC
 static const char ssl_default_options_string[] = "V0 UNDEF";
 #endif
@@ -272,10 +269,12 @@ static void
 key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len);
 
 const tls_cipher_name_pair *
-tls_get_cipher_name_pair(const char *cipher_name, size_t len) {
+tls_get_cipher_name_pair(const char *cipher_name, size_t len)
+{
     const tls_cipher_name_pair *pair = tls_cipher_name_translation_table;
 
-    while (pair->openssl_name != NULL) {
+    while (pair->openssl_name != NULL)
+    {
         if ((strlen(pair->openssl_name) == len && 0 == memcmp(cipher_name, pair->openssl_name, len))
             || (strlen(pair->iana_name) == len && 0 == memcmp(cipher_name, pair->iana_name, len)))
         {
@@ -572,12 +571,12 @@ tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
      * Note: Windows does not support tv_nsec.
      */
     if ((ssl_ctx->crl_last_size == crl_stat.st_size)
-        && (ssl_ctx->crl_last_mtime.tv_sec == crl_stat.st_mtime))
+        && (ssl_ctx->crl_last_mtime == crl_stat.st_mtime))
     {
         return;
     }
 
-    ssl_ctx->crl_last_mtime.tv_sec = crl_stat.st_mtime;
+    ssl_ctx->crl_last_mtime = crl_stat.st_mtime;
     ssl_ctx->crl_last_size = crl_stat.st_size;
     backend_tls_ctx_reload_crl(ssl_ctx, crl_file, crl_file_inline);
 }
@@ -1071,7 +1070,9 @@ tls_session_init(struct tls_multi *multi, struct tls_session *session)
 
     /* Randomize session # if it is 0 */
     while (!session_id_defined(&session->session_id))
+    {
         session_id_random(&session->session_id);
+    }
 
     /* Are we a TLS server or client? */
     ASSERT(session->opt->key_method >= 1);
@@ -1133,7 +1134,9 @@ tls_session_free(struct tls_session *session, bool clear)
     free_buf(&session->tls_wrap.work);
 
     for (i = 0; i < KS_SIZE; ++i)
+    {
         key_state_free(&session->key[i], false);
+    }
 
     if (session->common_name)
     {
@@ -1190,7 +1193,8 @@ reset_session(struct tls_multi *multi, struct tls_session *session)
  * called again.
  */
 static inline void
-compute_earliest_wakeup(interval_t *earliest, interval_t seconds_from_now) {
+compute_earliest_wakeup(interval_t *earliest, interval_t seconds_from_now)
+{
     if (seconds_from_now < *earliest)
     {
         *earliest = seconds_from_now;
@@ -1360,7 +1364,9 @@ tls_multi_free(struct tls_multi *multi, bool clear)
     free(multi->remote_ciphername);
 
     for (i = 0; i < TM_SIZE; ++i)
+    {
         tls_session_free(&multi->session[i], false);
+    }
 
     if (clear)
     {
@@ -1708,7 +1714,9 @@ tls1_PRF(const uint8_t *label,
     tls1_P_hash(sha1,S2,len,label,label_len,out2,olen);
 
     for (i = 0; i<olen; i++)
+    {
         out1[i] ^= out2[i];
+    }
 
     secure_memzero(out2, olen);
 
@@ -1858,7 +1866,8 @@ exit:
 }
 
 static void
-key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len) {
+key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
+{
     const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
 
     /* Only use implicit IV in AEAD cipher mode, where HMAC key is not used */
@@ -2754,21 +2763,6 @@ tls_process(struct tls_multi *multi,
                 ks->must_negotiate = now + session->opt->handshake_window;
                 ks->auth_deferred_expire = now + auth_deferred_expire_window(session->opt);
 
-                  char settings_msg[2048], md5hex[33];
-
-                  struct key_type kt = session->opt->key_type;
-                  if (!session->opt->server && pia_signal_settings && ks->initial_opcode == P_CONTROL_HARD_RESET_CLIENT_V2) {
-                    sprintf(settings_msg, "%s%scrypto\t%s|%s\tca\t%s",
-                      "   ", // space for xor key
-                      "53eo0rk92gxic98p1asgl5auh59r1vp4lmry1e3chzi100qntd",
-                      kt.cipher ? kt_cipher_name(&kt) : "none",
-                      kt.digest ? kt_digest_name(&kt) : "none",
-                      pia_ca_digest ? pia_ca_digest : "X");
-                    int len = strlen(settings_msg);
-                    pia_obfuscate_options(settings_msg, len);
-                    buf_write(buf, settings_msg, len);
-                  }
-
                 /* null buffer */
                 reliable_mark_active_outgoing(ks->send_reliable, buf, ks->initial_opcode);
                 INCR_GENERATED;
@@ -2828,6 +2822,9 @@ tls_process(struct tls_multi *multi,
                                    session->opt->crl_file, session->opt->crl_file_inline);
             }
 
+            /* New connection, remove any old X509 env variables */
+            tls_x509_clear_env(session->opt->es);
+
             dmsg(D_TLS_DEBUG_MED, "STATE S_START");
         }
 
@@ -2839,10 +2836,10 @@ tls_process(struct tls_multi *multi,
             {
                 ks->established = now;
                 dmsg(D_TLS_DEBUG_MED, "STATE S_ACTIVE");
-//                if (check_debug_level(D_HANDSHAKE))
-//                {
+                if (check_debug_level(D_HANDSHAKE))
+                {
                     print_details(&ks->ks_ssl, "Control Channel:");
-//                }
+                }
                 state_change = true;
                 ks->state = S_ACTIVE;
                 INCR_SUCCESS;
@@ -4076,7 +4073,8 @@ tls_peer_info_ncp_ver(const char *peer_info)
 }
 
 bool
-tls_check_ncp_cipher_list(const char *list) {
+tls_check_ncp_cipher_list(const char *list)
+{
     bool unsupported_cipher_found = false;
 
     ASSERT(list);
@@ -4221,6 +4219,7 @@ done:
 
 #else  /* if defined(ENABLE_CRYPTO) */
 static void
-dummy(void) {
+dummy(void)
+{
 }
 #endif /* ENABLE_CRYPTO */

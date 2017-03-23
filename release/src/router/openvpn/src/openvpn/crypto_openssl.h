@@ -33,6 +33,7 @@
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/md5.h>
+#include <openssl/sha.h>
 
 /** Generic cipher key type %context. */
 typedef EVP_CIPHER cipher_kt_t;
@@ -91,14 +92,14 @@ void crypto_print_openssl_errors(const unsigned int flags);
  *
  * This is just a convenience wrapper for often occurring situations.
  *
-+ * @param flags         Flags to indicate error type and priority.
-+ * @param format        Format string to print.
-+ * @param format args   (optional) arguments for the format string.
+ * @param flags         Flags to indicate error type and priority.
+ * @param format        Format string to print.
+ * @param format args   (optional) arguments for the format string.
  */
 #define crypto_msg(flags, ...) \
     do { \
         crypto_print_openssl_errors(nonfatal(flags)); \
-        msg((flags | M_SSL), __VA_ARGS__); \
+        msg((flags), __VA_ARGS__); \
     } while (false)
 
 
