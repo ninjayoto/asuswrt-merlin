@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-23E4j9527  (23-March-2017)
+* FIX: webui: workaround bug in openvpn 2.4 stats dump
+* FIX: webui: refactor ctf selection and status on switch control page
+* FIX: webui: use minimum of default reboot time when submitting switch control form
+* FIX: webui: fix lan registered domain check when lan_name length equals domain length
+
+
 374.43_2-23E3j9527  (13-March-2017)
 * NEW: ipv6: add v6hosts support to gui
 * CHANGED: services: free kernel page caches on firmware upgrade
