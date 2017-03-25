@@ -23,12 +23,12 @@
 #include <ctype.h>
 #include <bcmnvram.h>
 #include <shutils.h>
-#include <shared.h>
+#include <rtconfig.h>
 
 #include "usb_info.h"
 #include "disk_initial.h"
 #include "disk_share.h"
-#include <shared.h>
+
 #include <linux/version.h>
 
 #define SAMBA_CONF "/etc/smb.conf"
@@ -246,22 +246,14 @@ int main(int argc, char *argv[])
 	}
 	// share mode
 	else if (nvram_match("st_samba_mode", "1") || nvram_match("st_samba_mode", "3")) {
-#if 0
-//#if defined(RTCONFIG_TFAT) || defined(RTCONFIG_TUXERA_NTFS) || defined(RTCONFIG_TUXERA_HFS)
-		if(nvram_get_int("enable_samba_tuxera") == 1){
-			fprintf(fp, "auth methods = guest\n");
-			fprintf(fp, "guest account = admin\n");
-			fprintf(fp, "map to guest = Bad Password\n");
-			fprintf(fp, "guest ok = yes\n");
-		}
-		else{
-			fprintf(fp, "security = SHARE\n");
-			fprintf(fp, "guest only = yes\n");
-		}
-#else
+#ifdef RTCONFIG_TUXERA
+		fprintf(fp, "auth methods = guest\n");
+		fprintf(fp, "guest account = admin\n");
+		fprintf(fp, "map to guest = Bad Password\n");
+		fprintf(fp, "guest ok = yes\n");
+#endif
 		fprintf(fp, "security = SHARE\n");
 		fprintf(fp, "guest only = yes\n");
-#endif
 	}
 	else{
 		usb_dbg("samba mode: no\n");
@@ -271,28 +263,7 @@ int main(int argc, char *argv[])
 	fprintf(fp, "encrypt passwords = yes\n");
 	fprintf(fp, "pam password change = no\n");
 	fprintf(fp, "null passwords = yes\n");		// ASUS add
-#ifdef RTCONFIG_SAMBA_MODERN
-	if (nvram_get_int("smbd_enable_smb2"))
-		fprintf(fp, "max protocol = SMB2\n");
-	else
-		fprintf(fp, "max protocol = NT1\n");
 
-	fprintf(fp, "passdb backend = smbpasswd\n");
-	fprintf(fp, "smb encrypt = disabled\n");
-	fprintf(fp, "smb passwd file = /etc/samba/smbpasswd\n");
-
-        fprintf(fp, "enable core files = no\n");
-        fprintf(fp, "deadtime = 30\n");
-        fprintf(fp, "load printers = no\n");
-        fprintf(fp, "min receivefile size = 16384\n");
-
-#endif
-#if 0
-#ifdef RTCONFIG_RECVFILE
-	if(!nvram_get_int("stop_samba_recv"))
-		fprintf(fp, "use recvfile = yes\n");
-#endif
-#endif
 	fprintf(fp, "force directory mode = 0777\n");
 	fprintf(fp, "force create mode = 0777\n");
 
@@ -301,51 +272,24 @@ int main(int argc, char *argv[])
 		fprintf(fp, "max connections = %s\n", nvram_safe_get("st_max_user"));
 
         /* remove socket options due to NIC compatible issue */
-	if(!nvram_get_int("stop_samba_speedup")){
-#ifdef RTCONFIG_BCMARM
-#ifdef RTCONFIG_BCM_7114
-		fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=131072 SO_SNDBUF=131072\n");
+#ifndef RTCONFIG_BCMARM
+        fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=65536 SO_SNDBUF=65536\n");
 #endif
-#else
-		fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=65536 SO_SNDBUF=65536\n");
-#endif
-	}
 	fprintf(fp, "obey pam restrictions = no\n");
-//	fprintf(fp, "use spnego = no\n");		// ASUS add
-//	fprintf(fp, "client use spnego = no\n");	// ASUS add
+	fprintf(fp, "use spnego = no\n");		// ASUS add
+	fprintf(fp, "client use spnego = no\n");	// ASUS add
 //	fprintf(fp, "client use spnego = yes\n");  // ASUS add
 	fprintf(fp, "disable spoolss = yes\n");		// ASUS add
 	fprintf(fp, "host msdfs = no\n");		// ASUS add
 	fprintf(fp, "strict allocate = No\n");		// ASUS add
 //	fprintf(fp, "mangling method = hash2\n");	// ASUS add
 	fprintf(fp, "bind interfaces only = yes\n");    // ASUS add
-	fprintf(fp, "interfaces = lo br0 %s/%s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"), (is_routing_enabled() && nvram_get_int("smbd_wanac")) ? nvram_safe_get("wan0_ifname") : "");
-#if 0
-#if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD) || defined(RTCONFIG_OPENVPN)
-	int ip[5];
-	char pptpd_subnet[16];
-	char openvpn_subnet[32];
 
-	memset(pptpd_subnet, 0 , sizeof(pptpd_subnet));
-	memset(openvpn_subnet, 0 , sizeof(openvpn_subnet));
-	if (is_routing_enabled()) {
-#if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD)
-		if (nvram_get_int("pptpd_enable")) {
-			sscanf(nvram_safe_get("pptpd_clients"), "%d.%d.%d.%d-%d", &ip[0], &ip[1], &ip[2], &ip[3], &ip[4]);
-			sprintf(pptpd_subnet, "%d.%d.%d.", ip[0], ip[1], ip[2]);
-		}
-#endif
-#ifdef RTCONFIG_OPENVPN
-		if (nvram_get_int("VPNServer_enable") && strstr(nvram_safe_get("vpn_server1_if"), "tun") && nvram_get_int("vpn_server1_plan"))
-			sprintf(openvpn_subnet, "%s/%s", nvram_safe_get("vpn_server1_sn"), nvram_safe_get("vpn_server1_nm"));
-#endif
-	}
-	fprintf(fp, "hosts allow = 127.0.0.1 %s/%s %s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"), pptpd_subnet, openvpn_subnet);
+#ifndef RTCONFIG_BCMARM
+	fprintf(fp, "interfaces = lo br0 %s\n", (is_routing_enabled() && nvram_get_int("smbd_wanac")) ? nvram_safe_get("wan0_ifname") : "");
 #else
-	fprintf(fp, "hosts allow = 127.0.0.1 %s/%s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"));
+	fprintf(fp, "interfaces = br0 %s\n", (is_routing_enabled() && nvram_get_int("smbd_wanac")) ? nvram_safe_get("wan0_ifname") : "");
 #endif
-	fprintf(fp, "hosts deny = 0.0.0.0/0\n");
-#endif // #if 0
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,36)
 	fprintf(fp, "use sendfile = no\n");
 #else
@@ -377,15 +321,6 @@ int main(int argc, char *argv[])
 	if (nvram_match("enable_samba", "0"))
 		goto confpage;
 
-#if 0
-	fprintf(fp, "[ipc$]\n");
-#if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD) || defined(RTCONFIG_OPENVPN)
-	fprintf(fp, "hosts allow = 127.0.0.1 %s/%s %s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"), pptpd_subnet, openvpn_subnet);
-#else
-	fprintf(fp, "hosts allow = 127.0.0.1 %s/%s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"));
-#endif
-	fprintf(fp, "hosts deny = 0.0.0.0/0\n");
-#endif // #if 0
 	disks_info = read_disk_data();
 	if (disks_info == NULL) {
 		usb_dbg("Couldn't get disk list when writing smb.conf!\n");
@@ -414,7 +349,7 @@ int main(int argc, char *argv[])
 
 				fprintf(fp, "[%s]\n", mount_folder);
 				fprintf(fp, "comment = %s's %s\n", follow_disk->tag, mount_folder);
-				fprintf(fp, "veto files = /.__*.txt*/asusware*/asus_lighttpdpasswd/\n");
+				fprintf(fp, "veto files = /.__*.txt*/asus_lighttpdpasswd/\n");
 				fprintf(fp, "path = %s\n", follow_partition->mount_point);
 				fprintf(fp, "writeable = yes\n");
 
@@ -726,11 +661,23 @@ int main(int argc, char *argv[])
 confpage:
 	if(fp != NULL) {
 
-		append_custom_config("smb.conf", fp);
+		if (check_if_file_exist("/jffs/configs/smb.conf.add")) {
+			char *addendum = read_whole_file("/jffs/configs/smb.conf.add");
+			if (addendum) {
+				fwrite(addendum, 1, strlen(addendum), fp);
+				free(addendum);
+			}
+
+		}
 		fclose(fp);
 
-		use_custom_config("smb.conf", SAMBA_CONF);
-		run_postconf("smb", SAMBA_CONF);
+		if (check_if_file_exist("/jffs/configs/smb.conf")) {
+			eval("cp","/jffs/configs/smb.conf",SAMBA_CONF,NULL);
+		}
+
+		if (check_if_file_exist("/jffs/scripts/smb.postconf")) {
+			eval("/jffs/scripts/smb.postconf", SAMBA_CONF);
+		}
 	}
 
 	free_disk_data(&disks_info);

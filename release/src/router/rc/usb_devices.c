@@ -3637,7 +3637,7 @@ usb_dbg("(%s): cur_val=%d, tmp_val=%d.\n", device_name, cur_val, tmp_val);
 	}
 	else{ // isACMNode(device_name).
 		// Find the control interface of cdc-acm.
-		if(!isACMInterface(interface_name)){
+		if(!isACMInterface(interface_name, 1, vid, pid)){
 			usb_dbg("(%s): Not control interface!\n", device_name);
 			file_unlock(isLock_tty);
 			file_unlock(isLock);
@@ -3932,8 +3932,8 @@ int asus_usb_interface(const char *device_name, const char *action){
 		}
 	}
 
-	if(!isSerialInterface(device_name)
-			&& !isACMInterface(device_name)
+	if(!isSerialInterface(device_name, 1, vid, pid)
+			&& !isACMInterface(device_name, 1, vid, pid)
 			&& !isRNDISInterface(device_name, vid, pid)
 			&& !isCDCETHInterface(device_name)
 #ifdef RTCONFIG_USB_BECEEM
@@ -4078,7 +4078,7 @@ int asus_usb_interface(const char *device_name, const char *action){
 	else if(!strcmp(nvram_safe_get("stop_ui_insmod"), "1")){
 		usb_dbg("(%s): Don't insmod the serial modules.\n", device_name);
 	}
-	else if(isSerialInterface(device_name)){
+	else if(isSerialInterface(device_name, 1, vid, pid)){
 		usb_dbg("(%s): Runing USB serial with (0x%04x/0x%04x)...\n", device_name, vid, pid);
 		sleep(1);
 		modprobe("usbserial");
@@ -4092,7 +4092,7 @@ int asus_usb_interface(const char *device_name, const char *action){
 		eval("insmod", "option", modem_cmd, buf);
 		sleep(1);
 	}
-	else if(isACMInterface(device_name)){
+	else if(isACMInterface(device_name, 1, vid, pid)){
 		usb_dbg("(%s): Runing USB ACM...\n", device_name);
 		modprobe("cdc-acm");
 		sleep(1);
