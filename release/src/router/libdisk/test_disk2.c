@@ -28,9 +28,6 @@
 #include <dirent.h>
 #include <bcmnvram.h>
 
-// From BusyBox and get volume's label.
-#include <autoconf.h>
-#include <volume_id_internal.h>
 #include <shared.h>
 
 #include "disk_initial.h"
@@ -48,6 +45,10 @@
 #define USB_OHCI_PORT_2 get_usb_ohci_port(1)
 #define USB_EHCI_PORT_3 get_usb_ehci_port(2)
 #define USB_OHCI_PORT_3 get_usb_ohci_port(2)
+
+#ifdef BCM_MMC
+#define SDCARD_PORT USB_EHCI_PORT_3
+#endif
 
 enum {
 	DEVICE_TYPE_UNKNOWN=0,
@@ -87,6 +88,22 @@ int isBeceemNode(const char *device_name)
 }
 #endif
 
+int isStorageDevice(const char *device_name){
+	if(!strncmp(device_name, "sd", 2))
+		return 1;
+
+	return 0;
+}
+
+#ifdef BCM_MMC
+int isMMCDevice(const char *device_name){
+	if(!strncmp(device_name, "mmcblk", 6))
+		return 1;
+
+	return 0;
+}
+#endif
+
 int get_device_type_by_device(const char *device_name)
 {
 	if(device_name == NULL || strlen(device_name) <= 0){
@@ -94,15 +111,13 @@ int get_device_type_by_device(const char *device_name)
 		return DEVICE_TYPE_UNKNOWN;
 	}
 
-#ifdef RTCONFIG_USB
-	if(!strncmp(device_name, "sd", 2)
-#ifdef SUPPORT_IDE_SATA_DISK
-			|| !strncmp(device_name, "hd", 2)
+	if(isStorageDevice(device_name)
+#ifdef BCM_MMC
+			|| isMMCDevice(device_name) // SD card.
 #endif
 			){
 		return DEVICE_TYPE_DISK;
 	}
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(!strncmp(device_name, "lp", 2)){
 		return DEVICE_TYPE_PRINTER;
@@ -171,7 +186,7 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 {
 	int device_type = get_device_type_by_device(device_name);
 	char device_path[128], usb_path[PATH_MAX];
-	char disk_name[4];
+	char disk_name[16];
 
 	if(device_type == DEVICE_TYPE_UNKNOWN)
 		return NULL;
@@ -179,10 +194,8 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 	memset(device_path, 0, 128);
 	memset(usb_path, 0, PATH_MAX);
 
-#ifdef RTCONFIG_USB
 	if(device_type == DEVICE_TYPE_DISK){
-		memset(disk_name, 0, 4);
-		strncpy(disk_name, device_name, 3);
+		get_disk_name(device_name, disk_name, 16);
 		sprintf(device_path, "%s/%s/device", SYS_BLOCK, disk_name);
 		if(realpath(device_path, usb_path) == NULL){
 			usb_dbg("(%s): Fail to get link: %s.\n", device_name, device_path);
@@ -190,7 +203,6 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 		}
 	}
 	else
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(device_type == DEVICE_TYPE_PRINTER){
 		sprintf(device_path, "%s/%s/device", SYS_USB, device_name);
@@ -245,6 +257,12 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 #endif
 		return NULL;
 
+#ifdef BCM_MMC
+	if(isMMCDevice(device_name)){ // SD card.
+		snprintf(buf, buf_size, "%s", SDCARD_PORT);
+	}
+	else
+#endif
 	if(get_usb_port_by_string(usb_path, buf, buf_size) == NULL){
 		usb_dbg("(%s): Fail to get usb port: %s.\n", device_name, usb_path);
 		return NULL;
@@ -256,40 +274,43 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 
 char *get_usb_node_by_string(const char *target_string, char *ret, const int ret_size)
 {
-	char usb_port[8], buf[16];
-	char *ptr, *ptr_end;
+	char usb_port[32], buf[16];
+	char *ptr, *ptr2, *ptr3;
 	int len;
 
-	memset(usb_port, 0, 8);
-	if(get_usb_port_by_string(target_string, usb_port, 8) == NULL)
+	memset(usb_port, 0, sizeof(usb_port));
+	if(get_usb_port_by_string(target_string, usb_port, sizeof(usb_port)) == NULL)
 		return NULL;
-
 	if((ptr = strstr(target_string, usb_port)) == NULL)
 		return NULL;
 	if(ptr != target_string)
 		ptr += strlen(usb_port)+1;
 
-	if((ptr_end = strchr(ptr, ':')) == NULL)
+	if((ptr2 = strchr(ptr, ':')) == NULL)
 		return NULL;
+	ptr3 = ptr2;
+	*ptr3 = 0;
 
-	len = strlen(ptr)-strlen(ptr_end);
+	if((ptr2 = strrchr(ptr, '/')) == NULL)
+		ptr2 = ptr;
+	else
+		ptr = ptr2+1;
+
+	len = strlen(ptr);
 	if(len > 16)
 		len = 16;
 
-	memset(buf, 0, 16);
+	memset(buf, 0, sizeof(buf));
 	strncpy(buf, ptr, len);
 
-	if((ptr = strrchr(buf, '/')) == NULL)
-		ptr = buf;
-	else
-		++ptr;
-
-	len = strlen(ptr);
+	len = strlen(buf);
 	if(len > ret_size)
 		len = ret_size;
 
 	memset(ret, 0, ret_size);
-	strncpy(ret, ptr, len);
+	strncpy(ret, buf, len);
+
+	*ptr3 = ':';
 
 	return ret;
 }
@@ -298,7 +319,7 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 {
 	int device_type = get_device_type_by_device(device_name);
 	char device_path[128], usb_path[PATH_MAX];
-	char disk_name[4];
+	char disk_name[16];
 
 	if(device_type == DEVICE_TYPE_UNKNOWN)
 		return NULL;
@@ -306,10 +327,8 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 	memset(device_path, 0, 128);
 	memset(usb_path, 0, PATH_MAX);
 
-#ifdef RTCONFIG_USB
 	if(device_type == DEVICE_TYPE_DISK){
-		memset(disk_name, 0, 4);
-		strncpy(disk_name, device_name, 3);
+		get_disk_name(device_name, disk_name, 16);
 		sprintf(device_path, "%s/%s/device", SYS_BLOCK, disk_name);
 		if(realpath(device_path, usb_path) == NULL){
 			usb_dbg("(%s): Fail to get link: %s.\n", device_name, device_path);
@@ -317,7 +336,6 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 		}
 	}
 	else
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(device_type == DEVICE_TYPE_PRINTER){
 		sprintf(device_path, "%s/%s/device", SYS_USB, device_name);
@@ -372,8 +390,14 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 #endif
 		return NULL;
 
+#ifdef BCM_MMC
+	if(isMMCDevice(device_name)){ // SD card.
+		snprintf(buf, buf_size, "%s", SDCARD_PORT);
+	}
+	else
+#endif
 	if(get_usb_node_by_string(usb_path, buf, buf_size) == NULL){
-		usb_dbg("(%s): Fail to get usb port: %s.\n", device_name, usb_path);
+		usb_dbg("(%s): Fail to get usb node: %s.\n", device_name, usb_path);
 		return NULL;
 	}
 
@@ -381,7 +405,7 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 }
 
 char *get_path_by_node(const char *usb_node, char *buf, const int buf_size){
-	char usb_port[8], *hub_path;
+	char usb_port[32], *hub_path;
 	int port_num = 0, len;
 
 	if(usb_node == NULL || buf == NULL || buf_size <= 0)
@@ -396,7 +420,7 @@ char *get_path_by_node(const char *usb_node, char *buf, const int buf_size){
 		return NULL;
 
 	if(strlen(usb_node) > (len = strlen(usb_port))){
-		hub_path = usb_node+len;
+		hub_path = (char *)usb_node+len;
 		snprintf(buf, buf_size, "%d%s", port_num, hub_path);
 	}
 	else
@@ -511,7 +535,11 @@ disk_info_t *read_disk_data(){
 
 		if(sscanf(line, "%u %*u %llu %[^\n ]", &major, &device_size, device_name) != 3)
 			continue;
-		if(major != USB_DISK_MAJOR)
+		if(major != USB_DISK_MAJOR
+#ifdef BCM_MMC
+				&& major != MMC_DISK_MAJOR
+#endif
+				)
 			continue;
 		if(device_size == 1) // extend partition.
 			continue;
@@ -567,6 +595,13 @@ int is_disk_name(const char *device_name){
 	if(get_device_type_by_device(device_name) != DEVICE_TYPE_DISK)
 		return 0;
 
+#ifdef BCM_MMC
+	if(isMMCDevice(device_name)){
+		if(strchr(device_name, 'p'))
+			return 0;
+	}
+	else
+#endif
 	if(isdigit(device_name[strlen(device_name)-1]))
 		return 0;
 
@@ -622,7 +657,11 @@ disk_info_t *create_disk(const char *device_name, disk_info_t **new_disk_info){
 	}
 	follow_disk_info->size_in_kilobytes = size_in_kilobytes;
 
-	if(!strncmp(device_name, "sd", 2)){
+	if(isStorageDevice(device_name)
+#ifdef BCM_MMC
+			|| isMMCDevice(device_name)
+#endif
+			){
 		// Get USB node.
 		if(get_usb_node_by_device(device_name, usb_node, 32) == NULL){
 			usb_dbg("(%s): Fail to get usb node.\n", device_name);
@@ -658,11 +697,7 @@ disk_info_t *create_disk(const char *device_name, disk_info_t **new_disk_info){
 		}
 
 		// start get vendor.
-		if(get_disk_vendor(device_name, buf, 64) == NULL){
-			usb_dbg("Fail to get disk's vendor: %s.\n", device_name);
-			free_disk_data(&follow_disk_info);
-			return NULL;
-		}
+		get_disk_vendor(device_name, buf, 64);
 
 		len = strlen(buf);
 		if(len > 0){
@@ -680,11 +715,7 @@ disk_info_t *create_disk(const char *device_name, disk_info_t **new_disk_info){
 		}
 
 		// start get model.
-		if(get_disk_model(device_name, buf, 64) == NULL){
-			usb_dbg("Fail to get disk's model: %s.\n", device_name);
-			free_disk_data(&follow_disk_info);
-			return NULL;
-		}
+		get_disk_model(device_name, buf, 64);
 
 		len = strlen(buf);
 		if(len > 0){
@@ -732,7 +763,12 @@ disk_info_t *create_disk(const char *device_name, disk_info_t **new_disk_info){
 			follow_disk_info->tag[len] = 0;
 		}
 		else{
-			len = strlen(DEFAULT_USB_TAG);
+#ifdef BCM_MMC
+			if(isMMCDevice(device_name))
+				len = strlen(DEFAULT_MMC_TAG);
+			else
+#endif
+				len = strlen(DEFAULT_USB_TAG);
 
 			follow_disk_info->tag = (char *)malloc(len+1);
 			if(follow_disk_info->tag == NULL){
@@ -740,7 +776,12 @@ disk_info_t *create_disk(const char *device_name, disk_info_t **new_disk_info){
 				free_disk_data(&follow_disk_info);
 				return NULL;
 			}
-			strcpy(follow_disk_info->tag, DEFAULT_USB_TAG);
+#ifdef BCM_MMC
+			if(isMMCDevice(device_name))
+				strcpy(follow_disk_info->tag, DEFAULT_MMC_TAG);
+			else
+#endif
+				strcpy(follow_disk_info->tag, DEFAULT_USB_TAG);
 			follow_disk_info->tag[len] = 0;
 		}
 
@@ -891,6 +932,7 @@ char *get_disk_vendor(const char *disk_name, char *buf, const int buf_size){
 
 	if(buf_size <= 0)
 		return NULL;
+	memset(buf, 0, buf_size);
 
 	if(disk_name == NULL || !is_disk_name(disk_name))
 		return NULL;
@@ -900,7 +942,6 @@ char *get_disk_vendor(const char *disk_name, char *buf, const int buf_size){
 	if((fp = fopen(target_file, "r")) == NULL)
 		return NULL;
 
-	memset(buf, 0, buf_size);
 	ptr = fgets(buf, buf_size, fp);
 	fclose(fp);
 	if(ptr == NULL)
@@ -919,6 +960,7 @@ char *get_disk_model(const char *disk_name, char *buf, const int buf_size){
 
 	if(buf_size <= 0)
 		return NULL;
+	memset(buf, 0, buf_size);
 
 	if(disk_name == NULL || !is_disk_name(disk_name))
 		return NULL;
@@ -928,7 +970,6 @@ char *get_disk_model(const char *disk_name, char *buf, const int buf_size){
 	if((fp = fopen(target_file, "r")) == NULL)
 		return NULL;
 
-	memset(buf, 0, buf_size);
 	ptr = fgets(buf, buf_size, fp);
 	fclose(fp);
 	if(ptr == NULL)
@@ -941,7 +982,7 @@ char *get_disk_model(const char *disk_name, char *buf, const int buf_size){
 }
 
 int get_disk_partitionnumber(const char *string, u32 *partition_number, u32 *mounted_number){
-	char disk_name[8];
+	char disk_name[16];
 	char target_path[128];
 	DIR *dp;
 	struct dirent *file;
@@ -964,6 +1005,11 @@ int get_disk_partitionnumber(const char *string, u32 *partition_number, u32 *mou
 	if(!is_disk_name(string)){
 		while(isdigit(string[len-1]))
 			--len;
+
+#ifdef BCM_MMC
+		if(string[len-1] == 'p')
+			--len;
+#endif
 	}
 	else if(mounted_number != NULL && mount_info != NULL){
 		memset(target, 0, 8);
@@ -971,7 +1017,7 @@ int get_disk_partitionnumber(const char *string, u32 *partition_number, u32 *mou
 		if(strstr(mount_info, target) != NULL)
 			++(*mounted_number);
 	}
-	memset(disk_name, 0, 8);
+	memset(disk_name, 0, 16);
 	strncpy(disk_name, string, len);
 
 	memset(target_path, 0, 128);
@@ -1017,7 +1063,12 @@ int is_partition_name(const char *device_name, u32 *partition_order){
 		return 0;
 
 	// get the partition number in the device_name
-	order = (u32)strtol(device_name+3, NULL, 10);
+#ifdef BCM_MMC
+	if(isMMCDevice(device_name)) // SD card: mmcblk0p1.
+		order = (u32)strtol(device_name+8, NULL, 10);
+	else // sda1.
+#endif
+		order = (u32)strtol(device_name+3, NULL, 10);
 	if(order <= 0 || order == LONG_MIN || order == LONG_MAX)
 		return 0;
 
@@ -1031,57 +1082,35 @@ int is_partition_name(const char *device_name, u32 *partition_order){
 }
 
 int find_partition_label(const char *dev_name, char *label){
-	struct volume_id id;
 	char dev_path[128];
-	char usb_port[8];
+	char usb_port[32];
 	char nvram_label[32], nvram_value[512];
+	int ret;
 
-	if(label) *label = 0;
+	if (label) *label = 0;
 
-	memset(usb_port, 0, 8);
-	if(get_usb_port_by_device(dev_name, usb_port, 8) == NULL)
+	memset(usb_port, 0, 32);
+	if (get_usb_port_by_device(dev_name, usb_port, sizeof(usb_port)) == NULL)
 		return 0;
 
-	memset(nvram_label, 0, 32);
-	sprintf(nvram_label, "usb_path_%s_label", dev_name);
+	snprintf(nvram_label, sizeof(nvram_label), "usb_path_%s_label", dev_name);
+	strlcpy(nvram_value, nvram_safe_get(nvram_label), sizeof(nvram_value));
+	if (*nvram_value)
+		goto ret;
 
-	memset(nvram_value, 0, 512);
-	strncpy(nvram_value, nvram_safe_get(nvram_label), 512);
-	if(strlen(nvram_value) > 0){
-		strcpy(label, nvram_value);
-
-		return (label && *label != 0);
-	}
-
-	memset(dev_path, 0, 128);
-	sprintf(dev_path, "/dev/%s", dev_name);
-
-	memset(&id, 0x00, sizeof(id));
-	if((id.fd = open(dev_path, O_RDONLY)) < 0)
+	snprintf(dev_path, sizeof(dev_path), "/dev/%s", dev_name);
+	ret = find_label_or_uuid(dev_path, nvram_value, NULL);
+	if (ret < 0)
 		return 0;
 
-	volume_id_get_buffer(&id, 0, SB_BUFFER_SIZE);
-
-	if(volume_id_probe_linux_swap(&id) == 0 || id.error)
-		goto ret;
-	if(volume_id_probe_ext(&id) == 0 || id.error)
-		goto ret;
-	if(volume_id_probe_vfat(&id) == 0 || id.error)
-		goto ret;
-	if(volume_id_probe_ntfs(&id) == 0 || id.error)
-		goto ret;
-	if(volume_id_probe_hfs_hfsplus(&id) == 0 || id.error)
-		goto ret;
+	if (ret == 0)
+		strcpy(nvram_value, " ");
+	nvram_set(nvram_label, nvram_value);
 
 ret:
-	volume_id_free_buffer(&id);
-	if(label && (*id.label != 0))
-		strcpy(label, id.label);
-	else
-		strcpy(label, " ");
-	nvram_set(nvram_label, label);
-	close(id.fd);
-	return (label && *label != 0);
+	if (label)
+		strcpy(label, nvram_value);
+	return (label && *label);
 }
 
 partition_info_t *create_partition(const char *device_name, partition_info_t **new_part_info){
@@ -1252,7 +1281,7 @@ void free_partition_data(partition_info_t **partition_info_list){
 
 int get_partition_size(const char *partition_name, u64 *size_in_kilobytes){
 	FILE *fp;
-	char disk_name[4];
+	char disk_name[16];
 	char target_file[128], buf[16], *ptr;
 
 	if(size_in_kilobytes == NULL)
@@ -1263,8 +1292,7 @@ int get_partition_size(const char *partition_name, u64 *size_in_kilobytes){
 	if(!is_partition_name(partition_name, NULL))
 		return 0;
 
-	strncpy(disk_name, partition_name, 3);
-	disk_name[3] = 0;
+	get_disk_name(partition_name, disk_name, 16);
 
 	memset(target_file, 0, 128);
 	sprintf(target_file, "%s/%s/%s/size", SYS_BLOCK, disk_name, partition_name);
@@ -1381,6 +1409,7 @@ char *get_disk_name(const char *string, char *buf, const int buf_size){
 
 	if(string == NULL || buf_size <= 0)
 		return NULL;
+	memset(buf, 0, buf_size);
 
 	if(!is_disk_name(string) && !is_partition_name(string, NULL))
 		return NULL;
@@ -1389,12 +1418,16 @@ char *get_disk_name(const char *string, char *buf, const int buf_size){
 	if(!is_disk_name(string)){
 		while(isdigit(string[len-1]))
 			--len;
+
+#ifdef BCM_MMC
+		if(string[len-1] == 'p')
+			--len;
+#endif
 	}
 
 	if(len > buf_size)
 		return NULL;
 
-	memset(buf, 0, buf_size);
 	strncpy(buf, string, len);
 
 	return buf;

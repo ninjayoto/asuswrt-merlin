@@ -20,6 +20,7 @@
 #include <arpa/inet.h>
 #include <sys/sysinfo.h>
 #include <sys/types.h>
+#include <linux/version.h>
 
 #include <bcmnvram.h>
 #include <bcmdevs.h>
@@ -28,35 +29,36 @@
 #include "shutils.h"
 #include "shared.h"
 
+#include <linux/version.h>
+#ifndef LINUX_KERNEL_VERSION
+#define LINUX_KERNEL_VERSION LINUX_VERSION_CODE
+#endif
 
 /* Serialize using fcntl() calls 
  */
 
-int check_magic(char *buf, char *magic)
-{
-	if (strncmp(magic, "ext3_chk", 8) == 0) 
-	{
-		if (!((uint32_t)(buf) & 4))
+int check_magic(char *buf, char *magic){
+	if(!strncmp(magic, "ext3_chk", 8)){
+		if(!((*buf)&4))
 			return 0;
-		if ((uint32_t)(buf+4) >= 0x40)
+		if(*(buf+4) >= 0x40)
 			return 0;
-		if((uint32_t)(buf+8) >=8)
+		if(*(buf+8) >= 8)
 			return 0;
 		return 1;
 	}
  
-	if (strncmp(magic, "ext4_chk", 8) == 0) 
-	{
-		if (!((uint32_t)(buf) & 4))
+	if(!strncmp(magic, "ext4_chk", 8)){
+		if(!((*buf)&4))
 			return 0;
-		if ((uint32_t)(buf+4) > 0x3F)
+		if(*(buf+4) > 0x3F)
 			return 1;
-		if ((uint32_t)(buf+4) >= 0x40)
+		if(*(buf+4) >= 0x40)
 			return 0;
-		if((uint32_t)(buf+8) <= 7)
+		if(*(buf+8) <= 7)
 			return 0;
 		return 1;
-	} 
+	}
 
 	return 0;
 }
@@ -257,7 +259,11 @@ int exec_for_host(int host, int obsolete, uint flags, host_exec func)
 		    !strcmp(dp->d_name, "..")
 		   )
 			continue;
+#if LINUX_KERNEL_VERSION >= KERNEL_VERSION(3,3,0)
+		snprintf(device_path, sizeof(device_path), "/sys/block/%s", dp->d_name);
+#else
 		snprintf(device_path, sizeof(device_path), "/sys/block/%s/device", dp->d_name);
+#endif
 		if (readlink(device_path, linkbuf, sizeof(linkbuf)) == -1)
 			continue;
 		h = strstr(linkbuf, "/host");
@@ -465,82 +471,4 @@ void add_remove_usbhost(char *host, int add)
 	unsetenv("PRODUCT");
 	unsetenv("SCSI_HOST");
 	unsetenv("ACTION");
-}
-
-
-/****************************************************/
-/* Use busybox routines to get labels for fat & ext */
-/* Probe for label the same way that mount does.    */
-/****************************************************/
-
-#define VOLUME_ID_LABEL_SIZE		64
-#define VOLUME_ID_UUID_SIZE		36
-#define SB_BUFFER_SIZE			0x11000
-
-struct volume_id {
-	int		fd;
-	int		error;
-	size_t		sbbuf_len;
-	size_t		seekbuf_len;
-	uint8_t		*sbbuf;
-	uint8_t		*seekbuf;
-	uint64_t	seekbuf_off;
-	char		label[VOLUME_ID_LABEL_SIZE+1];
-	char		uuid[VOLUME_ID_UUID_SIZE+1];
-};
-
-extern void volume_id_set_uuid();
-extern void *volume_id_get_buffer();
-extern void volume_id_free_buffer();
-extern int volume_id_probe_ext();
-extern int volume_id_probe_vfat();
-extern int volume_id_probe_ntfs();
-extern int volume_id_probe_linux_swap();
-
-/* Put the label in *label and uuid in *uuid.
- * Return 0 if no label/uuid found, NZ if there is a label or uuid.
- */
-int find_label_or_uuid(char *dev_name, char *label, char *uuid)
-{
-	struct volume_id id;
-
-	memset(&id, 0x00, sizeof(id));
-	if (label) *label = 0;
-	if (uuid) *uuid = 0;
-	if ((id.fd = open(dev_name, O_RDONLY)) < 0)
-		return 0;
-
-	volume_id_get_buffer(&id, 0, SB_BUFFER_SIZE);
-
-	if (volume_id_probe_linux_swap(&id) == 0 || id.error)
-		goto ret;
-	if (volume_id_probe_vfat(&id) == 0 || id.error)
-		goto ret;
-	if (volume_id_probe_ext(&id) == 0 || id.error)
-		goto ret;
-	if (volume_id_probe_ntfs(&id) == 0 || id.error)
-		goto ret;
-ret:
-	volume_id_free_buffer(&id);
-	if (label && (*id.label != 0))
-		strcpy(label, id.label);
-	if (uuid && (*id.uuid != 0))
-		strcpy(uuid, id.uuid);
-	close(id.fd);
-	return (label && *label != 0) || (uuid && *uuid != 0);
-}
-
-void *xmalloc(size_t siz)
-{
-	return (malloc(siz));
-}
-#if 0
-static void *xrealloc(void *old, size_t size)
-{
-	return realloc(old, size);
-}
-#endif
-ssize_t full_read(int fd, void *buf, size_t len)
-{
-	return read(fd, buf, len);
 }

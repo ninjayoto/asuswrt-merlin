@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <shared.h>
 #include "usb_info.h"
+#include "disk_initial.h"
 #include <shutils.h>
 
 //#ifdef RTN56U
@@ -87,15 +88,13 @@ int get_device_type_by_device(const char *device_name)
 		return DEVICE_TYPE_UNKNOWN;
 	}
 
-#ifdef RTCONFIG_USB
-	if(!strncmp(device_name, "sd", 2)
-#ifdef SUPPORT_IDE_SATA_DISK
-			|| !strncmp(device_name, "hd", 2)
+	if(isStorageDevice(device_name)
+#ifdef BCM_MMC
+			|| isMMCDevice(device_name) // SD card.
 #endif
 			){
 		return DEVICE_TYPE_DISK;
 	}
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(!strncmp(device_name, "lp", 2)){
 		return DEVICE_TYPE_PRINTER;
@@ -108,7 +107,7 @@ int get_device_type_by_device(const char *device_name)
 	if(!strncmp(device_name, "sr", 2)){
 		return DEVICE_TYPE_CD;
 	}
-	if(isSerialNode(device_name) || isACMNode(device_name)){
+	if(isTTYNode(device_name)){
 		return DEVICE_TYPE_MODEM;
 	}
 #endif
@@ -131,9 +130,7 @@ char *get_device_type_by_node(const char *usb_node, char *buf, const int buf_siz
 #ifdef RTCONFIG_USB_MODEM
 	int got_modem = 0;
 #endif
-#ifdef RTCONFIG_USB
 	int got_disk = 0;
-#endif
 	int got_others = 0;
 
 	interface_num = get_usb_interface_number(usb_node);
@@ -150,15 +147,13 @@ char *get_device_type_by_node(const char *usb_node, char *buf, const int buf_siz
 		else
 #endif
 #ifdef RTCONFIG_USB_MODEM
-		if(isSerialInterface(interface_name) || isACMInterface(interface_name))
+		if(isSerialInterface(interface_name, 0, 0, 0) || isACMInterface(interface_name, 0, 0, 0))
 			++got_modem;
 		else
 #endif
-#ifdef RTCONFIG_USB
 		if(isStorageInterface(interface_name))
 			++got_disk;
 		else
-#endif
 			++got_others;
 	}
 
@@ -174,12 +169,7 @@ char *get_device_type_by_node(const char *usb_node, char *buf, const int buf_siz
 #else
 			1
 #endif
-			&&
-#ifdef RTCONFIG_USB
-			!got_disk
-#else
-			1
-#endif
+			&& !got_disk
 			)
 		return NULL;
 
@@ -194,11 +184,9 @@ char *get_device_type_by_node(const char *usb_node, char *buf, const int buf_siz
 		strcpy(buf, "modem");
 	else
 #endif
-#ifdef RTCONFIG_USB
 	if(got_disk > 0)
 		strcpy(buf, "storage");
 	else
-#endif
 		return NULL;
 
 	return buf;
@@ -206,40 +194,43 @@ char *get_device_type_by_node(const char *usb_node, char *buf, const int buf_siz
 
 char *get_usb_node_by_string(const char *target_string, char *ret, const int ret_size)
 {
-	char usb_port[8], buf[16];
-	char *ptr, *ptr_end;
+	char usb_port[32], buf[16];
+	char *ptr, *ptr2, *ptr3;
 	int len;
 
 	memset(usb_port, 0, sizeof(usb_port));
 	if(get_usb_port_by_string(target_string, usb_port, sizeof(usb_port)) == NULL)
 		return NULL;
-
 	if((ptr = strstr(target_string, usb_port)) == NULL)
 		return NULL;
 	if(ptr != target_string)
 		ptr += strlen(usb_port)+1;
 
-	if((ptr_end = strchr(ptr, ':')) == NULL)
+	if((ptr2 = strchr(ptr, ':')) == NULL)
 		return NULL;
+	ptr3 = ptr2;
+	*ptr3 = 0;
 
-	len = ptr_end - ptr;
-	if(len >= sizeof(buf))
-		len = sizeof(buf)-1;
+	if((ptr2 = strrchr(ptr, '/')) == NULL)
+		ptr2 = ptr;
+	else
+		ptr = ptr2+1;
+
+	len = strlen(ptr);
+	if(len > 16)
+		len = 16;
 
 	memset(buf, 0, sizeof(buf));
 	strncpy(buf, ptr, len);
 
-	if((ptr = strrchr(buf, '/')) == NULL)
-		ptr = buf;
-	else
-		++ptr;
-
-	len = strlen(ptr);
+	len = strlen(buf);
 	if(len > ret_size)
 		len = ret_size;
 
 	memset(ret, 0, ret_size);
-	strncpy(ret, ptr, len);
+	strncpy(ret, buf, len);
+
+	*ptr3 = ':';
 
 	return ret;
 }
@@ -248,7 +239,7 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 {
 	int device_type = get_device_type_by_device(device_name);
 	char device_path[128], usb_path[PATH_MAX];
-	char disk_name[4];
+	char disk_name[16];
 
 	if(device_type == DEVICE_TYPE_UNKNOWN)
 		return NULL;
@@ -256,10 +247,8 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 	memset(device_path, 0, 128);
 	memset(usb_path, 0, PATH_MAX);
 
-#ifdef RTCONFIG_USB
 	if(device_type == DEVICE_TYPE_DISK){
-		memset(disk_name, 0, 4);
-		strncpy(disk_name, device_name, 3);
+		get_disk_name(device_name, disk_name, 16);
 		sprintf(device_path, "%s/%s/device", SYS_BLOCK, disk_name);
 		if(realpath(device_path, usb_path) == NULL){
 			usb_dbg("(%s): Fail to get link: %s.\n", device_name, device_path);
@@ -267,7 +256,6 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 		}
 	}
 	else
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(device_type == DEVICE_TYPE_PRINTER){
 		sprintf(device_path, "%s/%s/device", SYS_USB, device_name);
@@ -322,8 +310,14 @@ char *get_usb_node_by_device(const char *device_name, char *buf, const int buf_s
 #endif
 		return NULL;
 
+#ifdef BCM_MMC
+	if(isMMCDevice(device_name)){ // SD card.
+		snprintf(buf, buf_size, "%s", SDCARD_PORT);
+	}
+	else
+#endif
 	if(get_usb_node_by_string(usb_path, buf, buf_size) == NULL){
-		usb_dbg("(%s): Fail to get usb port: %s.\n", device_name, usb_path);
+		usb_dbg("(%s): Fail to get usb node: %s.\n", device_name, usb_path);
 		return NULL;
 	}
 
@@ -346,6 +340,10 @@ char *get_usb_port_by_string(const char *target_string, char *buf, const int buf
 		strcpy(buf, USB_OHCI_PORT_1);
 	else if(strstr(target_string, USB_OHCI_PORT_2))
 		strcpy(buf, USB_OHCI_PORT_2);
+#ifdef BCM_MMC
+	else if(strstr(target_string, SDCARD_PORT))
+		strcpy(buf, SDCARD_PORT);
+#endif
 	else if(strstr(target_string, USB_EHCI_PORT_3))
 		strcpy(buf, USB_EHCI_PORT_3);
 	else if(strstr(target_string, USB_OHCI_PORT_3))
@@ -360,7 +358,7 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 {
 	int device_type = get_device_type_by_device(device_name);
 	char device_path[128], usb_path[PATH_MAX];
-	char disk_name[4];
+	char disk_name[16];
 
 	if(device_type == DEVICE_TYPE_UNKNOWN)
 		return NULL;
@@ -368,10 +366,8 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 	memset(device_path, 0, 128);
 	memset(usb_path, 0, PATH_MAX);
 
-#ifdef RTCONFIG_USB
 	if(device_type == DEVICE_TYPE_DISK){
-		memset(disk_name, 0, 4);
-		strncpy(disk_name, device_name, 3);
+		get_disk_name(device_name, disk_name, 16);
 		sprintf(device_path, "%s/%s/device", SYS_BLOCK, disk_name);
 		if(realpath(device_path, usb_path) == NULL){
 			usb_dbg("(%s): Fail to get link: %s.\n", device_name, device_path);
@@ -379,7 +375,6 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 		}
 	}
 	else
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(device_type == DEVICE_TYPE_PRINTER){
 		sprintf(device_path, "%s/%s/device", SYS_USB, device_name);
@@ -434,6 +429,12 @@ char *get_usb_port_by_device(const char *device_name, char *buf, const int buf_s
 #endif
 		return NULL;
 
+#ifdef BCM_MMC
+	if(isMMCDevice(device_name)){ // SD card.
+		snprintf(buf, buf_size, "%s", SDCARD_PORT);
+	}
+	else
+#endif
 	if(get_usb_port_by_string(usb_path, buf, buf_size) == NULL){
 		usb_dbg("(%s): Fail to get usb port: %s.\n", device_name, usb_path);
 		return NULL;
@@ -497,7 +498,7 @@ char *get_interface_by_device(const char *device_name, char *buf, const int buf_
 {
 	int device_type = get_device_type_by_device(device_name);
 	char device_path[128], usb_path[PATH_MAX];
-	char disk_name[4];
+	char disk_name[16];
 
 	if(device_type == DEVICE_TYPE_UNKNOWN)
 		return NULL;
@@ -505,10 +506,8 @@ char *get_interface_by_device(const char *device_name, char *buf, const int buf_
 	memset(device_path, 0, 128);
 	memset(usb_path, 0, PATH_MAX);
 
-#ifdef RTCONFIG_USB
 	if(device_type == DEVICE_TYPE_DISK){
-		memset(disk_name, 0, 4);
-		strncpy(disk_name, device_name, 3);
+		get_disk_name(device_name, disk_name, 16);
 		sprintf(device_path, "%s/%s/device", SYS_BLOCK, disk_name);
 		if(realpath(device_path, usb_path) == NULL){
 			usb_dbg("(%s): Fail to get link: %s.\n", device_name, device_path);
@@ -516,7 +515,6 @@ char *get_interface_by_device(const char *device_name, char *buf, const int buf_
 		}
 	}
 	else
-#endif
 #ifdef RTCONFIG_USB_PRINTER
 	if(device_type == DEVICE_TYPE_PRINTER){
 		sprintf(device_path, "%s/%s/device", SYS_USB, device_name);
@@ -580,7 +578,7 @@ char *get_interface_by_device(const char *device_name, char *buf, const int buf_
 }
 
 char *get_path_by_node(const char *usb_node, char *buf, const int buf_size){
-	char usb_port[8], *hub_path;
+	char usb_port[32], *hub_path;
 	int port_num = 0, len;
 
 	if(usb_node == NULL || buf == NULL || buf_size <= 0)
@@ -595,7 +593,7 @@ char *get_path_by_node(const char *usb_node, char *buf, const int buf_size){
 		return NULL;
 
 	if(strlen(usb_node) > (len = strlen(usb_port))){
-		hub_path = usb_node+len;
+		hub_path = (char *)usb_node+len;
 		snprintf(buf, buf_size, "%d%s", port_num, hub_path);
 	}
 	else
@@ -607,7 +605,7 @@ char *get_path_by_node(const char *usb_node, char *buf, const int buf_size){
 static FILE *open_usb_target(const char *usb_node, const char *target, const int wait)
 {
 	FILE *fp;
-	char usb_port[8], target_file[128];
+	char usb_port[32], target_file[128];
 	int retry = wait;
 
 	if(usb_node == NULL || target == NULL ||
@@ -972,6 +970,14 @@ int hadGCTModule(void){
 }
 #endif
 
+int isTTYNode(const char *device_name)
+{
+	if(strncmp(device_name, "tty", 3))
+		return 0;
+
+	return 1;
+}
+
 int isSerialNode(const char *device_name)
 {
 	if(strstr(device_name, "ttyUSB") == NULL)
@@ -998,9 +1004,15 @@ int isBeceemNode(const char *device_name)
 }
 #endif
 
-int isSerialInterface(const char *interface_name)
+int isSerialInterface(const char *interface_name, const int specifics, const unsigned int vid, const unsigned int pid)
 {
 	char interface_class[4];
+
+	if(specifics){
+		// HTC M8
+		if(vid == 0x0bb4 && (pid == 0x0f64 || pid == 0x0f60))
+			return 0;
+	}
 
 	if(get_usb_interface_class(interface_name, interface_class, 4) == NULL)
 		return 0;
@@ -1011,9 +1023,15 @@ int isSerialInterface(const char *interface_name)
 	return 1;
 }
 
-int isACMInterface(const char *interface_name)
+int isACMInterface(const char *interface_name, const int specifics, const unsigned int vid, const unsigned int pid)
 {
 	char interface_class[4], interface_subclass[4];
+
+	if(specifics){
+		// HTC M8
+		if(vid == 0x0bb4 && (pid == 0x0f64 || pid == 0x0f60))
+			return 0;
+	}
 
 	if(get_usb_interface_class(interface_name, interface_class, 4) == NULL)
 		return 0;
@@ -1081,6 +1099,34 @@ int isCDCETHInterface(const char *interface_name)
 	return 1;
 }
 
+int isNCMInterface(const char *interface_name)
+{
+	char interface_class[4], interface_subclass[4];
+	char target_file[128];
+	DIR *module_dir;
+
+	if(get_usb_interface_class(interface_name, interface_class, 4) == NULL)
+		return 0;
+
+	if(strcmp(interface_class, "02"))
+		return 0;
+
+	if(get_usb_interface_subclass(interface_name, interface_subclass, 4) == NULL)
+		return 0;
+
+	if(strcmp(interface_subclass, "0d"))
+		return 0;
+
+	memset(target_file, 0, 128);
+	sprintf(target_file, "%s/%s", SYS_NCM_PATH, interface_name);
+	if((module_dir = opendir(target_file)) == NULL)
+		return 0;
+
+	closedir(module_dir);
+
+	return 1;
+}
+
 #ifdef RTCONFIG_USB_BECEEM
 int isGCTInterface(const char *interface_name){
 	char interface_class[4];
@@ -1095,7 +1141,7 @@ int isGCTInterface(const char *interface_name){
 }
 #endif
 
-// 0: no modem, 1: has modem, 2: has modem but system isn't ready.
+// 0: no modem, 1: has modem
 int is_usb_modem_ready(void)
 {
 	char prefix[32], tmp[32];
@@ -1105,25 +1151,17 @@ int is_usb_modem_ready(void)
 	if(nvram_match("modem_enable", "0"))
 		return 0;
 
-	snprintf(usb_node, 32, "%s", nvram_safe_get("usb_modem_act_path"));
-	if(strlen(usb_node) <= 0)
+	if(snprintf(usb_node, sizeof(usb_node), "%s", nvram_safe_get("usb_modem_act_path")) <= 0)
 		return 0;
 
 	if(get_path_by_node(usb_node, port_path, 8) == NULL)
 		return 0;
 
-	snprintf(prefix, 32, "usb_path%s", port_path);
-	snprintf(usb_act, 8, "%s", nvram_safe_get(strcat_r(prefix, "_act", tmp)));
+	snprintf(prefix, sizeof(prefix), "usb_path%s", port_path);
+	snprintf(usb_act, sizeof(usb_act), "%s", nvram_safe_get(strcat_r(prefix, "_act", tmp)));
 
-	if(nvram_match(prefix, "modem") && strlen(usb_act) != 0){
-		// for the router dongle: Huawei E353, E3131.
-		if(!strncmp(usb_act, "eth", 3) || !strncmp(usb_act, "usb", 3)){
-			if(!strncmp(nvram_safe_get("lan_ipaddr"), "192.168.1.", 10))
-				return 2;
-		}
-
+	if(nvram_match(prefix, "modem") && *usb_act)
 		return 1;
-	}
 
 	return 0;
 }
@@ -1181,7 +1219,6 @@ int isPrinterInterface(const char *interface_name)
 }
 #endif // RTCONFIG_USB_PRINTER
 
-#ifdef RTCONFIG_USB
 int isStorageInterface(const char *interface_name)
 {
 	char interface_class[4];
@@ -1194,13 +1231,28 @@ int isStorageInterface(const char *interface_name)
 
 	return 1;
 }
-#endif // RTCONFIG_USB
+
+int isStorageDevice(const char *device_name){
+	if(!strncmp(device_name, "sd", 2))
+		return 1;
+
+	return 0;
+}
+
+#ifdef BCM_MMC
+int isMMCDevice(const char *device_name){
+	if(!strncmp(device_name, "mmcblk", 6))
+		return 1;
+
+	return 0;
+}
+#endif
 
 char *find_sg_of_device(const char *device_name, char *buf, const int buf_size)
 {
 	DIR *dp;
 	struct dirent *file;
-	char target_usb_port[8], check_usb_port[8];
+	char target_usb_port[32], check_usb_port[32];
 	int got_sg = 0;
 
 	if(get_usb_port_by_device(device_name, target_usb_port, sizeof(target_usb_port)) == NULL)
@@ -1232,4 +1284,14 @@ char *find_sg_of_device(const char *device_name, char *buf, const int buf_size)
 		return NULL;
 
 	return buf;
+}
+
+char *get_gobi_portpath(){
+#ifdef RT4GAC68U
+	return "3";
+#elif defined(RT4GAC55U)
+	return "2";
+#endif
+
+	return "";
 }

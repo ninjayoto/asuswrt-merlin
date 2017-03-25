@@ -57,13 +57,15 @@ struct server_config_t {
 	struct static_lease *static_leases; /* List of ip/mac pairs to assign static leases */
 } FIX_ALIASING;
 
-#define server_config (*(struct server_config_t*)&bb_common_bufsiz1)
+#define server_config (*(struct server_config_t*)bb_common_bufsiz1)
 /* client_config sits in 2nd half of bb_common_bufsiz1 */
 
 #if ENABLE_FEATURE_UDHCP_PORT
-#define SERVER_PORT (server_config.port)
+#define SERVER_PORT  (server_config.port)
+#define SERVER_PORT6 (server_config.port)
 #else
-#define SERVER_PORT 67
+#define SERVER_PORT  67
+#define SERVER_PORT6 547
 #endif
 
 
@@ -98,7 +100,7 @@ struct dyn_lease *add_lease(
 int is_expired_lease(struct dyn_lease *lease) FAST_FUNC;
 struct dyn_lease *find_lease_by_mac(const uint8_t *mac) FAST_FUNC;
 struct dyn_lease *find_lease_by_nip(uint32_t nip) FAST_FUNC;
-uint32_t find_free_or_expired_nip(const uint8_t *safe_mac) FAST_FUNC;
+uint32_t find_free_or_expired_nip(const uint8_t *safe_mac, unsigned arpping_ms) FAST_FUNC;
 
 
 /* Config file parser will pass static lease info to this function

@@ -17,7 +17,9 @@ static struct dyn_lease *oldest_expired_lease(void)
 	/* Unexpired leases have g_leases[i].expires >= current time
 	 * and therefore can't ever match */
 	for (i = 0; i < server_config.max_leases; i++) {
-		if (g_leases[i].expires < oldest_time) {
+		if (g_leases[i].expires == 0 /* empty entry */
+		 || g_leases[i].expires < oldest_time
+		) {
 			oldest_time = g_leases[i].expires;
 			oldest_lease = &g_leases[i];
 		}
@@ -65,10 +67,15 @@ struct dyn_lease* FAST_FUNC add_lease(
 			if (hostname_len > sizeof(oldest->hostname))
 				hostname_len = sizeof(oldest->hostname);
 			p = safe_strncpy(oldest->hostname, hostname, hostname_len);
-			/* sanitization (s/non-ASCII/^/g) */
+			/*
+			 * Sanitization (s/bad_char/./g).
+			 * The intent is not to allow only "DNS-valid" hostnames,
+			 * but merely make dumpleases output safe for shells to use.
+			 * We accept "0-9A-Za-z._-", all other chars turn to dots.
+			 */
 			while (*p) {
-				if (*p < ' ' || *p > 126)
-					*p = '^';
+				if (!isalnum(*p) && *p != '-' && *p != '_')
+					*p = '.';
 				p++;
 			}
 		}
@@ -112,7 +119,7 @@ struct dyn_lease* FAST_FUNC find_lease_by_nip(uint32_t nip)
 }
 
 /* Check if the IP is taken; if it is, add it to the lease table */
-static int nobody_responds_to_arp(uint32_t nip, const uint8_t *safe_mac)
+static int nobody_responds_to_arp(uint32_t nip, const uint8_t *safe_mac, unsigned arpping_ms)
 {
 	struct in_addr temp;
 	int r;
@@ -120,19 +127,20 @@ static int nobody_responds_to_arp(uint32_t nip, const uint8_t *safe_mac)
 	r = arpping(nip, safe_mac,
 			server_config.server_nip,
 			server_config.server_mac,
-			server_config.interface);
+			server_config.interface,
+			arpping_ms);
 	if (r)
 		return r;
 
 	temp.s_addr = nip;
-	bb_info_msg("%s belongs to someone, reserving it for %u seconds",
+	bb_error_msg("%s belongs to someone, reserving it for %u seconds",
 		inet_ntoa(temp), (unsigned)server_config.conflict_time);
 	add_lease(NULL, nip, server_config.conflict_time, NULL, 0);
 	return 0;
 }
 
 /* Find a new usable (we think) address */
-uint32_t FAST_FUNC find_free_or_expired_nip(const uint8_t *safe_mac)
+uint32_t FAST_FUNC find_free_or_expired_nip(const uint8_t *safe_mac, unsigned arpping_ms)
 {
 	uint32_t addr;
 	struct dyn_lease *oldest_lease = NULL;
@@ -146,7 +154,7 @@ uint32_t FAST_FUNC find_free_or_expired_nip(const uint8_t *safe_mac)
 	 */
 	hash = 0;
 	for (i = 0; i < 6; i++)
-		hash += safe_mac[i] + (hash << 6) + (hash << 16) - hash;
+		hash = safe_mac[i] + (hash << 6) + (hash << 16) - hash;
 
 	/* pick a seed based on hwaddr then iterate until we find a free address. */
 	addr = server_config.start_ip
@@ -177,7 +185,7 @@ uint32_t FAST_FUNC find_free_or_expired_nip(const uint8_t *safe_mac)
 		lease = find_lease_by_nip(nip);
 		if (!lease) {
 //TODO: DHCP servers do not always sit on the same subnet as clients: should *ping*, not arp-ping!
-			if (nobody_responds_to_arp(nip, safe_mac))
+			if (nobody_responds_to_arp(nip, safe_mac, arpping_ms))
 				return nip;
 		} else {
 			if (!oldest_lease || lease->expires < oldest_lease->expires)
@@ -194,7 +202,7 @@ uint32_t FAST_FUNC find_free_or_expired_nip(const uint8_t *safe_mac)
 
 	if (oldest_lease
 	 && is_expired_lease(oldest_lease)
-	 && nobody_responds_to_arp(oldest_lease->lease_nip, safe_mac)
+	 && nobody_responds_to_arp(oldest_lease->lease_nip, safe_mac, arpping_ms)
 	) {
 		return oldest_lease->lease_nip;
 	}

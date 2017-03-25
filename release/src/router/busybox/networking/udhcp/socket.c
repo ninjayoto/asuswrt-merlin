@@ -25,7 +25,8 @@
 #include "common.h"
 #include <net/if.h>
 
-int FAST_FUNC udhcp_read_interface(const char *interface, int *ifindex, uint32_t *nip, uint8_t *mac, uint16_t *mtu)
+int FAST_FUNC udhcp_read_interface(const char *interface, int *ifindex,
+		uint32_t *nip, uint8_t *mac, uint16_t *mtu)
 {
 	/* char buffer instead of bona-fide struct avoids aliasing warning */
 	char ifr_buf[sizeof(struct ifreq)];
@@ -56,7 +57,7 @@ int FAST_FUNC udhcp_read_interface(const char *interface, int *ifindex, uint32_t
 			close(fd);
 			return -1;
 		}
-		log1("Adapter index %d", ifr->ifr_ifindex);
+		log1("adapter index %d", ifr->ifr_ifindex);
 		*ifindex = ifr->ifr_ifindex;
 	}
 
@@ -75,7 +76,7 @@ int FAST_FUNC udhcp_read_interface(const char *interface, int *ifindex, uint32_t
 			close(fd);
 			return -1;
 		}
-		log1("Adapter mtu %d", ifr->ifr_mtu);
+		log1("MTU %d", ifr->ifr_mtu);
 		*mtu = ifr->ifr_mtu;
 	}
 
@@ -91,7 +92,7 @@ int FAST_FUNC udhcp_listen_socket(/*uint32_t ip,*/ int port, const char *inf)
 	struct sockaddr_in addr;
 	char *colon;
 
-	log1("Opening listen socket on *:%d %s", port, inf);
+	log1("opening listen socket on *:%d %s", port, inf);
 	fd = xsocket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	setsockopt_reuseaddr(fd);
