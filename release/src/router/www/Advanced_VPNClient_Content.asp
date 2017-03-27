@@ -153,6 +153,7 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 var vpnc_clientlist = decodeURIComponent('<% nvram_char_to_ascii("","vpnc_clientlist"); %>');
 var vpnc_clientlist_array_ori = '<% nvram_char_to_ascii("","vpnc_clientlist"); %>';
 var vpnc_clientlist_array = decodeURIComponent(vpnc_clientlist_array_ori);
+var vpnc_pptp_options_x_list_array = decodeURIComponent('<% nvram_char_to_ascii("", "vpnc_pptp_options_x_list"); %>');
 var overlib_str0 = new Array();	//Viz add 2013.04 for record longer VPN client username/pwd
 var overlib_str1 = new Array();	//Viz add 2013.04 for record longer VPN client username/pwd
 
@@ -171,6 +172,8 @@ function Add_profile(){
 	document.form.vpnc_svr_edit.value = "";
 	document.form.vpnc_account_edit.value = "";
 	document.form.vpnc_pwd_edit.value = "";
+	document.form.selPPTPOption.value = "auto";
+	document.getElementById("pptpOptionHint").style.display = "none";
 	tabclickhandler(0);
 
 	$("cancelBtn").style.display = "";
@@ -200,7 +203,7 @@ function addRow_Group(upper, flag, idx){
 		}
 
 		if(validForm(flag)){
-			
+			var vpnc_clientlist_row = vpnc_clientlist_array.split('<');
 			duplicateCheck.saveTotmpIdx(idx);
 			duplicateCheck.tmpStr = "";
 			duplicateCheck.saveToTmpStr(type_obj, 0);
@@ -214,16 +217,32 @@ function addRow_Group(upper, flag, idx){
 				return false;
 			}
 			
-			var vpnc_clientlist_row = vpnc_clientlist_array.split('<');
+
 			vpnc_clientlist_row[idx] = description_obj.value+">"+type_obj.value+">"+server_obj.value+">"+username_obj.value+">"+password_obj.value;
-			//alert(idx+" ; "+vpnc_clientlist_row.join("<"));
-						
 			vpnc_clientlist_array = vpnc_clientlist_row.join("<");
+
+			//edit vpnc_pptp_options_x_list
+			if(vpnc_pptp_options_x_list_array == "") {
+				//idx: NaN=Add i=edit row
+				vpnc_pptp_options_x_list_array = reFillEmptyPPTPOPtion(idx, document.form.selPPTPOption.value, vpnc_clientlist_array);
+			}
+			else {
+				vpnc_pptp_options_x_list_array = handlePPTPOPtion(idx, document.form.selPPTPOption.value, vpnc_clientlist_array);
+			}
+
+			document.form.vpnc_pptp_options_x_list.value = vpnc_pptp_options_x_list_array;
+
+			// update vpnc_pptp_options_x
+			document.form.vpnc_pptp_options_x.value = "";
+			if(flag == "PPTP" && document.form.selPPTPOption.value != "auto") {
+				document.form.vpnc_pptp_options_x.value = document.form.selPPTPOption.value;
+			}
+
 			show_vpnc_rulelist();
 			cancel_add_rule();
 			idx_tmp= "";
-			document.vpnclientForm.vpnc_clientlist.value = vpnc_clientlist_row.join("<");
-			document.vpnclientForm.submit();		
+			document.form.vpnc_clientlist.value = vpnc_clientlist_row.join("<");
+			document.form.submit();
 			
 		}		
 	}
@@ -265,13 +284,89 @@ function addRow_Group(upper, flag, idx){
 			if(vpnc_clientlist_array.charAt(0) == "<")
 				vpnc_clientlist_array = vpnc_clientlist_array.substr(1,vpnc_clientlist_array.length);
 
+			//add vpnc_pptp_options_x_list
+			if(vpnc_pptp_options_x_list_array == "") {		//idx: NaN=Add i=edit row
+				vpnc_pptp_options_x_list_array = reFillEmptyPPTPOPtion(idx, document.form.selPPTPOption.value, vpnc_clientlist_array);
+			}
+			else{
+				vpnc_pptp_options_x_list_array = handlePPTPOPtion(idx, document.form.selPPTPOption.value, vpnc_clientlist_array);
+			}
+
 			show_vpnc_rulelist();
 			cancel_add_rule();
 			idx_tmp= "";
-			document.vpnclientForm.vpnc_clientlist.value = vpnc_clientlist_array;
-			document.vpnclientForm.submit();
+			document.form.vpnc_clientlist.value = vpnc_clientlist_array;
+			document.form.submit();
 		}				
 	}	
+}
+
+function reFillEmptyPPTPOPtion(idx, objValue, vpncClientList) {
+	var finalPPTPOptionsList = "";
+	var currentVPNCList = vpncClientList;
+	var currentVPNCListNum = currentVPNCList.split("<").length;
+	if(idx >= 0){
+		for(var i = 0; i < currentVPNCListNum; i += 1){
+			if(i == idx){
+				finalPPTPOptionsList += "<" + objValue;
+			}
+			else{
+				finalPPTPOptionsList += "<auto";
+			}
+		}
+	}
+	else{ //add
+		for(var i = 1; i < currentVPNCListNum; i += 1) {
+			finalPPTPOptionsList += "<auto";
+		}
+
+		finalPPTPOptionsList += "<" + objValue;
+	}
+
+	return finalPPTPOptionsList;
+}
+
+function handlePPTPOPtion(idx, objValue, vpncClientList) {
+	var finalPPTPOptionsList = "";
+	var currentVPNCList = vpncClientList;
+	var currentVPNCListNum = currentVPNCList.split("<").length;
+	var origPPTPOptionsList = vpnc_pptp_options_x_list_array;
+	var origPPTPOptionsListArray = origPPTPOptionsList.split("<");
+	var origPPTPOptionsListArrayNum = origPPTPOptionsListArray.length;
+	if(idx >= 0){ //edit
+		for(var i = 0; i < currentVPNCListNum; i += 1) {
+			if(i == idx) {
+				if(objValue == "") {
+					finalPPTPOptionsList += "<auto";
+				}
+				else {
+					finalPPTPOptionsList += "<" + objValue;
+				}
+			}
+			else {
+				if(origPPTPOptionsListArray[i + 1] == "undefined") {
+					finalPPTPOptionsList += "<auto";
+				}
+				else {
+					finalPPTPOptionsList += "<" +  origPPTPOptionsListArray[i + 1];
+				}
+			}
+		}
+	}
+	else{ //add
+		for(var i = 1; i < currentVPNCListNum; i += 1){
+			if(origPPTPOptionsListArray[i] == "undefined"){
+				finalPPTPOptionsList += "<auto";
+			}
+			else{
+				finalPPTPOptionsList += "<" + origPPTPOptionsListArray[i];
+			}
+		}
+
+		finalPPTPOptionsList += "<" + objValue;
+	}
+
+	return finalPPTPOptionsList;
 }
 
 var duplicateCheck = {
@@ -361,11 +456,13 @@ function tabclickhandler(_type){
 		save_flag = "PPTP";
 		document.form.vpnc_type.value = "PPTP";
 		document.getElementById('pptpcTitle').className = "vpnClientTitle_td_click";
+		document.getElementById('trPPTPOptions').style.display = "";
 	}
 	else if(_type == 1){
 		save_flag = "L2TP";
 		document.form.vpnc_type.value = "L2TP";
 		document.getElementById('l2tpcTitle').className = "vpnClientTitle_td_click";
+		document.getElementById('trPPTPOptions').style.display = "none";
 	}
 }
 
@@ -461,27 +558,44 @@ function connect_Row(rowdata, flag){
 					document.form.vpnc_proto.value = "openvpn";
 			} 
 			else if(j ==2){
-				if(vpnc_clientlist_col[1] == "OpenVPN")
-					document.form.vpn_client_unit.value = 1;	//1, 2
-				else
+//				if(vpnc_clientlist_col[1] == "OpenVPN")
+//					document.form.vpn_client_unit.value = 1;	//1, 2
+//				else
 					document.form.vpnc_heartbeat_x.value = vpnc_clientlist_col[2];
 			} 
 			else if(j ==3){
-				if(vpnc_clientlist_col[1] == "OpenVPN")
-					document.form.vpn_client1_username.value = vpnc_clientlist_col[3];
-				else
+//				if(vpnc_clientlist_col[1] == "OpenVPN")
+//					document.form.vpn_client1_username.value = vpnc_clientlist_col[3];
+//				else
 					document.form.vpnc_pppoe_username.value = vpnc_clientlist_col[3];
 			} 
 			else if(j ==4){
-				if(vpnc_clientlist_col[1] == "OpenVPN")				
-					document.form.vpn_client1_password.value = vpnc_clientlist_col[4];
-				else	
+//				if(vpnc_clientlist_col[1] == "OpenVPN")
+//					document.form.vpn_client1_password.value = vpnc_clientlist_col[4];
+//				else
 					document.form.vpnc_pppoe_passwd.value = vpnc_clientlist_col[4];
 			} 
 		}
 		//document.form.vpnc_clientlist.value = vpnc_clientlist_array;
+
+		//handle vpnc_pptp_options_x
+		if(vpnc_clientlist_col[1] == "PPTP"){
+			var origPPTPOptionsList = vpnc_pptp_options_x_list_array;
+			if(origPPTPOptionsList != ""){
+				var origPPTPOptionsListArray = origPPTPOptionsList.split("<");
+				var setPPTPOption = origPPTPOptionsListArray[idx + 1];
+				document.form.vpnc_pptp_options_x.value = "";
+				if(setPPTPOption != "auto" && setPPTPOption != "undefined") {
+					document.form.vpnc_pptp_options_x.value = setPPTPOption;
+				}
+			}
+			else{
+				document.form.vpnc_pptp_options_x.value = "";
+			}
+		}
 	}
 
+	document.form.vpnc_pptp_options_x_list.value = vpnc_pptp_options_x_list_array;
 	document.form.vpnc_clientlist.value = vpnc_clientlist_array;	
 	rowdata.parentNode.innerHTML = "<img src='/images/InternetScan.gif'>";
 	document.form.submit();	
@@ -495,7 +609,30 @@ function Edit_Row(rowdata, flag){
 	idx_tmp = rowdata.parentNode.parentNode.rowIndex;
 	var vpnc_clientlist_row = vpnc_clientlist_array.split('<');
 	var vpnc_clientlist_col = vpnc_clientlist_row[idx].split('>');
+	//get idx of PPTP option value
+	var pptpOptionValue = "";
+	var origPPTPOptionsList = vpnc_pptp_options_x_list_array;
+	if(idx >= 0){
+		var origPPTPOptionsListArray = origPPTPOptionsList.split("<");
+		if(origPPTPOptionsListArray.length == 1) { //avoid vpnc_pptp_options_x_list is null
+			pptpOptionValue = "auto";
+		}
+		else{
+			if(origPPTPOptionsListArray[idx + 1] == "undefined"){
+				pptpOptionValue = "auto";
+			}
+			else{
+				pptpOptionValue = origPPTPOptionsListArray[idx + 1];
+			}
 
+		}
+	}
+	else{	//default is auto
+		pptpOptionValue = "auto";
+	}
+
+	document.form.selPPTPOption.value = pptpOptionValue;
+	pptpOptionChange();
 	for(var j=0; j<vpnc_clientlist_col.length; j++){
 		if(j == 0){
 			document.form.vpnc_des_edit.value = vpnc_clientlist_col[0];
@@ -523,11 +660,11 @@ function Edit_Row(rowdata, flag){
 	if(vpnc_clientlist_col[1] == "PPTP"){
 		document.getElementById("pptpcTitle").style.display = "";
 		document.getElementById("l2tpcTitle").style.display = "none";
-		document.getElementById("opencTitle").style.display = "none";
+		document.getElementById("trPPTPOptions").style.display = "";
 	}else if(vpnc_clientlist_col[1] == "L2TP"){
 		document.getElementById("pptpcTitle").style.display = "none";
 		document.getElementById("l2tpcTitle").style.display = "";
-		document.getElementById("opencTitle").style.display = "none";
+		document.getElementById("trPPTPOptions").style.display = "none";
 	}	
 }
 
@@ -550,6 +687,24 @@ function del_Row(rowdata, flag){
 		if(vpnc_clientlist_array == "")
 			show_vpnc_rulelist();
 
+		//del vpnc_pptp_options_x_list
+		var tempPPTPOptionsValue = "";
+		var origPPTPOptionsList = vpnc_pptp_options_x_list_array;
+		var origPPTPOptionsListArray = origPPTPOptionsList.split("<");
+		var origPPTPOptionsListArrayNum = origPPTPOptionsListArray.length;
+		for(var index = 0; index < origPPTPOptionsListArrayNum; index += 1) {
+			if(index != (idx + 1)) {	//save exist items
+				tempPPTPOptionsValue += "<"+ origPPTPOptionsListArray[index];
+			}
+		}
+
+		if(tempPPTPOptionsValue.charAt(0) == "<") {	//remove the 1st "<"
+			tempPPTPOptionsValue = tempPPTPOptionsValue.substr(1,tempPPTPOptionsValue.length);
+		}
+
+		vpnc_pptp_options_x_list_array = tempPPTPOptionsValue;
+		document.form.vpnc_pptp_options_x_list.value = vpnc_pptp_options_x_list_array;
+
 		if(flag == "vpnc_enable"){
 			document.form.vpnc_proto.value = "disable";
 			document.form.vpnc_proto.disabled = false;
@@ -565,6 +720,13 @@ function del_Row(rowdata, flag){
 
 	document.form.vpnc_clientlist.value = vpnc_clientlist_array;
 	document.form.submit();
+}
+
+function pptpOptionChange() {
+	document.getElementById("pptpOptionHint").style.display = "none";
+	if(document.form.selPPTPOption.value == "auto") {
+		document.getElementById("pptpOptionHint").style.display = "";
+	}
 }
 
 </script>
@@ -594,6 +756,9 @@ function del_Row(rowdata, flag){
 <input type="hidden" name="vpn_client_unit" value="1">
 <input type="hidden" name="vpn_client1_username" value="<% nvram_get("vpn_client1_username"); %>">
 <input type="hidden" name="vpn_client1_password" value="<% nvram_get("vpn_client1_password"); %>">
+<input type="hidden" name="vpnc_pptp_options_x" value="<% nvram_get("vpnc_pptp_options_x"); %>">
+<input type="hidden" name="vpnc_pptp_options_x_list" value="<% nvram_get("vpnc_pptp_options_x_list"); %>">
+
 
 <div id="vpnc_settings"  class="contentM_qis" style="box-shadow: 3px 3px 10px #000;">
 	<table class="QISform_wireless" border=0 align="center" cellpadding="5" cellspacing="0">
@@ -630,16 +795,29 @@ function del_Row(rowdata, flag){
 						<tr>
 							<th><#PPPConnection_UserName_itemname#></th>
 							<td>
-								<input type="text" name="vpnc_account" id="vpnc_account_edit" value="" class="input_32_table" style="float:left;"></input>
+								<input type="text" name="vpnc_account" id="vpnc_account_edit" value="" class="input_32_table" style="float:left;" autocomplete="off" autocorrect="off" autocapitalize="off"></input>
 							</td>
 						</tr>
 
 						<tr>
 							<th><#PPPConnection_Password_itemname#></th>
 							<td>
-								<input type="text" name="vpnc_pwd" id="vpnc_pwd_edit" value="" class="input_32_table" style="float:left;"></input>
+								<input type="text" name="vpnc_pwd" id="vpnc_pwd_edit" value="" class="input_32_table"  style="float:left;" autocomplete="off" autocorrect="off" autocapitalize="off"></input>
 							</td>
 						</tr>
+						<tr id="trPPTPOptions">
+						<th><#PPPConnection_x_PPTPOptions_itemname#></th>
+						<td>
+							<select name="selPPTPOption" class="input_option" onchange="pptpOptionChange();">
+								<option value="auto"><#Auto#></option>
+								<option value="-mppc"><#No_Encryp#></option>
+								<option value="+mppe-40">MPPE 40</option>
+								<option value="+mppe-56">MPPE 56</option>
+								<option value="+mppe-128">MPPE 128</option>
+							</select>
+							<span id="pptpOptionHint" style="display:none;margin-left:10px;">Negotiate highest supported encryption</span>
+						</td>
+					</tr>
 					</table>
 		 		</div>
 		 		<!---- vpnc_pptp/l2tp end  ---->		 			 	

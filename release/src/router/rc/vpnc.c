@@ -165,9 +165,12 @@ start_vpnc(void)
 		if (nvram_match(strcat_r(prefix, "pptp_options_x", tmp), "-mppc")) {
 			fprintf(fp, "nomppe nomppc\n");
 		} else
+		if (nvram_match(strcat_r(prefix, "pptp_options_x", tmp), "auto")) {
+			fprintf(fp, "require-mppe\n");
+		} else
 		if (nvram_match(strcat_r(prefix, "pptp_options_x", tmp), "+mppe-40")) {
 			fprintf(fp, "nomppe-56\n"
-                                    "nomppe-128\n"
+				    "nomppe-128\n"
 				    "require-mppe\n"
 				    "require-mppe-40\n");
 		} else
@@ -236,6 +239,7 @@ start_vpnc(void)
 	fprintf(fp, "ip-pre-up-script %s\n", "/tmp/ppp/vpnc-ip-pre-up");
 	fprintf(fp, "auth-fail-script %s\n", "/tmp/ppp/vpnc-auth-fail");
 
+#if 0 /* unsupported */
 #ifdef RTCONFIG_IPV6
 	switch (get_ipv6_service()) {
 		case IPV6_NATIVE:
@@ -244,6 +248,7 @@ start_vpnc(void)
 			fprintf(fp, "+ipv6\n");
 			break;
         }
+#endif
 #endif
 
 	/* user specific options */
@@ -449,7 +454,7 @@ void vpnc_add_firewall_rule()
 #ifdef RTCONFIG_BCMARM
 		else	/* mark tcp connection to bypass CTF */
 			eval("iptables", "-t", "mangle", "-A", "FORWARD", "-p", "tcp", 
-				"-m", "state", "--state", "NEW","-j", "MARK", "--set-mark", "0x01");
+				"-m", "state", "--state", "NEW","-j", "MARK", "--set-mark", "0x01/0x1ff");
 #endif
 
 		eval("iptables", "-A", "FORWARD", "-o", vpnc_ifname, "!", "-i", lan_if, "-j", "DROP");
@@ -581,7 +586,7 @@ void vpnc_del_firewall_rule()
 #ifdef RTCONFIG_BCMARM
 	else
 		eval("iptables", "-t", "mangle", "-D", "FORWARD", "-p", "tcp", 
-			"-m", "state", "--state", "NEW","-j", "MARK", "--set-mark", "0x01");
+			"-m", "state", "--state", "NEW","-j", "MARK", "--set-mark", "0x01/0x1ff");
 #endif
 
 	eval("iptables", "-D", "FORWARD", "-o", vpnc_ifname, "!", "-i", lan_if, "-j", "DROP");
