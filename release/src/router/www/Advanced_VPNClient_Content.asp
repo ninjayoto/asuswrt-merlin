@@ -802,7 +802,7 @@ function pptpOptionChange() {
 						<tr>
 							<th><#PPPConnection_Password_itemname#></th>
 							<td>
-								<input type="text" name="vpnc_pwd" id="vpnc_pwd_edit" value="" class="input_32_table"  style="float:left;" autocomplete="off" autocorrect="off" autocapitalize="off"></input>
+								<input id="vpnc_pwd_edit" name="vpnc_pwd" maxlength="64" class="input_32_table" type="password" autocapitalization="off" onBlur="switchType(this, false);" onFocus="switchType(this, true);" value=""></input>
 							</td>
 						</tr>
 						<tr id="trPPTPOptions">
