@@ -1465,7 +1465,7 @@ void start_vpnserver(int serverNum)
 	vpnlog(VPN_LOG_EXTRA,"Done writing certs/keys");
 	nvram_commit();
 
-	fprintf(fp_client, "ns-cert-type server\n");
+	fprintf(fp_client, "remote-cert-tls server\n");
 	fprintf(fp_client, "resolv-retry infinite\n");
 	fprintf(fp_client, "nobind\n");
 	fclose(fp_client);
