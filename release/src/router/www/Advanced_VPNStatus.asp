@@ -206,13 +206,15 @@ function parseStatus(text, block){
 /*** Clients ***/
 
 	if (clientPtr > 0) {
-		code = '<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable_table"><thead><tr><td colspan="' + (clientTableHeaders.length-1) + '">Clients</td></tr></thead><tr>';
+		code = '<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable_table"><thead><tr><td colspan="' + (clientTableHeaders.length-3) + '">Clients</td></tr></thead><tr>';
 
 // Headers
 		for (i = 0; i < (clientTableHeaders.length - 2); ++i)
 		{
 			if (i == 0) {
 				code +='<th style="text-align:left;">' + clientTableHeaders[i] + '<br><span style="color: cyan; background: transparent;">' + clientTableHeaders[clientTableHeaders.length-2] + '</span></th>';
+			} else if ((i == 3) || (i == 7)) {
+				// skip it
 			} else {
 				code +='<th style="text-align:left;">' + clientTableHeaders[i] + '</th>';
 			}
@@ -228,10 +230,12 @@ function parseStatus(text, block){
 			{
 				if (j == 0) {
 					code += '<td style="white-space:nowrap; text-align:left;">' + clientTableEntries[i][j] + '<br><span style="color: cyan; background: transparent;">' + clientTableEntries[i][clientTableEntries[i].length-2] +'</span></td>';
-				} else if ((j == 3) || (j == 4)) {
-					code += '<td style="vertical-align:top; text-align:left;">' + Number(clientTableEntries[i][j]).toLocaleString() + '</td>';
+				} else if ((j == 3) || (j == 7)) {
+					// skip it
+				} else if ((j == 4) || (j == 5)) {
+					code += '<td style="white-space:nowrap; vertical-align:top; text-align:left;">' + Number(clientTableEntries[i][j]).toLocaleString() + '</td>';
 				} else {
-					code += '<td style="vertical-align:top; text-align:left;">' + clientTableEntries[i][j] + '</td>';
+					code += '<td style="white-space:nowrap; vertical-align:top; text-align:left;">' + clientTableEntries[i][j] + '</td>';
 				}
 			}
 			code += '</tr>';
