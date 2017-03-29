@@ -1,3 +1,86 @@
+/**
+ * Implements cookie-less JavaScript session variables
+ * v1.0
+ *
+ * By Craig Buckler, Optimalworks.net
+ *
+ * As featured on SitePoint.com
+ * Please use as you wish at your own risk.
+*
+ * Usage:
+ *
+ * // store a session value/object
+ * Session.set(name, object);
+ *
+ * // retreive a session value/object
+ * Session.get(name);
+ *
+ * // clear all session data
+ * Session.clear();
+ *
+ * // dump session data
+ * Session.dump();
+ */
+
+ if (JSON && JSON.stringify && JSON.parse) var Session = Session || (function() {
+
+	// window object
+	var win = window.top || window;
+
+	// Firefox sometimes contain random characters here, breaking the JSON parser
+	if ((typeof(win.name) != "string") || (win.name.substring(2, 7) != "ouiDB")) {
+			win.name = "";
+	}
+
+	// session store
+	var store = (win.name ? JSON.parse(win.name) : {});
+
+	// save store on page unload
+	function Save() {
+		win.name = JSON.stringify(store);
+	};
+
+	// page unload event
+	if (window.addEventListener) window.addEventListener("unload", Save, false);
+	else if (window.attachEvent) window.attachEvent("onunload", Save);
+	else window.onunload = Save;
+
+	// public methods
+	return {
+
+		// set a session variable
+		set: function(name, value) {
+			store[name] = value;
+		},
+
+		// get a session value
+		get: function(name) {
+			return (store[name] ? store[name] : undefined);
+		},
+
+		// clear session
+		clear: function() { store = {}; },
+
+		// dump session data
+		dump: function() { return JSON.stringify(store); }
+
+	};
+
+ })();
+
+var ouiClientListArray = new Array();
+ouiClientListArray = Session.get("ouiDB");
+if(ouiClientListArray == undefined) {
+	ouiClientListArray = [];
+	//Download OUI DB
+	setTimeout(function() {
+		var ouiBDjs = document.createElement("script");
+		ouiBDjs.type = "application/javascript";
+		ouiBDjs.src = "/ouiDB.js";
+		window.document.body.appendChild(ouiBDjs);
+	}, 1000);
+}
+
 /* Exported from device-map/clients.asp */
 
 lan_ipaddr = "<% nvram_get("lan_ipaddr"); %>";
@@ -97,7 +180,13 @@ function populateCache() {
 	return;
 }
 
-function oui_query(mac) {
+function updateManufacturer(_ouiDBArray) {  //from ASUS ouidatabase
+	ouiClientListArray = [];
+	ouiClientListArray = _ouiDBArray;
+	Session.set("ouiDB", _ouiDBArray);
+}
+
+function oui_query_web(mac) {
 	var tab = new Array()
 	tab = mac.split(mac.substr(2,1));
 
@@ -108,7 +197,7 @@ function oui_query(mac) {
 			if(overlib.isOut)
 				return true;
 			else
-				oui_query(mac);
+				oui_query_web(mac);
     },
     success: function(response) {
 			if(overlib.isOut)
@@ -118,4 +207,17 @@ function oui_query(mac) {
 			return overlib(overlib_str_tmp + "<p style='margin-top:5px'><#Manufacturer#> :</p>" + retData[0]);
 		}    
   });
+}
+
+function oui_query(mac){
+	setTimeout(function(){
+		var manufacturer_id = mac.replace(/\:/g,"").substring(0, 6);
+
+		if(ouiClientListArray[manufacturer_id] != undefined) {
+			overlib_str_tmp += "<p><span>.....................................</span></p><p style='margin-top:5px'><#Manufacturer#>:</p>";
+			return overlib(overlib_str_tmp + "<p style='margin-top:5px'></p>" + ouiClientListArray[manufacturer_id]);
+		} else {
+			return oui_query_web(mac);
+		}
+	}, 1);
 }
