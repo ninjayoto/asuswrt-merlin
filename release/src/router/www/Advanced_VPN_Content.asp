@@ -508,8 +508,12 @@ function parseOpenVPNClients(){		//192.168.123.82:46954 10.8.0.6 pine\n
 	var Loginfo = document.form.status_openvpnd.value;
 	if (Loginfo == "") {return;}
 
+	Loginfo = Loginfo.replace('\r\n', '\n');
+	Loginfo = Loginfo.replace('\n\r', '\n');
+	Loginfo = Loginfo.replace('\r', '\n');
+
 	var lines = Loginfo.split('\n');
-	for (i = 0; i < lines.length-1; i++){
+	for (i = 0; i < lines.length; i++){
 		var fields = lines[i].split(' ');
 		if ( fields.length != 3 ) continue;
 		openvpnd_connected_clients.push({"username":fields[2],"remoteIP":fields[0],"VPNIP":fields[1]});

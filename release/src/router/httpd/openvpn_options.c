@@ -11,6 +11,7 @@
 #define TYPEDEF_BOOL
 #include <bcmnvram.h>
 #include <shared.h>
+#include <shutils.h>
 
 struct buffer
 alloc_buf (size_t size)
@@ -688,13 +689,17 @@ void reset_client_setting(int unit){
 void parse_openvpn_status(int unit){
 	FILE *fpi, *fpo;
 	char buf[512];
-	char realip[25], virtip[25], username[32];
+	char *token;
+	char nv_name[32] = "";
+	char prefix_vpn[] = "vpn_serverXX_";
 
 	sprintf(buf, "/etc/openvpn/server%d/status", unit);
 	fpi = fopen(buf, "r");
 
 	sprintf(buf, "/etc/openvpn/server%d/client_status", unit);
 	fpo = fopen(buf, "w");
+
+	snprintf(prefix_vpn, sizeof(prefix_vpn), "vpn_server%d_", unit);
 
 	if(fpi && fpo) {
 		while(!feof(fpi)){
@@ -703,9 +708,35 @@ void parse_openvpn_status(int unit){
 				break;
 			if(!strncmp(buf, "CLIENT_LIST", 11)) {
 				//printf("%s", buf);
-				if (sscanf(buf,"%*[^,],%*[^,],%[^,],%[^,],%*[^,],%*[^,],%*[^,],%*[^,],%31s", realip, virtip, username) == 3) {
-					fprintf(fpo,"%s %s %s\n", realip, virtip, username);
+				token = strtok(buf, ",");	//CLIENT_LIST
+				token = strtok(NULL, ",");	//Common Name
+				token = strtok(NULL, ",");	//Real Address
+				if(token)
+					fprintf(fpo, "%s ", token);
+				else
+					fprintf(fpo, "NoRealAddress ");
+				snprintf(nv_name, sizeof(nv_name) -1, "vpn_server%d_if", unit);
+
+				if(nvram_match(strcat_r(prefix_vpn, "if", nv_name), "tap")
+					&& nvram_match(strcat_r(prefix_vpn, "dhcp", nv_name), "1")) {
+					fprintf(fpo, "VirtualAddressAssignedByDhcp ");
 				}
+				else {
+					token = strtok(NULL, ",");	//Virtual Address
+					if(token)
+						fprintf(fpo, "%s ", token);
+					else
+						fprintf(fpo, "NoVirtualAddress ");
+				}
+				token = strtok(NULL, ",");	//Bytes Received
+				token = strtok(NULL, ",");	//Bytes Sent
+				token = strtok(NULL, ",");	//Connected Since
+				token = strtok(NULL, ",");	//Connected Since (time_t)
+				token = strtok(NULL, ",");	//Username, include'\n'
+				if(token)
+					fprintf(fpo, "%s", token);
+				else
+					fprintf(fpo, "NoUsername");
 			}
 		}
 		fclose(fpi);
