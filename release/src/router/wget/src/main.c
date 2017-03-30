@@ -1,5 +1,7 @@
 /* Command line parsing.
-   Copyright (C) 1996-2014 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015 Free
+   Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -52,11 +54,20 @@ as that of the covered work.  */
 #include "convert.h"
 #include "spider.h"
 #include "http.h"               /* for save_cookies */
+#include "hsts.h"               /* for initializing hsts_store to NULL */
 #include "ptimer.h"
 #include "warc.h"
+#include "version.h"
+#include "c-strcase.h"
+#include "dirname.h"
 #include <getopt.h>
 #include <getpass.h>
 #include <quote.h>
+
+#ifdef HAVE_METALINK
+# include <metalink/metalink_parser.h>
+# include "metalink.h"
+#endif
 
 #ifdef WINDOWS
 # include <io.h>
@@ -75,32 +86,55 @@ as that of the covered work.  */
 struct iri dummy_iri;
 #endif
 
+#ifdef HAVE_LIBCARES
+#include <ares.h>
+ares_channel ares;
+#else
+void *ares;
+#endif
+
 struct options opt;
 
 /* defined in version.c */
-extern char *version_string;
-extern char *compilation_string;
 extern char *system_getrc;
-extern char *link_string;
-/* defined in build_info.c */
-extern const char *compiled_features[];
 /* Used for --version output in print_version */
 #define MAX_CHARS_PER_LINE      72
 #define TABULATION              4
-
-#if defined(SIGHUP) || defined(SIGUSR1)
-static void redirect_output_signal (int);
-#endif
 
 const char *exec_name;
 
 /* Number of successfully downloaded URLs */
 int numurls = 0;
-
+
 #ifndef TESTING
 /* Initialize I18N/L10N.  That amounts to invoking setlocale, and
    setting up gettext's message catalog using bindtextdomain and
    textdomain.  Does nothing if NLS is disabled or missing.  */
+
+#if defined(SIGHUP) || defined(SIGUSR1)
+/* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
+   will proceed operation as usual, trying to write into a log file.
+   If that is impossible, the output will be turned off.  */
+
+static void
+redirect_output_signal (int sig)
+{
+  const char *signal_name = "WTF?!";
+
+#ifdef SIGHUP
+  if (sig == SIGHUP)
+    signal_name = "SIGHUP";
+#endif
+#ifdef SIGUSR1
+  if (sig == SIGUSR1)
+    signal_name = "SIGUSR1";
+#endif
+
+  log_request_redirect_output (signal_name);
+  progress_schedule_redirect ();
+  signal (sig, redirect_output_signal);
+}
+#endif /* defined(SIGHUP) || defined(SIGUSR1) */
 
 static void
 i18n_initialize (void)
@@ -114,11 +148,79 @@ i18n_initialize (void)
   textdomain ("wget");
 #endif /* ENABLE_NLS */
 }
-
+
+#ifdef HAVE_HSTS
+/* make the HSTS store global */
+hsts_store_t hsts_store;
+
+static char*
+get_hsts_database (void)
+{
+  char *home;
+
+  if (opt.hsts_file)
+    return xstrdup (opt.hsts_file);
+
+  home = home_dir ();
+  if (home)
+    {
+      char *dir = aprintf ("%s/.wget-hsts", home);
+      xfree(home);
+      return dir;
+    }
+
+  return NULL;
+}
+
+static void
+load_hsts (void)
+{
+  if (!hsts_store)
+    {
+      char *filename = get_hsts_database ();
+
+      if (filename)
+        {
+          DEBUGP (("Reading HSTS entries from %s\n", filename));
+
+          hsts_store = hsts_store_open (filename);
+
+          if (!hsts_store)
+            logprintf (LOG_NOTQUIET, "ERROR: could not open HSTS store at '%s'. "
+                       "HSTS will be disabled.\n",
+                       filename);
+        }
+      else
+        logprintf (LOG_NOTQUIET, "ERROR: could not open HSTS store. HSTS will be disabled.\n");
+
+      xfree (filename);
+    }
+}
+
+static void
+save_hsts (void)
+{
+  if (hsts_store)
+    {
+      char *filename = get_hsts_database ();
+
+      if (filename && hsts_store_has_changed (hsts_store))
+        {
+          DEBUGP (("Saving HSTS entries to %s\n", filename));
+          hsts_store_save (hsts_store, filename);
+        }
+
+      hsts_store_close (hsts_store);
+
+      xfree (filename);
+    }
+}
+#endif
+
 /* Definition of command-line options. */
 
-static void print_help (void);
-static void print_version (void);
+static void _Noreturn print_help (void);
+static void _Noreturn print_version (void);
 
 #ifdef HAVE_SSL
 # define IF_SSL(x) x
@@ -159,6 +261,9 @@ static struct cmdline_option option_data[] =
     { "backups", 0, OPT_BOOLEAN, "backups", -1 },
     { "base", 'B', OPT_VALUE, "base", -1 },
     { "bind-address", 0, OPT_VALUE, "bindaddress", -1 },
+#ifdef HAVE_LIBCARES
+    { "bind-dns-address", 0, OPT_VALUE, "binddnsaddress", -1 },
+#endif
     { "body-data", 0, OPT_VALUE, "bodydata", -1 },
     { "body-file", 0, OPT_VALUE, "bodyfile", -1 },
     { IF_SSL ("ca-certificate"), 0, OPT_VALUE, "cacertificate", -1 },
@@ -171,10 +276,12 @@ static struct cmdline_option option_data[] =
     { "config", 0, OPT_VALUE, "chooseconfig", -1 },
     { "connect-timeout", 0, OPT_VALUE, "connecttimeout", -1 },
     { "continue", 'c', OPT_BOOLEAN, "continue", -1 },
+    { "convert-file-only", 0, OPT_BOOLEAN, "convertfileonly", -1 },
     { "convert-links", 'k', OPT_BOOLEAN, "convertlinks", -1 },
     { "content-disposition", 0, OPT_BOOLEAN, "contentdisposition", -1 },
     { "content-on-error", 0, OPT_BOOLEAN, "contentonerror", -1 },
     { "cookies", 0, OPT_BOOLEAN, "cookies", -1 },
+    { IF_SSL ("crl-file"), 0, OPT_VALUE, "crlfile", -1 },
     { "cut-dirs", 0, OPT_VALUE, "cutdirs", -1 },
     { "debug", 'd', OPT_BOOLEAN, "debug", -1 },
     { "default-page", 0, OPT_VALUE, "defaultpage", -1 },
@@ -182,6 +289,9 @@ static struct cmdline_option option_data[] =
     { "directories", 0, OPT_BOOLEAN, "dirstruct", -1 },
     { "directory-prefix", 'P', OPT_VALUE, "dirprefix", -1 },
     { "dns-cache", 0, OPT_BOOLEAN, "dnscache", -1 },
+#ifdef HAVE_LIBCARES
+    { "dns-servers", 0, OPT_VALUE, "dnsservers", -1 },
+#endif
     { "dns-timeout", 0, OPT_VALUE, "dnstimeout", -1 },
     { "domains", 'D', OPT_VALUE, "domains", -1 },
     { "dont-remove-listing", 0, OPT__DONT_REMOVE_LISTING, NULL, no_argument },
@@ -199,10 +309,20 @@ static struct cmdline_option option_data[] =
     { "ftp-stmlf", 0, OPT_BOOLEAN, "ftpstmlf", -1 },
 #endif /* def __VMS */
     { "ftp-user", 0, OPT_VALUE, "ftpuser", -1 },
+#ifdef HAVE_SSL
+    { "ftps-clear-data-connection", 0, OPT_BOOLEAN, "ftpscleardataconnection", -1 },
+    { "ftps-fallback-to-ftp", 0, OPT_BOOLEAN, "ftpsfallbacktoftp", -1 },
+    { "ftps-implicit", 0, OPT_BOOLEAN, "ftpsimplicit", -1 },
+    { "ftps-resume-ssl", 0, OPT_BOOLEAN, "ftpsresumessl", -1 },
+#endif
     { "glob", 0, OPT_BOOLEAN, "glob", -1 },
     { "header", 0, OPT_VALUE, "header", -1 },
     { "help", 'h', OPT_FUNCALL, (void *)print_help, no_argument },
     { "host-directories", 0, OPT_BOOLEAN, "addhostdir", -1 },
+#ifdef HAVE_HSTS
+    { "hsts", 0, OPT_BOOLEAN, "hsts", -1},
+    { "hsts-file", 0, OPT_VALUE, "hsts-file", -1 },
+#endif
     { "html-extension", 'E', OPT_BOOLEAN, "adjustextension", -1 }, /* deprecated */
     { "htmlify", 0, OPT_BOOLEAN, "htmlify", -1 },
     { "http-keep-alive", 0, OPT_BOOLEAN, "httpkeepalive", -1 },
@@ -219,13 +339,20 @@ static struct cmdline_option option_data[] =
     { "inet6-only", '6', OPT_BOOLEAN, "inet6only", -1 },
 #endif
     { "input-file", 'i', OPT_VALUE, "input", -1 },
+#ifdef HAVE_METALINK
+    { "input-metalink", 0, OPT_VALUE, "input-metalink", -1 },
+#endif
     { "iri", 0, OPT_BOOLEAN, "iri", -1 },
     { "keep-session-cookies", 0, OPT_BOOLEAN, "keepsessioncookies", -1 },
     { "level", 'l', OPT_VALUE, "reclevel", -1 },
     { "limit-rate", 0, OPT_VALUE, "limitrate", -1 },
     { "load-cookies", 0, OPT_VALUE, "loadcookies", -1 },
     { "local-encoding", 0, OPT_VALUE, "localencoding", -1 },
+    { "rejected-log", 0, OPT_VALUE, "rejectedlog", -1 },
     { "max-redirect", 0, OPT_VALUE, "maxredirect", -1 },
+#ifdef HAVE_METALINK
+    { "metalink-over-http", 0, OPT_BOOLEAN, "metalink-over-http", -1 },
+#endif
     { "method", 0, OPT_VALUE, "method", -1 },
     { "mirror", 'm', OPT_BOOLEAN, "mirror", -1 },
     { "no", 'n', OPT__NO, NULL, required_argument },
@@ -238,9 +365,13 @@ static struct cmdline_option option_data[] =
     { "parent", 0, OPT__PARENT, NULL, optional_argument },
     { "passive-ftp", 0, OPT_BOOLEAN, "passiveftp", -1 },
     { "password", 0, OPT_VALUE, "password", -1 },
+    { IF_SSL ("pinnedpubkey"), 0, OPT_VALUE, "pinnedpubkey", -1 },
     { "post-data", 0, OPT_VALUE, "postdata", -1 },
     { "post-file", 0, OPT_VALUE, "postfile", -1 },
     { "prefer-family", 0, OPT_VALUE, "preferfamily", -1 },
+#ifdef HAVE_METALINK
+    { "preferred-location", 0, OPT_VALUE, "preferred-location", -1 },
+#endif
     { "preserve-permissions", 0, OPT_BOOLEAN, "preservepermissions", -1 },
     { IF_SSL ("private-key"), 0, OPT_VALUE, "privatekey", -1 },
     { IF_SSL ("private-key-type"), 0, OPT_VALUE, "privatekeytype", -1 },
@@ -279,6 +410,7 @@ static struct cmdline_option option_data[] =
     { "strict-comments", 0, OPT_BOOLEAN, "strictcomments", -1 },
     { "timeout", 'T', OPT_VALUE, "timeout", -1 },
     { "timestamping", 'N', OPT_BOOLEAN, "timestamping", -1 },
+    { "if-modified-since", 0, OPT_BOOLEAN, "if-modified-since", -1 },
     { "tries", 't', OPT_VALUE, "tries", -1 },
     { "unlink", 0, OPT_BOOLEAN, "unlink", -1 },
     { "trust-server-names", 0, OPT_BOOLEAN, "trustservernames", -1 },
@@ -320,8 +452,7 @@ no_prefix (const char *s)
 
   char *cp = p;
   int size = 3 + strlen (s) + 1;  /* "no-STRING\0" */
-  if (p + size >= buffer + sizeof (buffer))
-    abort ();
+  assert(p + size <= buffer + sizeof (buffer));
 
   cp[0] = 'n', cp[1] = 'o', cp[2] = '-';
   strcpy (cp + 3, s);
@@ -428,206 +559,227 @@ Mandatory arguments to long options are mandatory for short options too.\n\n"),
     N_("\
 Startup:\n"),
     N_("\
-  -V,  --version                   display the version of Wget and exit.\n"),
+  -V,  --version                   display the version of Wget and exit\n"),
     N_("\
-  -h,  --help                      print this help.\n"),
+  -h,  --help                      print this help\n"),
     N_("\
-  -b,  --background                go to background after startup.\n"),
+  -b,  --background                go to background after startup\n"),
     N_("\
-  -e,  --execute=COMMAND           execute a `.wgetrc'-style command.\n"),
+  -e,  --execute=COMMAND           execute a `.wgetrc'-style command\n"),
     "\n",
 
     N_("\
 Logging and input file:\n"),
     N_("\
-  -o,  --output-file=FILE          log messages to FILE.\n"),
+  -o,  --output-file=FILE          log messages to FILE\n"),
     N_("\
-  -a,  --append-output=FILE        append messages to FILE.\n"),
+  -a,  --append-output=FILE        append messages to FILE\n"),
 #ifdef ENABLE_DEBUG
     N_("\
-  -d,  --debug                     print lots of debugging information.\n"),
+  -d,  --debug                     print lots of debugging information\n"),
 #endif
 #ifdef USE_WATT32
     N_("\
-       --wdebug                    print Watt-32 debug output.\n"),
+       --wdebug                    print Watt-32 debug output\n"),
 #endif
     N_("\
-  -q,  --quiet                     quiet (no output).\n"),
+  -q,  --quiet                     quiet (no output)\n"),
     N_("\
-  -v,  --verbose                   be verbose (this is the default).\n"),
+  -v,  --verbose                   be verbose (this is the default)\n"),
     N_("\
-  -nv, --no-verbose                turn off verboseness, without being quiet.\n"),
+  -nv, --no-verbose                turn off verboseness, without being quiet\n"),
     N_("\
-       --report-speed=TYPE         Output bandwidth as TYPE.  TYPE can be bits.\n"),
+       --report-speed=TYPE         output bandwidth as TYPE.  TYPE can be bits\n"),
     N_("\
-  -i,  --input-file=FILE           download URLs found in local or external FILE.\n"),
+  -i,  --input-file=FILE           download URLs found in local or external FILE\n"),
+#ifdef HAVE_METALINK
     N_("\
-  -F,  --force-html                treat input file as HTML.\n"),
+       --input-metalink=FILE       download files covered in local Metalink FILE\n"),
+#endif
+    N_("\
+  -F,  --force-html                treat input file as HTML\n"),
     N_("\
   -B,  --base=URL                  resolves HTML input-file links (-i -F)\n\
-                                   relative to URL.\n"),
+                                     relative to URL\n"),
     N_("\
-       --config=FILE               Specify config file to use.\n"),
+       --config=FILE               specify config file to use\n"),
     N_("\
-       --no-config                 Do not read any config file.\n"),
+       --no-config                 do not read any config file\n"),
+    N_("\
+       --rejected-log=FILE         log reasons for URL rejection to FILE\n"),
     "\n",
 
     N_("\
 Download:\n"),
     N_("\
-  -t,  --tries=NUMBER              set number of retries to NUMBER (0 unlimits).\n"),
+  -t,  --tries=NUMBER              set number of retries to NUMBER (0 unlimits)\n"),
     N_("\
-       --retry-connrefused         retry even if connection is refused.\n"),
+       --retry-connrefused         retry even if connection is refused\n"),
     N_("\
-  -O,  --output-document=FILE      write documents to FILE.\n"),
+  -O,  --output-document=FILE      write documents to FILE\n"),
     N_("\
   -nc, --no-clobber                skip downloads that would download to\n\
-                                   existing files (overwriting them).\n"),
+                                     existing files (overwriting them)\n"),
     N_("\
-  -c,  --continue                  resume getting a partially-downloaded file.\n"),
+  -c,  --continue                  resume getting a partially-downloaded file\n"),
     N_("\
-       --start-pos=OFFSET          start downloading from zero-based position OFFSET.\n"),
+       --start-pos=OFFSET          start downloading from zero-based position OFFSET\n"),
     N_("\
-       --progress=TYPE             select progress gauge type.\n"),
+       --progress=TYPE             select progress gauge type\n"),
     N_("\
-       --show-progress             display the progress bar in any verbosity mode.\n"),
+       --show-progress             display the progress bar in any verbosity mode\n"),
     N_("\
   -N,  --timestamping              don't re-retrieve files unless newer than\n\
-                                   local.\n"),
+                                     local\n"),
     N_("\
-  --no-use-server-timestamps       don't set the local file's timestamp by\n\
-                                   the one on the server.\n"),
+       --no-if-modified-since      don't use conditional if-modified-since get\n\
+                                     requests in timestamping mode\n"),
     N_("\
-  -S,  --server-response           print server response.\n"),
+       --no-use-server-timestamps  don't set the local file's timestamp by\n\
+                                     the one on the server\n"),
     N_("\
-       --spider                    don't download anything.\n"),
+  -S,  --server-response           print server response\n"),
     N_("\
-  -T,  --timeout=SECONDS           set all timeout values to SECONDS.\n"),
+       --spider                    don't download anything\n"),
     N_("\
-       --dns-timeout=SECS          set the DNS lookup timeout to SECS.\n"),
+  -T,  --timeout=SECONDS           set all timeout values to SECONDS\n"),
+#ifdef HAVE_LIBCARES
     N_("\
-       --connect-timeout=SECS      set the connect timeout to SECS.\n"),
+       --dns-servers=ADDRESSES     list of DNS servers to query (comma separated)\n"),
     N_("\
-       --read-timeout=SECS         set the read timeout to SECS.\n"),
-    N_("\
-  -w,  --wait=SECONDS              wait SECONDS between retrievals.\n"),
-    N_("\
-       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval.\n"),
-    N_("\
-       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals.\n"),
-    N_("\
-       --no-proxy                  explicitly turn off proxy.\n"),
-    N_("\
-  -Q,  --quota=NUMBER              set retrieval quota to NUMBER.\n"),
-    N_("\
-       --bind-address=ADDRESS      bind to ADDRESS (hostname or IP) on local host.\n"),
-    N_("\
-       --limit-rate=RATE           limit download rate to RATE.\n"),
-    N_("\
-       --no-dns-cache              disable caching DNS lookups.\n"),
-    N_("\
-       --restrict-file-names=OS    restrict chars in file names to ones OS allows.\n"),
-    N_("\
-       --ignore-case               ignore case when matching files/directories.\n"),
-#ifdef ENABLE_IPV6
-    N_("\
-  -4,  --inet4-only                connect only to IPv4 addresses.\n"),
-    N_("\
-  -6,  --inet6-only                connect only to IPv6 addresses.\n"),
-    N_("\
-       --prefer-family=FAMILY      connect first to addresses of specified family,\n\
-                                   one of IPv6, IPv4, or none.\n"),
+       --bind-dns-address=ADDRESS  bind DNS resolver to ADDRESS (hostname or IP) on local host\n"),
 #endif
     N_("\
-       --user=USER                 set both ftp and http user to USER.\n"),
+       --dns-timeout=SECS          set the DNS lookup timeout to SECS\n"),
     N_("\
-       --password=PASS             set both ftp and http password to PASS.\n"),
+       --connect-timeout=SECS      set the connect timeout to SECS\n"),
     N_("\
-       --ask-password              prompt for passwords.\n"),
+       --read-timeout=SECS         set the read timeout to SECS\n"),
     N_("\
-       --no-iri                    turn off IRI support.\n"),
+  -w,  --wait=SECONDS              wait SECONDS between retrievals\n"),
     N_("\
-       --local-encoding=ENC        use ENC as the local encoding for IRIs.\n"),
+       --waitretry=SECONDS         wait 1..SECONDS between retries of a retrieval\n"),
     N_("\
-       --remote-encoding=ENC       use ENC as the default remote encoding.\n"),
+       --random-wait               wait from 0.5*WAIT...1.5*WAIT secs between retrievals\n"),
     N_("\
-       --unlink                    remove file before clobber.\n"),
+       --no-proxy                  explicitly turn off proxy\n"),
+    N_("\
+  -Q,  --quota=NUMBER              set retrieval quota to NUMBER\n"),
+    N_("\
+       --bind-address=ADDRESS      bind to ADDRESS (hostname or IP) on local host\n"),
+    N_("\
+       --limit-rate=RATE           limit download rate to RATE\n"),
+    N_("\
+       --no-dns-cache              disable caching DNS lookups\n"),
+    N_("\
+       --restrict-file-names=OS    restrict chars in file names to ones OS allows\n"),
+    N_("\
+       --ignore-case               ignore case when matching files/directories\n"),
+#ifdef ENABLE_IPV6
+    N_("\
+  -4,  --inet4-only                connect only to IPv4 addresses\n"),
+    N_("\
+  -6,  --inet6-only                connect only to IPv6 addresses\n"),
+    N_("\
+       --prefer-family=FAMILY      connect first to addresses of specified family,\n\
+                                     one of IPv6, IPv4, or none\n"),
+#endif
+    N_("\
+       --user=USER                 set both ftp and http user to USER\n"),
+    N_("\
+       --password=PASS             set both ftp and http password to PASS\n"),
+    N_("\
+       --ask-password              prompt for passwords\n"),
+    N_("\
+       --no-iri                    turn off IRI support\n"),
+    N_("\
+       --local-encoding=ENC        use ENC as the local encoding for IRIs\n"),
+    N_("\
+       --remote-encoding=ENC       use ENC as the default remote encoding\n"),
+    N_("\
+       --unlink                    remove file before clobber\n"),
+#ifdef HAVE_METALINK
+    N_("\
+       --metalink-over-http        use Metalink metadata from HTTP response headers\n"),
+    N_("\
+       --preferred-location        preferred location for Metalink resources\n"),
+#endif
     "\n",
 
     N_("\
 Directories:\n"),
     N_("\
-  -nd, --no-directories            don't create directories.\n"),
+  -nd, --no-directories            don't create directories\n"),
     N_("\
-  -x,  --force-directories         force creation of directories.\n"),
+  -x,  --force-directories         force creation of directories\n"),
     N_("\
-  -nH, --no-host-directories       don't create host directories.\n"),
+  -nH, --no-host-directories       don't create host directories\n"),
     N_("\
-       --protocol-directories      use protocol name in directories.\n"),
+       --protocol-directories      use protocol name in directories\n"),
     N_("\
-  -P,  --directory-prefix=PREFIX   save files to PREFIX/...\n"),
+  -P,  --directory-prefix=PREFIX   save files to PREFIX/..\n"),
     N_("\
-       --cut-dirs=NUMBER           ignore NUMBER remote directory components.\n"),
+       --cut-dirs=NUMBER           ignore NUMBER remote directory components\n"),
     "\n",
 
     N_("\
 HTTP options:\n"),
     N_("\
-       --http-user=USER            set http user to USER.\n"),
+       --http-user=USER            set http user to USER\n"),
     N_("\
-       --http-password=PASS        set http password to PASS.\n"),
+       --http-password=PASS        set http password to PASS\n"),
     N_("\
-       --no-cache                  disallow server-cached data.\n"),
+       --no-cache                  disallow server-cached data\n"),
     N_ ("\
-       --default-page=NAME         Change the default page name (normally\n\
-                                   this is `index.html'.).\n"),
+       --default-page=NAME         change the default page name (normally\n\
+                                     this is 'index.html'.)\n"),
     N_("\
-  -E,  --adjust-extension          save HTML/CSS documents with proper extensions.\n"),
+  -E,  --adjust-extension          save HTML/CSS documents with proper extensions\n"),
     N_("\
-       --ignore-length             ignore `Content-Length' header field.\n"),
+       --ignore-length             ignore 'Content-Length' header field\n"),
     N_("\
-       --header=STRING             insert STRING among the headers.\n"),
+       --header=STRING             insert STRING among the headers\n"),
     N_("\
-       --max-redirect              maximum redirections allowed per page.\n"),
+       --max-redirect              maximum redirections allowed per page\n"),
     N_("\
-       --proxy-user=USER           set USER as proxy username.\n"),
+       --proxy-user=USER           set USER as proxy username\n"),
     N_("\
-       --proxy-password=PASS       set PASS as proxy password.\n"),
+       --proxy-password=PASS       set PASS as proxy password\n"),
     N_("\
-       --referer=URL               include `Referer: URL' header in HTTP request.\n"),
+       --referer=URL               include 'Referer: URL' header in HTTP request\n"),
     N_("\
-       --save-headers              save the HTTP headers to file.\n"),
+       --save-headers              save the HTTP headers to file\n"),
     N_("\
-  -U,  --user-agent=AGENT          identify as AGENT instead of Wget/VERSION.\n"),
+  -U,  --user-agent=AGENT          identify as AGENT instead of Wget/VERSION\n"),
     N_("\
-       --no-http-keep-alive        disable HTTP keep-alive (persistent connections).\n"),
+       --no-http-keep-alive        disable HTTP keep-alive (persistent connections)\n"),
     N_("\
-       --no-cookies                don't use cookies.\n"),
+       --no-cookies                don't use cookies\n"),
     N_("\
-       --load-cookies=FILE         load cookies from FILE before session.\n"),
+       --load-cookies=FILE         load cookies from FILE before session\n"),
     N_("\
-       --save-cookies=FILE         save cookies to FILE after session.\n"),
+       --save-cookies=FILE         save cookies to FILE after session\n"),
     N_("\
-       --keep-session-cookies      load and save session (non-permanent) cookies.\n"),
+       --keep-session-cookies      load and save session (non-permanent) cookies\n"),
     N_("\
-       --post-data=STRING          use the POST method; send STRING as the data.\n"),
+       --post-data=STRING          use the POST method; send STRING as the data\n"),
     N_("\
-       --post-file=FILE            use the POST method; send contents of FILE.\n"),
+       --post-file=FILE            use the POST method; send contents of FILE\n"),
     N_("\
-       --method=HTTPMethod         use method \"HTTPMethod\" in the request.\n"),
+       --method=HTTPMethod         use method \"HTTPMethod\" in the request\n"),
     N_("\
-       --body-data=STRING          Send STRING as data. --method MUST be set.\n"),
+       --body-data=STRING          send STRING as data. --method MUST be set\n"),
     N_("\
-       --body-file=FILE            Send contents of FILE. --method MUST be set.\n"),
+       --body-file=FILE            send contents of FILE. --method MUST be set\n"),
     N_("\
        --content-disposition       honor the Content-Disposition header when\n\
-                                   choosing local file names (EXPERIMENTAL).\n"),
+                                     choosing local file names (EXPERIMENTAL)\n"),
     N_("\
-       --content-on-error          output the received content on server errors.\n"),
+       --content-on-error          output the received content on server errors\n"),
     N_("\
        --auth-no-challenge         send Basic HTTP authentication information\n\
-                                   without first waiting for the server's\n\
-                                   challenge.\n"),
+                                     without first waiting for the server's\n\
+                                     challenge\n"),
     "\n",
 
 #ifdef HAVE_SSL
@@ -635,148 +787,185 @@ HTTP options:\n"),
 HTTPS (SSL/TLS) options:\n"),
     N_("\
        --secure-protocol=PR        choose secure protocol, one of auto, SSLv2,\n\
-                                   SSLv3, TLSv1 and PFS.\n"),
+                                     SSLv3, TLSv1 and PFS\n"),
     N_("\
        --https-only                only follow secure HTTPS links\n"),
     N_("\
-       --no-check-certificate      don't validate the server's certificate.\n"),
+       --no-check-certificate      don't validate the server's certificate\n"),
     N_("\
-       --certificate=FILE          client certificate file.\n"),
+       --certificate=FILE          client certificate file\n"),
     N_("\
-       --certificate-type=TYPE     client certificate type, PEM or DER.\n"),
+       --certificate-type=TYPE     client certificate type, PEM or DER\n"),
     N_("\
-       --private-key=FILE          private key file.\n"),
+       --private-key=FILE          private key file\n"),
     N_("\
-       --private-key-type=TYPE     private key type, PEM or DER.\n"),
+       --private-key-type=TYPE     private key type, PEM or DER\n"),
     N_("\
-       --ca-certificate=FILE       file with the bundle of CA's.\n"),
+       --ca-certificate=FILE       file with the bundle of CAs\n"),
     N_("\
-       --ca-directory=DIR          directory where hash list of CA's is stored.\n"),
+       --ca-directory=DIR          directory where hash list of CAs is stored\n"),
     N_("\
-       --random-file=FILE          file with random data for seeding the SSL PRNG.\n"),
+       --crl-file=FILE             file with bundle of CRLs\n"),
     N_("\
-       --egd-file=FILE             file naming the EGD socket with random data.\n"),
+       --pinnedpubkey=FILE/HASHES  Public key (PEM/DER) file, or any number\n\
+                                   of base64 encoded sha256 hashes preceded by\n\
+                                   \'sha256//\' and seperated by \';\', to verify\n\
+                                   peer against\n"),
+#if defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)
+    N_("\
+       --random-file=FILE          file with random data for seeding the SSL PRNG\n"),
+#endif
+#if (defined(HAVE_LIBSSL) || defined(HAVE_LIBSSL32)) && defined(HAVE_RAND_EGD)
+    N_("\
+       --egd-file=FILE             file naming the EGD socket with random data\n"),
+#endif
     "\n",
 #endif /* HAVE_SSL */
+
+#ifdef HAVE_HSTS
+    N_("\
+HSTS options:\n"),
+    N_("\
+       --no-hsts                   disable HSTS\n"),
+    N_("\
+       --hsts-file                 path of HSTS database (will override default)\n"),
+    "\n",
+#endif
 
     N_("\
 FTP options:\n"),
 #ifdef __VMS
     N_("\
-       --ftp-stmlf                 Use Stream_LF format for all binary FTP files.\n"),
+       --ftp-stmlf                 use Stream_LF format for all binary FTP files\n"),
 #endif /* def __VMS */
     N_("\
-       --ftp-user=USER             set ftp user to USER.\n"),
+       --ftp-user=USER             set ftp user to USER\n"),
     N_("\
-       --ftp-password=PASS         set ftp password to PASS.\n"),
+       --ftp-password=PASS         set ftp password to PASS\n"),
     N_("\
-       --no-remove-listing         don't remove `.listing' files.\n"),
+       --no-remove-listing         don't remove '.listing' files\n"),
     N_("\
-       --no-glob                   turn off FTP file name globbing.\n"),
+       --no-glob                   turn off FTP file name globbing\n"),
     N_("\
-       --no-passive-ftp            disable the \"passive\" transfer mode.\n"),
+       --no-passive-ftp            disable the \"passive\" transfer mode\n"),
     N_("\
-       --preserve-permissions      preserve remote file permissions.\n"),
+       --preserve-permissions      preserve remote file permissions\n"),
     N_("\
-       --retr-symlinks             when recursing, get linked-to files (not dir).\n"),
+       --retr-symlinks             when recursing, get linked-to files (not dir)\n"),
     "\n",
+
+#ifdef HAVE_SSL
+    N_("\
+FTPS options:\n"),
+    N_("\
+       --ftps-implicit                 use implicit FTPS (default port is 990)\n"),
+    N_("\
+       --ftps-resume-ssl               resume the SSL/TLS session started in the control connection when\n"
+        "                                         opening a data connection\n"),
+    N_("\
+       --ftps-clear-data-connection    cipher the control channel only; all the data will be in plaintext\n"),
+    N_("\
+       --ftps-fallback-to-ftp          fall back to FTP if FTPS is not supported in the target server\n"),
+#endif
 
     N_("\
 WARC options:\n"),
     N_("\
-       --warc-file=FILENAME        save request/response data to a .warc.gz file.\n"),
+       --warc-file=FILENAME        save request/response data to a .warc.gz file\n"),
     N_("\
-       --warc-header=STRING        insert STRING into the warcinfo record.\n"),
+       --warc-header=STRING        insert STRING into the warcinfo record\n"),
     N_("\
-       --warc-max-size=NUMBER      set maximum size of WARC files to NUMBER.\n"),
+       --warc-max-size=NUMBER      set maximum size of WARC files to NUMBER\n"),
     N_("\
-       --warc-cdx                  write CDX index files.\n"),
+       --warc-cdx                  write CDX index files\n"),
     N_("\
-       --warc-dedup=FILENAME       do not store records listed in this CDX file.\n"),
+       --warc-dedup=FILENAME       do not store records listed in this CDX file\n"),
 #ifdef HAVE_LIBZ
     N_("\
-       --no-warc-compression       do not compress WARC files with GZIP.\n"),
+       --no-warc-compression       do not compress WARC files with GZIP\n"),
 #endif
     N_("\
-       --no-warc-digests           do not calculate SHA1 digests.\n"),
+       --no-warc-digests           do not calculate SHA1 digests\n"),
     N_("\
-       --no-warc-keep-log          do not store the log file in a WARC record.\n"),
+       --no-warc-keep-log          do not store the log file in a WARC record\n"),
     N_("\
        --warc-tempdir=DIRECTORY    location for temporary files created by the\n\
-                                   WARC writer.\n"),
+                                     WARC writer\n"),
     "\n",
 
     N_("\
 Recursive download:\n"),
     N_("\
-  -r,  --recursive                 specify recursive download.\n"),
+  -r,  --recursive                 specify recursive download\n"),
     N_("\
-  -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite).\n"),
+  -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite)\n"),
     N_("\
-       --delete-after              delete files locally after downloading them.\n"),
+       --delete-after              delete files locally after downloading them\n"),
     N_("\
   -k,  --convert-links             make links in downloaded HTML or CSS point to\n\
-                                   local files.\n"),
+                                     local files\n"),
     N_("\
-       --backups=N                 before writing file X, rotate up to N backup files.\n"),
+       --convert-file-only         convert the file part of the URLs only (usually known as the basename)\n"),
+    N_("\
+       --backups=N                 before writing file X, rotate up to N backup files\n"),
 
 #ifdef __VMS
     N_("\
-  -K,  --backup-converted          before converting file X, back up as X_orig.\n"),
+  -K,  --backup-converted          before converting file X, back up as X_orig\n"),
 #else /* def __VMS */
     N_("\
-  -K,  --backup-converted          before converting file X, back up as X.orig.\n"),
+  -K,  --backup-converted          before converting file X, back up as X.orig\n"),
 #endif /* def __VMS [else] */
     N_("\
-  -m,  --mirror                    shortcut for -N -r -l inf --no-remove-listing.\n"),
+  -m,  --mirror                    shortcut for -N -r -l inf --no-remove-listing\n"),
     N_("\
-  -p,  --page-requisites           get all images, etc. needed to display HTML page.\n"),
+  -p,  --page-requisites           get all images, etc. needed to display HTML page\n"),
     N_("\
-       --strict-comments           turn on strict (SGML) handling of HTML comments.\n"),
+       --strict-comments           turn on strict (SGML) handling of HTML comments\n"),
     "\n",
 
     N_("\
 Recursive accept/reject:\n"),
     N_("\
-  -A,  --accept=LIST               comma-separated list of accepted extensions.\n"),
+  -A,  --accept=LIST               comma-separated list of accepted extensions\n"),
     N_("\
-  -R,  --reject=LIST               comma-separated list of rejected extensions.\n"),
+  -R,  --reject=LIST               comma-separated list of rejected extensions\n"),
     N_("\
-       --accept-regex=REGEX        regex matching accepted URLs.\n"),
+       --accept-regex=REGEX        regex matching accepted URLs\n"),
     N_("\
-       --reject-regex=REGEX        regex matching rejected URLs.\n"),
+       --reject-regex=REGEX        regex matching rejected URLs\n"),
 #ifdef HAVE_LIBPCRE
     N_("\
-       --regex-type=TYPE           regex type (posix|pcre).\n"),
+       --regex-type=TYPE           regex type (posix|pcre)\n"),
 #else
     N_("\
-       --regex-type=TYPE           regex type (posix).\n"),
+       --regex-type=TYPE           regex type (posix)\n"),
 #endif
     N_("\
-  -D,  --domains=LIST              comma-separated list of accepted domains.\n"),
+  -D,  --domains=LIST              comma-separated list of accepted domains\n"),
     N_("\
-       --exclude-domains=LIST      comma-separated list of rejected domains.\n"),
+       --exclude-domains=LIST      comma-separated list of rejected domains\n"),
     N_("\
-       --follow-ftp                follow FTP links from HTML documents.\n"),
+       --follow-ftp                follow FTP links from HTML documents\n"),
     N_("\
-       --follow-tags=LIST          comma-separated list of followed HTML tags.\n"),
+       --follow-tags=LIST          comma-separated list of followed HTML tags\n"),
     N_("\
-       --ignore-tags=LIST          comma-separated list of ignored HTML tags.\n"),
+       --ignore-tags=LIST          comma-separated list of ignored HTML tags\n"),
     N_("\
-  -H,  --span-hosts                go to foreign hosts when recursive.\n"),
+  -H,  --span-hosts                go to foreign hosts when recursive\n"),
     N_("\
-  -L,  --relative                  follow relative links only.\n"),
+  -L,  --relative                  follow relative links only\n"),
     N_("\
-  -I,  --include-directories=LIST  list of allowed directories.\n"),
+  -I,  --include-directories=LIST  list of allowed directories\n"),
     N_("\
        --trust-server-names        use the name specified by the redirection\n\
-                                   url last component.\n"),
+                                     URL's last component\n"),
     N_("\
-  -X,  --exclude-directories=LIST  list of excluded directories.\n"),
+  -X,  --exclude-directories=LIST  list of excluded directories\n"),
     N_("\
-  -np, --no-parent                 don't ascend to the parent directory.\n"),
+  -np, --no-parent                 don't ascend to the parent directory\n"),
     "\n",
-    N_("Mail bug reports and suggestions to <bug-wget@gnu.org>.\n")
+    N_("Mail bug reports and suggestions to <bug-wget@gnu.org>\n")
   };
 
   size_t i;
@@ -848,7 +1037,10 @@ format_and_print_line (const char *prefix, const char *line,
   line_dup = xstrdup (line);
 
   if (printf ("%s", prefix) < 0)
-    return -1;
+    {
+      xfree (line_dup);
+      return -1;
+    }
 
   /* Wrap to new line after prefix. */
   remaining_chars = 0;
@@ -863,17 +1055,26 @@ format_and_print_line (const char *prefix, const char *line,
       if (remaining_chars <= (int) strlen (token))
         {
           if (printf ("\n%*c", TABULATION, ' ') < 0)
-            return -1;
+            {
+              xfree (line_dup);
+              return -1;
+            }
           remaining_chars = line_length - TABULATION;
         }
       if (printf ("%s ", token) < 0)
-        return -1;
+        {
+          xfree (line_dup);
+          return -1;
+        }
       remaining_chars -= strlen (token) + 1;  /* account for " " */
       token = strtok (NULL, " ");
     }
 
   if (printf ("\n") < 0)
-    return -1;
+    {
+      xfree (line_dup);
+      return -1;
+    }
 
   xfree (line_dup);
   return 0;
@@ -957,7 +1158,7 @@ print_version (void)
   /* TRANSLATORS: When available, an actual copyright character
      (circle-c) should be used in preference to "(C)". */
   if (printf (_("\
-Copyright (C) %s Free Software Foundation, Inc.\n"), "2014") < 0)
+Copyright (C) %s Free Software Foundation, Inc.\n"), "2015") < 0)
     exit (WGET_EXIT_IO_FAIL);
   if (fputs (_("\
 License GPLv3+: GNU GPL version 3 or later\n\
@@ -977,23 +1178,26 @@ There is NO WARRANTY, to the extent permitted by law.\n"), stdout) < 0)
   exit (WGET_EXIT_SUCCESS);
 }
 
-char *program_name; /* Needed by lib/error.c. */
-char *program_argstring; /* Needed by wget_warc.c. */
+const char *program_name; /* Needed by lib/error.c. */
+const char *program_argstring; /* Needed by wget_warc.c. */
 
 int
 main (int argc, char **argv)
 {
-  char **url, **t;
+  char **url, **t, *p;
   int i, ret, longindex;
   int nurl;
+  int retconf;
+  int argstring_length;
+  bool use_userconfig = false;
+  bool noconfig = false;
   bool append_to_log = false;
-
-  total_downloaded_bytes = 0;
-
-  program_name = argv[0];
 
   struct ptimer *timer = ptimer_new ();
   double start_time = ptimer_measure (timer);
+
+  total_downloaded_bytes = 0;
+  program_name = argv[0];
 
   i18n_initialize ();
 
@@ -1002,11 +1206,7 @@ main (int argc, char **argv)
   /* On VMS, lose the "dev:[dir]" prefix and the ".EXE;nnn" suffix. */
   exec_name = vms_basename (argv[0]);
 #else /* def __VMS */
-  exec_name = strrchr (argv[0], PATH_SEPARATOR);
-  if (!exec_name)
-    exec_name = argv[0];
-  else
-    ++exec_name;
+  exec_name = base_name (argv[0]);
 #endif /* def __VMS [else] */
 
 #ifdef WINDOWS
@@ -1015,10 +1215,9 @@ main (int argc, char **argv)
 #endif
 
   /* Construct the arguments string. */
-  int argstring_length = 1;
-  for (i = 1; i < argc; i++)
-    argstring_length += strlen (argv[i]) + 2 + 1;
-  char *p = program_argstring = malloc (argstring_length * sizeof (char));
+  for (argstring_length = 1, i = 1; i < argc; i++)
+    argstring_length += strlen (argv[i]) + 3 + 1;
+  program_argstring = p = malloc (argstring_length);
   if (p == NULL)
     {
       fprintf (stderr, _("Memory allocation problem\n"));
@@ -1026,8 +1225,10 @@ main (int argc, char **argv)
     }
   for (i = 1; i < argc; i++)
     {
+      int arglen;
+
       *p++ = '"';
-      int arglen = strlen (argv[i]);
+      arglen = strlen (argv[i]);
       memcpy (p, argv[i], arglen);
       p += arglen;
       *p++ = '"';
@@ -1043,9 +1244,6 @@ main (int argc, char **argv)
   /* This separate getopt_long is needed to find the user config file
      option ("--config") and parse it before the other user options. */
   longindex = -1;
-  int retconf;
-  bool use_userconfig = false;
-  bool noconfig = false;
 
   while ((retconf = getopt_long (argc, argv,
                                 short_options, long_options, &longindex)) != -1)
@@ -1219,11 +1417,14 @@ main (int argc, char **argv)
   /* All user options have now been processed, so it's now safe to do
      interoption dependency checks. */
 
-  if (opt.noclobber && opt.convert_links)
+  if (opt.noclobber && (opt.convert_links || opt.convert_file_only))
     {
       fprintf (stderr,
-               _("Both --no-clobber and --convert-links were specified,"
-                 " only --convert-links will be used.\n"));
+               opt.convert_links ?
+                   _("Both --no-clobber and --convert-links were specified,"
+                     " only --convert-links will be used.\n") :
+                    _("Both --no-clobber and --convert-file-only were specified,"
+                      " only --convert-file-only will be used.\n"));
       opt.noclobber = false;
     }
 
@@ -1246,8 +1447,11 @@ main (int argc, char **argv)
   if (opt.verbose == -1)
     opt.verbose = !opt.quiet;
 
-  if (opt.verbose == 1)
-    opt.show_progress = true;
+  if (!opt.verbose && opt.show_progress == -1)
+    opt.show_progress = false;
+
+  if (opt.quiet && opt.show_progress == -1)
+    opt.show_progress = false;
 
   /* Sanity checks.  */
   if (opt.verbose && opt.quiet)
@@ -1274,11 +1478,11 @@ Can't timestamp and not clobber old files at the same time.\n"));
 #endif
   if (opt.output_document)
     {
-      if (opt.convert_links
+      if ((opt.convert_links || opt.convert_file_only)
           && (nurl > 1 || opt.page_requisites || opt.recursive))
         {
           fputs (_("\
-Cannot specify both -k and -O if multiple URLs are given, or in combination\n\
+Cannot specify both -k or --convert-file-only and -O if multiple URLs are given, or in combination\n\
 with -p or -r. See the manual for details.\n\n"), stderr);
           print_usage (1);
           exit (WGET_EXIT_GENERIC_ERROR);
@@ -1365,7 +1569,11 @@ for details.\n\n"));
       opt.always_rest = false;
     }
 
-  if (!nurl && !opt.input_filename)
+  if (!nurl && !opt.input_filename
+#ifdef HAVE_METALINK
+      && !opt.input_metalink
+#endif
+      )
     {
       /* No URL specified.  */
       fprintf (stderr, _("%s: missing URL\n"), exec_name);
@@ -1438,7 +1646,7 @@ for details.\n\n"));
 
   /* When user specifies HEAD as the method, we do not wish to download any
      files. Hence, set wget to run in spider mode.  */
-  if (opt.method && strcasecmp (opt.method, "HEAD") == 0)
+  if (opt.method && c_strcasecmp (opt.method, "HEAD") == 0)
     setoptval ("spider", "1", "spider");
 
   /* Convert post_data to body-data and post_file_name to body-file options.
@@ -1455,12 +1663,12 @@ for details.\n\n"));
         if (opt.post_data)
           {
             setoptval ("bodydata", opt.post_data, "body-data");
-            opt.post_data = NULL;
+            xfree(opt.post_data);
           }
         else
           {
             setoptval ("bodyfile", opt.post_file_name, "body-file");
-            opt.post_file_name = NULL;
+            xfree(opt.post_file_name);
           }
     }
 
@@ -1579,14 +1787,71 @@ for details.\n\n"));
           if (fstat (fileno (output_stream), &st) == 0 && S_ISREG (st.st_mode))
             output_stream_regular = true;
         }
-      if (!output_stream_regular && opt.convert_links)
+      if (!output_stream_regular && (opt.convert_links || opt.recursive))
         {
-          fprintf (stderr, _("-k can be used together with -O only if \
+          fprintf (stderr, _("-k or -r can be used together with -O only if \
 outputting to a regular file.\n"));
-          print_usage (1);
+          exit (WGET_EXIT_GENERIC_ERROR);
+        }
+      if (!output_stream_regular && (opt.convert_links || opt.convert_file_only))
+        {
+          fprintf (stderr, _("--convert-links or --convert-file-only can be used together \
+only if outputting to a regular file.\n"));
           exit (WGET_EXIT_GENERIC_ERROR);
         }
     }
+
+#ifdef HAVE_LIBCARES
+  if (opt.bind_dns_address || opt.dns_servers)
+    {
+      if (ares_library_init (ARES_LIB_INIT_ALL))
+        {
+          fprintf (stderr, _("Failed to init libcares\n"));
+          exit (WGET_EXIT_GENERIC_ERROR);
+        }
+
+      if (ares_init (&ares) != ARES_SUCCESS)
+        {
+          fprintf (stderr, _("Failed to init c-ares channel\n"));
+          exit (WGET_EXIT_GENERIC_ERROR);
+        }
+
+      if (opt.bind_dns_address)
+        {
+          struct in_addr a4;
+#ifdef ENABLE_IPV6
+          struct in6_addr a6;
+#endif
+
+          if (inet_pton (AF_INET, opt.bind_dns_address, &a4) == 1)
+            {
+              ares_set_local_ip4 (ares, ntohl (a4.s_addr));
+            }
+#ifdef ENABLE_IPV6
+          else if (inet_pton (AF_INET6, opt.bind_dns_address, &a6) == 1)
+            {
+              ares_set_local_ip6 (ares, (unsigned char *) &a6);
+            }
+#endif
+          else
+            {
+              fprintf (stderr, _("Failed to parse IP address '%s'\n"), opt.bind_dns_address);
+              exit (WGET_EXIT_GENERIC_ERROR);
+            }
+        }
+
+      if (opt.dns_servers)
+        {
+          int result;
+
+          if ((result = ares_set_servers_csv (ares, opt.dns_servers)) != ARES_SUCCESS)
+            {
+              fprintf (stderr, _("Failed to set DNS server(s) '%s' (%d)\n"), opt.dns_servers, result);
+              exit (WGET_EXIT_GENERIC_ERROR);
+            }
+        }
+    }
+#endif
 
 #ifdef __VMS
   /* Set global ODS5 flag according to the specified destination (if
@@ -1622,6 +1887,16 @@ outputting to a regular file.\n"));
   signal (SIGWINCH, progress_handle_sigwinch);
 #endif
 
+#ifdef HAVE_HSTS
+  /* Load the HSTS database.
+     Maybe all the URLs are FTP(S), in which case HSTS would not be needed,
+     but this is the best place to do it, and it shouldn't be a critical
+     performance hit.
+   */
+  if (opt.hsts)
+    load_hsts ();
+#endif
+
   /* Retrieve the URLs from argument list.  */
   for (t = url; *t; t++)
     {
@@ -1646,12 +1921,21 @@ outputting to a regular file.\n"));
       else
         {
           if ((opt.recursive || opt.page_requisites)
-              && (url_scheme (*t) != SCHEME_FTP || url_uses_proxy (url_parsed)))
+              && ((url_scheme (*t) != SCHEME_FTP
+#ifdef HAVE_SSL
+              && url_scheme (*t) != SCHEME_FTPS
+#endif
+              )
+                  || url_uses_proxy (url_parsed)))
             {
               int old_follow_ftp = opt.follow_ftp;
 
               /* Turn opt.follow_ftp on in case of recursive FTP retrieval */
-              if (url_scheme (*t) == SCHEME_FTP)
+              if (url_scheme (*t) == SCHEME_FTP
+#ifdef HAVE_SSL
+                  || url_scheme (*t) == SCHEME_FTPS
+#endif
+                  )
                 opt.follow_ftp = 1;
 
               retrieve_tree (url_parsed, NULL);
@@ -1659,10 +1943,10 @@ outputting to a regular file.\n"));
               opt.follow_ftp = old_follow_ftp;
             }
           else
-          {
-            retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
-                          &dt, opt.recursive, iri, true);
-          }
+            {
+              retrieve_url (url_parsed, *t, &filename, &redirected_URL, NULL,
+                            &dt, opt.recursive, iri, true);
+            }
 
           if (opt.delete_after && filename != NULL && file_exists_p (filename))
             {
@@ -1671,8 +1955,8 @@ outputting to a regular file.\n"));
               if (unlink (filename))
                 logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
             }
-          xfree_null (redirected_URL);
-          xfree_null (filename);
+          xfree (redirected_URL);
+          xfree (filename);
           url_free (url_parsed);
         }
       iri_free (iri);
@@ -1690,6 +1974,57 @@ outputting to a regular file.\n"));
                    opt.input_filename);
     }
 
+#ifdef HAVE_METALINK
+  /* Finally, from metlink file, if any.  */
+  if (opt.input_metalink)
+    {
+      metalink_error_t meta_err;
+      uerr_t retr_err;
+      metalink_t *metalink;
+
+      meta_err = metalink_parse_file (opt.input_metalink, &metalink);
+
+      if (meta_err)
+        {
+          logprintf (LOG_NOTQUIET, _("Unable to parse metalink file %s.\n"),
+                     opt.input_metalink);
+          retr_err = METALINK_PARSE_ERROR;
+        }
+      else
+        {
+          /* We need to sort the resources if preferred location
+             was specified by the user.  */
+          if (opt.preferred_location && opt.preferred_location[0])
+            {
+              metalink_file_t **mfile_ptr;
+              for (mfile_ptr = metalink->files; *mfile_ptr; mfile_ptr++)
+                {
+                  metalink_resource_t **mres_ptr;
+                  metalink_file_t *mfile = *mfile_ptr;
+                  size_t mres_count = 0;
+
+                  for (mres_ptr = mfile->resources; *mres_ptr; mres_ptr++)
+                    mres_count++;
+
+                  stable_sort (mfile->resources,
+                               mres_count,
+                               sizeof (metalink_resource_t *),
+                               metalink_res_cmp);
+                }
+            }
+          retr_err = retrieve_from_metalink (metalink);
+          if (retr_err != RETROK)
+            {
+              logprintf (LOG_NOTQUIET,
+                         _("Could not download all resources from %s.\n"),
+                         quote (opt.input_metalink));
+            }
+          metalink_delete (metalink);
+        }
+      inform_exit_status (retr_err);
+    }
+#endif /* HAVE_METALINK */
+
   /* Print broken links. */
   if (opt.recursive && opt.spider)
     print_broken_links ();
@@ -1702,10 +2037,11 @@ outputting to a regular file.\n"));
       total_downloaded_bytes != 0)
     {
       double end_time = ptimer_measure (timer);
-      ptimer_destroy (timer);
-
       char *wall_time = xstrdup (secs_to_human_time (end_time - start_time));
       char *download_time = xstrdup (secs_to_human_time (total_download_time));
+
+      ptimer_destroy (timer);
+
       logprintf (LOG_NOTQUIET,
                  _("FINISHED --%s--\nTotal wall clock time: %s\n"
                    "Downloaded: %d files, %s in %s (%s)\n"),
@@ -1728,40 +2064,20 @@ outputting to a regular file.\n"));
   if (opt.cookies_output)
     save_cookies ();
 
-  if (opt.convert_links && !opt.delete_after)
+#ifdef HAVE_HSTS
+  if (opt.hsts && hsts_store)
+    save_hsts ();
+#endif
+
+  if ((opt.convert_links || opt.convert_file_only) && !opt.delete_after)
     convert_all_links ();
 
   cleanup ();
 
   exit (get_exit_status ());
 }
+
 #endif /* TESTING */
-
-#if defined(SIGHUP) || defined(SIGUSR1)
-
-/* So the signal_name check doesn't blow when only one is available. */
-#ifndef SIGHUP
-# define SIGHUP -1
-#endif
-#ifndef SIGUSR1
-# define SIGUSR1 -1
-#endif
-
-/* Hangup signal handler.  When wget receives SIGHUP or SIGUSR1, it
-   will proceed operation as usual, trying to write into a log file.
-   If that is impossible, the output will be turned off.  */
-
-static void
-redirect_output_signal (int sig)
-{
-  const char *signal_name = (sig == SIGHUP ? "SIGHUP" :
-                             (sig == SIGUSR1 ? "SIGUSR1" :
-                              "WTF?!"));
-  log_request_redirect_output (signal_name);
-  progress_schedule_redirect ();
-  signal (sig, redirect_output_signal);
-}
-#endif
 
 /*
  * vim: et ts=2 sw=2

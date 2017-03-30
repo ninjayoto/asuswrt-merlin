@@ -1,6 +1,6 @@
 /* Establishing and handling network connections.
    Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software
+   2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
    Foundation, Inc.
 
 This file is part of GNU Wget.
@@ -54,6 +54,11 @@ as that of the covered work.  */
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+
+#ifdef ENABLE_IRI
+#include <idn-free.h>
+#endif
+
 #include "utils.h"
 #include "host.h"
 #include "connect.h"
@@ -168,7 +173,7 @@ sockaddr_size (const struct sockaddr *sa)
       abort ();
     }
 }
-
+
 /* Resolve the bind address specified via --bind-address and store it
    to SA.  The resolved value is stored in a static variable and
    reused after the first invocation of this function.
@@ -213,7 +218,7 @@ resolve_bind_address (struct sockaddr *sa)
   should_bind = true;
   return true;
 }
-
+
 struct cwt_context {
   int fd;
   const struct sockaddr *addr;
@@ -250,7 +255,7 @@ connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
     errno = ETIMEDOUT;
   return ctx.result;
 }
-
+
 /* Connect via TCP to the specified address and port.
 
    If PRINT is non-NULL, it is the host name to print that we're
@@ -278,14 +283,13 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
               str = xmalloc (len);
               snprintf (str, len, "%s (%s)", name, print);
               str[len-1] = '\0';
-              xfree (name);
+              idn_free (name);
             }
 
           logprintf (LOG_VERBOSE, _("Connecting to %s|%s|:%d... "),
                      str ? str : escnonprint_uri (print), txt_addr, port);
 
-          if (str)
-              xfree (str);
+          xfree (str);
         }
       else
         {
@@ -365,9 +369,16 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
        logprintf.  */
     int save_errno = errno;
     if (sock >= 0)
-      fd_close (sock);
+      {
+#ifdef WIN32
+	/* If the connection timed out, fd_close will hang in Gnulib's
+	   close_fd_maybe_socket, inside the call to WSAEnumNetworkEvents.  */
+	if (errno != ETIMEDOUT)
+#endif
+	  fd_close (sock);
+      }
     if (print)
-      logprintf (LOG_VERBOSE, _("failed: %s.\n"), strerror (errno));
+      logprintf (LOG_NOTQUIET, _("failed: %s.\n"), strerror (errno));
     errno = save_errno;
     return -1;
   }
@@ -429,7 +440,7 @@ connect_to_host (const char *host, int port)
 
   return -1;
 }
-
+
 /* Create a socket, bind it to local interface BIND_ADDRESS on port
    *PORT, set up a listen backlog, and return the resulting socket, or
    -1 in case of error.
@@ -746,7 +757,7 @@ wget uses blocking sockets so we must convert them back to blocking
        or EOF/error. */
     return false;
 }
-
+
 /* Basic socket operations, mostly EINTR wrappers.  */
 
 static int
@@ -794,7 +805,7 @@ sock_close (int fd)
 #undef read
 #undef write
 #undef close
-
+
 /* Reading and writing from the network.  We build around the socket
    (file descriptor) API, but support "extended" operations for things
    that are not mere file descriptors under the hood, such as SSL
@@ -845,7 +856,7 @@ void *
 fd_transport_context (int fd)
 {
   struct transport_info *info = hash_table_get (transport_map, (void *)(intptr_t) fd);
-  return info->ctx;
+  return info ? info->ctx : NULL;
 }
 
 /* When fd_read/fd_write are called multiple times in a loop, they should

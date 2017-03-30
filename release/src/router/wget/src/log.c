@@ -1,6 +1,6 @@
 /* Messages logging.
    Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-   2007, 2008, 2009, 2010, 2011 Free Software Foundation, Inc.
+   2007, 2008, 2009, 2010, 2011, 2015 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -73,7 +73,7 @@ as that of the covered work.  */
    - Inhibiting output.  When Wget receives SIGHUP, but redirecting
    the output fails, logging is inhibited.  */
 
-
+
 /* The file descriptor used for logging.  This is NULL before log_init
    is called; logging functions log to stderr then.  log_init sets it
    either to stderr or to a file pointer obtained from fopen().  If
@@ -142,7 +142,7 @@ static int log_line_current = -1;
 static bool trailing_line;
 
 static void check_redirect_output (void);
-
+
 #define ROT_ADVANCE(num) do {                   \
   if (++num >= SAVED_LOG_LINES)                 \
     num = 0;                                    \
@@ -156,11 +156,7 @@ static void
 free_log_line (int num)
 {
   struct log_ln *ln = log_lines + num;
-  if (ln->malloced_line)
-    {
-      xfree (ln->malloced_line);
-      ln->malloced_line = NULL;
-    }
+  xfree (ln->malloced_line);
   ln->content = NULL;
 }
 
@@ -265,7 +261,7 @@ saved_append (const char *s)
       s = end;
     }
 }
-
+
 /* Check X against opt.verbose and opt.quiet.  The semantics is as
    follows:
 
@@ -314,6 +310,14 @@ get_log_fp (void)
   return stderr;
 }
 
+static FILE *
+get_progress_fp (void)
+{
+  if (opt.show_progress == true)
+      return stderr;
+  return get_log_fp();
+}
+
 /* Returns the file descriptor for the secondary log file. This is
    WARCLOGFP, except if called before log_init, in which case it
    returns stderr.  This is useful in case someone calls a logging
@@ -338,7 +342,7 @@ log_set_warc_log_fp (FILE * fp)
 {
   warclogfp = fp;
 }
-
+
 /* Log a literal string S.  The string is logged as-is, without a
    newline appended.  */
 
@@ -347,11 +351,22 @@ logputs (enum log_options o, const char *s)
 {
   FILE *fp;
   FILE *warcfp;
+  int errno_save = errno;
 
   check_redirect_output ();
-  if ((fp = get_log_fp ()) == NULL)
+  if (o == LOG_PROGRESS)
+    fp = get_progress_fp ();
+  else
+    fp = get_log_fp ();
+
+  errno = errno_save;
+
+  if (fp == NULL)
     return;
+
   warcfp = get_warc_log_fp ();
+  errno = errno_save;
+
   CHECK_VERBOSE (o);
 
   FPUTS (s, fp);
@@ -363,6 +378,8 @@ logputs (enum log_options o, const char *s)
     logflush ();
   else
     needs_flushing = true;
+
+  errno = errno_save;
 }
 
 struct logvprintf_state {
@@ -385,7 +402,7 @@ struct logvprintf_state {
    (An alternative approach would be to use va_copy, but that's not
    portable.)  */
 
-static bool
+static bool GCC_FORMAT_ATTR (2, 0)
 log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
                       va_list args)
 {
@@ -451,8 +468,7 @@ log_vprintf_internal (struct logvprintf_state *state, const char *fmt,
   FPUTS (write_ptr, fp);
   if (warcfp != NULL)
     FPUTS (write_ptr, warcfp);
-  if (state->bigmsg)
-    xfree (state->bigmsg);
+  xfree (state->bigmsg);
 
  flush:
   if (flush_log_p)
@@ -534,13 +550,16 @@ logprintf (enum log_options o, const char *fmt, ...)
   va_list args;
   struct logvprintf_state lpstate;
   bool done;
+  int errno_saved = errno;
 
   check_redirect_output ();
+  errno = errno_saved;
   if (inhibit_logging)
     return;
   CHECK_VERBOSE (o);
 
   xzero (lpstate);
+  errno = 0;
   do
     {
       va_start (args, fmt);
@@ -551,6 +570,8 @@ logprintf (enum log_options o, const char *fmt, ...)
         exit (WGET_EXIT_GENERIC_ERROR);
     }
   while (!done);
+
+  errno = errno_saved;
 }
 
 #ifdef ENABLE_DEBUG
@@ -580,7 +601,7 @@ debug_logprintf (const char *fmt, ...)
     }
 }
 #endif /* ENABLE_DEBUG */
-
+
 /* Open FILE and set up a logging stream.  If FILE cannot be opened,
    exit with status of 1.  */
 void
@@ -588,11 +609,18 @@ log_init (const char *file, bool appendp)
 {
   if (file)
     {
-      logfp = fopen (file, appendp ? "a" : "w");
-      if (!logfp)
+      if (HYPHENP (file))
         {
-          fprintf (stderr, "%s: %s: %s\n", exec_name, file, strerror (errno));
-          exit (WGET_EXIT_GENERIC_ERROR);
+          logfp = stdout;
+        }
+      else
+        {
+          logfp = fopen (file, appendp ? "a" : "w");
+          if (!logfp)
+            {
+              fprintf (stderr, "%s: %s: %s\n", exec_name, file, strerror (errno));
+              exit (WGET_EXIT_GENERIC_ERROR);
+            }
         }
     }
   else
@@ -675,7 +703,7 @@ log_dump_context (void)
   fflush (fp);
   fflush (warcfp);
 }
-
+
 /* String escape functions. */
 
 /* Return the number of non-printable characters in SOURCE.
@@ -847,9 +875,9 @@ log_cleanup (void)
 {
   size_t i;
   for (i = 0; i < countof (ring); i++)
-    xfree_null (ring[i].buffer);
+    xfree (ring[i].buffer);
 }
-
+
 /* When SIGHUP or SIGUSR1 are received, the output is redirected
    elsewhere.  Such redirection is only allowed once. */
 static enum { RR_NONE, RR_REQUESTED, RR_DONE } redirect_request = RR_NONE;

@@ -93,8 +93,11 @@ Environment Variables:
   valgrind.
 * NO_CLEANUP: Do not remove the temporary files created by the test.
   This will prevent the ${testname}-test directory from being deleted
-* VALGRIND_TESTS: If this variable is set, the test suite will execute all the
-  tests through valgrind's memcheck tool.
+* VALGRIND_TESTS: If this variable is set and contains the valgrind command line,
+  the test suite will execute all the tests via this command.
+  If it is set to "1", valgrind memcheck is enabled with hard coded options.
+  This variable is set by ./configure --enable-valgrind-tests.
+* SSL_TESTS: This must be set to run any https tests.
 
 
 File Structure:
@@ -122,7 +125,7 @@ WgetFile (str name, str contents, str timestamp, dict rules)
 None except name is a mandatory paramter, one may pass only those parameters
 that are required by the File object.
 
-The timestamp string should be a valid Unix Timestamp as defined in RFC xxxx.
+The timestamp string should be in a format: "YYYY-MM-DD HH:MM:SS" in UTC zone.
 The rules object is a dictionary element, with the key as the Rule Name and
 value as the Rule Data. In most cases, the Rule Data is another dictionary.
 
@@ -182,7 +185,8 @@ This section lists the currently supported File Rules and their structure.
 
     * SendHeader    : This list of Headers will be sent in EVERY response to a
     request for the respective file. It follows the same value format as
-    ExpectHeader.
+    ExpectHeader. Additionally you can specify a list of strings as <Header Data>
+    if you want the header repeated with multiple values.
 
     * Response      : The HTTP Response Code to send to a request for this File.
     The value is an Integer that represents a valid HTTP Response Code.

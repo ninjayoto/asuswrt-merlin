@@ -1,6 +1,6 @@
 /* Support for cookies.
    Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-   2010, 2011 Free Software Foundation, Inc.
+   2010, 2011, 2015 Free Software Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -58,7 +58,9 @@ as that of the covered work.  */
 #include "hash.h"
 #include "cookies.h"
 #include "http.h"               /* for http_atotm */
-
+#include "c-strcase.h"
+
+
 /* Declarations of `struct cookie' and the most basic functions. */
 
 /* Cookie jar serves as cookie storage and a means of retrieving
@@ -151,13 +153,13 @@ cookie_expired_p (const struct cookie *c)
 static void
 delete_cookie (struct cookie *cookie)
 {
-  xfree_null (cookie->domain);
-  xfree_null (cookie->path);
-  xfree_null (cookie->attr);
-  xfree_null (cookie->value);
+  xfree (cookie->domain);
+  xfree (cookie->path);
+  xfree (cookie->attr);
+  xfree (cookie->value);
   xfree (cookie);
 }
-
+
 /* Functions for storing cookies.
 
    All cookies can be reached beginning with jar->chains.  The key in
@@ -302,7 +304,12 @@ discard_matching_cookie (struct cookie_jar *jar, struct cookie *cookie)
 
           res = hash_table_get_pair (jar->chains, victim->domain,
                                      &chain_key, NULL);
-          assert (res != 0);
+
+          if (res == 0)
+            {
+              logprintf (LOG_VERBOSE, _("Unable to get cookie for %s\n"),
+                         victim->domain);
+            }
           if (!victim->next)
             {
               /* VICTIM was the only cookie in the chain.  Destroy the
@@ -317,7 +324,7 @@ discard_matching_cookie (struct cookie_jar *jar, struct cookie *cookie)
       DEBUGP (("Discarded old cookie.\n"));
     }
 }
-
+
 /* Functions for parsing the `Set-Cookie' header, and creating new
    cookies from the wire.  */
 
@@ -369,7 +376,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
         {
           if (!TOKEN_NON_EMPTY (value))
             goto error;
-          xfree_null (cookie->domain);
+          xfree (cookie->domain);
           /* Strictly speaking, we should set cookie->domain_exact if the
              domain doesn't begin with a dot.  But many sites set the
              domain to "foo.com" and expect "subhost.foo.com" to get the
@@ -382,7 +389,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
         {
           if (!TOKEN_NON_EMPTY (value))
             goto error;
-          xfree_null (cookie->path);
+          xfree (cookie->path);
           cookie->path = strdupdelim (value.b, value.e);
         }
       else if (TOKEN_IS (name, "expires"))
@@ -456,7 +463,7 @@ parse_set_cookie (const char *set_cookie, bool silent)
 
 #undef TOKEN_IS
 #undef TOKEN_NON_EMPTY
-
+
 /* Sanity checks.  These are important, otherwise it is possible for
    mailcious attackers to destroy important cookie information and/or
    violate your privacy.  */
@@ -518,12 +525,12 @@ check_domain_match (const char *cookie_domain, const char *host)
 {
 
 #ifdef HAVE_LIBPSL
-  DEBUGP (("cdm: 1"));
   char *cookie_domain_lower = NULL;
   char *host_lower = NULL;
   const psl_ctx_t *psl;
   int is_acceptable;
 
+  DEBUGP (("cdm: 1"));
   if (!(psl = psl_builtin()))
     {
       DEBUGP (("\nlibpsl not built with a public suffix list. "
@@ -692,7 +699,7 @@ check_path_match (const char *cookie_path, const char *path)
   s = PS_newstr;                                                \
 } while (0)
 
-
+
 /* Process the HTTP `Set-Cookie' header.  This results in storing the
    cookie or discarding a matching one, or ignoring it completely, all
    depending on the contents.  */
@@ -776,7 +783,7 @@ cookie_handle_set_cookie (struct cookie_jar *jar,
   if (cookie)
     delete_cookie (cookie);
 }
-
+
 /* Support for sending out cookies in HTTP requests, based on
    previously stored cookies.  Entry point is
    `build_cookies_request'.  */
@@ -1107,7 +1114,7 @@ cookie_header (struct cookie_jar *jar, const char *host,
   assert (pos == result_size);
   return result;
 }
-
+
 /* Support for loading and saving cookies.  The format used for
    loading and saving should be the format of the `cookies.txt' file
    used by Netscape and Mozilla, at least the Unix versions.
@@ -1346,7 +1353,7 @@ cookie_jar_save (struct cookie_jar *jar, const char *file)
 
   DEBUGP (("Done saving cookies.\n"));
 }
-
+
 /* Clean up cookie-related data. */
 
 void
@@ -1369,7 +1376,7 @@ cookie_jar_delete (struct cookie_jar *jar)
   hash_table_destroy (jar->chains);
   xfree (jar);
 }
-
+
 /* Test cases.  Currently this is only tests parse_set_cookies.  To
    use, recompile Wget with -DTEST_COOKIES and call test_cookies()
    from main.  */
@@ -1438,8 +1445,8 @@ test_cookies (void)
               printf ("Invalid value %d for '%s' (expected '%s', got '%s')\n",
                       j / 2 + 1, data, expected[j + 1], v);
             j += 2;
-            free (n);
-            free (v);
+            xfree (n);
+            xfree (v);
           }
         if (expected[j])
           printf ("Too few parameters for '%s'\n", data);

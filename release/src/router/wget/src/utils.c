@@ -1,7 +1,7 @@
 /* Various utility functions.
    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005, 2006, 2007, 2008, 2009, 2010, 2011 Free Software Foundation,
-   Inc.
+   2005, 2006, 2007, 2008, 2009, 2010, 2011, 2015 Free Software
+   Foundation, Inc.
 
 This file is part of GNU Wget.
 
@@ -31,14 +31,12 @@ as that of the covered work.  */
 
 #include "wget.h"
 
+#include "sha256.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#ifdef HAVE_MMAP
-# include <sys/mman.h>
-#endif
 #ifdef HAVE_PROCESS_H
 # include <process.h>  /* getpid() */
 #endif
@@ -64,8 +62,10 @@ as that of the covered work.  */
 #include <sys/stat.h>
 
 /* For TIOCGWINSZ and friends: */
-#include <sys/ioctl.h>
-#include <termios.h>
+#ifndef WINDOWS
+# include <sys/ioctl.h>
+# include <termios.h>
+#endif
 
 /* Needed for Unix version of run_with_timeout. */
 #include <signal.h>
@@ -87,6 +87,18 @@ as that of the covered work.  */
 # define USE_SIGNAL_TIMEOUT
 #endif
 
+/* Some systems (Linux libc5, "NCR MP-RAS 3.0", and others) don't
+   provide MAP_FAILED, a symbolic constant for the value returned by
+   mmap() when it doesn't work.  Usually, this constant should be -1.
+   This only makes sense for files that use mmap() and include
+   sys/mman.h *before* sysdep.h, but doesn't hurt others.  */
+#ifdef HAVE_MMAP
+# include <sys/mman.h>
+# ifndef MAP_FAILED
+#  define MAP_FAILED ((void *) -1)
+# endif
+#endif
+
 #include "utils.h"
 #include "hash.h"
 
@@ -99,6 +111,7 @@ as that of the covered work.  */
 #endif
 
 #include "exits.h"
+#include "c-strcase.h"
 
 static void _Noreturn
 memfatal (const char *context, long attempted_size)
@@ -267,7 +280,7 @@ sepstring (const char *s)
   res[i + 1] = NULL;
   return res;
 }
-
+
 /* Like sprintf, but prints into a string of sufficient size freshly
    allocated with malloc, which is returned.  If unable to print due
    to invalid format, returns NULL.  Inability to allocate needed
@@ -333,7 +346,7 @@ aprintf (const char *fmt, ...)
         {                               /* maybe we have some wrong
                                            format string? */
           logprintf (LOG_ALWAYS,
-                     _("%s: aprintf: text buffer is too big (%ld bytes), "
+                     _("%s: aprintf: text buffer is too big (%d bytes), "
                        "aborting.\n"),
                      exec_name, size);  /* printout a log message */
           abort ();                     /* and abort... */
@@ -349,6 +362,32 @@ aprintf (const char *fmt, ...)
 #endif /* not HAVE_VASPRINTF */
 }
 
+#ifndef HAVE_STRLCPY
+/* strlcpy() is a BSD function that sometimes is really handy.
+ * It is the same as snprintf(dst,dstsize,"%s",src), but much faster. */
+
+size_t
+strlcpy (char *dst, const char *src, size_t size)
+{
+  const char *old = src;
+
+  /* Copy as many bytes as will fit */
+  if (size)
+    {
+      while (--size)
+        {
+          if (!(*dst++ = *src++))
+            return src - old - 1;
+        }
+
+      *dst = 0;
+    }
+
+  while (*src++);
+  return src - old - 1;
+}
+#endif
+
 /* Concatenate the NULL-terminated list of string arguments into
    freshly allocated space.  */
 
@@ -356,47 +395,30 @@ char *
 concat_strings (const char *str0, ...)
 {
   va_list args;
-  int saved_lengths[5];         /* inspired by Apache's apr_pstrcat */
-  char *ret, *p;
+  const char *arg;
+  size_t length = 0, pos = 0;
+  char *s;
 
-  const char *next_str;
-  int total_length = 0;
-  size_t argcount;
+  if (!str0)
+    return NULL;
 
-  /* Calculate the length of and allocate the resulting string. */
-
-  argcount = 0;
+  /* calculate the length of the resulting string */
   va_start (args, str0);
-  for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
-    {
-      int len = strlen (next_str);
-      if (argcount < countof (saved_lengths))
-        saved_lengths[argcount++] = len;
-      total_length += len;
-    }
+  for (arg = str0; arg; arg = va_arg (args, const char *))
+    length += strlen(arg);
   va_end (args);
-  p = ret = xmalloc (total_length + 1);
 
-  /* Copy the strings into the allocated space. */
+  s = xmalloc (length + 1);
 
-  argcount = 0;
+  /* concatenate strings */
   va_start (args, str0);
-  for (next_str = str0; next_str != NULL; next_str = va_arg (args, char *))
-    {
-      int len;
-      if (argcount < countof (saved_lengths))
-        len = saved_lengths[argcount++];
-      else
-        len = strlen (next_str);
-      memcpy (p, next_str, len);
-      p += len;
-    }
+  for (arg = str0; arg; arg = va_arg (args, const char *))
+    pos += strlcpy(s + pos, arg, length - pos + 1);
   va_end (args);
-  *p = '\0';
 
-  return ret;
+  return s;
 }
-
+
 /* Format the provided time according to the specified format.  The
    format is a string with format elements supported by strftime.  */
 
@@ -430,7 +452,7 @@ datetime_str (time_t t)
 {
   return fmttime(t, "%Y-%m-%d %H:%M:%S");
 }
-
+
 /* The Windows versions of the following two functions are defined in
    mswindows.c. On MSDOS this function should never be called. */
 
@@ -495,7 +517,7 @@ fork_to_background (void)
 
 #endif /* def __VMS [else] */
 
-
+
 /* "Touch" FILE, i.e. make its mtime ("modified time") equal the time
    specified with TM.  The atime ("access time") is set to the current
    time.  */
@@ -805,7 +827,7 @@ fopen_excl (const char *fname, int binary)
   return fopen (fname, binary ? "wb" : "w");
 #endif /* not O_EXCL */
 }
-
+
 /* Create DIRECTORY.  If some of the pathname components of DIRECTORY
    are missing, create them first.  In case any mkdir() call fails,
    return its error status.  Returns 0 on successful completion.
@@ -871,7 +893,7 @@ file_merge (const char *base, const char *file)
 
   return result;
 }
-
+
 /* Like fnmatch, but performs a case-insensitive match.  */
 
 int
@@ -1112,11 +1134,11 @@ has_html_suffix_p (const char *fname)
 
   if ((suf = suffix (fname)) == NULL)
     return false;
-  if (!strcasecmp (suf, "html"))
+  if (!c_strcasecmp (suf, "html"))
     return true;
-  if (!strcasecmp (suf, "htm"))
+  if (!c_strcasecmp (suf, "htm"))
     return true;
-  if (suf[0] && !strcasecmp (suf + 1, "html"))
+  if (suf[0] && !c_strcasecmp (suf + 1, "html"))
     return true;
   return false;
 }
@@ -1262,7 +1284,7 @@ wget_read_file_free (struct file_memory *fm)
     }
   xfree (fm);
 }
-
+
 /* Free the pointers in a NULL-terminated vector of pointers, then
    free the pointer itself.  */
 void
@@ -1272,7 +1294,10 @@ free_vec (char **vec)
     {
       char **p = vec;
       while (*p)
-        xfree (*p++);
+        {
+          xfree (*p);
+          p++;
+        }
       xfree (vec);
     }
 }
@@ -1331,7 +1356,7 @@ vec_append (char **vec, const char *str)
   vec[cnt] = NULL;
   return vec;
 }
-
+
 /* Sometimes it's useful to create "sets" of strings, i.e. special
    hash tables where you want to store strings as keys and merely
    query for their existence.  Here is a set of utility routines that
@@ -1396,7 +1421,7 @@ free_keys_and_values (struct hash_table *ht)
       xfree (iter.value);
     }
 }
-
+
 /* Get digit grouping data for thousand separors by calling
    localeconv().  The data includes separator string and grouping info
    and is cached after the first call to the function.
@@ -1787,7 +1812,7 @@ convert_to_bits (wgint num)
   return num;
 }
 
-
+
 /* Determine the width of the terminal we're running on.  If that's
    not possible, return 0.  */
 
@@ -1800,7 +1825,7 @@ determine_screen_width (void)
   int fd;
   struct winsize wsz;
 
-  if (opt.lfilename != NULL)
+  if (opt.lfilename != NULL && opt.show_progress != 1)
     return 0;
 
   fd = fileno (stderr);
@@ -1817,7 +1842,7 @@ determine_screen_width (void)
   return 0;
 #endif /* neither TIOCGWINSZ nor WINDOWS */
 }
-
+
 /* Whether the rnd system (either rand or [dl]rand48) has been
    seeded.  */
 static int rnd_seeded;
@@ -1837,7 +1862,14 @@ static int rnd_seeded;
 int
 random_number (int max)
 {
-#ifdef HAVE_DRAND48
+#ifdef HAVE_RANDOM
+  if (!rnd_seeded)
+    {
+      srandom ((long) time (NULL) ^ (long) getpid ());
+      rnd_seeded = 1;
+    }
+  return random () % max;
+#elif defined HAVE_DRAND48
   if (!rnd_seeded)
     {
       srand48 ((long) time (NULL) ^ (long) getpid ());
@@ -1872,7 +1904,9 @@ random_number (int max)
 double
 random_float (void)
 {
-#ifdef HAVE_DRAND48
+#ifdef HAVE_RANDOM
+    return ((double) random_number (RAND_MAX)) / RAND_MAX;
+#elif defined HAVE_DRAND48
   if (!rnd_seeded)
     {
       srand48 ((long) time (NULL) ^ (long) getpid ());
@@ -1886,7 +1920,7 @@ random_float (void)
           + random_number (10000) / (10000.0 * 10000.0 * 10000.0 * 10000.0));
 #endif /* not HAVE_DRAND48 */
 }
-
+
 /* Implementation of run_with_timeout, a generic timeout-forcing
    routine for systems with Unix-like signal handling.  */
 
@@ -1897,7 +1931,7 @@ random_float (void)
 static sigjmp_buf run_with_timeout_env;
 
 static void _Noreturn
-abort_run_with_timeout (int sig)
+abort_run_with_timeout (int sig _GL_UNUSED)
 {
   assert (sig == SIGALRM);
   siglongjmp (run_with_timeout_env, -1);
@@ -1907,8 +1941,8 @@ abort_run_with_timeout (int sig)
 
 static jmp_buf run_with_timeout_env;
 
-static void
-abort_run_with_timeout (int sig)
+static void _Noreturn
+abort_run_with_timeout (int sig _GL_UNUSED)
 {
   assert (sig == SIGALRM);
   /* We don't have siglongjmp to preserve the set of blocked signals;
@@ -2045,7 +2079,7 @@ run_with_timeout (double timeout, void (*fun) (void *), void *arg)
 }
 #endif /* not WINDOWS */
 #endif /* not USE_SIGNAL_TIMEOUT */
-
+
 #ifndef WINDOWS
 
 /* Sleep the specified amount of seconds.  On machines without
@@ -2292,6 +2326,7 @@ compile_posix_regex (const char *str)
       fprintf (stderr, _("Invalid regular expression %s, %s\n"),
                quote (str), errbuf);
       xfree (errbuf);
+      xfree (regex);
       return NULL;
     }
 
@@ -2345,7 +2380,7 @@ match_posix_regex (const void *regex, const char *str)
 
 #undef IS_ASCII
 #undef NEXT_CHAR
-
+
 /* Simple merge sort for use by stable_sort.  Implementation courtesy
    Zeljko Vrba with additional debugging by Nenad Barbutov.  */
 
@@ -2391,7 +2426,7 @@ stable_sort (void *base, size_t nmemb, size_t size,
       mergesort_internal (base, temp, size, 0, nmemb - 1, cmpfun);
     }
 }
-
+
 /* Print a decimal number.  If it is equal to or larger than ten, the
    number is rounded.  Otherwise it is printed with one significant
    digit without trailing zeros and with no more than three fractional
@@ -2480,6 +2515,220 @@ get_max_length (const char *path, int length, int name)
 
   return ret;
 }
+
+void
+wg_hex_to_string (char *str_buffer, const char *hex_buffer, size_t hex_len)
+{
+  size_t i;
+
+  for (i = 0; i < hex_len; i++)
+    {
+      /* Each byte takes 2 characters.  */
+      sprintf (str_buffer + 2 * i, "%02x", hex_buffer[i] & 0xFF);
+    }
+
+  /* Null-terminate result.  */
+  str_buffer[2 * i] = '\0';
+}
+
+#ifdef HAVE_SSL
+
+/*
+ * Public key pem to der conversion
+ */
+
+static bool
+wg_pubkey_pem_to_der (const char *pem, unsigned char **der, size_t *der_len)
+{
+  char *stripped_pem, *begin_pos, *end_pos;
+  size_t pem_count, stripped_pem_count = 0, pem_len;
+  ssize_t size;
+  unsigned char *base64data;
+
+  *der = NULL;
+  *der_len = 0;
+
+  /* if no pem, exit. */
+  if (!pem)
+    return false;
+
+  begin_pos = strstr (pem, "-----BEGIN PUBLIC KEY-----");
+  if (!begin_pos)
+    return false;
+
+  pem_count = begin_pos - pem;
+  /* Invalid if not at beginning AND not directly following \n */
+  if (0 != pem_count && '\n' != pem[pem_count - 1])
+    return false;
+
+  /* 26 is length of "-----BEGIN PUBLIC KEY-----" */
+  pem_count += 26;
+
+  /* Invalid if not directly following \n */
+  end_pos = strstr (pem + pem_count, "\n-----END PUBLIC KEY-----");
+  if (!end_pos)
+    return false;
+
+  pem_len = end_pos - pem;
+
+  stripped_pem = xmalloc (pem_len - pem_count + 1);
+
+  /*
+   * Here we loop through the pem array one character at a time between the
+   * correct indices, and place each character that is not '\n' or '\r'
+   * into the stripped_pem array, which should represent the raw base64 string
+   */
+  while (pem_count < pem_len) {
+    if ('\n' != pem[pem_count] && '\r' != pem[pem_count])
+      stripped_pem[stripped_pem_count++] = pem[pem_count];
+    ++pem_count;
+  }
+  /* Place the null terminator in the correct place */
+  stripped_pem[stripped_pem_count] = '\0';
+
+  base64data = xmalloc (BASE64_LENGTH(stripped_pem_count));
+
+  size = base64_decode (stripped_pem, base64data);
+
+  if (size < 0) {
+    xfree (base64data);           /* malformed base64 from server */
+  } else {
+    *der = base64data;
+    *der_len = (size_t) size;
+  }
+
+  xfree (stripped_pem);
+
+  return *der_len > 0;
+}
+
+/*
+ * Generic pinned public key check.
+ */
+
+bool
+wg_pin_peer_pubkey (const char *pinnedpubkey, const char *pubkey, size_t pubkeylen)
+{
+  struct file_memory *fm;
+  unsigned char *buf = NULL, *pem_ptr = NULL;
+  size_t size, pem_len;
+  bool pem_read;
+  bool result = false;
+
+  size_t pinkeylen;
+  ssize_t decoded_hash_length;
+  char *pinkeycopy, *begin_pos, *end_pos;
+  unsigned char *sha256sumdigest = NULL, *expectedsha256sumdigest = NULL;
+
+  /* if a path wasn't specified, don't pin */
+  if (!pinnedpubkey)
+    return true;
+  if (!pubkey || !pubkeylen)
+    return result;
+
+  /* only do this if pinnedpubkey starts with "sha256//", length 8 */
+  if (strncmp (pinnedpubkey, "sha256//", 8) == 0) {
+    /* compute sha256sum of public key */
+    sha256sumdigest = xmalloc (SHA256_DIGEST_SIZE);
+    sha256_buffer (pubkey, pubkeylen, sha256sumdigest);
+    expectedsha256sumdigest = xmalloc (SHA256_DIGEST_SIZE + 1);
+
+    /* it starts with sha256//, copy so we can modify it */
+    pinkeylen = strlen (pinnedpubkey) + 1;
+    pinkeycopy = xmalloc (pinkeylen);
+    memcpy (pinkeycopy, pinnedpubkey, pinkeylen);
+
+    /* point begin_pos to the copy, and start extracting keys */
+    begin_pos = pinkeycopy;
+    do
+      {
+        end_pos = strstr (begin_pos, ";sha256//");
+        /*
+         * if there is an end_pos, null terminate,
+         * otherwise it'll go to the end of the original string
+         */
+        if (end_pos)
+          end_pos[0] = '\0';
+
+        /* decode base64 pinnedpubkey, 8 is length of "sha256//" */
+        decoded_hash_length = base64_decode (begin_pos + 8, expectedsha256sumdigest);
+        /* if valid base64, compare sha256 digests directly */
+        if (SHA256_DIGEST_SIZE == decoded_hash_length &&
+           !memcmp (sha256sumdigest, expectedsha256sumdigest, SHA256_DIGEST_SIZE)) {
+          result = true;
+          break;
+        }
+
+        /*
+         * change back the null-terminator we changed earlier,
+         * and look for next begin
+         */
+        if (end_pos) {
+          end_pos[0] = ';';
+          begin_pos = strstr (end_pos, "sha256//");
+        }
+      } while (end_pos && begin_pos);
+
+    xfree (sha256sumdigest);
+    xfree (expectedsha256sumdigest);
+    xfree (pinkeycopy);
+
+    return result;
+  }
+
+  /* fall back to assuming this is a file path */
+  fm = wget_read_file (pinnedpubkey);
+  if (!fm)
+    return result;
+
+  /* Check the file's size */
+  if (fm->length < 0 || fm->length > MAX_PINNED_PUBKEY_SIZE)
+    goto cleanup;
+
+  /*
+   * if the size of our certificate is bigger than the file
+   * size then it can't match
+   */
+  size = (size_t) fm->length;
+  if (pubkeylen > size)
+    goto cleanup;
+
+  /* If the sizes are the same, it can't be base64 encoded, must be der */
+  if (pubkeylen == size) {
+    if (!memcmp (pubkey, fm->content, pubkeylen))
+      result = true;
+    goto cleanup;
+  }
+
+  /*
+   * Otherwise we will assume it's PEM and try to decode it
+   * after placing null terminator
+   */
+  buf = xmalloc (size + 1);
+  memcpy (buf, fm->content, size);
+  buf[size] = '\0';
+
+  pem_read = wg_pubkey_pem_to_der ((const char *) buf, &pem_ptr, &pem_len);
+  /* if it wasn't read successfully, exit */
+  if (!pem_read)
+    goto cleanup;
+
+  /*
+   * if the size of our certificate doesn't match the size of
+   * the decoded file, they can't be the same, otherwise compare
+   */
+  if (pubkeylen == pem_len && !memcmp (pubkey, pem_ptr, pubkeylen))
+    result = true;
+
+ cleanup:
+  xfree (buf);
+  xfree (pem_ptr);
+  wget_read_file_free (fm);
+
+  return result;
+}
+
+#endif /* HAVE_SSL */
 
 #ifdef TESTING
 
