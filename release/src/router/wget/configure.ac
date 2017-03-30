@@ -184,7 +184,7 @@ dnl
 dnl Gettext
 dnl
 AM_GNU_GETTEXT([external],[need-ngettext])
-AM_GNU_GETTEXT_VERSION([0.18.1])
+dnl AM_GNU_GETTEXT_VERSION([0.18.1])
 
 AC_PROG_RANLIB
 
