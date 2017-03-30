@@ -484,6 +484,9 @@ void start_vpnclient(int clientNum)
 		fprintf(fp, "#!/bin/sh\n");
 		fprintf(fp, "iptables -I INPUT -i %s -j ACCEPT\n", &iface[0]);
 		fprintf(fp, "iptables -I FORWARD %d -i %s -j ACCEPT\n", (nvram_match("cstats_enable", "1") ? 4 : 2), &iface[0]);
+		if (nvram_match("ctf_disable", "0")) {
+			fprintf(fp, "iptables -t mangle -I PREROUTING -i %s -j MARK --set-mark 0x01/0xf\n", &iface[0]);
+		}
 		// Setup traffic accounting
 		if (nvram_match("cstats_enable", "1")) {
 			ipt_account(fp, &iface[0]);
@@ -1502,6 +1505,9 @@ void start_vpnserver(int serverNum)
 		{
 			fprintf(fp, "iptables -I INPUT -i %s -j ACCEPT\n", &iface[0]);
 			fprintf(fp, "iptables -I FORWARD %d -i %s -j ACCEPT\n", (nvram_match("cstats_enable", "1") ? 4 : 2), &iface[0]);
+		}
+		if (nvram_match("ctf_disable", "0")) {
+			fprintf(fp, "iptables -t mangle -I PREROUTING -i %s -j MARK --set-mark 0x01/0xf\n", &iface[0]);
 		}
 		if (nvram_match("cstats_enable", "1")) {
 			ipt_account(fp, &iface[0]);
