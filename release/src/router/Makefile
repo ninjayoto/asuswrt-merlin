@@ -245,6 +245,7 @@ obj-$(RTCONFIG_USB_BECEEM) += gctwimax-0.0.3rc4 # for GCT WiMAX
 obj-y += libdisk
 
 obj-y += e2fsprogs
+obj-$(RTCONFIG_EXFAT) += exfat-utils
 obj-$(RTCONFIG_NFS) += nfs-utils
 obj-$(RTCONFIG_NFS) += portmap
 
@@ -1052,6 +1053,28 @@ ifeq (2_6_36,$(LINUX_VERSION))
 	ln -sf mke2fs $(INSTALLDIR)/e2fsprogs/usr/sbin/mkfs.ext4
 endif
 	install -D -m 0644 e2fsprogs/e2fsck/e2fsck.conf $(INSTALLDIR)/rom/rom/etc/e2fsck.conf
+
+exfat-utils/stamp-h1:
+	cd $(TOP)/exfat-utils && autoreconf -i -f && \
+	CFLAGS="-Wall -Os -D_GNU_SOURCE $(EXTRACFLAGS) -fPIC -ffunction-sections -fdata-sections" \
+	CPPFLAGS="-I$(TOP)/exfat-utils/libexfat" \
+	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/exfat_utils/libexfat" \
+	$(CONFIGURE)
+	touch exfat-utils/stamp-h1
+
+exfat-utils: exfat-utils/stamp-h1
+	$(MAKE) -C exfat-utils $(PARALLEL_BUILD)
+
+exfat-utils-install:
+	install -D exfat-utils/dump/dumpexfat $(INSTALLDIR)/exfat-utils/usr/sbin/dumpexfat
+	install -D exfat-utils/fsck/exfatfsck $(INSTALLDIR)/exfat-utils/usr/sbin/exfatfsck
+	install -D exfat-utils/mkfs/mkexfatfs $(INSTALLDIR)/exfat-utils/usr/sbin/mkexfatfs
+	install -D exfat-utils/label/exfatlabel $(INSTALLDIR)/exfat-utils/usr/sbin/exfatlabel
+	$(STRIP) $(INSTALLDIR)/exfat-utils/usr/sbin/*
+
+exfat-utils-clean:
+	-@$(MAKE) -C exfat-utils clean
+	@rm -rf exfat-utils/stamp-h1
 
 infosvr: shared nvram${BCMEX}
 
