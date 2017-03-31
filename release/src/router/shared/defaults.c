@@ -1176,6 +1176,9 @@ struct nvram_tuple router_defaults[] = {
 #ifdef RTCONFIG_HFS
 	{ "usb_fs_hfs", "1"},
 #endif
+#ifdef RTCONFIG_EXFAT
+	{ "usb_fs_exfat", "1"},
+#endif
 	{ "usb_automount", "1"},
 #ifdef LINUX26
 	{ "usb_idle_timeout", "0"},
