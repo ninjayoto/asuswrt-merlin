@@ -665,6 +665,7 @@ void start_vpnserver(int serverNum)
 #endif
 	char nv1[32], nv2[32], nv3[32], fpath[128];
 	int valid = 0;
+	int jffs_crt = 0;
 	int userauth = 0, useronly = 0;
 	int i;
 
@@ -1371,6 +1372,17 @@ void start_vpnserver(int serverNum)
 
 			// Validate dh strength
 			valid = 1;      // Tentative state
+			jffs_crt = 0;
+
+			if (!strncmp(buffer2, "/jffs", 5)) {	// nvram is pointer to a jffs file
+				vpnlog(VPN_LOG_EXTRA,"Found dh.pem was moved to %s", buffer2);
+				if (check_if_file_exist(buffer2))
+					jffs_crt = 1;
+				if (jffs_crt) {
+					sprintf(fpath, "/etc/openvpn/server%d/dh.pem", serverNum);
+					eval("cp", buffer2, fpath);	//copy the file to the test file
+				}
+			}
 
 			if (strncmp(buffer2, "none", 4)) {	// If not set to "none" then validate it
 				vpnlog(VPN_LOG_EXTRA,"Start dh length check");
@@ -1397,20 +1409,26 @@ void start_vpnserver(int serverNum)
 
 		if (valid == 0)
 		{
-			sprintf(fpath, "/etc/openvpn/server%d/dh.pem", serverNum);
-			//generate dh param file
-			//eval("openssl", "dhparam", "-out", fpath, "1024");
+			if (jffs_crt) {	//update jffs with new dh
+				eval("cp", "/rom/dh2048.pem", buffer2);
+				vpnlog(VPN_LOG_EXTRA,"Done updating jffs with new dh");
+			}
+			else {
+				sprintf(fpath, "/etc/openvpn/server%d/dh.pem", serverNum);
+				//generate dh param file
+				//eval("openssl", "dhparam", "-out", fpath, "1024");
 
-			// Provide a 2048-bit PEM, from RFC 3526.
-			eval("cp", "/rom/dh2048.pem", fpath);
+				// Provide a 2048-bit PEM, from RFC 3526.
+				eval("cp", "/rom/dh2048.pem", fpath);
 
-			//update nvram with new dh
-			fp = fopen(fpath, "r");
-			if(fp) {
-				sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
-				set_crt_parsed(&buffer[0], fpath);
-				fclose(fp);
-				vpnlog(VPN_LOG_EXTRA,"Done updating nvram with new dh");
+				//update nvram with new dh
+				fp = fopen(fpath, "r");
+				if(fp) {
+					sprintf(&buffer[0], "vpn_crt_server%d_dh", serverNum);
+					set_crt_parsed(&buffer[0], fpath);
+					fclose(fp);
+					vpnlog(VPN_LOG_EXTRA,"Done updating nvram with new dh");
+				}
 			}
 		}
 	}
