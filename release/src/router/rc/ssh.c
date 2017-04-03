@@ -14,12 +14,41 @@
 
 static inline int check_host_key(const char *ktype, const char *nvname, const char *hkfn)
 {
-	unlink(hkfn);
+	char jname[64];
+	char dname[64];
+	char *value;
 
-	if (!nvram_get_file(nvname, hkfn, 2048)) {
-		eval("dropbearkey", "-t", (char *)ktype, "-f", (char *)hkfn);
-		if (nvram_set_file(nvname, hkfn, 2048)) {
+	snprintf(&dname[0], sizeof(dname), "/etc/%s", hkfn);
+	value = nvram_safe_get("sshd_authkeys");
+
+	if (!strncmp(value, "/jffs", 5)) {	// authkeys moved to jffs, attempt to copy the rest of the dropbear keys from jffs
+		snprintf(&jname[0], sizeof(jname), "/jffs/%s", hkfn);
+		if(check_if_file_exist(jname)) {
+			eval("cp", jname, dname);
+			nvram_unset(nvname);  //key in jffs, release nvram
 			return 1;
+		}
+		else {
+			if (nvram_get_file(nvname, dname, 2048)) {  // copy key from nvram
+				eval("cp", dname, jname);
+				nvram_unset(nvname);  //key in jffs, release nvram
+			}
+			else {
+				mkdir("/jffs/dropbear", 0700);
+				eval("dropbearkey", "-t", (char *)ktype, "-f", dname);
+				eval("cp", dname, jname);
+				nvram_unset(nvname);  //new key in jffs, release nvram
+				return 1;
+			}
+		}
+	}
+	else {
+		unlink(dname);
+		if (!nvram_get_file(nvname, dname, 2048)) {
+			eval("dropbearkey", "-t", (char *)ktype, "-f", dname);
+			if (nvram_set_file(nvname, dname, 2048)) {
+				return 1;
+			}
 		}
 	}
 
@@ -48,9 +77,9 @@ void start_sshd(void)
 
 	f_write_string("/root/.ssh/authorized_keys", get_parsed_crt("sshd_authkeys", buf, sizeof(buf)), 0, 0700);
 
-	dirty |= check_host_key("rsa", "sshd_hostkey", "/etc/dropbear/dropbear_rsa_host_key");
-	dirty |= check_host_key("dss", "sshd_dsskey",  "/etc/dropbear/dropbear_dss_host_key");
-	dirty |= check_host_key("ecdsa", "sshd_ecdsakey",  "/etc/dropbear/dropbear_ecdsa_host_key");
+	dirty |= check_host_key("rsa", "sshd_hostkey", "dropbear/dropbear_rsa_host_key");
+	dirty |= check_host_key("dss", "sshd_dsskey",  "dropbear/dropbear_dss_host_key");
+	dirty |= check_host_key("ecdsa", "sshd_ecdsakey", "dropbear/dropbear_ecdsa_host_key");
 	if (dirty)
 		nvram_commit_x();
 
