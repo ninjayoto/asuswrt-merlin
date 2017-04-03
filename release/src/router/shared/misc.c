@@ -1363,28 +1363,60 @@ int is_psr(int unit)
 #endif
 #endif
 
-#ifdef RTCONFIG_OPENVPN
-char *get_parsed_crt(const char *name, char *buf)
+char *get_parsed_crt(const char *name, char *buf, size_t buf_len)
 {
 	char *value;
 	int len, i;
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2)
+	FILE *fp;
+	char tmpBuf[256] = {0};
+	char *p = buf;
+#endif
 
 	value = nvram_safe_get(name);
 
-	len = strlen(value);
+	if (strncmp(value, "/jffs", 5)) {  // crt still in nvram
+		len = strlen(value);
+		for (i=0; (i < len); i++) {
+			if (value[i] == '>')
+				buf[i] = '\n';
+			else
+				buf[i] = value[i];
+		}
 
-	for (i=0; (i < len); i++) {
-		if (value[i] == '>')
-			buf[i] = '\n';
-		else
-			buf[i] = value[i];
+		buf[i] = '\0';
 	}
 
-	buf[i] = '\0';
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2)
+	else {
+		//crt moved to file
+		fp = fopen(value, "r");
+		if(fp) {
+			while(fgets(buf, buf_len, fp)) {
+				if(!strncmp(buf, "-----BEGIN", 10) || !strncmp(buf, "none", 4))
+					break;
+			}
+			if(feof(fp) &&  strncmp(buf, "none", 4)) {
+				fclose(fp);
+				memset(buf, 0, buf_len);
+				return buf;
+			}
+			p += strlen(buf);
+			memset(tmpBuf, 0, sizeof(tmpBuf));
+			while(fgets(tmpBuf, sizeof(tmpBuf), fp)) {
+				strncpy(p, tmpBuf, strlen(tmpBuf));
+				p += strlen(tmpBuf);
+			}
+			*p = '\0';
+			fclose(fp);
+		}
+	}
+#endif
 
 	return buf;
 }
 
+#ifdef RTCONFIG_OPENVPN
 int set_crt_parsed(const char *name, char *file_path)
 {
 	FILE *fp=fopen(file_path, "r");
@@ -1420,6 +1452,32 @@ int set_crt_parsed(const char *name, char *file_path)
 	}
 	else
 		return -ENOENT;
+}
+
+int ovpn_crt_is_empty(const char *name)
+{
+	if( nvram_is_empty(name) ) {
+		return 1;
+	}
+	else {
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2)
+		//check file
+		char *fpath;
+		fpath = nvram_safe_get(name);
+		if (!strncmp(fpath, "/jffs", 5)) {
+			if(check_if_file_exist(fpath))
+				return 0;
+			else
+				return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+#else
+		return 0;
+	}
+#endif
 }
 #endif
 

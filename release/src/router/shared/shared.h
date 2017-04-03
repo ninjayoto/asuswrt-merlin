@@ -151,6 +151,7 @@ extern int nvram_set_file(const char *key, const char *fname, int max);
 #endif
 extern int nvram_contains_word(const char *key, const char *word);
 extern int nvram_is_empty(const char *key);
+extern int ovpn_crt_is_empty(const char *key);
 extern void nvram_commit_x(void);
 extern int connect_timeout(int fd, const struct sockaddr *addr, socklen_t len, int timeout);
 extern int mtd_getinfo(const char *mtdname, int *part, int *size);
@@ -520,7 +521,8 @@ extern char* INET6_rresolve(struct sockaddr_in6 *sin6, int numeric);
 extern const char *ipv6_gateway_address(void);
 #endif
 #ifdef RTCONFIG_OPENVPN
-extern char *get_parsed_crt(const char *name, char *buf);
+extern char *get_parsed_crt(const char *name, char *buf, size_t buf_len);
+extern int set_crt_parsed(const char *name, char *file_path);
 extern int set_crt_parsed(const char *name, char *file_path);
 #endif
 

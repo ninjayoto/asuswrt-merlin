@@ -810,22 +810,54 @@ function cancel_Key_panel(auth){
 function save_keys(auth){
 	if((auth == 'tls') || (auth == "secret")){
 		if (openvpn_unit == "1") {
-			document.openvpn_form.vpn_crt_server1_static.value = document.getElementById('edit_vpn_crt_server1_static').value;
-			document.openvpn_form.vpn_crt_server1_ca.value = document.getElementById('edit_vpn_crt_server1_ca').value;
-			document.openvpn_form.vpn_crt_server1_crt.value = document.getElementById('edit_vpn_crt_server1_crt').value;
-			document.openvpn_form.vpn_crt_server1_crl.value = document.getElementById('edit_vpn_crt_server1_crl').value;
-			document.openvpn_form.vpn_crt_server1_key.value = document.getElementById('edit_vpn_crt_server1_key').value;
-			document.openvpn_form.vpn_crt_server1_dh.value = document.getElementById('edit_vpn_crt_server1_dh').value;
+			if ( check_key(document.getElementById('edit_vpn_crt_server1_static')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server1_ca')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server1_crt')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server1_crl')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server1_key')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server1_dh')) ){
+
+				document.openvpn_form.vpn_crt_server1_static.value = document.getElementById('edit_vpn_crt_server1_static').value;
+				document.openvpn_form.vpn_crt_server1_ca.value = document.getElementById('edit_vpn_crt_server1_ca').value;
+				document.openvpn_form.vpn_crt_server1_crt.value = document.getElementById('edit_vpn_crt_server1_crt').value;
+				document.openvpn_form.vpn_crt_server1_crl.value = document.getElementById('edit_vpn_crt_server1_crl').value;
+				document.openvpn_form.vpn_crt_server1_key.value = document.getElementById('edit_vpn_crt_server1_key').value;
+				document.openvpn_form.vpn_crt_server1_dh.value = document.getElementById('edit_vpn_crt_server1_dh').value;
+				this.FromObject ="0";
+				$j("#tlsKey_panel").fadeOut(300);
+			}else {
+				alert("One or more key values are not in the correct format!");
+			}
 		}else{
-			document.openvpn_form.vpn_crt_server2_static.value = document.getElementById('edit_vpn_crt_server2_static').value;
-			document.openvpn_form.vpn_crt_server2_ca.value = document.getElementById('edit_vpn_crt_server2_ca').value;
-			document.openvpn_form.vpn_crt_server2_crt.value = document.getElementById('edit_vpn_crt_server2_crt').value;
-			document.openvpn_form.vpn_crt_server2_crl.value = document.getElementById('edit_vpn_crt_server2_crl').value;
-			document.openvpn_form.vpn_crt_server2_key.value = document.getElementById('edit_vpn_crt_server2_key').value;
-			document.openvpn_form.vpn_crt_server2_dh.value = document.getElementById('edit_vpn_crt_server2_dh').value;
+			if ( check_key(document.getElementById('edit_vpn_crt_server2_static')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server2_ca')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server2_crt')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server2_crl')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server2_key')) &&
+			     check_key(document.getElementById('edit_vpn_crt_server2_dh')) ){
+
+				document.openvpn_form.vpn_crt_server2_static.value = document.getElementById('edit_vpn_crt_server2_static').value;
+				document.openvpn_form.vpn_crt_server2_ca.value = document.getElementById('edit_vpn_crt_server2_ca').value;
+				document.openvpn_form.vpn_crt_server2_crt.value = document.getElementById('edit_vpn_crt_server2_crt').value;
+				document.openvpn_form.vpn_crt_server2_crl.value = document.getElementById('edit_vpn_crt_server2_crl').value;
+				document.openvpn_form.vpn_crt_server2_key.value = document.getElementById('edit_vpn_crt_server2_key').value;
+				document.openvpn_form.vpn_crt_server2_dh.value = document.getElementById('edit_vpn_crt_server2_dh').value;
+				this.FromObject ="0";
+				$j("#tlsKey_panel").fadeOut(300);
+			}else {
+				alert("One or more key values are not in the correct format!");
+			}
 		}
-		this.FromObject ="0";
-		$j("#tlsKey_panel").fadeOut(300);	
+	}
+}
+
+function check_key(key){
+	if(key.value.length == 0)
+		return true;
+	if(((key.value.indexOf("-----BEGIN")) == 0) ||  ((key.value.indexOf("none")) == 0) || ((key.value.indexOf("/jffs")) == 0)){
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -899,6 +931,7 @@ function defaultSettings() {
 			<tr>
 				<div style="margin-left:30px; margin-top:10px;">
 					<p>Only paste the content of the <span style="color:#FFCC00;">----- BEGIN xxx ----- </span>/<span style="color:#FFCC00;"> ----- END xxx -----</span> block (including those two lines).
+					<p>Alternatively, enter the path to the location of the key or certificate on JFFS. For example, <span style="color:#FFCC00;">/jffs/openvpn/client1/ca.crt</span>
 					<p>Limit: 3499 characters per field
 				</div>
 				<div style="margin:5px;*margin-left:-5px;"><img style="width: 730px; height: 2px;" src="/images/New_ui/export/line_export.png"></div>

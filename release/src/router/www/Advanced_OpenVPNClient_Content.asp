@@ -451,19 +451,48 @@ function cancel_Key_panel(auth){
 function save_keys(auth){
 	if((auth == 'tls') || (auth == "secret")){
 		if (openvpn_unit == "1") {
-			document.form.vpn_crt_client1_static.value = document.getElementById('edit_vpn_crt_client1_static').value;
-			document.form.vpn_crt_client1_ca.value = document.getElementById('edit_vpn_crt_client1_ca').value;
-			document.form.vpn_crt_client1_crt.value = document.getElementById('edit_vpn_crt_client1_crt').value;
-			document.form.vpn_crt_client1_crl.value = document.getElementById('edit_vpn_crt_client1_crl').value;
-			document.form.vpn_crt_client1_key.value = document.getElementById('edit_vpn_crt_client1_key').value;
+			if ( check_key(document.getElementById('edit_vpn_crt_client1_static')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client1_ca')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client1_crt')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client1_crl')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client1_key')) ){
+
+				document.form.vpn_crt_client1_static.value = document.getElementById('edit_vpn_crt_client1_static').value;
+				document.form.vpn_crt_client1_ca.value = document.getElementById('edit_vpn_crt_client1_ca').value;
+				document.form.vpn_crt_client1_crt.value = document.getElementById('edit_vpn_crt_client1_crt').value;
+				document.form.vpn_crt_client1_crl.value = document.getElementById('edit_vpn_crt_client1_crl').value;
+				document.form.vpn_crt_client1_key.value = document.getElementById('edit_vpn_crt_client1_key').value;
+				cancel_Key_panel('tls');
+			}else {
+				alert("One or more key values are not in the correct format!");
+			}
 		} else {
-			document.form.vpn_crt_client2_static.value = document.getElementById('edit_vpn_crt_client2_static').value;
-			document.form.vpn_crt_client2_ca.value = document.getElementById('edit_vpn_crt_client2_ca').value;
-			document.form.vpn_crt_client2_crt.value = document.getElementById('edit_vpn_crt_client2_crt').value;
-			document.form.vpn_crt_client2_crl.value = document.getElementById('edit_vpn_crt_client2_crl').value;
-			document.form.vpn_crt_client2_key.value = document.getElementById('edit_vpn_crt_client2_key').value;
+			if ( check_key(document.getElementById('edit_vpn_crt_client2_static')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client2_ca')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client2_crt')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client2_crl')) &&
+			     check_key(document.getElementById('edit_vpn_crt_client2_key')) ){
+
+				document.form.vpn_crt_client2_static.value = document.getElementById('edit_vpn_crt_client2_static').value;
+				document.form.vpn_crt_client2_ca.value = document.getElementById('edit_vpn_crt_client2_ca').value;
+				document.form.vpn_crt_client2_crt.value = document.getElementById('edit_vpn_crt_client2_crt').value;
+				document.form.vpn_crt_client2_crl.value = document.getElementById('edit_vpn_crt_client2_crl').value;
+				document.form.vpn_crt_client2_key.value = document.getElementById('edit_vpn_crt_client2_key').value;
+				cancel_Key_panel('tls');
+			}else {
+				alert("One or more key values are not in the correct format!");
+			}
 		}
-		cancel_Key_panel('tls');
+	}
+}
+
+function check_key(key){
+	if(key.value.length == 0)
+		return true;
+	if(((key.value.indexOf("-----BEGIN")) == 0) ||  ((key.value.indexOf("none")) == 0) || ((key.value.indexOf("/jffs")) == 0)){
+		return true;
+	} else {
+		return false;
 	}
 }
 
@@ -793,6 +822,8 @@ function defaultSettings() {
 			<tr>
 				<div style="margin-left:30px; margin-top:10px;">
 					<p>Only paste the content of the <span style="color:#FFCC00;">----- BEGIN xxx ----- </span>/<span style="color:#FFCC00;"> ----- END xxx -----</span> block (including those two lines).
+
+					<p>Alternatively, enter the path to the location of the key or certificate on JFFS. For example, <span style="color:#FFCC00;">/jffs/openvpn/client1/ca.crt</span>
 					<p>Limit: 3499 characters per field
 				</div>
 				<div style="margin:5px;*margin-left:-5px;"><img style="width: 730px; height: 2px;" src="/images/New_ui/export/line_export.png"></div>
