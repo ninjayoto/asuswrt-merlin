@@ -39,6 +39,12 @@ ifeq ($(RTCONFIG_DNSMASQ),y)
 	install -m 0700 -D updatehosts.sh $(INSTALLDIR)/usr/sbin
 endif
 
+# Utilites to move certs
+	install -m 0700 -D sshd2nvram $(INSTALLDIR)/usr/sbin
+	install -m 0700 -D sshd2jffs $(INSTALLDIR)/usr/sbin
+	install -m 0700 -D ovpn2nvram $(INSTALLDIR)/usr/sbin
+	install -m 0700 -D ovpn2jffs $(INSTALLDIR)/usr/sbin
+
 # Easy-rsa scripts (for OpenVPN)
 ifeq ($(RTCONFIG_OPENVPN),y)
 	install -m 0700 setuprsa.sh $(INSTALLDIR)/usr/sbin

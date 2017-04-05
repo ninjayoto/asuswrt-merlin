@@ -1,0 +1,50 @@
+#!/bin/sh
+
+if [ "$1" == "" ]; then
+	echo "Must provide OpenVPN instance to move: client1, client2, server1 or server2"
+	exit 0
+fi
+
+instance=$1
+type=${instance:0:6}
+ovpn_vars="vpn_crt_${instance}_ca vpn_crt_${instance}_crt vpn_crt_${instance}_key vpn_crt_${instance}_dh vpn_crt_${instance}_crl vpn_crt_${instance}_static \
+        vpn_crt_${instance}_client_crt vpn_crt_${instance}_client_key"
+ovpn_files="ca.crt $type.crt $type.key dh.pem crl.pem static.key \
+        client.crt client.key"
+ovpn_jffs="/jffs/openvpn/$instance/"
+OLDIF=IFS; IFS=" ";
+
+err=0
+let count=1
+for VARNAME in $ovpn_vars;
+do
+    if [ $count -eq 7 ] && [ "$type" == "client" ]; then break; fi
+    FILENAME=$(echo $ovpn_files | cut -d " " -f$count)
+    FILEPATH=${ovpn_jffs}$FILENAME
+    printf "%-46s" "Processing $FILEPATH"
+    if [ -e $FILEPATH ]; then
+	VALUE=$(head -c 3499 $FILEPATH)
+	lVALUE=$(echo ${#VALUE})
+	if [ $lVALUE -gt 0 ]; then
+		VALUE=${VALUE//$'\r'/}        # remove cr
+		VALUE=${VALUE//$'\n'/\>}      # convert lf to router line separator
+		nvram set $VARNAME="$VALUE"
+		echo -e "\tDone"
+	else
+		echo -e "\tEmpty cert file"
+		err=1
+	fi
+    else
+	echo -e "\tNot defined"
+    fi
+    let count=count+1
+done
+
+IFS=OLDIFS;
+if [ $err -eq 0 ]; then
+	nvram commit
+        echo "Please reboot via web gui"
+else
+        echo "Errors found!"
+fi
+exit 0

@@ -1,0 +1,56 @@
+#!/bin/sh
+
+sshd_vars="sshd_authkeys sshd_hostkey sshd_dsskey sshd_ecdsakey"
+sshd_files="sshd_authkeys dropbear_rsa_host_key dropbear_dss_host_key dropbear_ecdsa_host_key"
+sshd_jffs="/jffs/dropbear/"
+sshd_dir="/etc/dropbear/"
+OLDIF=IFS; IFS=" ";
+
+mkdir -p "$sshd_jffs"
+err=0
+let count=1
+for VARNAME in $sshd_vars;
+do
+    FILENAME=$(echo $sshd_files | cut -d " " -f$count)
+    FILEPATH=${sshd_jffs}$FILENAME
+    printf "%-25s" "Processing $VARNAME"
+    if [ $count -eq 1 ]; then
+	DATA=$(nvram get $VARNAME)
+	lDATA=$(echo ${#DATA})
+	if [ $lDATA -gt 0 ]; then
+		if [ "${DATA:0:7}" == "ssh-rsa" ]; then
+			echo "$DATA" > $FILEPATH
+			nvram set $VARNAME="$FILEPATH"
+			echo -e "\tDone"
+		else
+			echo -e "\tInvalid cert"
+			err=1
+		fi
+	else
+		echo -e "\tEmpty"
+		err=1
+	fi
+    else
+	if [ "$1" == "copyall" ]; then
+		if [ -e $sshd_dir$FILENAME ]; then
+			cp $sshd_dir$FILENAME $FILEPATH
+			nvram unset $VARNAME
+			echo -e "\tDone"
+		else
+			echo -e "\tFile empty"
+			err=1
+		fi
+	else
+		echo -e "\tNext Boot"
+	fi
+    fi
+    let count=count+1
+done
+
+IFS=OLDIFS;
+if [ $err -eq 0 ]; then
+	nvram commit
+	echo "Please reboot via web gui"
+else
+	echo "Errors found!"
+fi
