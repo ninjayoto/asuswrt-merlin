@@ -307,7 +307,7 @@
 	border-bottom-width:1px; 
 	border-color:#888;	
 	color:#FFFFFF;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	font-size:13px;
 }
 
@@ -323,7 +323,7 @@
 	color:#FFFFFF;
 	*color:#000;
 	font-size:13px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 }
 .input_option_left{
 	float: right;
@@ -335,7 +335,7 @@
 	border-color:#888;
 	color:#FFFFFF;
 	margin:8px 10px 0 0;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	font-size:13px;
 }
 
@@ -346,7 +346,7 @@
 	width:345px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -358,7 +358,7 @@
 	width:315px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -370,7 +370,7 @@
 	width:235px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -382,7 +382,7 @@
 	width:180px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -394,7 +394,7 @@
 	width:160px;
 	line-height:23px \9;    /*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	/* background-image:url(/images/New_ui/inputbg.png); */
 	background-color:transparent;
 	border-width:0;
@@ -407,7 +407,7 @@
 	width:160px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -419,7 +419,7 @@
 	width:120px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -431,7 +431,7 @@
 	width:90px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -443,7 +443,7 @@
 	width:50px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -455,7 +455,7 @@
 	width:28px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -467,7 +467,7 @@
 	width:125px;
 	line-height:23px \9;	/*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background-image:url(/images/New_ui/inputbg.png);
 	border-width:0;
 	color:#FFFFFF;
@@ -896,7 +896,7 @@ textarea{
 .list_table td{
 	border: 1px solid #000000;
 	border-collapse: collapse;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	height:25px;
 }
 
@@ -1842,7 +1842,7 @@ padding-top:1px;
 	height:184px;
 	line-height:23px;    /*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background: #172226;
 	border: 2px ridge #777;
 	border-style:bevel;
@@ -1855,7 +1855,7 @@ padding-top:1px;
 	height:184px;
 	line-height:23px;    /*IE*/
 	font-size:12px;
-	font-family: Lucida Console;
+	font-family: "Lucida Console", Monaco, monospace;
 	background: #172226;
 	border: 2px ridge #777;
 	border-style:bevel;
