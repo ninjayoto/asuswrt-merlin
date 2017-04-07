@@ -268,6 +268,7 @@ void start_vpnclient(int clientNum)
 		if ((nvi > 0) && (buffer2[0] != '\0')) {
 			fprintf(fp, "ncp-ciphers %s\n", buffer2);
 		} else {
+			fprintf(fp, "ncp-disable\n");
 			nvi = 0;
 		}
 	} else {
@@ -893,6 +894,7 @@ void start_vpnserver(int serverNum)
 			fprintf(fp, "ncp-ciphers %s\n", buffer2);
 			fprintf(fp_client, "ncp-ciphers %s\n", buffer2);
 		} else {
+			fprintf(fp, "ncp-disable\n");
 			nvi = 0;
 		}
 	} else {
