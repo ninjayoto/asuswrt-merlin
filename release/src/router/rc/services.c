@@ -3882,6 +3882,21 @@ int stop_norton(void)
 
 #endif /* __CONFIG_NORTON__ */
 
+#ifdef RTCONFIG_PROTECTION_SERVER
+int start_ptcsrv(void)
+{
+	char *ptcsrv_argv[] = {"protect_srv", NULL};
+	pid_t pid;
+
+	return _eval(ptcsrv_argv, NULL, 0, &pid);
+}
+
+void stop_ptcsrv(void)
+{
+	killall_tk("protect_srv");
+}
+
+#endif
 
 int
 start_services(void)
@@ -3892,6 +3907,9 @@ start_services(void)
 	start_norton();
 #endif /* __CONFIG_NORTON__ */
 
+#ifdef RTCONFIG_PROTECTION_SERVER
+	start_ptcsrv();
+#endif
 	start_telnetd();
 #ifdef RTCONFIG_SSH
 	if (nvram_match("sshd_enable", "1"))

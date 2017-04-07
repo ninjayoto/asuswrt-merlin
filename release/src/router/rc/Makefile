@@ -78,6 +78,10 @@ ifeq ($(RTCONFIG_ODMPID),y)
 CFLAG += RTCONFIG_ODMPID
 endif
 
+ifeq ($(RTCONFIG_PROTECTION_SERVER),y)
+CFLAGS  += -I$(TOP)/protect_srv/include
+endif
+
 #CFLAGS += -DRC_BUILDTIME=$(shell date -d "now" +"%s")
 
 ifneq ($(findstring NET_CLS_POLICE=, $(shell cat $(LINUXDIR)/.config)),)

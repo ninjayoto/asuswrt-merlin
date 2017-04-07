@@ -349,6 +349,8 @@ endif
 #
 # configurable packages
 #
+obj-$(RTCONFIG_PROTECTION_SERVER) += protect_srv
+
 RTCONFIG_PPP_BASE = y
 obj-$(RTCONFIG_PPP_BASE) += pppd rp-pppoe
 obj-$(RTCONFIG_L2TP) += rp-l2tp
@@ -2049,6 +2051,25 @@ wpa_supplicant-install: wpa_supplicant
 wpa_supplicant-clean:
 	-@$(MAKE) -C wpa_supplicant/wpa_supplicant clean
 
+protect_srv/stamp-h1:
+	touch $@
+
+protect_srv: protect_srv/stamp-h1
+	$(MAKE) -C protect_srv
+
+protect_srv-install: protect_srv
+	install -d $(INSTALLDIR)/protect_srv/usr/lib/
+	install -d $(INSTALLDIR)/protect_srv/usr/sbin/
+	install -D protect_srv/lib/libptcsrv.so $(INSTALLDIR)/protect_srv/usr/lib/libptcsrv.so
+	install -D protect_srv/protect_srv $(INSTALLDIR)/protect_srv/usr/sbin/protect_srv
+	install -D protect_srv/Send_Event2ptcsrv $(INSTALLDIR)/protect_srv/usr/sbin/Send_Event2ptcsrv
+	$(STRIP) $(INSTALLDIR)/protect_srv/usr/lib/libptcsrv.so
+	$(STRIP) $(INSTALLDIR)/protect_srv/usr/sbin/protect_srv
+
+protect_srv-clean:
+	-$(MAKE) -C protect_srv clean
+	@rm -f protect_srv/stamp-h1
+
 #	libnet:
 #		@$(SEP)
 #		@-mkdir -p libnet/lib
@@ -2155,33 +2176,38 @@ ntpclient: nvram$(BCMEX) shared
 
 rstats: nvram$(BCMEX) shared
 
+dropbear/config.h: dropbear/config.h.in
+	cd dropbear && CPPFLAGS="-O2 -Wall $(EXTRACFLAGS) -DARGTYPE=3 -ffunction-sections -fdata-sections" \
+		LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections $(if $(RTCONFIG_PROTECTION_SERVER),-L$(TOP)/protect_srv/lib)" \
+		CFLAGS="$(if $(RTCONFIG_PROTECTION_SERVER),-I$(TOP)/protect_srv/include -DRTCONFIG_PROTECTION_SERVER)" \
+		LIBS="$(if $(RTCONFIG_PROTECTION_SERVER),-lptcsrv)" \
+		$(CONFIGURE) --disable-zlib --disable-pam \
+		--enable-openpty --enable-syslog --enable-shadow --enable-bundled-libtom \
+		--disable-lastlog \
+		--disable-utmp --disable-utmpx \
+		--disable-wtmp --disable-wtmpx \
+		--disable-loginfunc \
+		--disable-pututline --disable-pututxline
+
 dropbear: dropbear/config.h
 	@$(SEP)
-	@$(MAKE) -C dropbear PROGRAMS="dropbear dbclient dropbearconvert dropbearkey scp" MULTI=1 $(PARALLEL_BUILD)
+	@$(MAKE) -C $@ PROGRAMS="dropbear dbclient dropbearkey scp" MULTI=1 $(PARALLEL_BUILD)
 
 dropbear-install:
 	install -D dropbear/dropbearmulti $(INSTALLDIR)/dropbear/usr/bin/dropbearmulti
 	$(STRIP) $(INSTALLDIR)/dropbear/usr/bin/dropbearmulti
 	cd $(INSTALLDIR)/dropbear/usr/bin && \
-	ln -sf dropbearmulti dropbear && \
-	ln -sf dropbearmulti dropbearconvert && \
 	ln -sf dropbearmulti dropbearkey && \
 	ln -sf dropbearmulti dbclient && \
 	ln -sf dropbearmulti ssh && \
 	ln -sf dropbearmulti scp
+	install -d $(INSTALLDIR)/dropbear/usr/sbin
+	cd $(INSTALLDIR)/dropbear/usr/sbin && \
+	ln -sf ../bin/dropbearmulti dropbear
 
 dropbear-clean:
 	-@$(MAKE) -C dropbear clean
 	@rm -f dropbear/config.h
-
-dropbear/config.h:
-	cd dropbear && CFLAGS="-O2 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
-		LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections" \
-		ac_cv_func_logout=no ac_cv_func_logwtmp=no \
-		$(CONFIGURE) --disable-zlib --enable-syslog --disable-lastlog --disable-utmp \
-		--disable-utmpx --disable-wtmp --disable-wtmpx --disable-pututline \
-		--disable-pututxline --disable-loginfunc --disable-pam --enable-openpty
-	-@$(MAKE) -C dropbear clean
 
 # Media libraries
 

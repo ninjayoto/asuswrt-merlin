@@ -1010,6 +1010,10 @@ define RouterOptions
 		sed -i "/RTCONFIG_REBOOT_SCHEDULE/d" $(1); \
 		echo "RTCONFIG_REBOOT_SCHEDULE=y" >>$(1); \
 	fi; \
+	if [ "$(PROTECTION_SERVER)" = "y" ]; then \
+		sed -i "/RTCONFIG_PROTECTION_SERVER/d" $(1); \
+		echo "RTCONFIG_PROTECTION_SERVER=y" >>$(1); \
+	fi; \
 	)
 	$(call platformRouterOptions, $(1))
 endef

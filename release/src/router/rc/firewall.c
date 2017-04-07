@@ -40,6 +40,10 @@
 #include <netdb.h>	// for struct addrinfo
 #include <proto/ethernet.h>
 
+#ifdef RTCONFIG_PROTECTION_SERVER
+#include <protect_srv.h>
+#endif
+
 #define WEBSTRFILTER 1
 #define CONTENTFILTER 1
 
@@ -2166,6 +2170,9 @@ filter_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 	fprintf(fp, ":MACS - [0:0]\n");
 #endif
 	fprintf(fp, ":logaccept - [0:0]\n:logdrop - [0:0]\n");
+#ifdef RTCONFIG_PROTECTION_SERVER
+	fprintf(fp, ":%s - [0:0]\n", PROTECT_SRV_RULE_CHAIN);
+#endif
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()){
@@ -2302,6 +2309,17 @@ TRACE_PT("writing Parental Control\n");
 		else
 #endif
 		{
+#ifdef RTCONFIG_PROTECTION_SERVER
+#ifdef RTCONFIG_SSH
+			if (nvram_get_int("sshd_enable") != 0) {
+				fprintf(fp, "-A INPUT -p tcp -m multiport --dport %d -j %s\n",
+					    nvram_get_int("sshd_port") ? : 22, PROTECT_SRV_RULE_CHAIN);
+			}
+#endif
+			if (nvram_get_int("telnetd_enable") != 0) {
+				fprintf(fp, "-A INPUT -p tcp -m multiport --dport 23 -j %s\n", PROTECT_SRV_RULE_CHAIN);
+			}
+#endif
 			/* Filter known SPI state */
 			fprintf(fp, "-A INPUT -m state --state INVALID -j %s\n"
 			  "-A INPUT -m state --state RELATED,ESTABLISHED -j %s\n"
@@ -3071,6 +3089,10 @@ TRACE_PT("write url filter\n");
 		}
 	}
 #endif
+
+#ifdef RTCONFIG_PROTECTION_SERVER
+	kill_pidfile_s(PROTECT_SRV_PID_PATH, SIGUSR1);
+#endif
 }
 
 #ifdef RTCONFIG_DUALWAN // RTCONFIG_DUALWAN
@@ -3137,6 +3159,9 @@ filter_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	fprintf(fp, ":MACS - [0:0]\n");
 #endif
 	fprintf(fp, ":logaccept - [0:0]\n:logdrop - [0:0]\n");
+#ifdef RTCONFIG_PROTECTION_SERVER
+	fprintf(fp, ":%s - [0:0]\n", PROTECT_SRV_RULE_CHAIN);
+#endif
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()){
 		if (nvram_match("ipv6_fw_enable", "1")){
@@ -3272,6 +3297,17 @@ TRACE_PT("writing Parental Control\n");
 		else
 #endif
 		{
+#ifdef RTCONFIG_PROTECTION_SERVER
+#ifdef RTCONFIG_SSH
+		if (nvram_get_int("sshd_enable") != 0) {
+			fprintf(fp, "-A INPUT -p tcp -m multiport --dport %d -j %s\n",
+				    nvram_get_int("sshd_port") ? : 22, PROTECT_SRV_RULE_CHAIN);
+		}
+#endif
+		if (nvram_get_int("telnetd_enable") != 0) {
+			fprintf(fp, "-A INPUT -p tcp -m multiport --dport 23 -j %s\n", PROTECT_SRV_RULE_CHAIN);
+		}
+#endif
 			/* Filter known SPI state */
 			fprintf(fp, "-A INPUT -m state --state INVALID -j %s\n"
 			  "-A INPUT -m state --state RELATED,ESTABLISHED -j %s\n"
@@ -4184,6 +4220,9 @@ TRACE_PT("write url filter\n");
 			i = 4;
 		}
 	}
+#ifdef RTCONFIG_PROTECTION_SERVER
+	kill_pidfile_s(PROTECT_SRV_PID_PATH, SIGUSR1);
+#endif
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled())
