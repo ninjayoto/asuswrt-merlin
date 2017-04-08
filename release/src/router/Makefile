@@ -248,7 +248,7 @@ obj-y += e2fsprogs
 obj-$(RTCONFIG_NFS) += nfs-utils
 obj-$(RTCONFIG_NFS) += portmap
 
-#obj-y += dosfstools
+obj-y += dosfstools
 #obj-$(RTCONFIG_NTFS) += linux-ntfs-2.0.0
 obj-$(RTCONFIG_FTP) += vsftpd
 

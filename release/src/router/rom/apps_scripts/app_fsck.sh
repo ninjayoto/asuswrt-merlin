@@ -32,9 +32,9 @@ _get_fsck_logfile(){
 if [ -z "$1" ] || [ -z "$2" ]; then
 	echo "Usage: app_fsck.sh [filesystem type] [device's path]"
 	exit 0
-elif [ "$1" == "vfat" ] || [ "$1" == "msdos" ]; then
-	_set_fsck_code $2 3
-	exit 0
+#elif [ "$1" == "vfat" ] || [ "$1" == "msdos" ]; then
+#	_set_fsck_code $2 3
+#	exit 0
 fi
 
 autocheck_option=

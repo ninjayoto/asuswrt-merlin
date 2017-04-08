@@ -47,13 +47,18 @@ rebuild: distclean build
 
 #install: install-bin install-doc install-man
 install: dosfsck mkdosfs
-	install -D mkdosfs $(INSTALLDIR)/sbin/mkdosfs
-	$(STRIP) $(INSTALLDIR)/sbin/mkdosfs
+	install -D mkdosfs $(INSTALLDIR)/usr/sbin/mkdosfs
+	$(STRIP) $(INSTALLDIR)/usr/sbin/mkdosfs
 
-	install -D dosfsck $(INSTALLDIR)/sbin/dosfsck
-	$(STRIP) $(INSTALLDIR)/sbin/dosfsck
-	cd $(INSTALLDIR)/sbin && ln -sf dosfsck fsck.msdos
-	cd $(INSTALLDIR)/sbin && ln -sf dosfsck fsck.vfat
+	install -D dosfsck $(INSTALLDIR)/usr/sbin/dosfsck
+	$(STRIP) $(INSTALLDIR)/usr/sbin/dosfsck
+	cd $(INSTALLDIR)/usr/sbin && ln -sf dosfsck fsck.msdos
+	cd $(INSTALLDIR)/usr/sbin && ln -sf dosfsck fsck.vfat
+	cd $(INSTALLDIR)/usr/sbin && ln -sf dosfsck fatfsck
+
+	install -D dosfslabel $(INSTALLDIR)/usr/sbin/dosfslabel
+	$(STRIP) $(INSTALLDIR)/usr/sbin/dosfslabel
+	cd $(INSTALLDIR)/usr/sbin && ln -sf dosfslabel fatlabel
 
 install-bin: build
 	install -d -m 0755 $(DESTDIR)/$(SBINDIR)
