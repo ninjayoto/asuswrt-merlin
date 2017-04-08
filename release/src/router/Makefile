@@ -1071,6 +1071,8 @@ exfat-utils-install:
 	install -D exfat-utils/mkfs/mkexfatfs $(INSTALLDIR)/exfat-utils/usr/sbin/mkexfatfs
 	install -D exfat-utils/label/exfatlabel $(INSTALLDIR)/exfat-utils/usr/sbin/exfatlabel
 	$(STRIP) $(INSTALLDIR)/exfat-utils/usr/sbin/*
+	ln -sf exfatfsck $(INSTALLDIR)/e2fsprogs/usr/sbin/fsck.exfat
+	ln -sf mkexfatfs $(INSTALLDIR)/e2fsprogs/usr/sbin/mkfs.exfat
 
 exfat-utils-clean:
 	-@$(MAKE) -C exfat-utils clean
