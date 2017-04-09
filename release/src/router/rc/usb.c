@@ -2204,7 +2204,7 @@ void start_dms(void)
 	int dircount = 0, sharecount = 0;
 	char dirlist[32][1024];
 	unsigned char typelist[32];
-	int default_dms_dir_used = 0;
+	int default_dms_dir_used = 1;
 	unsigned char type = 0;
 	char types[5];
 
@@ -2239,12 +2239,13 @@ void start_dms(void)
 				while ((b = strsep(&nvp, "<")) != NULL) {
 					if (!strlen(b)) continue;
 
-					if (!default_dms_dir_used &&
-						!strcmp(b, nvram_default_get("dms_dir")))
-						default_dms_dir_used = 1;
-
-					if (check_if_dir_exist(b))
+					if (default_dms_dir_used && !strcmp(b, nvram_default_get("dms_dir")))
 						strncpy(dirlist[dircount++], b, 1024);
+
+					if (check_if_dir_exist(b)) {
+						strncpy(dirlist[dircount++], b, 1024);
+						default_dms_dir_used = 0;
+					}
 				}
 			}
 
@@ -2278,14 +2279,9 @@ void start_dms(void)
 			if (nv) free(nv);
 			if (nv2) free(nv2);
 
-			if (!dircount)
-			{
-				strcpy(dirlist[dircount++], nvram_default_get("dms_dir"));
-				default_dms_dir_used = 1;
-			}
-
-			if (default_dms_dir_used)
+			if (default_dms_dir_used) {
 				find_dms_dbdir(dbdir);
+			}
 			else {
 				for (i = 0; i < dircount; i++)
 				{
@@ -2300,9 +2296,10 @@ void start_dms(void)
 					break;
 				}
 			}
-			mkdir_if_none(dbdir);
-			if (!check_if_dir_exist(dbdir))
-			{
+
+			if (strlen(dbdir))
+				mkdir_if_none(dbdir);
+			if (!check_if_dir_exist(dbdir)) {
 				strcpy(dbdir, nvram_default_get("dms_dbdir"));
 				mkdir_if_none(dbdir);
 			}
