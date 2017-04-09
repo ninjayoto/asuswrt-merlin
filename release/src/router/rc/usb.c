@@ -1296,6 +1296,9 @@ done:
 #if defined(RTCONFIG_BCMARM) || defined(RTCONFIG_EXT4FS)
 						|| !strcmp(type, "ext4")
 #endif
+#ifdef RTCONFIG_EXFAT
+						|| !strcmp(type, "exfat")
+#endif
 						|| !strcmp(type, "vfat") || !strcmp(type, "msdos")
 						|| !strcmp(type, "ntfs") || !strncmp(type, "hfs", 3))
 						){
