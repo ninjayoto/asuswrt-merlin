@@ -134,7 +134,12 @@ then
 	then
 		echo iptables -t nat -A PREROUTING -i $lan_if -p udp -m udp --dport 53 -j DNSVPN$instance >> $dnsscript
 		echo iptables -t nat -A PREROUTING -i $lan_if -p tcp -m tcp --dport 53 -j DNSVPN$instance >> $dnsscript
-		if [ $ipv6_enabled == 1 -a $vpn_allow_ipv6 != 1 ]
+	fi
+
+	if [ $ipv6_enabled == 1 -a $vpn_allow_ipv6 != 1 ]
+	then
+		$(ip6tables-save -t filter | grep -q -i "dport 53 -j REJECT")
+		if [ $? -eq 1 ]
 		then
 			if [ $(nvram get ipv6_dns_router) == 1 ]
 			then #dnsmasq as ipv6 dns server
