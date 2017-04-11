@@ -4104,7 +4104,9 @@ stop_services(void)
 	stop_sshd();
 #endif
 	stop_telnetd();
-
+#ifdef RTCONFIG_PROTECTION_SERVER
+	stop_ptcsrv();
+#endif
 #ifdef  __CONFIG_NORTON__
 	stop_norton();
 #endif /* __CONFIG_NORTON__ */
