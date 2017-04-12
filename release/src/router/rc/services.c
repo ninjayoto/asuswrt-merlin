@@ -1141,10 +1141,8 @@ void stop_dnscrypt(int force)
 	killall_tk("dnscrypt-proxy");
 	logmessage("dnscrypt-proxy", "stop dnscrypt-proxy");
 	time_valid = -1;
-	unlink("/var/run/dnscrypt-proxy-ipv4.pid");
-#ifdef RTCONFIG_IPV6
-	unlink("/var/run/dnscrypt-proxy-ipv6.pid");
-#endif
+	unlink("/var/run/dnscrypt-proxy1.pid");
+	unlink("/var/run/dnscrypt-proxy2.pid");
 }
 
 void restart_dnscrypt(int force)
