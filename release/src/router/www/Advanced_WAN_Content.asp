@@ -240,16 +240,20 @@ function applyRule(){
 				document.form.vpn_client2_adns.value = 3;
 		}
 
-		if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
-			document.form.action_script += ";restart_firewall";
+		// Restart services if required
+		//if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
+		//	document.form.action_script += ";restart_firewall";
 
-/* Should not need this since restarting wan_if
 		if((document.form.dnscrypt_proxy[0].checked != "<% nvram_get("dnscrypt_proxy"); %>") ||
-		   (document.form.dnscrypt_resolver.value != "<% nvram_get("dnscrypt_proxy"); %>") ||
-		   (document.form.dnscrypt_port.value != "<% nvram_get("dnscrypt_port"); %>") ||
+		   (document.form.dnscrypt1_resolver.value != "<% nvram_get("dnscrypt1_resolver"); %>") ||
+		   (document.form.dnscrypt1_port.value != "<% nvram_get("dnscrypt1_port"); %>") ||
+		   (document.form.dnscrypt2_resolver.value != "<% nvram_get("dnscrypt2_resolver"); %>") ||
+		   (document.form.dnscrypt2_port.value != "<% nvram_get("dnscrypt2_port"); %>") ||
 		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
-			document.form.action_script += ";restart_dnsmasq";
-*/
+			document.form.action_script.value += "stop_dnscrypt;";
+
+		document.form.action_script.value += "restart_wan_if";
+
 		document.form.action_wait.value = eval("<% get_default_reboot_time(); %> / 2");
 		document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1"; //force progress bar to always be shown
 		showLoading();
@@ -853,7 +857,7 @@ function pass_checked(obj){
 <input type="hidden" name="group_id" value="">
 <input type="hidden" name="modified" value="0">
 <input type="hidden" name="action_mode" value="apply">
-<input type="hidden" name="action_script" value="restart_wan_if">
+<input type="hidden" name="action_script" value="">	<!-- set in applyRule -->
 <input type="hidden" name="action_wait" value="60">
 <input type="hidden" name="first_time" value="">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
