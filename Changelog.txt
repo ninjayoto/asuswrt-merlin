@@ -4,6 +4,49 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-24E1j9527  (15-April-2017)
+* NEW: pppd: add support for user host_uniq
+* NEW: openvpn: allow moving keys/certs to jffs by entering a path in the gui
+* NEW: sshd: move all dropbear keys to jffs when moving authkey
+- CHANGED: nano: update to 2.8.0
+- CHANGED: firewall: (backport2) add support for protection server GPL 7378
+- CHANGED: webdav: update client binaries to GPL 7378
+- CHANGED: webstor: update webstorage binaries to GPL 7378
+- CHANGED: webui: (backport) add asus db with web backup for oui lookups
+- CHANGED: openvpn: upgrade bundled LZ4 library to 1.7.5
+- CHANGED: openvpn: (backport) replace deprecated ns-cert-type with remote-cert-tls
+- CHANGED: openvpn: mark vpn traffic to bypass CTF if CTF enabled
+- CHANGED: pptp: (backport) encryption options for pptp client
+- CHANGED: busybox: backport busybox 1.25.1/libdisk from merlin (thru commit 83547ae)
+* CHANGED openvpn: update to 2.4.1
+* CHANGED: lighttpd: add missing files to repo
+* CHANGED: dnscrypt: add missing files to repo
+* CHANGED: wget: add missing files to repo
+* CHANGED: firewall: shorten name of SECURITY_PROTECT chain to fix formatting in iptables list
+* CHANGED: openvpn: explicitly disable ncp when disabled in gui
+* CHANGED: filesys: re-enable dosfstools for fat fs and move to /usr/sbin
+* CHANGED: webui: update font for textarea tables
+* CHANGED: allow moving openvpn server dh to jffs
+* CHANGED: dnssec: add new trust-anchor
+* CHANGED: wget: update to 1.18
+* CHANGED: webui: change performance temp graph to show cooler temps
+* CHANGED: webui: cleanup openvpn server stats client table
+* CHANGED: busybox: respect syslogd -S option (log smaller)
+* CHANGED: busybox: disable wget in favor of gnu version
+* CHANGED: busybox: include mktemp (required for EasyRSA)
+* CHANGED: webui: obscure pptp/l2tp passwords unless selected
+* CHANGED: services: flush inode and dentry in addition to page cache on firmware upgrade
+* CHANGED: busybox: 1.25.1 LTS fork compatibility updates
+* CHANGED: busybox: update osname string for LTS fork
+* CHANGED: wl: add dfs support for eu ac66
+- FIXED: ddns: fix 'account name cannot be blank' error
+* FIXED: webui: client connected status on openvpn server page
+* FIXED: updown: check for existing ipv6 dns block rules before applying
+* FIXED: services: fix pidfile cleanup for dnscrypt
+* FIXED: dnscrypt: force restart when changing configuration on wan page
+* FIXED: dms: do not create user dbdir if usb drive is not mounted
+
+
 374.43_2-23E4j9527  (23-March-2017)
 * FIX: webui: workaround bug in openvpn 2.4 stats dump
 * FIX: webui: refactor ctf selection and status on switch control page
