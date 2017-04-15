@@ -1034,17 +1034,7 @@ static int time_valid = -1;
 
 void start_dnscrypt(int force)
 {
-	char *argv[] = { "dnscrypt-proxy",
-		NULL, 		// -d daemonize
-		NULL, NULL, 	// -a local address
-		NULL, NULL, 	// -m loglevel
-		NULL, NULL, 	// -L resolvers csv
-		NULL, NULL, 	// -R resolver
-		NULL, NULL, 	// -Z syslog msg
-		NULL, NULL, 	// -p pidfile
-		NULL, 		// -I ignore-timestamps
-		NULL, NULL,	// -X plugin
-		NULL };
+	FILE *fp;
 	int argc, pid, rc;
 	int ntp_sync;
 	char tmp[64];
@@ -1064,6 +1054,9 @@ void start_dnscrypt(int force)
 //	stop_dnscrypt(0);
 	time_valid = ntp_sync;
 
+	if ((fp = fopen("/etc/dnscrypt-proxy1.conf", "w")) == NULL)
+		return;
+
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled() && nvram_get_int("dnscrypt1_ipv6"))
 		dnscrypt1_lanip = "[::1]";
@@ -1072,30 +1065,29 @@ void start_dnscrypt(int force)
 		dnscrypt1_lanip = "127.0.0.1";
 
 	if (!nvram_match("dnscrypt1_resolver", "none")) {
-		argc = 1;
-		argv[argc++] = "-d";
-		argv[argc++] = "-a";
-		snprintf(tmp, sizeof(tmp), "%s:%d", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
-		argv[argc++] = tmp;
-		argv[argc++] = "-m";
-		argv[argc++] = nvram_safe_get("dnscrypt_log");
-		argv[argc++] = "-L";
-		argv[argc++] = nvram_safe_get("dnscrypt_csv");
-		argv[argc++] = "-R";
-		argv[argc++] = nvram_safe_get("dnscrypt1_resolver");
-		argv[argc++] = "-Z";
-		argv[argc++] = "dnscrypt-proxy1:";
-		argv[argc++] = "-p";
-		argv[argc++] = "/var/run/dnscrypt-proxy1.pid";
-		if (nvram_match("ntp_sync", "0"))
-			argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
-//		if (nvram_match("dnscrypt_noipv6", "1")) {
-//			argv[argc++] = "-X";
-//			argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
-//		}
-		rc = _eval(argv, NULL, 0, &pid);
+		fprintf(fp, "Daemonize yes\n");
+		fprintf(fp, "LocalAddress %s:%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
+		fprintf(fp, "LogLevel %s\n", nvram_safe_get("dnscrypt_log"));
+		fprintf(fp, "ResolversList %s\n", nvram_safe_get("dnscrypt_csv"));
+		fprintf(fp, "ResolverName %s\n", nvram_safe_get("dnscrypt1_resolver"));
+		fprintf(fp, "SyslogPrefix dnscrypt-proxy1\n");
+		fprintf(fp, "PidFile /var/run/dnscrypt-proxy1.pid\n");
+		fprintf(fp, "IgnoreTimestamps %s\n", nvram_match("ntp_sync", "0") ? "yes" : "no");
+		fprintf(fp, "BlockIPv6 %s\n", nvram_match("dnscrypt_noipv6", "1") ? "yes" : "no");
+
+		append_custom_config("dnscrypt-proxy1.conf",fp);
+
+		fclose(fp);
+
+		use_custom_config("dnscrypt-proxy1.conf","/etc/dnscrypt-proxy1.conf");
+		run_postconf("dnscrypt-proxy1.postconf","/etc/dnscrypt-proxy1.conf");
+
+		rc = eval("dnscrypt-proxy", "/etc/dnscrypt-proxy1.conf");
 		logmessage("dnscrypt-proxy", "start dnscrypt-proxy1 (%d)", rc);
 	}
+
+	if ((fp = fopen("/etc/dnscrypt-proxy2.conf", "w")) == NULL)
+		return;
 
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled() && nvram_get_int("dnscrypt2_ipv6"))
@@ -1105,28 +1097,24 @@ void start_dnscrypt(int force)
 		dnscrypt2_lanip = "127.0.0.1";
 
 	if (!nvram_match("dnscrypt2_resolver", "none")) {
-		argc = 1;
-		argv[argc++] = "-d";
-		argv[argc++] = "-a";
-		snprintf(tmp, sizeof(tmp), "%s:%d", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
-		argv[argc++] = tmp;
-		argv[argc++] = "-m";
-		argv[argc++] = nvram_safe_get("dnscrypt_log");
-		argv[argc++] = "-L";
-		argv[argc++] = nvram_safe_get("dnscrypt_csv");
-		argv[argc++] = "-R";
-		argv[argc++] = nvram_safe_get("dnscrypt2_resolver");
-		argv[argc++] = "-Z";
-		argv[argc++] = "dnscrypt-proxy2:";
-		argv[argc++] = "-p";
-		argv[argc++] = "/var/run/dnscrypt-proxy2.pid";
-		if (nvram_match("ntp_sync", "0"))
-			argv[argc++] = "-I"; //ignore timestamps when validating certificates until clock is synced
-//		if (nvram_match("dnscrypt_noipv6", "1")) {
-//			argv[argc++] = "-X";
-//			argv[argc++] = "/usr/sbin/example-ldns-aaaa-blocking.la";
-//		}
-		rc = _eval(argv, NULL, 0, &pid);
+		fprintf(fp, "Daemonize yes\n");
+		fprintf(fp, "LocalAddress %s:%d\n", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
+		fprintf(fp, "LogLevel %s\n", nvram_safe_get("dnscrypt_log"));
+		fprintf(fp, "ResolversList %s\n", nvram_safe_get("dnscrypt_csv"));
+		fprintf(fp, "ResolverName %s\n", nvram_safe_get("dnscrypt2_resolver"));
+		fprintf(fp, "SyslogPrefix dnscrypt-proxy2\n");
+		fprintf(fp, "PidFile /var/run/dnscrypt-proxy2.pid\n");
+		fprintf(fp, "IgnoreTimestamps %s\n", nvram_match("ntp_sync", "0") ? "yes" : "no");
+		fprintf(fp, "BlockIPv6 %s\n", nvram_match("dnscrypt_noipv6", "1") ? "yes" : "no");
+
+		append_custom_config("dnscrypt-proxy2.conf",fp);
+
+		fclose(fp);
+
+		use_custom_config("dnscrypt-proxy2.conf","/etc/dnscrypt-proxy2.conf");
+		run_postconf("dnscrypt-proxy2.postconf","/etc/dnscrypt-proxy2.conf");
+
+		rc = eval("dnscrypt-proxy", "/etc/dnscrypt-proxy2.conf");
 		logmessage("dnscrypt-proxy", "start dnscrypt-proxy2 (%d)", rc);
 	}
 }
