@@ -315,7 +315,7 @@ void start_vpnclient(int clientNum)
 			fprintf(fp, "reneg-sec %ld\n", nvl);
 
 		sprintf(&buffer[0], "vpn_client%d_adns", clientNum);
-		if ( nvram_get_int(&buffer[0]) > 0 )
+		if ( nvram_get_int(&buffer[0]) >= 0 )
 		{
 			sprintf(&buffer[0], "/etc/openvpn/client%d/updown.sh", clientNum);
 			symlink("/usr/sbin/updown.sh", &buffer[0]);

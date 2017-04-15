@@ -111,24 +111,27 @@ then
 		logger -t "openvpn-updown" "Using `if [ $allow_dnscrypt == 1 ]; then echo '(DNSCrypt)'; else echo '(Primary WAN)'; fi` DNS for non-VPN clients"
 	else
 		setdns=-1
-		logger -t "openvpn-updown" "Using `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo 'DNSCrypt'; else echo 'VPN'; fi` DNS for non-VPN clients"
+		logger -t "openvpn-updown" "Using `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo 'DNSCrypt'; elif [ $(nvram get vpn_client$(echo $instance)_adns) == 3 ]; then echo 'VPN'; else echo 'Default'; fi` DNS for non-VPN clients"
 	fi
 
-	for optionname in `set | grep "^foreign_option_" | sed "s/^\(.*\)=.*$/\1/g"`
-	do
-		option=`eval "echo \\$$optionname"`
-		if echo $option | grep "dhcp-option WINS "; then echo $option | sed "s/ WINS /=44,/" >> $conffile; fi
-		if echo $option | grep "dhcp-option DNS"
-		then
-			echo $option | sed "s/dhcp-option DNS/nameserver/" >> $resolvfile
-			if [ $setdns == 0 ]
+	if [ $(nvram get vpn_client$(echo $instance)_adns) -gt 0 ]
+	then
+		for optionname in `set | grep "^foreign_option_" | sed "s/^\(.*\)=.*$/\1/g"`
+		do
+			option=`eval "echo \\$$optionname"`
+			if echo $option | grep "dhcp-option WINS "; then echo $option | sed "s/ WINS /=44,/" >> $conffile; fi
+			if echo $option | grep "dhcp-option DNS"
 			then
-				create_client_list $(echo $option | sed "s/dhcp-option DNS//")
-				setdns=1
+				echo $option | sed "s/dhcp-option DNS/nameserver/" >> $resolvfile
+				if [ $setdns == 0 ]
+				then
+					create_client_list $(echo $option | sed "s/dhcp-option DNS//")
+					setdns=1
+				fi
 			fi
-		fi
-		if echo $option | grep "dhcp-option DOMAIN"; then echo $option | sed "s/dhcp-option DOMAIN/search/" >> $resolvfile; fi
-	done
+			if echo $option | grep "dhcp-option DOMAIN"; then echo $option | sed "s/dhcp-option DOMAIN/search/" >> $resolvfile; fi
+		done
+	fi
 
 	if [ $setdns == 1 ]
 	then
