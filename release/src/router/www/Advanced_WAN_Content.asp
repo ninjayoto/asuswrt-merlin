@@ -122,10 +122,12 @@ function update_resolverlist(){
 	free_options(document.form.dnscrypt1_resolver);
 	currentresolver1 = "<% nvram_get("dnscrypt1_resolver"); %>";
 	add_option(document.form.dnscrypt1_resolver, "Not Defined","none",(currentresolver1 == "none"));
+	add_option(document.form.dnscrypt1_resolver, "Random","random",(currentresolver1 == "random"));
 
 	free_options(document.form.dnscrypt2_resolver);
 	currentresolver2 = "<% nvram_get("dnscrypt2_resolver"); %>";
 	add_option(document.form.dnscrypt2_resolver, "Not Defined","none",(currentresolver2 == "none"));
+	add_option(document.form.dnscrypt2_resolver, "Random","random",(currentresolver2 == "random"));
 
 	var dnssec_enabled = document.form.dnssec_enable[0].checked;
 	for(var i = 0; i < resolverarray.length; i++){
