@@ -1083,7 +1083,7 @@ void start_dnscrypt(int force)
 		run_postconf("dnscrypt-proxy1.postconf","/etc/dnscrypt-proxy1.conf");
 
 		rc = eval("dnscrypt-proxy", "/etc/dnscrypt-proxy1.conf");
-		logmessage("dnscrypt-proxy", "start dnscrypt-proxy1 (%d)", rc);
+//		logmessage("dnscrypt-proxy", "start dnscrypt-proxy1 (%d)", rc);
 	}
 
 	if ((fp = fopen("/etc/dnscrypt-proxy2.conf", "w")) == NULL)
@@ -1115,7 +1115,7 @@ void start_dnscrypt(int force)
 		run_postconf("dnscrypt-proxy2.postconf","/etc/dnscrypt-proxy2.conf");
 
 		rc = eval("dnscrypt-proxy", "/etc/dnscrypt-proxy2.conf");
-		logmessage("dnscrypt-proxy", "start dnscrypt-proxy2 (%d)", rc);
+//		logmessage("dnscrypt-proxy", "start dnscrypt-proxy2 (%d)", rc);
 	}
 }
 
