@@ -130,23 +130,26 @@ function update_resolverlist(){
 	add_option(document.form.dnscrypt2_resolver, "Random","random",(currentresolver2 == "random"));
 
 	var dnssec_enabled = document.form.dnssec_enable[0].checked;
+	var dnscrypt_nologs = document.form.dnscrypt_nologs[0].checked;
 	for(var i = 0; i < resolverarray.length; i++){
 		// Exclude non-dnssec resolvers if dnssec is enabled
 //		if ((dnssec_enabled == 1 && resolverarray[i][2] == "yes") || dnssec_enabled == 0) {
-			if ((resolverarray[i][0].indexOf('ipv6') != -1) && (ipv6_enabled != "disabled")) { //ipv6
-				add_option(document.form.dnscrypt1_resolver,
-					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
-					(currentresolver1 == resolverarray[i][0]));
-				add_option(document.form.dnscrypt2_resolver,
-					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
-					(currentresolver2 == resolverarray[i][0]));
-			} else if (resolverarray[i][0].indexOf('ipv6') == -1) { //ipv4
-				add_option(document.form.dnscrypt1_resolver,
-					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
-					(currentresolver1 == resolverarray[i][0]));
-				add_option(document.form.dnscrypt2_resolver,
-					resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
-					(currentresolver2 == resolverarray[i][0]));
+			if ((dnscrypt_nologs == 1 && resolverarray[i][3] == "yes") || dnscrypt_nologs == 0) {
+				if ((resolverarray[i][0].indexOf('ipv6') != -1) && (ipv6_enabled != "disabled")) { //ipv6
+					add_option(document.form.dnscrypt1_resolver,
+						resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+						(currentresolver1 == resolverarray[i][0]));
+					add_option(document.form.dnscrypt2_resolver,
+						resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+						(currentresolver2 == resolverarray[i][0]));
+				} else if (resolverarray[i][0].indexOf('ipv6') == -1) { //ipv4
+					add_option(document.form.dnscrypt1_resolver,
+						resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+						(currentresolver1 == resolverarray[i][0]));
+					add_option(document.form.dnscrypt2_resolver,
+						resolverarray[i][1] + (resolverarray[i][2] == "yes" ? " w/DNSSEC" : ""), resolverarray[i][0],
+						(currentresolver2 == resolverarray[i][0]));
+				}
 			}
 //		}
 	}
@@ -172,6 +175,7 @@ function display_dnscrypt_opt(){
 	$("dnscrypt2_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt2_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt_log_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnscrypt_nologs_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 }
 
 function display_upnp_range(){
@@ -1065,6 +1069,13 @@ function pass_checked(obj){
 					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
 				<span id="dnscrypt_csvwarn" style="padding-left:42px;">Using updated resolver file</span>
+				</td>
+			</tr>
+			<tr id="dnscrypt_nologs_tr" style="display:none;">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,34);">Exclude DNSCRYPT servers with logs</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dnscrypt_nologs" onclick="update_resolverlist();" <% nvram_match("dnscrypt_nologs", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnscrypt_nologs" onclick="update_resolverlist();" <% nvram_match("dnscrypt_nologs", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
 			<tr id="dnscrypt1_resolv_tr" style="display:none;">

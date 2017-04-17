@@ -225,7 +225,7 @@ int resolver_dump(FILE *pFile, webs_t wp) {
 		if (parse_csv_line(sInputBuf,lineno) == 0)
 			// On return pFields array pointers point to loaded fields ready for load into DB or whatever
 			// Fields can be accessed via pFields
-			ret += websWrite(wp, "[\"%s\", \"%s\", \"%s\"],\n", pFields[NAME], pFields[FULLNAME], pFields[DNSSEC]);
+			ret += websWrite(wp, "[\"%s\", \"%s\", \"%s\", \"%s\"],\n", pFields[NAME], pFields[FULLNAME], pFields[DNSSEC], pFields[LOGS]);
 	}
 	return ret;
 }

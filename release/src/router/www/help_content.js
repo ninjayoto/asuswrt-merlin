@@ -129,7 +129,8 @@ helpcontent[7] = new Array("",
 							 "<#PPPConnection_Authentication_itemdesc2#>", //30
 							 "<#IPConnection_LocalIP_itemdesc#> or fixed Interface (Device) ID starting with ::<br/>A fixed Interface ID is commonly an EUI-64 address.",
 							 "Enables DNSSEC validation.  The specified WAN or DNSCrypt DNS servers must support DNSSEC or errors in DNS name resolution may occur.",
-							 "Enables DNSCrypt DNS Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.");
+							 "Enables DNSCrypt DNS Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
+							 "Exclude DNSCrypt DNS Servers which maintain logs from selection.");
 //Firewall
 helpcontent[8] = new Array("",
 						   "<#FirewallConfig_WanLanLog_itemdesc#>",

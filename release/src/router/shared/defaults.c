@@ -714,7 +714,7 @@ struct nvram_tuple router_defaults[] = {
 //	{ "dnscrypt1_noipv6", "0"},		// block AAAA records plugin
 //	{ "dnscrypt1_manual", "0"},		// Set manual resolver
 //	{ "dnscrypt1_provider_name", ""},	// Set manual provider name
-//	{ "dnscrypt1_provider_key", ""},		// Set manual provider key
+//	{ "dnscrypt1_provider_key", ""},	// Set manual provider key
 //	{ "dnscrypt1_resolver_address", ""},	// Set manual resolver address
 	{ "dnscrypt2_resolver", "none"},	// default resolver
 	{ "dnscrypt2_port", "65054"}, 		// local port
@@ -722,9 +722,10 @@ struct nvram_tuple router_defaults[] = {
 //	{ "dnscrypt2_noipv6", "0"},		// block AAAA records plugin
 //	{ "dnscrypt2_manual", "0"},		// Set manual resolver
 //	{ "dnscrypt2_provider_name", ""},	// Set manual provider name
-//	{ "dnscrypt2_provider_key", ""},		// Set manual provider key
+//	{ "dnscrypt2_provider_key", ""},	// Set manual provider key
 //	{ "dnscrypt2_resolver_address", ""},	// Set manual resolver address
 	{ "dnscrypt_log", "4"},			// log level
+	{ "dnscrypt_nologs", "0"},		// Show only non-logging servers
 	{ "dnscrypt_csv","/rom/dnscrypt-resolvers.csv"},	// list of resolvers
 
 #endif
