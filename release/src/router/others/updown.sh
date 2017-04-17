@@ -31,10 +31,13 @@ else
 	ISPserver=$(nvram get wan0_dns1_x)
 fi
 
-# Assume if DNS server and router address first octet are the same the DNS server is local
-if [ ${ISPserver%%.*} == ${lan_ip%%.*} -a $allow_routelocal == 1 ]
+# Check if DNS server is a private address
+if [[ -n "$(echo "$ISPserver" | grep -E '^(10\.|100\.(6[4-9]|7[0-9]|8[0-9]|9[0-9]|1[0-2][0-9])\.|172\.(1[6789]|2[0-9]|3[01])\.|127\.0\.0\.|192\.168|198\.1[89])')" ]]
 then
-	echo 1 > /proc/sys/net/ipv4/conf/br0/route_localnet
+	if [ $allow_routelocal == 1 ]
+	then
+		echo 1 > /proc/sys/net/ipv4/conf/br0/route_localnet
+	fi
 fi
 
 # Override if DNSCRYPT is active and exclusive
