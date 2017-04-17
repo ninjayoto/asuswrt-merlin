@@ -415,6 +415,30 @@ IPv6 Local Name Resolution
 	Notes:			Add script for IPv6 hosts auto update for native/stateless IPv6
 					(adds local ipv6 name resolution to public address)
 ---------------------------------------------------------------------------------------------------------------
+Move certs from NVRAM to JFFS
+
+	Can be set in gui:	No
+	Enable via NVRAM:	No
+				This function is provided via command line using telnet/ssh
+
+				To move the SSH (dropbear certs), enter
+				sshd2jffs or
+				sshd2nvram
+
+				To move the OpenVPN certs, enter
+				ovpn2jffs  [server1|server2|client1|client2] or
+				ovpn2nvram [server1|server2|client1|client2]
+
+				At the end of the command execution, you will be prompted to reboot the router
+
+	Routers Supported:	All
+	Released:		Update-24
+	Reboot Required:	Yes
+	Notes:			These commands can free NVRAM space by moving certificates/keys from NVRAM to JFFS (and back if required).
+				They may be used if you are receiving a low NVRAM warning from the router gui.
+				IMPORTANT:  If you wish to revert to a firmware prior to Update-24 and have moved the certs to JFFS,
+					you MUST move them back to NVRAM prior to loading the earlier firmware.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 

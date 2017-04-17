@@ -4,6 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-24E2j9527  (17-April-2017)
+* NEW: utils: add utilities to move certs between jffs and nvram
+* NEW: kernel: add exFAT support (Tomato backport)
+* NEW: system: basic exfat support for ARM routers (no utilities)
+* NEW: exfat: add utilities support
+- CHANGED: kernel: (backport) properly support MSG_PEEK with truncated buffers, CVE-2016-10229
+* CHANGED: usb: fsck exfat drives on mount with .asusrouter
+* CHANGED: openvpn: call updown even with adns disabled to set ip6tables
+* CHANGED: dnscrypt: support random option for resolver
+* CHANGED: dsncrypt: update resolver csv to 17-April-2017
+* CHANGED: webui: add filter for dnscrypt servers which do not maintain logs
+* CHANGED: services: update dnscrypt to use config file and support merlin scripts/conf
+* CHANGED: updown: improve check for use of local dns servers
+
+
 374.43_2-24E1j9527  (15-April-2017)
 * NEW: pppd: add support for user host_uniq
 * NEW: openvpn: allow moving keys/certs to jffs by entering a path in the gui
