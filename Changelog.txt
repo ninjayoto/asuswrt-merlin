@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-24E3j9527  (22-April-2017)
+- CHANGED: httpd: update https cert to include SAN extensions for chrome 58
+
+
 374.43_2-24E2j9527  (17-April-2017)
 * NEW: utils: add utilities to move certs between jffs and nvram
 * NEW: kernel: add exFAT support (Tomato backport)
