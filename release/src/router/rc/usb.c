@@ -2383,10 +2383,13 @@ void start_dms(void)
 				}
 			}
 
-			if (!sharecount)
-			fprintf(f,
-				"media_dir=%s\n",
-				nvram_default_get("dms_dir"));
+			if (!sharecount) {
+				if (strlen(nvram_safe_get("dms_dir_x")))
+					fprintf(f, "media_dir=/Media\n");	//use linux default media dir if other is defined and not available
+				else
+					fprintf(f, "media_dir=%s\n",
+						nvram_default_get("dms_dir"));	//use default with no media dirs defined
+			}
 
 			fprintf(f,
 				"serial=%s\n"
