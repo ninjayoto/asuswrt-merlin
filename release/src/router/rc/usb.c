@@ -2203,7 +2203,7 @@ void start_dms(void)
 {
 	FILE *f;
 	int port, pid;
-	char dbdir[128], *dmsdir;
+	char dbdir[128], dbdir_last[128], *dmsdir;
 	char *argv[] = { MEDIA_SERVER_APP, "-f", "/etc/"MEDIA_SERVER_APP".conf", "-R", NULL };
 	static int once = 1;
 	int i, j;
@@ -2290,6 +2290,7 @@ void start_dms(void)
 			if (nv) free(nv);
 			if (nv2) free(nv2);
 
+			strlcpy(dbdir_last, nvram_safe_get("dms_dbdir"), sizeof(dbdir_last));
 			if (default_dms_dir_used) {
 				find_dms_dbdir(dbdir);
 			}
@@ -2315,6 +2316,11 @@ void start_dms(void)
 				mkdir_if_none(dbdir);
 			} else
 				nvram_set("dms_dbdir", dbdir);
+
+			if (strcmp(dbdir, dbdir_last))	{	//remove old dbdir
+				if (check_if_dir_exist(dbdir_last))
+					eval("rm", "-rf", dbdir_last);
+			}
 
 			nvram_set("dms_dbcwd", dbdir);
 
