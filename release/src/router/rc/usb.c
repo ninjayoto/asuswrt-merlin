@@ -2171,7 +2171,7 @@ void find_dms_dbdir(char *dbdir)
   	strcpy(dbdir_t, nvram_safe_get("dms_dbdir"));
 
 	/* if previous dms_dbdir there, use it */
-	if(!strcmp(dbdir_t, nvram_default_get("dms_dbdir"))) {
+	if(strcmp(dbdir_t, nvram_default_get("dms_dbdir"))) {
 		sprintf(dbfile, "%s/file.db", dbdir_t);
 		if (check_if_file_exist(dbfile)) {
 			strcpy(dbdir, dbdir_t);
@@ -2248,8 +2248,10 @@ void start_dms(void)
 				while ((b = strsep(&nvp, "<")) != NULL) {
 					if (!strlen(b)) continue;
 
-					if (default_dms_dir_used && !strcmp(b, nvram_default_get("dms_dir")))
+					if (default_dms_dir_used && !strcmp(b, nvram_default_get("dms_dir"))) {
 						strncpy(dirlist[dircount++], b, 1024);
+						continue;
+					}
 
 					if (check_if_dir_exist(b)) {
 						strncpy(dirlist[dircount++], b, 1024);
@@ -2311,7 +2313,8 @@ void start_dms(void)
 			if (!check_if_dir_exist(dbdir)) {
 				strcpy(dbdir, nvram_default_get("dms_dbdir"));
 				mkdir_if_none(dbdir);
-			}
+			} else
+				nvram_set("dms_dbdir", dbdir);
 
 			nvram_set("dms_dbcwd", dbdir);
 
