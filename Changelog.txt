@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-24E4j9527  (24-April-2017)
+* CHANGED: usb: remove old minidlna dbdir if set to new location
+* CHANGED: usb: only use default of /tmp/mnt for media dir if no dirs specified
+* FIXED: usb: fix potential buffer overruns in minidlna start
+* FIXED: usb: fix dbdir discovery for minidlna
+
+
 374.43_2-24E3j9527  (22-April-2017)
 - CHANGED: httpd: update https cert to include SAN extensions for chrome 58
 
