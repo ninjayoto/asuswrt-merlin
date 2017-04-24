@@ -2168,7 +2168,7 @@ void find_dms_dbdir(char *dbdir)
 	char dbdir_t[128], dbfile[128];
 	int found=0;
 
-  	strcpy(dbdir_t, nvram_safe_get("dms_dbdir"));
+	strlcpy(dbdir_t, nvram_safe_get("dms_dbdir"), sizeof(dbdir_t));
 
 	/* if previous dms_dbdir there, use it */
 	if(strcmp(dbdir_t, nvram_default_get("dms_dbdir"))) {
@@ -2187,7 +2187,7 @@ void find_dms_dbdir(char *dbdir)
 
  	/* use default dir */
 	if(!found)
-		strcpy(dbdir, nvram_default_get("dms_dbdir"));
+		strlcpy(dbdir, nvram_default_get("dms_dbdir"), sizeof(dbdir_t));
 
 	nvram_set("dms_dbdir", dbdir);
 
@@ -2203,7 +2203,7 @@ void start_dms(void)
 {
 	FILE *f;
 	int port, pid;
-	char dbdir[100], *dmsdir;
+	char dbdir[128], *dmsdir;
 	char *argv[] = { MEDIA_SERVER_APP, "-f", "/etc/"MEDIA_SERVER_APP".conf", "-R", NULL };
 	static int once = 1;
 	int i, j;
@@ -2311,7 +2311,7 @@ void start_dms(void)
 			if (strlen(dbdir))
 				mkdir_if_none(dbdir);
 			if (!check_if_dir_exist(dbdir)) {
-				strcpy(dbdir, nvram_default_get("dms_dbdir"));
+				strlcpy(dbdir, nvram_default_get("dms_dbdir"), sizeof(dbdir));
 				mkdir_if_none(dbdir);
 			} else
 				nvram_set("dms_dbdir", dbdir);
