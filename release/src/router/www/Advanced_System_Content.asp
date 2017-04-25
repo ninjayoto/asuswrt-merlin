@@ -1471,7 +1471,7 @@ function updateDateTime()
 		  	</tr>
 
 			<tr id="https_cert">
-					<th>Save HTTPS certificate<br><i>Requires approx 1KB NVRAM space</i></th>
+					<th>Save HTTPS certificate</th>
 					<td>
 						<input type="radio" name="https_crt_save" class="input" value="1" <% nvram_match_x("", "https_crt_save", "1", "checked"); %>><#checkbox_Yes#>
 						<input type="radio" name="https_crt_save" class="input" value="0" <% nvram_match_x("", "https_crt_save", "0", "checked"); %>><#checkbox_No#>
