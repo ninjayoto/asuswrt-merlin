@@ -3884,6 +3884,19 @@ void stop_ptcsrv(void)
 
 #endif
 
+int start_haveged(void)
+{
+	eval("/usr/sbin/haveged", "-r0", "-w2048");
+
+	return 0;
+}
+
+int stop_haveged(void)
+{
+	if (pids("haveged"))
+		killall("haveged", SIGTERM);
+}
+
 int
 start_services(void)
 {
@@ -3892,7 +3905,7 @@ start_services(void)
 #ifdef  __CONFIG_NORTON__
 	start_norton();
 #endif /* __CONFIG_NORTON__ */
-
+	start_haveged();
 #ifdef RTCONFIG_PROTECTION_SERVER
 	start_ptcsrv();
 #endif
@@ -4093,6 +4106,7 @@ stop_services(void)
 #ifdef RTCONFIG_PROTECTION_SERVER
 	stop_ptcsrv();
 #endif
+	stop_haveged();
 #ifdef  __CONFIG_NORTON__
 	stop_norton();
 #endif /* __CONFIG_NORTON__ */
