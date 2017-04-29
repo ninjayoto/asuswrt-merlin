@@ -3886,7 +3886,11 @@ void stop_ptcsrv(void)
 
 int start_haveged(void)
 {
-	eval("/usr/sbin/haveged", "-r0", "-w2048");
+#ifdef RTCONFIG_BCMARM
+	eval("/usr/sbin/haveged", "-r0", "-d32", "-i32", "-w2048");
+#else
+	eval("/usr/sbin/haveged", "-r0", "-w1024");
+#endif
 
 	return 0;
 }
