@@ -1133,7 +1133,8 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 		":OUTPUT ACCEPT [0:0]\n"
 		":VSERVER - [0:0]\n"
 		":LOCALSRV - [0:0]\n"
-		":VUPNP - [0:0]\n");
+		":VUPNP - [0:0]\n"
+		":PUPNP - [0:0]\n");
 
 #ifdef RTCONFIG_YANDEXDNS
 	fprintf(fp,
@@ -1279,6 +1280,7 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 #if 1
 		/* call UPNP chain */
 		fprintf(fp, "-A VSERVER -j VUPNP\n");
+		fprintf(fp, "-A POSTROUTING -j PUPNP\n");
 #else
 		// upnp port forward
 		//write_upnp_forward(fp, fp1, wan_if, wan_ip, lan_if, lan_ip, lan_class, logaccept, logdrop);
@@ -1404,7 +1406,8 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 				":OUTPUT ACCEPT [0:0]\n"
 				":VSERVER - [0:0]\n"
 				":LOCALSRV - [0:0]\n"
-				":VUPNP - [0:0]\n");
+				":VUPNP - [0:0]\n"
+				":PUPNP - [0:0]\n");
 #ifdef RTCONFIG_YANDEXDNS
 			fprintf(fp,
 				":YADNS - [0:0]\n");
@@ -1559,6 +1562,7 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 #if 1
                 /* call UPNP chain */
                 fprintf(fp, "-A VSERVER -j VUPNP\n");
+		fprintf(fp, "-A POSTROUTING -j PUPNP\n");
 #else
                 for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
                         snprintf(prefix, sizeof(prefix), "wan%d_", unit);
@@ -1708,7 +1712,8 @@ void redirect_setting(void)
 				":POSTROUTING ACCEPT [0:0]\n"
 				":OUTPUT ACCEPT [0:0]\n"
 				":VSERVER - [0:0]\n"
-				":VUPNP - [0:0]\n");
+				":VUPNP - [0:0]\n"
+				":PUPNP - [0:0]\n");
 #ifdef RTCONFIG_YANDEXDNS
 		fprintf(redirect_fp,
 				":YADNS - [0:0]\n");
@@ -2622,6 +2627,9 @@ TRACE_PT("writing Parental Control\n");
 		// if logging
 		fprintf(fp_ipv6, "-A INPUT -j %s\n", logdrop);
 
+#ifdef RTCONFIG_IGD2
+		if (nvram_match("upnp_enable", "1") && nvram_match("upnp_pinhole_enable", "1")) fprintf(fp_ipv6, "-A FORWARD -j UPNP\n");
+#endif
 
 		fprintf(fp_ipv6, "-A OUTPUT -m rt --rt-type 0 -j %s\n", logdrop);
 
@@ -3165,9 +3173,9 @@ filter_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()){
 		if (nvram_match("ipv6_fw_enable", "1")){
-			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD DROP [0:0]\n:OUTPUT ACCEPT [0:0]\n:UPNP - [0:0]\n");
 		} else {
-			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n");
+			fprintf(fp_ipv6, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n:UPNP - [0:0]\n");
 		}
 #ifdef RTCONFIG_PARENTALCTRL
 		fprintf(fp_ipv6, ":PControls - [0:0]\n");
@@ -4378,7 +4386,8 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 
 		if (nvram_match("fw_nat_loopback", "1")) { 
 			/* mark VTS loopback connections */ 
-			if (nvram_match("vts_enable_x", "1")||!nvram_match("dmz_ip", "")) { 
+			if (nvram_match("vts_enable_x", "1") || !nvram_match("dmz_ip", "") ||
+				(is_nat_enabled() && nvram_get_int("upnp_enable"))) {
 				char lan_class[32]; 
  
 				ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class); 
