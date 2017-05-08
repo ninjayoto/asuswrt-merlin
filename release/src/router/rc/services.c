@@ -5093,7 +5093,13 @@ check_ddr_done:
 		}
 		if(action&RC_SERVICE_START){
 //_dprintf("restart_nas_services(%d): test 11.\n", getpid());
+			int restart_upnp = 0;
+			if (pidof("miniupnpd") != -1) {
+				stop_upnp();
+				restart_upnp = 1;
+			}
 			restart_nas_services(0, 1);
+			if (restart_upnp) start_upnp();
 		}
 	}
 #if defined(RTCONFIG_SAMBASRV) && defined(RTCONFIG_FTP)
