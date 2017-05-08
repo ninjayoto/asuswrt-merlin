@@ -1014,6 +1014,13 @@ define RouterOptions
 		sed -i "/RTCONFIG_PROTECTION_SERVER/d" $(1); \
 		echo "RTCONFIG_PROTECTION_SERVER=y" >>$(1); \
 	fi; \
+	if [ "$(UPNPIGD2)" = "y" ]; then \
+		sed -i "/RTCONFIG_IGD2/d" $(1); \
+		echo "RTCONFIG_IGD2=y" >>$(1); \
+	else \
+		sed -i "/RTCONFIG_IGD2/d" $(1); \
+		echo "# RTCONFIG_IGD2 is not set" >>$(1); \
+	fi; \
 	)
 	$(call platformRouterOptions, $(1))
 endef

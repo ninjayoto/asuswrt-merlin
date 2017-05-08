@@ -1,3 +1,4 @@
+
 #
 # Broadcom Linux Router Makefile
 #
@@ -131,13 +132,21 @@ endif
 ifeq ($(RTCONFIG_DSL),y)
 obj-y += dsl_drv_tool
 endif
+
 ifneq ($(or $(findstring linux-2.6.36,$(LINUXDIR)),$(findstring linux-3.x,$(LINUXDIR))),)
+IPTABLES := iptables-1.4.x
+IPTC_LIBDIR := $(TOP)/$(IPTABLES)/libiptc/.libs
+IPTC_LIBS := -lip4tc $(if $(RTCONFIG_IGD2), $(if $(RTCONFIG_IPV6),-lip6tc,),) -liptc
 obj-y += iptables-1.4.x
 obj-y += iproute2-3.x
 else
+IPTABLES := iptables
+IPTC_LIBDIR := $(TOP)/$(IPTABLES)
+IPTC_LIBS := -liptc
 obj-y += iptables
 obj-y += iproute2
 endif
+
 obj-y += libbcmcrypto
 ifeq ($(RTCONFIG_HTTPS),y)
 obj-y += openssl
@@ -383,6 +392,7 @@ obj-$(RTCONFIG_IXIAEP) += ixia_endpoint$(BCMEX)
 # Add for ASUS Components
 obj-y += zlib # for libxml2, curl
 obj-y += curl-7.21.7 # include for all builds
+obj-$(RTCONFIG_UPNPC) += miniupnpc
 obj-y += miniupnpd
 obj-y += igmpproxy
 obj-y += udpxy
@@ -469,15 +479,6 @@ obj-$(RTCONFIG_NANO) += nano
 
 obj-clean := $(foreach obj, $(obj-y) $(obj-n) $(obj-), $(obj)-clean)
 obj-install := $(foreach obj,$(obj-y),$(obj)-install)
-
-# Specify iptables path and target for miniupnpd
-ifneq ($(findstring iptables-1.4.x,$(obj-y)),)
-IPTABLESPATH=$(TOP)/iptables-1.4.x
-export IPTABLESPATH
-IPTABLES_TARGET = iptables-1.4.x
-else
-IPTABLES_TARGET = iptables
-endif
 
 ifneq ($(or $(findstring linux-2.6.36.x,$(LINUXDIR)),$(findstring linux-3.x,$(LINUXDIR))),)
 MKSQUASHFS_TARGET = mksquashfs
@@ -1399,43 +1400,39 @@ endif
 iptables-clean:
 	-@$(MAKE) -C iptables KERNEL_DIR=$(LINUXDIR) clean
 
+iptables-1.4.x/configure:
+	cd iptables-1.4.x && ./autogen.sh
+
+iptables-1.4.x/Makefile: iptables-1.4.x/configure
+	cd iptables-1.4.x && $(CONFIGURE) \
+		--prefix=/usr \
+		--bindir=/usr/sbin \
+		--libdir=/usr/lib \
+		--with-kernel=$(LINUXDIR) \
+		$(if $(RTCONFIG_IPV6),--enable-ipv6,--disable-ipv6) \
+		CFLAGS="-Os $(EXTRACFLAGS) -U CONFIG_NVRAM_SIZE"
+
 iptables-1.4.x: iptables-1.4.x/Makefile libnfnetlink
 	@$(SEP)
 	$(MAKE) -C $@ KERNEL_DIR=$(LINUXDIR) COPT_FLAGS="-Os $(EXTRACFLAGS) -U CONFIG_NVRAM_SIZE" \
 		CFLAGS="-Wall -Os -D_GNU_SOURCE $(EXTRACFLAGS) -I$(TOP)/libnfnetlink/include" \
 		LDFLAGS="-L$(TOP)/libnfnetlink/src/.libs -lnfnetlink"
 
-iptables-1.4.x/Makefile: iptables-1.4.x/configure
-	$(MAKE) iptables-1.4.x-configure
-
-iptables-1.4.x/configure:
-	( cd iptables-1.4.x ; ./autogen.sh )
-
-iptables-1.4.x-configure:
-	( cd iptables-1.4.x ; \
-		$(CONFIGURE) \
-		--prefix=/usr \
-		--bindir=/usr/sbin \
-		--libdir=/usr/lib \
-		$(IPTABLES_IPV6_OPT) \
-		--with-kernel=$(LINUXDIR) \
-	)
-
-iptables-1.4.x-install:
+iptables-1.4.x-install: iptables-1.4.x
 	install -D iptables-1.4.x/iptables/.libs/xtables-multi $(INSTALLDIR)/iptables-1.4.x/usr/sbin/xtables-multi
 	cd $(INSTALLDIR)/iptables-1.4.x/usr/sbin && \
 		ln -sf xtables-multi iptables-save && \
 		ln -sf xtables-multi iptables-restore && \
+		ln -sf xtables-multi iptables-save && \
 		ln -sf xtables-multi iptables
 	install -d $(INSTALLDIR)/iptables-1.4.x/usr/lib/xtables
-	install -D iptables-1.4.x/libiptc/.libs/lib*.so $(INSTALLDIR)/iptables-1.4.x/usr/lib/
+	install -D iptables-1.4.x/libiptc/.libs/libiptc.so $(INSTALLDIR)/iptables-1.4.x/usr/lib/libiptc.so
+	install -D iptables-1.4.x/libiptc/.libs/libip4tc.so $(INSTALLDIR)/iptables-1.4.x/usr/lib/libip4tc.so
 	cd $(INSTALLDIR)/iptables-1.4.x/usr/lib && \
-		ln -sf libip4tc.so libip4tc.so.0 && \
-		ln -sf libip4tc.so libip4tc.so.0.0.0 && \
-		ln -sf libip6tc.so libip6tc.so.0 && \
-		ln -sf libip6tc.so libip6tc.so.0.0.0 && \
 		ln -sf libiptc.so  libiptc.so.0 && \
-		ln -sf libiptc.so  libiptc.so.0.0.0
+		ln -sf libiptc.so  libiptc.so.0.0.0 && \
+		ln -sf libip4tc.so libip4tc.so.0 && \
+		ln -sf libip4tc.so libip4tc.so.0.0.0
 	install -D iptables-1.4.x/libxtables/.libs/lib*.so $(INSTALLDIR)/iptables-1.4.x/usr/lib/
 	cd $(INSTALLDIR)/iptables-1.4.x/usr/lib && \
 		ln -sf libxtables.so libxtables.so.7 && \
@@ -1444,9 +1441,12 @@ iptables-1.4.x-install:
 
 ifeq ($(RTCONFIG_IPV6),y)
 	cd $(INSTALLDIR)/iptables-1.4.x/usr/sbin && \
-		ln -sf xtables-multi ip6tables-save && \
 		ln -sf xtables-multi ip6tables-restore && \
 		ln -sf xtables-multi ip6tables
+	install -D iptables-1.4.x/libiptc/.libs/libip6tc.so $(INSTALLDIR)/iptables-1.4.x/usr/lib/libip6tc.so
+	cd $(INSTALLDIR)/iptables-1.4.x/usr/lib && \
+		ln -sf libip6tc.so libip6tc.so.0 && \
+		ln -sf libip6tc.so libip6tc.so.0.0.0
 endif
 
 	$(STRIP) $(INSTALLDIR)/iptables-1.4.x/usr/sbin/xtables-multi
@@ -1455,6 +1455,7 @@ endif
 
 iptables-1.4.x-clean:
 	[ ! -f iptables-1.4.x/Makefile ] || $(MAKE) -C iptables-1.4.x KERNEL_DIR=$(LINUXDIR) distclean
+	@rm -f iptables-1.4.x/Makefile
 
 libnfnetlink/stamp-h1:
 # tomatoraf.com, Victek
@@ -1477,13 +1478,18 @@ libnfnetlink-install:
 
 upnp: nvram$(BCMEX) shared iptables
 
-miniupnpd/config.h:
-	cd miniupnpd && ./genconfig.sh --leasefile --vendorcfg
+miniupnpd/config.h: shared/version.h
+ifeq ($(RTCONFIG_IGD2),y)
+	cd miniupnpd && ./genconfig.sh --vendorcfg --leasefile --portinuse --pcp-peer --uda-version=1.1 $(if $(RTCONFIG_IPV6),--ipv6,) --igd2
+else
+	cd miniupnpd && ./genconfig.sh --vendorcfg --leasefile --portinuse --pcp-peer --uda-version=1.1
+endif
 
-miniupnpd: $(IPTABLES_TARGET) miniupnpd/config.h
+miniupnpd: $(IPTABLES) miniupnpd/config.h
 	@$(SEP)
 	cp -f ./shared/version.h miniupnpd/.
-	$(MAKE) -C miniupnpd -f Makefile.merlin $(PARALLEL_BUILD)
+	$(MAKE) -C miniupnpd -f Makefile.merlin $(PARALLEL_BUILD) \
+		IPTABLESPATH=$(TOP)/$(IPTABLES)
 
 miniupnpd-clean:
 	-@$(MAKE) -C miniupnpd -f Makefile.merlin clean
@@ -1492,6 +1498,17 @@ miniupnpd-clean:
 miniupnpd-install:
 	install -D miniupnpd/miniupnpd $(INSTALLDIR)/miniupnpd/usr/sbin/miniupnpd
 	$(STRIP) $(INSTALLDIR)/miniupnpd/usr/sbin/miniupnpd
+
+miniupnpc:
+	$(MAKE) -C miniupnpc
+
+miniupnpc-clean:
+	-@$(MAKE) -C miniupnpc clean
+
+miniupnpc-install:
+	install -D miniupnpc/upnpc-static $(INSTALLDIR)/miniupnpc/usr/sbin/miniupnpc
+	$(STRIP) $(INSTALLDIR)/miniupnpc/usr/sbin/miniupnpc
+
 
 # !!TB
 shared: busybox $(if $(RTCONFIG_QTN),libqcsapi_client)
@@ -2585,7 +2602,7 @@ igmpproxy-clean:
 	-@$(MAKE) -C igmpproxy/src clean
 	@rm -f igmpproxy/stamp-h1
 
-wps$(BCMEX): nvram$(BCMEX) shared
+wps$(BCMEX): nvram$(BCMEX) shared libupnp
 ifeq ($(RTCONFIG_WPS),y)
 	-rm -rf $(SRCBASE)/../src/wps
 	-ln -s $(SRCBASE)/../$(SRCBASEDIR)/wps $(SRCBASE)/../src/wps
