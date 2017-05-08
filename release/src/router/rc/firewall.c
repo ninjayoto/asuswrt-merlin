@@ -1280,7 +1280,7 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 #if 1
 		/* call UPNP chain */
 		fprintf(fp, "-A VSERVER -j VUPNP\n");
-		fprintf(fp, "-A POSTROUTING -j PUPNP\n");
+		fprintf(fp, "-A POSTROUTING -o %s -j PUPNP\n", wan_if);
 #else
 		// upnp port forward
 		//write_upnp_forward(fp, fp1, wan_if, wan_ip, lan_if, lan_ip, lan_class, logaccept, logdrop);
@@ -1562,7 +1562,7 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 #if 1
                 /* call UPNP chain */
                 fprintf(fp, "-A VSERVER -j VUPNP\n");
-		fprintf(fp, "-A POSTROUTING -j PUPNP\n");
+		fprintf(fp, "-A POSTROUTING -o %s -j PUPNP\n", wan_if);
 #else
                 for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
                         snprintf(prefix, sizeof(prefix), "wan%d_", unit);
