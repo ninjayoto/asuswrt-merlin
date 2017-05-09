@@ -482,6 +482,7 @@ extern void ascii_to_char(const char *output, const char *input);
 extern const char *find_word(const char *buffer, const char *word);
 extern int remove_word(char *buffer, const char *word);
 extern int remove_char(char *str, const char *c);
+extern int str_escape_quotes(const char *output, const char *input, int outsize);
 
 // file.c
 extern int check_if_file_exist(const char *file);
