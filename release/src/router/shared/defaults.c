@@ -757,6 +757,9 @@ struct nvram_tuple router_defaults[] = {
 	{ "upnp_min_lifetime", "120" },
 	{ "upnp_max_lifetime", "86400" },
 
+	// miniupnpd, minidlna - bridge multicast option
+	{ "lan_brsnoop", "0" },		// Bridge multicast snooping
+
 #ifdef RTCONFIG_DUALWAN // RTCONFIG_DUALWAN
 	{ "wans_mode", "fo" }, 		// off/failover/failback/loadbance(off/fo/fb/lb)
 #ifdef RTCONFIG_DSL

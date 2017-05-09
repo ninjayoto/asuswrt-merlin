@@ -1250,6 +1250,12 @@ void start_lan(void)
 			eval("brctl", "stp", lan_ifname, nvram_safe_get("lan_stp"));
 		else
 			eval("brctl", "stp", lan_ifname, "0");
+
+		if (!strcmp(lan_ifname, "br0")) {
+			snprintf(tmp, sizeof (tmp), "%d", nvram_get_int("lan_brsnoop"));
+			f_write_string("/sys/class/net/br0/bridge/multicast_snooping", tmp, 0, 0);
+		}
+
 #ifdef RTCONFIG_IPV6
 		if ((get_ipv6_service() != IPV6_DISABLED) &&
 			(!((nvram_get_int("ipv6_accept_ra") & 2) != 0 && !nvram_get_int("ipv6_radvd"))))
