@@ -272,6 +272,13 @@ reltime(unsigned int seconds, char *cs)
 //2008.08 magic{
 void websRedirect(webs_t wp, char_t *url)
 {
+	char url_str[128];
+	if(check_xxs_blacklist(url, 1)){
+		memset(url_str, 0, sizeof(url_str));
+		strlcpy(url_str, "index.asp", sizeof(url_str));
+	}else
+		strlcpy(url_str, url, sizeof(url_str));
+
 	websWrite(wp, T("<html><head>\r\n"));
 
 	if(strchr(url, '>') || strchr(url, '<'))
@@ -2909,7 +2916,12 @@ static int ej_get_parameter(int eid, webs_t wp, int argc, char_t **argv){
 
 	last_was_escaped = FALSE;
 
-	//char *value = websGetVar(wp, argv[0], "");
+	char *value = websGetVar(wp, argv[0], "");
+	if(value != NULL){
+		if(check_xxs_blacklist(value, 0)){
+			return ret;
+		}
+	}
 	//websWrite(wp, "%s", value);
 	for (c = websGetVar(wp, argv[0], ""); *c; c++){
 		if (isprint((int)*c) &&
@@ -5141,6 +5153,12 @@ apply_cgi(webs_t wp, char_t *urlPrefix, char_t *webDir, int arg,
 	{
 		char *system_cmd;
 		system_cmd = websGetVar(wp, "SystemCmd","");
+
+		if(check_xxs_blacklist(system_cmd, 0)){
+			strcpy(SystemCmd, "");
+			websRedirect(wp, current_url);
+			return 0;
+		}
 
 		if(strchr(system_cmd, '&') || strchr(system_cmd, ';') || strchr(system_cmd, '%') || strchr(system_cmd, '|')){
 			_dprintf("[httpd] Invalid SystemCmd!\n");
@@ -9956,4 +9974,69 @@ void write_encoded_crt(char *name, char *value){
 
 	tmp[i] = '\0';
 	nvram_set(name, tmp);
+}
+
+int check_xxs_blacklist(char* para, int check_www)
+{
+	int i = 0;
+	int file_len;
+	char *query, *para_t;
+	char para_str[256];
+	char filename[128];
+	char url_str[128];
+	memset(filename, 0, sizeof(filename));
+	memset(para_str, 0, sizeof(para_str));
+
+
+	if(para == NULL || !strcmp(para, "")){
+		//_dprintf("check_xxs_blacklist: para is NULL\n");
+		return 1;
+	}
+
+	para_t = strdup(para);
+	while(*para) {
+		//if(*para=='<' || *para=='>' || *para=='%' || *para=='/' || *para=='(' || *para==')' || *para=='&') {
+		if(*para=='<' || *para=='>' || *para=='%' || *para=='(' || *para==')' || *para=='&') {
+			//_dprintf("check_xxs_blacklist: para is Invalid\n");
+			free(para_t);
+			return 1;
+		}
+		else {
+			para_str[i] = tolower(*para);
+			i++;
+			para++;
+		}
+	}
+
+	if(strstr(para_str, "script") || strstr(para_str, "//") ){
+		//_dprintf("check_xxs_blacklist: para include script\n");
+		free(para_t);
+		return 1;
+	}
+
+	if(check_www == 1){
+		memset(url_str, 0, sizeof(url_str));
+		if ((query = index(para_t, '?')) != NULL) {
+			file_len = strlen(para_t)-strlen(query);
+
+			if(file_len > sizeof(url_str))
+				file_len = sizeof(url_str);
+
+			strncpy(url_str, para_t, file_len);
+		}
+		else
+		{
+			strncpy(url_str, para_t, sizeof(url_str)-1);
+		}
+
+		snprintf(filename, sizeof(filename), "/www/%s", url_str);
+		if(!check_if_file_exist(filename)){
+			_dprintf("check_xxs_blacklist:%s is not in www\n", url_str);
+			free(para_t);
+			return 1;
+		}
+	}
+
+	free(para_t);
+	return 0;
 }

@@ -239,6 +239,7 @@ int x_Setting = 0;
 int skip_auth = 0;
 int isLogout = 0;
 char url[128];
+char cloud_file[128];
 int http_port;
 
 /* Added by Joey for handle one people at the same time */
@@ -1214,8 +1215,11 @@ handle_request(void)
 //#ifdef RTCONFIG_CLOUDSYNC
 		// Todo: verify invite code
 		if(strlen(file) > 50){
-			char inviteCode[100];
-			sprintf(inviteCode, "<script>location.href='/cloud_sync.asp?flag=%s';</script>", file);
+			char inviteCode[256];
+			memset(cloud_file, 0, sizeof(cloud_file));
+			if(!check_xxs_blacklist(file, 0))
+				strlcpy(cloud_file, file, sizeof(cloud_file));
+			snprintf(inviteCode, sizeof(inviteCode), "<meta http-equiv=\"refresh\" content=\"0; url=cloud_sync.asp?flag=%s\">\r\n", cloud_file);
 			send_page( 200, "OK", (char*) 0, inviteCode);
 		}
 		else
