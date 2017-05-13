@@ -53,6 +53,19 @@ extern struct mime_handler mime_handlers[];
 #define MIME_EXCEPTION_NOAUTH_ALL 	1<<0
 #define MIME_EXCEPTION_NOAUTH_FIRST	1<<1
 #define MIME_EXCEPTION_NORESETTIME	1<<2
+#define MIME_EXCEPTION_MAINPAGE 	1<<3
+#define CHECK_REFERER	1
+
+//asus token status for APP
+#define NOTOKEN		1
+#define AUTHFAIL	2
+#define ACCOUNTFAIL	3
+#define NOREFERER	4
+#define WEB_NOREFERER	5
+#define REFERERFAIL	6
+#define LOGINLOCK	7
+#define ISLOGOUT	8
+#define NOLOGIN		9
 
 /* Exception MIME handler */
 struct except_mime_handler {
@@ -61,6 +74,14 @@ struct except_mime_handler {
 };
 
 extern struct except_mime_handler except_mime_handlers[];
+
+/* MIME referer */
+struct mime_referer {
+	char *pattern;
+	int flag;
+};
+
+extern struct mime_referer mime_referers[];
 
 #define INC_ITEM        128
 #define REALLOC_VECTOR(p, len, size, item_size) {                               \

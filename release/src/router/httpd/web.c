@@ -6764,6 +6764,7 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "popup.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "general.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "help.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
+#if 0
 	{ "start_autodet.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "start_dsl_autodet.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "start_apply.htm", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
@@ -6780,11 +6781,7 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "result_of_get_changed_status_QIS.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "result_of_detect_client.asp", MIME_EXCEPTION_NORESETTIME},
 	{ "detect_firmware.asp", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "Nologin.asp", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "Logout.asp", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "alertImg.gif", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "error_page.htm", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "jquery.js", MIME_EXCEPTION_NOAUTH_ALL},
+	
 	{ "gotoHomePage.htm", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "update_appstate.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "update_applist.asp", MIME_EXCEPTION_NOAUTH_ALL},
@@ -6792,11 +6789,51 @@ struct except_mime_handler except_mime_handlers[] = {
 //#if (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2))
 //	{ "jffsupload.cgi", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 //#endif
+#endif
+	{ "Nologin.asp", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "Logout.asp", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "alertImg.gif", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "error_page.htm", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "jquery.js", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.gz", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.tgz", MIME_EXCEPTION_NOAUTH_ALL},
-//	{ "*.tar", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "*.tar", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.zip", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "*.ipk", MIME_EXCEPTION_NOAUTH_ALL},
+	{ NULL, 0 }
+};
+
+// some should be referer
+struct mime_referer mime_referers[] = {
+	{ "start_apply.htm", CHECK_REFERER},
+	{ "start_apply2.htm", CHECK_REFERER},
+	{ "api.asp", CHECK_REFERER},
+	{ "applyapp.cgi", CHECK_REFERER},
+	{ "apply.cgi", CHECK_REFERER},
+	{ "upgrade.cgi", CHECK_REFERER},
+	{ "upload.cgi", CHECK_REFERER},
+	{ "dsllog.cgi", CHECK_REFERER},
+	{ "update.cgi", CHECK_REFERER},
+	{ "vpnupload.cgi", CHECK_REFERER},
+	{ "jffsupload.cgi", CHECK_REFERER},
+	{ "findasus.cgi", CHECK_REFERER},
+	{ "ftpServerTree.cgi", CHECK_REFERER},
+	{ "aidisk/create_account.asp", CHECK_REFERER},
+#if defined(RTCONFIG_WIRELESSREPEATER) || defined(RTCONFIG_CONCURRENTREPEATER)
+	{ "apscan.asp", CHECK_REFERER},
+#endif
+#ifdef RTCONFIG_QCA_PLC_UTILS
+	{ "plc.cgi", CHECK_REFERER},
+#endif
+	{ "status.asp", CHECK_REFERER},
+	{ "wds_aplist_2g.asp", CHECK_REFERER},
+	{ "wds_aplist_5g.asp", CHECK_REFERER},
+	{ "update_networkmapd.asp", CHECK_REFERER},
+	{ "get_real_ip.asp", CHECK_REFERER},
+	{ "WPS_info.xml", CHECK_REFERER},
+	{ "login.cgi", CHECK_REFERER},
+	{ "get_webdavInfo.asp", CHECK_REFERER},
+	{ "update_clients.asp", CHECK_REFERER},
 	{ NULL, 0 }
 };
 
