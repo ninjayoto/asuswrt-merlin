@@ -239,12 +239,10 @@ void start_vpnclient(int clientNum)
 	fprintf(fp, "nobind\n");
 	fprintf(fp, "persist-key\n");
 	sprintf(&buffer[0], "vpn_client%d_adns", clientNum);
-        if ( nvram_get_int(&buffer[0]) != 3
 #ifdef RTCONFIG_DUALWAN
-		&& (strstr(wans_dualwan, "none") != NULL)
+	if (strstr(wans_dualwan, "none") != NULL)
 #endif
-		)
-		fprintf(fp, "persist-tun\n");	//only set if not DNS exclusive and not dual wan
+		fprintf(fp, "persist-tun\n");	//only set if not dual wan
 
 	sprintf(&buffer[0], "vpn_client%d_comp", clientNum);
 	strlcpy(buffer2, nvram_safe_get(&buffer[0]), sizeof (buffer2));
