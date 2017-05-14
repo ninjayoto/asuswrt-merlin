@@ -1,18 +1,18 @@
 #!/bin/ash
 # $Id: reverse_replace.sh 18 2015-03-01 16:12:35Z jo $
 #
-# Usage e.g.: netstat -n -4 | reverse_replace.sh
-# Parses stdin for IP4 addresses and replaces them
+# Usage e.g.: netstat -n -4 | reverse_replace.sh 
+# Parses stdin for IP4 addresses and replaces them 
 # with names retrieved by parsing the dnsmasq log.
-# This currently only gives CNAMEs. But these
-# usually tell ou more than the mones from reverse
-# lookups.
+# This currently only gives CNAMEs. But these 
+# usually tell you more than the ones from reverse 
+# lookups. 
 #
-# This has been tested on debian and asuswrt. Plese
+# This has been tested on debian and asuswrt. Please
 # report successful tests on other platforms.
 #
 # Author: Joachim Zobel <jz-2014@heute-morgen.de>
-# License: Consider this MIT style licensed. You can
+# License: Consider this MIT style licensed. You can 
 #   do as you ike, but you must not remove my name.
 #
 
@@ -26,7 +26,7 @@ IP_private='\(^127\.\)\|\(^192\.168\.\)\|\(^10\.\)\|\(^172\.1[6-9]\.\)\|\(^172\.
 
 #######################################################################
 # Find Commands
-
+  
 HOST=nslookup
 if type host > /dev/null 2>&1; then
   # echo "No need for nslookup, host is there"
@@ -79,7 +79,7 @@ dns_lookup()
     echo -n $IP
   else
     echo -n "$RTN"
-  fi
+  fi     
 }
 
 reverse_dns()
@@ -89,17 +89,17 @@ reverse_dns()
   # Skip if it is not an IP
   if ! echo $IP | grep -q "^$IP_regex$"; then
     echo -n $IP
-    return
+    return 
   fi
-
+    
   # Do a dns lookup, if it is a local IP
   if echo $IP | grep -q $IP_private; then
     dns_lookup $IP
     return
   fi
-
+    
   local NAME="$(get_val $IP)"
-
+  
   if [ -z "$NAME" ]; then
     echo -n $IP
   else
@@ -114,11 +114,12 @@ create_lookup_table
 while read LINE; do
   for IP in $(echo "$LINE" | \
               sed "s#\b\($IP_regex\)\b#\n\1\n#g" | \
-              grep $IP_regex)
+              grep $IP_regex) 
   do
     NAME=`reverse_dns $IP `
     # echo "$NAME $IP"
-    LINE=`echo "$LINE" | sed "s#$IP#$NAME#" `
+    LINE=`echo "$LINE" | sed "s#$IP#$NAME#" ` 
   done
   echo $LINE
 done
+

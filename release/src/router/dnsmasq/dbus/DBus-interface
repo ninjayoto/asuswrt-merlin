@@ -166,7 +166,7 @@ GetLoopServers
 (Only available if dnsmasq compiled with HAVE_LOOP)
 
 Return an array of strings, each string is the IP address of an upstream
-server which has been found to loop queries back to this dnsmasq instance, and
+server which has been found to loop queries back to this dnsmasq instance, and 
 it therefore not being used.
 
 AddDhcpLease

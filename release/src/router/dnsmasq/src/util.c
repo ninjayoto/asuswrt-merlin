@@ -24,7 +24,9 @@
 #include <sys/times.h>
 #endif
 
-#if defined(LOCALEDIR) || defined(HAVE_IDN)
+#ifdef HAVE_LIBIDN2
+#include <idn2.h>
+#elif defined(LOCALEDIR) || defined(HAVE_IDN)
 #include <idna.h>
 #endif
 
@@ -83,14 +85,14 @@ unsigned short rand16(void)
 
 u32 rand32(void)
 {
- if (!outleft)
+ if (!outleft) 
     {
       if (!++in[0]) if (!++in[1]) if (!++in[2]) ++in[3];
       surf();
       outleft = 8;
     }
-
-  return out[--outleft];
+  
+  return out[--outleft]; 
 }
 
 u64 rand64(void)
@@ -134,7 +136,7 @@ static int check_name(char *in)
       else if (isascii((unsigned char)c) && iscntrl((unsigned char)c)) 
 	/* iscntrl only gives expected results for ascii */
 	return 0;
-#if !defined(LOCALEDIR) && !defined(HAVE_IDN)
+#if !defined(LOCALEDIR) && !defined(HAVE_IDN) && !defined(HAVE_LIBIDN2)
       else if (!isascii((unsigned char)c))
 	return 0;
 #endif
@@ -190,7 +192,7 @@ int legal_hostname(char *name)
 char *canonicalise(char *in, int *nomem)
 {
   char *ret = NULL;
-#if defined(LOCALEDIR) || defined(HAVE_IDN)
+#if defined(LOCALEDIR) || defined(HAVE_IDN) || defined(HAVE_LIBIDN2)
   int rc;
 #endif
 
@@ -200,8 +202,15 @@ char *canonicalise(char *in, int *nomem)
   if (!check_name(in))
     return NULL;
   
-#if defined(LOCALEDIR) || defined(HAVE_IDN)
-  if ((rc = idna_to_ascii_lz(in, &ret, 0)) != IDNA_SUCCESS)
+#if defined(LOCALEDIR) || defined(HAVE_IDN) || defined(HAVE_LIBIDN2)
+#ifdef HAVE_LIBIDN2
+  rc = idn2_to_ascii_lz(in, &ret, IDN2_NONTRANSITIONAL);
+  if (rc == IDN2_DISALLOWED)
+    rc = idn2_to_ascii_lz(in, &ret, IDN2_TRANSITIONAL);
+#else
+  rc = idna_to_ascii_lz(in, &ret, 0);
+#endif
+  if (rc != IDNA_SUCCESS)
     {
       if (ret)
 	free(ret);
@@ -237,7 +246,7 @@ unsigned char *do_rfc1035_name(unsigned char *p, char *sval)
 	  if (option_bool(OPT_DNSSEC_VALID) && *sval == NAME_ESCAPE)
 	    *p++ = (*(++sval))-1;
 	  else
-#endif
+#endif		
 	    *p++ = *sval;
 	}
       *cp  = j;
@@ -250,11 +259,11 @@ unsigned char *do_rfc1035_name(unsigned char *p, char *sval)
 /* for use during startup */
 void *safe_malloc(size_t size)
 {
-  void *ret = malloc(size);
+  void *ret = calloc(1, size);
   
   if (!ret)
     die(_("could not get memory"), NULL, EC_NOMEM);
-     
+      
   return ret;
 }    
 
@@ -268,11 +277,11 @@ void safe_pipe(int *fd, int read_noblock)
 
 void *whine_malloc(size_t size)
 {
-  void *ret = malloc(size);
+  void *ret = calloc(1, size);
 
   if (!ret)
     my_syslog(LOG_ERR, _("failed to allocate %d bytes"), (int) size);
-
+  
   return ret;
 }
 
@@ -329,7 +338,7 @@ int hostname_isequal(const char *a, const char *b)
   
   return 1;
 }
-    
+
 time_t dnsmasq_time(void)
 {
 #ifdef HAVE_BROKEN_RTC
@@ -349,12 +358,12 @@ int netmask_length(struct in_addr mask)
 {
   int zero_count = 0;
 
-  while (0x0 == (mask.s_addr & 0x1) && zero_count < 32)
+  while (0x0 == (mask.s_addr & 0x1) && zero_count < 32) 
     {
       mask.s_addr >>= 1;
       zero_count++;
     }
-
+  
   return 32 - zero_count;
 }
 
@@ -379,7 +388,7 @@ int is_same_net6(struct in6_addr *a, struct in6_addr *b, int prefixlen)
   return 0;
 }
 
-/* return least signigicant 64 bits if IPv6 address */
+/* return least significant 64 bits if IPv6 address */
 u64 addr6part(struct in6_addr *addr)
 {
   int i;
@@ -503,9 +512,14 @@ int parse_hex(char *in, unsigned char *out, int maxlen,
 			  sav = in[(j+1)*2];
 			  in[(j+1)*2] = 0;
 			}
+		      /* checks above allow mix of hexdigit and *, which
+			 is illegal. */
+		      if (strchr(&in[j*2], '*'))
+			return -1;
 		      out[i] = strtol(&in[j*2], NULL, 16);
 		      mask = mask << 1;
-		      i++;
+		      if (++i == maxlen)
+			break; 
 		      if (j < bytes - 1)
 			in[(j+1)*2] = sav;
 		    }
@@ -583,17 +597,17 @@ int retry_send(ssize_t rc)
 {
   static int retries = 0;
   struct timespec waiter;
-
+  
   if (rc != -1)
     {
       retries = 0;
       errno = 0;
       return 0;
     }
-
+  
   /* Linux kernels can return EAGAIN in perpetuity when calling
      sendmsg() and the relevant interface has gone. Here we loop
-     retrying in EAGAIN for 1 second max, to avoid this hanging
+     retrying in EAGAIN for 1 second max, to avoid this hanging 
      dnsmasq. */
 
   if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -604,12 +618,12 @@ int retry_send(ssize_t rc)
        if (retries++ < 1000)
 	 return 1;
      }
-
+  
   retries = 0;
-
+  
   if (errno == EINTR)
     return 1;
-
+  
   return 0;
 }
 
@@ -619,21 +633,21 @@ int read_write(int fd, unsigned char *packet, int size, int rw)
   
   for (done = 0; done < size; done += n)
     {
-      do {
+      do { 
 	if (rw)
 	  n = read(fd, &packet[done], (size_t)(size - done));
 	else
 	  n = write(fd, &packet[done], (size_t)(size - done));
-
+	
 	if (n == 0)
 	  return 0;
-
+	
       } while (retry_send(n) || errno == ENOMEM || errno == ENOBUFS);
 
       if (errno != 0)
 	return 0;
     }
-
+     
   return 1;
 }
 
