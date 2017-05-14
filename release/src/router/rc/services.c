@@ -6290,6 +6290,10 @@ void set_acs_ifnames()
 
 	if (nvram_match("wl1_country_code", "EU"))
 	{
+#ifdef RTAC66U
+		if (!nvram_match("wl1_dfs", "1"))
+			nvram_set("acs_dfs", "0");
+#endif
 		if (nvram_match("acs_dfs", "1"))
 		{
 			nvram_set("wl1_acs_excl_chans", "");
