@@ -477,7 +477,7 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 <input type="hidden" name="modified" value="0">
 <input type="hidden" name="action_mode" value="apply_new">
 <input type="hidden" name="action_script" value="restart_net">
-<input type="hidden" name="action_wait" value="10">
+<input type="hidden" name="action_wait" value="45">
 <input type="hidden" name="preferred_lang" id="preferred_lang" value="<% nvram_get("preferred_lang"); %>">
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
 <input type="hidden" name="ttl_inc_enable" value='<% nvram_get("ttl_inc_enable"); %>'>
@@ -645,29 +645,38 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 			<tr id="mr_enable_x">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,11);"><#RouterConfig_GWMulticastEnable_itemname#> (IGMP Proxy)</a></th>
 				<td>
-          <select name="mr_enable_x" class="input_option">
-            <option value="0" <% nvram_match("mr_enable_x", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
-           	<option value="1" <% nvram_match("mr_enable_x", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
-          </select>
+					<select name="mr_enable_x" class="input_option">
+						<option value="0" <% nvram_match("mr_enable_x", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
+						<option value="1" <% nvram_match("mr_enable_x", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
+					</select>
 				</td>
 			</tr>
+			<tr id="enable_eff_multicast_forward" style="display:none;">
+				<th><#WLANConfig11b_x_Emf_itemname#></th>
+				<td>
+					<select name="emf_enable" class="input_option">
+						<option value="0" <% nvram_match("emf_enable", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
+						<option value="1" <% nvram_match("emf_enable", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,14);">Enable LAN Bridge multicast snooping</a></th>
+				<td>
 
-					<tr id="enable_eff_multicast_forward" style="display:none;">
-						<th><#WLANConfig11b_x_Emf_itemname#></th>
-						<td>
-                  				<select name="emf_enable" class="input_option">
-                    					<option value="0" <% nvram_match("emf_enable", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
-                    					<option value="1" <% nvram_match("emf_enable", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
-                  				</select>
-						</td>
-					</tr>
+					<select name="lan_brsnoop" class="input_option">
+						<option value="0" <% nvram_match("lan_brsnoop", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
+						<option value="1" <% nvram_match("lan_brsnoop", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
+					</select>
+				</td>
+			</tr>
 			<!-- 2008.03 James. patch for Oleg's patch. } -->
 			<tr>
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(6, 6);"><#RouterConfig_IPTV_itemname#></a></th>
-     		<td>
-     			<input id="udpxy_enable_x" type="text" maxlength="5" class="input_6_table" name="udpxy_enable_x" value="<% nvram_get("udpxy_enable_x"); %>" onkeypress="return is_number(this,event);">
-     		</td>
-     	</tr>
+				<td>
+					<input id="udpxy_enable_x" type="text" maxlength="5" class="input_6_table" name="udpxy_enable_x" value="<% nvram_get("udpxy_enable_x"); %>" onkeypress="return is_number(this,event);">
+				</td>
+			</tr>
 		</table>	
 
 		<div class="apply_gen">
