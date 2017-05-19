@@ -238,7 +238,6 @@ void start_vpnclient(int clientNum)
 		fprintf(fp, "resolv-retry infinite\n");
 	fprintf(fp, "nobind\n");
 	fprintf(fp, "persist-key\n");
-	sprintf(&buffer[0], "vpn_client%d_adns", clientNum);
 #ifdef RTCONFIG_DUALWAN
 	if (strstr(wans_dualwan, "none") != NULL)
 #endif
