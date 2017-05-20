@@ -277,7 +277,7 @@ int main(int argc, char *argv[])
 
 	fprintf(fp, "encrypt passwords = yes\n");
 	fprintf(fp, "pam password change = no\n");
-	fprintf(fp, "null passwords = yes\n");		// ASUS add
+//	fprintf(fp, "null passwords = yes\n");		// ASUS add (remove deprecated)
 #if defined(RTCONFIG_SAMBA36X) || defined(RTCONFIG_SAMBA_MODERN)
 	if (nvram_get_int("smbd_enable_smb2"))
 		fprintf(fp, "max protocol = SMB2\n");
