@@ -319,7 +319,8 @@ int main(int argc, char *argv[])
 	fprintf(fp, "strict allocate = No\n");		// ASUS add
 //	fprintf(fp, "mangling method = hash2\n");	// ASUS add
 	fprintf(fp, "bind interfaces only = yes\n");    // ASUS add
-	fprintf(fp, "interfaces = lo br0 %s/%s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"), (is_routing_enabled() && nvram_get_int("smbd_wanac")) ? nvram_safe_get("wan0_ifname") : "");
+//	fprintf(fp, "interfaces = lo br0 %s/%s %s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"), (is_routing_enabled() && nvram_get_int("smbd_wanac")) ? nvram_safe_get("wan0_ifname") : "");
+	fprintf(fp, "interfaces = 127.0.0.1/8 %s/%s\n", nvram_safe_get("lan_ipaddr"), nvram_safe_get("lan_netmask"));
 #if 0
 #if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD) || defined(RTCONFIG_OPENVPN)
 	int ip[5];
