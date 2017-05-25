@@ -30,6 +30,9 @@
 #include "dbutil.h"
 #include "auth.h"
 #include "runopts.h"
+#ifdef RTCONFIG_PROTECTION_SERVER
+#include <libptcsrv.h>
+#endif
 
 #ifdef ENABLE_SVR_PASSWORD_AUTH
 
