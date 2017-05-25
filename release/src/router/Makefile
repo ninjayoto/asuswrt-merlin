@@ -2130,7 +2130,7 @@ wpa_supplicant-clean:
 protect_srv/stamp-h1:
 	touch $@
 
-protect_srv: protect_srv/stamp-h1
+protect_srv: shared nvram$(BCMEX) protect_srv/stamp-h1
 	$(MAKE) -C protect_srv
 
 protect_srv-install: protect_srv

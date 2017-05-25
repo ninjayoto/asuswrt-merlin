@@ -9,17 +9,19 @@
  *
  */
 
-#ifndef __libptcsrv_h__
-#define __libptcsrv_h__
+#ifndef __ptcsrv_nvram_h__
+#define __ptcsrv_nvram_h__
 
-#include <protect_srv.h>
-
-extern void SEND_PTCSRV_EVENT(int s_type, int status, const char *addr, const char *msg);
-
-#ifndef RTCONFIG_NOTIFICATION_CENTER
-extern void Debug2Console(const char * format, ...);
-extern int isFileExist(char *fname);
-extern int GetDebugValue(char *path);
+#ifdef ASUSWRT_SDK /* ASUSWRT SDK */
+ #include <shutils.h>
+ #include <shared.h>
+ #include <bcmnvram.h>
+#else /* DSL_ASUSWRT SDK */
+ #include <shared.h>
+ #include <tcutils.h>
+ #include <libtcapi.h>
+ #include <bcmnvram.h>
 #endif
 
 #endif
+
