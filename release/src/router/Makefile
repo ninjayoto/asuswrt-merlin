@@ -359,7 +359,7 @@ obj-$(RTCONFIG_TIMEMACHINE) += libgcrypt-1.5.1
 obj-$(RTCONFIG_TIMEMACHINE) += db-4.8.30
 obj-$(RTCONFIG_TIMEMACHINE) += netatalk-3.0.5
 ifeq ($(or $(RTCONFIG_TIMEMACHINE),$(RTCONFIG_MDNS)),y)
-obj-$(RTCONFIG_TIMEMACHINE) += avahi-0.6.31
+obj-$(RTCONFIG_TIMEMACHINE) += avahi-0.6.32
 obj-$(RTCONFIG_TIMEMACHINE) += expat-2.0.1
 else
 obj-$(RTCONFIG_MEDIA_SERVER) += mDNSResponder
@@ -3231,29 +3231,29 @@ expat-2.0.1-clean:
 	-@$(MAKE) -C expat-2.0.1 clean
 	@rm -f expat-2.0.1/stamp-h1
 
-#avahi-0.6.31
-avahi-0.6.31/stamp-h1: shared nvram$(BCMEX) expat-2.0.1 libdaemon
-	cd $(TOP)/avahi-0.6.31 && \
-	$(CONFIGURE) LDFLAGS="-L$(TOP)/expat-2.0.1/.libs -ldl -lpthread" CFLAGS="-I$(TOP)/expat-2.0.1/lib -I$(TOP)/shared -I$(SRCBASE)/include" --prefix=$(INSTALLDIR)/avahi-0.6.31/usr --with-distro=archlinux --disable-glib --disable-gobject --disable-qt3 --disable-qt4 --disable-gtk --disable-dbus --disable-expat --disable-gdbm --disable-python --disable-pygtk --disable-python-dbus --disable-mono --disable-monodoc --disable-gtk3 --with-xml=none  LIBDAEMON_LIBS="-L$(TOP)/libdaemon/libdaemon/.libs -ldaemon -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client)" LIBDAEMON_CFLAGS="-I$(TOP)/libdaemon" --disable-autoipd --with-xml=expat --disable-stack-protector --with-avahi-user="admin" --with-avahi-group="root"
+#avahi-0.6.32
+avahi-0.6.32/stamp-h1: shared nvram$(BCMEX) expat-2.0.1 libdaemon
+	cd $(TOP)/avahi-0.6.32 && \
+	$(CONFIGURE) LDFLAGS="-L$(TOP)/expat-2.0.1/.libs -ldl -lpthread" CFLAGS="-I$(TOP)/expat-2.0.1/lib -I$(TOP)/shared -I$(SRCBASE)/include" --prefix=$(INSTALLDIR)/avahi-0.6.32/usr --with-distro=archlinux --disable-glib --disable-gobject --disable-qt3 --disable-qt4 --disable-gtk --disable-dbus --disable-expat --disable-gdbm --disable-python --disable-pygtk --disable-python-dbus --disable-mono --disable-monodoc --disable-gtk3 --with-xml=none  LIBDAEMON_LIBS="-L$(TOP)/libdaemon/libdaemon/.libs -ldaemon -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client)" LIBDAEMON_CFLAGS="-I$(TOP)/libdaemon" --disable-autoipd --with-xml=expat --disable-stack-protector --with-avahi-user="admin" --with-avahi-group="root"
 	touch $@
 
-avahi-0.6.31: avahi-0.6.31/stamp-h1
+avahi-0.6.32: avahi-0.6.32/stamp-h1
 	@$(SEP)
-	@$(MAKE) -C avahi-0.6.31 $(PARALLEL_BUILD)
+	@$(MAKE) -C avahi-0.6.32 $(PARALLEL_BUILD)
 
-avahi-0.6.31-install: avahi-0.6.31
-	install -D avahi-0.6.31/avahi-daemon/.libs/avahi-daemon $(INSTALLDIR)/avahi-0.6.31/usr/sbin/avahi-daemon
-	install -D avahi-0.6.31/avahi-common/.libs/libavahi-common.so.3.5.3 $(INSTALLDIR)/avahi-0.6.31/usr/lib/libavahi-common.so.3.5.3
-	install -D avahi-0.6.31/avahi-core/.libs/libavahi-core.so.7.0.2 $(INSTALLDIR)/avahi-0.6.31/usr/lib/libavahi-core.so.7.0.2
-	$(STRIP) $(INSTALLDIR)/avahi-0.6.31/usr/sbin/avahi-daemon
-	$(STRIP) $(INSTALLDIR)/avahi-0.6.31/usr/lib/libavahi-common.so.3.5.3
-	$(STRIP) $(INSTALLDIR)/avahi-0.6.31/usr/lib/libavahi-core.so.7.0.2
-	cd $(INSTALLDIR)/avahi-0.6.31/usr/lib && ln -sf libavahi-common.so.3.5.3 libavahi-common.so.3
-	cd $(INSTALLDIR)/avahi-0.6.31/usr/lib && ln -sf libavahi-core.so.7.0.2 libavahi-core.so.7
+avahi-0.6.32-install: avahi-0.6.32
+	install -D avahi-0.6.32/avahi-daemon/.libs/avahi-daemon $(INSTALLDIR)/avahi-0.6.32/usr/sbin/avahi-daemon
+	install -D avahi-0.6.32/avahi-common/.libs/libavahi-common.so.3.5.3 $(INSTALLDIR)/avahi-0.6.32/usr/lib/libavahi-common.so.3.5.3
+	install -D avahi-0.6.32/avahi-core/.libs/libavahi-core.so.7.0.2 $(INSTALLDIR)/avahi-0.6.32/usr/lib/libavahi-core.so.7.0.2
+	$(STRIP) $(INSTALLDIR)/avahi-0.6.32/usr/sbin/avahi-daemon
+	$(STRIP) $(INSTALLDIR)/avahi-0.6.32/usr/lib/libavahi-common.so.3.5.3
+	$(STRIP) $(INSTALLDIR)/avahi-0.6.32/usr/lib/libavahi-core.so.7.0.2
+	cd $(INSTALLDIR)/avahi-0.6.32/usr/lib && ln -sf libavahi-common.so.3.5.3 libavahi-common.so.3
+	cd $(INSTALLDIR)/avahi-0.6.32/usr/lib && ln -sf libavahi-core.so.7.0.2 libavahi-core.so.7
 
-avahi-0.6.31-clean:
-	-@$(MAKE) -C avahi-0.6.31 clean
-	@rm -f avahi-0.6.31/stamp-h1
+avahi-0.6.32-clean:
+	-@$(MAKE) -C avahi-0.6.32 clean
+	@rm -f avahi-0.6.32/stamp-h1
 
 madwimax-0.1.1/stamp-h1:
 	cd $(TOP)/madwimax-0.1.1 && \
