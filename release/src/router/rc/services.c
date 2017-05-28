@@ -587,6 +587,12 @@ void start_dnsmasq(int force)
 	if (pids("dnsmasq"))
 		stop_dnsmasq(force);
 
+#ifdef RTCONFIG_DNSCRYPT
+	if (nvram_match("dnscrypt_proxy", "1")) {
+		restart_dnscrypt(0);
+	}
+#endif
+
 	lan_ifname = nvram_safe_get("lan_ifname");
 #ifdef RTCONFIG_WIRELESSREPEATER
 	if(nvram_get_int("sw_mode") == SW_MODE_REPEATER && nvram_get_int("wlc_state") != WLC_STATE_CONNECTED){
@@ -916,12 +922,6 @@ void start_dnsmasq(int force)
 		}
 	}
 
-#ifdef RTCONFIG_DNSCRYPT
-	if (nvram_match("dnscrypt_proxy", "1")) {
-		restart_dnscrypt(0);
-	}
-#endif
-
 /* TODO: remove it for here !!!*/
 //	int unit;
 //	char prefix[8], nvram_name[16], wan_proto[16];
@@ -996,16 +996,14 @@ void reload_dnsmasq(void)
 		start_dnsmasq(0);
 	}
 	else {
+#ifdef RTCONFIG_DNSCRYPT
+		if (nvram_match("dnscrypt_proxy", "1")) {
+			/* restart dnscrypt to update timestamp check */
+			restart_dnscrypt(0);
+		}
+#endif
 		/* notify dnsmasq */
 		kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
-
-
-	}
-#endif
-#ifdef RTCONFIG_DNSCRYPT
-	if (nvram_match("dnscrypt_proxy", "1")) {
-		/* restart dnscrypt to update timestamp check */
-		restart_dnscrypt(0);
 	}
 #endif
 }
