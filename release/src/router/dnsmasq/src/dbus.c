@@ -231,7 +231,7 @@ static DBusMessage *dbus_reply_server_loop(DBusMessage *message)
   DBusMessageIter args, args_iter;
   struct server *serv;
   DBusMessage *reply = dbus_message_new_method_return(message);
-   
+
   dbus_message_iter_init_append (reply, &args);
   dbus_message_iter_open_container (&args, DBUS_TYPE_ARRAY,DBUS_TYPE_STRING_AS_STRING, &args_iter);
 
@@ -241,7 +241,7 @@ static DBusMessage *dbus_reply_server_loop(DBusMessage *message)
 	prettyprint_addr(&serv->addr, daemon->addrbuff);
 	dbus_message_iter_append_basic (&args_iter, DBUS_TYPE_STRING, &daemon->addrbuff);
       }
-  
+
   dbus_message_iter_close_container (&args, &args_iter);
 
   return reply;
@@ -476,7 +476,7 @@ static DBusMessage *dbus_add_lease(DBusMessage* message)
   if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_STRING)
     return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
 				  "Expected string as second argument");
-    
+
   dbus_message_iter_get_basic(&iter, &hwaddr);
   dbus_message_iter_next(&iter);
 
@@ -484,7 +484,7 @@ static DBusMessage *dbus_add_lease(DBusMessage* message)
       (dbus_message_iter_get_element_type(&iter) != DBUS_TYPE_BYTE))
     return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
 				  "Expected byte array as third argument");
-    
+
   dbus_message_iter_recurse(&iter, &array_iter);
   dbus_message_iter_get_fixed_array(&array_iter, &hostname, &hostname_len);
   tmp = memchr(hostname, '\0', hostname_len);
@@ -510,14 +510,14 @@ static DBusMessage *dbus_add_lease(DBusMessage* message)
   if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_UINT32)
     return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
 				  "Expected uint32 as fifth argument");
-    
+
   dbus_message_iter_get_basic(&iter, &expires);
   dbus_message_iter_next(&iter);
 
   if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_UINT32)
     return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
                                     "Expected uint32 as sixth argument");
-  
+
   dbus_message_iter_get_basic(&iter, &ia_id);
   dbus_message_iter_next(&iter);
 
@@ -532,9 +532,9 @@ static DBusMessage *dbus_add_lease(DBusMessage* message)
       if (ia_id != 0 || is_temporary)
 	return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
 				      "ia_id and is_temporary must be zero for IPv4 lease");
-      
+
       if (!(lease = lease_find_by_addr(addr.addr.addr4)))
-    	lease = lease4_allocate(addr.addr.addr4);
+	lease = lease4_allocate(addr.addr.addr4);
     }
 #ifdef HAVE_DHCP6
   else if (inet_pton(AF_INET6, ipaddr, &addr.addr.addr6))
@@ -548,17 +548,18 @@ static DBusMessage *dbus_add_lease(DBusMessage* message)
   else
     return dbus_message_new_error_printf(message, DBUS_ERROR_INVALID_ARGS,
 					 "Invalid IP address '%s'", ipaddr);
-   
-  hw_len = parse_hex((char*)hwaddr, dhcp_chaddr, DHCP_CHADDR_MAX, NULL, &hw_type);
+
+  hw_len = parse_hex((char*)hwaddr, dhcp_chaddr, DHCP_CHADDR_MAX, NULL,
+		     &hw_type);
   if (hw_type == 0 && hw_len != 0)
     hw_type = ARPHRD_ETHER;
-  
-  lease_set_hwaddr(lease, dhcp_chaddr, clid, hw_len, hw_type,
+
+    lease_set_hwaddr(lease, dhcp_chaddr, clid, hw_len, hw_type,
                    clid_len, now, 0);
   lease_set_expires(lease, expires, now);
   if (hostname_len != 0)
     lease_set_hostname(lease, hostname, 0, get_domain(lease->addr), NULL);
-  
+
   lease_update_file(now);
   lease_update_dns(0);
 
@@ -578,11 +579,11 @@ static DBusMessage *dbus_del_lease(DBusMessage* message)
   if (!dbus_message_iter_init(message, &iter))
     return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
 				  "Failed to initialize dbus message iter");
-   
+
   if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_STRING)
     return dbus_message_new_error(message, DBUS_ERROR_INVALID_ARGS,
 				  "Expected string as first argument");
-   
+
   dbus_message_iter_get_basic(&iter, &ipaddr);
 
   if (inet_pton(AF_INET, ipaddr, &addr.addr.addr4))
@@ -594,7 +595,7 @@ static DBusMessage *dbus_del_lease(DBusMessage* message)
   else
     return dbus_message_new_error_printf(message, DBUS_ERROR_INVALID_ARGS,
 					 "Invalid IP address '%s'", ipaddr);
-    
+
   if (lease)
     {
       lease_prune(lease, now);
@@ -603,12 +604,12 @@ static DBusMessage *dbus_del_lease(DBusMessage* message)
     }
   else
     ret = 0;
-  
+
   if ((reply = dbus_message_new_method_return(message)))
     dbus_message_append_args(reply, DBUS_TYPE_BOOLEAN, &ret,
 			     DBUS_TYPE_INVALID);
-  
-    
+
+
   return reply;
 }
 #endif

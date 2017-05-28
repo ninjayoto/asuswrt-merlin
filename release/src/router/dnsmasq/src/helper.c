@@ -14,12 +14,11 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include "dnsmasq.h"
 
 #ifdef HAVE_SCRIPT
 
-/* This file has code to fork a helper process which receives data via a pipe 
+/* This file has code to fork a helper process which recieves data via a pipe 
    shared with the main process and which is responsible for calling a script when
    DHCP leases change.
 
@@ -136,7 +135,7 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
 	max_fd != STDIN_FILENO && max_fd != pipefd[0] && 
 	max_fd != event_fd && max_fd != err_fd)
       close(max_fd);
-
+  
 #ifdef HAVE_LUASCRIPT
   if (daemon->luascript)
     {
@@ -190,7 +189,6 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
       unsigned char *buf = (unsigned char *)daemon->namebuff;
       unsigned char *end, *extradata, *alloc_buff = NULL;
       int is6, err = 0;
-      int pipeout[2];
 
       free(alloc_buff);
       
@@ -232,7 +230,7 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
 	  is6 = (data.flags != AF_INET);
 	  data.action = ACTION_ARP;
 	}
-       else 
+       else
 	continue;
 
       	
@@ -336,7 +334,7 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
 	    }
 	  else if (data.action == ACTION_ARP)
 	    {
-	      lua_getglobal(lua, "arp"); 
+	      lua_getglobal(lua, "arp");
 	      if (lua_type(lua, -1) != LUA_TFUNCTION)
 		lua_pop(lua, 1); /* arp function optional */
 	      else
@@ -474,54 +472,16 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
       if (!daemon->lease_change_command)
 	continue;
 
-      /* Pipe to capture stdout and stderr from script */
-      if (!option_bool(OPT_DEBUG) && pipe(pipeout) == -1)
-	continue;
-      
       /* possible fork errors are all temporary resource problems */
       while ((pid = fork()) == -1 && (errno == EAGAIN || errno == ENOMEM))
 	sleep(2);
 
       if (pid == -1)
-        {
-	  if (!option_bool(OPT_DEBUG))
-	    {
-	      close(pipeout[0]);
-	      close(pipeout[1]);
-	    }
-	  continue;
-        }
+	continue;
       
       /* wait for child to complete */
       if (pid != 0)
 	{
-	  if (!option_bool(OPT_DEBUG))
-	    {
-	      FILE *fp;
-	  
-	      close(pipeout[1]);
-	      
-	      /* Read lines sent to stdout/err by the script and pass them back to be logged */
-	      if (!(fp = fdopen(pipeout[0], "r")))
-		close(pipeout[0]);
-	      else
-		{
-		  while (fgets(daemon->packet, daemon->packet_buff_sz, fp))
-		    {
-		      /* do not include new lines, log will append them */
-		      size_t len = strlen(daemon->packet);
-		      if (len > 0)
-			{
-			  --len;
-			  if (daemon->packet[len] == '\n')
-			    daemon->packet[len] = 0;
-			}
-		      send_event(event_fd, EVENT_SCRIPT_LOG, 0, daemon->packet);
-		    }
-		  fclose(fp);
-		}
-	    }
-	  
 	  /* reap our children's children, if necessary */
 	  while (1)
 	    {
@@ -543,15 +503,6 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
 	    }
 	  
 	  continue;
-	}
-
-      if (!option_bool(OPT_DEBUG))
-	{
-	  /* map stdout/stderr of script to pipeout */
-	  close(pipeout[0]);
-	  dup2(pipeout[1], STDOUT_FILENO);
-	  dup2(pipeout[1], STDERR_FILENO);
-	  close(pipeout[1]);
 	}
       
       if (data.action != ACTION_TFTP && data.action != ACTION_ARP)
@@ -605,7 +556,6 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
 	      buf = grab_extradata(buf, end, "DNSMASQ_CIRCUIT_ID", &err);
 	      buf = grab_extradata(buf, end, "DNSMASQ_SUBSCRIBER_ID", &err);
 	      buf = grab_extradata(buf, end, "DNSMASQ_REMOTE_ID", &err);
-	      buf = grab_extradata(buf, end, "DNSMASQ_REQUESTED_OPTIONS", &err);
 	    }
 	  
 	  buf = grab_extradata(buf, end, "DNSMASQ_TAGS", &err);
@@ -627,10 +577,9 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
 	  my_setenv("DNSMASQ_OLD_HOSTNAME", data.action == ACTION_OLD_HOSTNAME ? hostname : NULL, &err);
 	  if (data.action == ACTION_OLD_HOSTNAME)
 	    hostname = NULL;
-	  
+
 	  my_setenv("DNSMASQ_LOG_DHCP", option_bool(OPT_LOG_OPTS) ? "1" : NULL, &err);
-	}
-      
+    }
       /* we need to have the event_fd around if exec fails */
       if ((i = fcntl(event_fd, F_GETFD)) != -1)
 	fcntl(event_fd, F_SETFD, i | FD_CLOEXEC);
@@ -640,8 +589,8 @@ int create_helper(int event_fd, int err_fd, uid_t uid, gid_t gid, long max_fd)
       if (err == 0)
 	{
 	  execl(daemon->lease_change_command, 
-		p ? p+1 : daemon->lease_change_command, action_str, 
-		(is6 && data.action != ACTION_ARP) ? daemon->packet : daemon->dhcp_buff, 
+		p ? p+1 : daemon->lease_change_command, action_str,
+		(is6 && data.action != ACTION_ARP) ? daemon->packet : daemon->dhcp_buff,
 		daemon->addrbuff, hostname, (char*)NULL);
 	  err = errno;
 	}
@@ -842,22 +791,22 @@ void queue_arp(int action, unsigned char *mac, int maclen, int family, struct al
   /* no script */
   if (daemon->helperfd == -1)
     return;
-  
+
   buff_alloc(sizeof(struct script_data));
   memset(buf, 0, sizeof(struct script_data));
 
   buf->action = action;
   buf->hwaddr_len = maclen;
-  buf->hwaddr_type =  ARPHRD_ETHER; 
+  buf->hwaddr_type =  ARPHRD_ETHER;
   if ((buf->flags = family) == AF_INET)
     buf->addr = addr->addr.addr4;
 #ifdef HAVE_IPV6
   else
     buf->addr6 = addr->addr.addr6;
 #endif
-  
+
   memcpy(buf->hwaddr, mac, maclen);
-  
+
   bytes_in_buf = sizeof(struct script_data);
 }
 

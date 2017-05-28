@@ -94,7 +94,7 @@ void slaac_add_addrs(struct dhcp_lease *lease, time_t now, int force)
 	    slaac->backoff = 1;
 	    slaac->addr = addr;
 	    /* Do RA's to prod it */
-	    ra_start_unsolicited(now, context);
+	    ra_start_unsolicted(now, context);
 	  }
 	
 	if (slaac)
@@ -146,11 +146,8 @@ time_t periodic_slaac(time_t now, struct dhcp_lease *leases)
 	    struct ping_packet *ping;
 	    struct sockaddr_in6 addr;
  
-	    reset_counter();
-
-	    if (!(ping = expand(sizeof(struct ping_packet))))
-	      continue;
-
+	    save_counter(0);
+	    ping = expand(sizeof(struct ping_packet));
 	    ping->type = ICMP6_ECHO_REQUEST;
 	    ping->code = 0;
 	    ping->identifier = ping_id;
@@ -164,7 +161,7 @@ time_t periodic_slaac(time_t now, struct dhcp_lease *leases)
 	    addr.sin6_port = htons(IPPROTO_ICMPV6);
 	    addr.sin6_addr = slaac->addr;
 	    
-	    if (sendto(daemon->icmp6fd, daemon->outpacket.iov_base, save_counter(-1), 0,
+	    if (sendto(daemon->icmp6fd, daemon->outpacket.iov_base, save_counter(0), 0,
 		       (struct sockaddr *)&addr,  sizeof(addr)) == -1 &&
 		errno == EHOSTUNREACH)
 	      slaac->ping_time = 0; /* Give up */ 

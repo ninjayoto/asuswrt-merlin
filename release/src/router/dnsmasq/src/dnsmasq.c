@@ -83,18 +83,18 @@ int main (int argc, char **argv)
   sigaction(SIGPIPE, &sigact, NULL);
 
   umask(022); /* known umask, create leases and pid files as 0644 */
- 
+
   rand_init(); /* Must precede read_opts() */
-  
+
   read_opts(argc, argv, compile_opts);
  
   if (daemon->edns_pktsz < PACKETSZ)
     daemon->edns_pktsz = PACKETSZ;
 
-  /* Min buffer size: we check after adding each record, so there must be 
+  /* Min buffer size: we check after adding each record, so there must be
      memory for the largest packet, and the largest record so the
      min for DNS is PACKETSZ+MAXDNAME+RRFIXEDSZ which is < 1000.
-     This might be increased is EDNS packet size if greater than the minimum. */ 
+     This might be increased is EDNS packet size if greater than the minimum. */
   daemon->packet_buff_sz = daemon->edns_pktsz + MAXDNAME + RRFIXEDSZ;
   daemon->packet = safe_malloc(daemon->packet_buff_sz);
   
@@ -107,9 +107,9 @@ int main (int argc, char **argv)
     {
       /* Note that both /000 and '.' are allowed within labels. These get
 	 represented in presentation format using NAME_ESCAPE as an escape
-	 character when in DNSSEC mode. 
+	 character when in DNSSEC mode.
 	 In theory, if all the characters in a name were /000 or
-	 '.' or NAME_ESCAPE then all would have to be escaped, so the 
+	 '.' or NAME_ESCAPE then all would have to be escaped, so the
 	 presentation format would be twice as long as the spec.
 
 	 daemon->namebuff was previously allocated by the option-reading
@@ -194,7 +194,7 @@ int main (int argc, char **argv)
 
 #ifdef HAVE_CONNTRACK
   if (option_bool(OPT_CONNTRACK) && (daemon->query_port != 0 || daemon->osport))
-    die (_("cannot use --conntrack AND --query-port"), NULL, EC_BADCONF); 
+    die (_("cannot use --conntrack AND --query-port"), NULL, EC_BADCONF);
 #else
   if (option_bool(OPT_CONNTRACK))
     die(_("conntrack support not available: set HAVE_CONNTRACK in src/config.h"), NULL, EC_BADCONF);
@@ -202,12 +202,12 @@ int main (int argc, char **argv)
 
 #ifdef HAVE_SOLARIS_NETWORK
   if (daemon->max_logs != 0)
-    die(_("asynchronous logging is not available under Solaris"), NULL, EC_BADCONF);
+    die(_("asychronous logging is not available under Solaris"), NULL, EC_BADCONF);
 #endif
   
 #ifdef __ANDROID__
   if (daemon->max_logs != 0)
-    die(_("asynchronous logging is not available under Android"), NULL, EC_BADCONF);
+    die(_("asychronous logging is not available under Android"), NULL, EC_BADCONF);
 #endif
 
 #ifndef HAVE_AUTH
@@ -261,8 +261,8 @@ int main (int argc, char **argv)
      to the lease-script init process. We need to call common_init
      before lease_init to allocate buffers it uses.
      The script subsystem relies on DHCP buffers, hence the last two
-     conditions below. */  
-  if (daemon->dhcp || daemon->doing_dhcp6 || daemon->relay4 || 
+     conditions below. */
+  if (daemon->dhcp || daemon->doing_dhcp6 || daemon->relay4 ||
       daemon->relay6 || option_bool(OPT_TFTP) || option_bool(OPT_SCRIPT_ARP))
     {
       dhcp_common_init();
@@ -363,7 +363,7 @@ int main (int argc, char **argv)
   else
     daemon->inotifyfd = -1;
 #endif
-       
+
   if (option_bool(OPT_DBUS))
 #ifdef HAVE_DBUS
     {
@@ -514,7 +514,7 @@ int main (int argc, char **argv)
 	     extent that an attacker running as the unprivileged  user could replace the pidfile with a 
 	     symlink, and have the target of that symlink overwritten as root next time dnsmasq starts. 
 
-	     The following code first deletes any existing file, and then opens it with the O_EXCL flag,
+	     The folowing code first deletes any existing file, and then opens it with the O_EXCL flag,
 	     ensuring that the open() fails should there be any existing file (because the unlink() failed, 
 	     or an attacker exploited the race between unlink() and open()). This ensures that no symlink
 	     attack can succeed. 
@@ -539,7 +539,7 @@ int main (int argc, char **argv)
 	    {
 	      if (!read_write(fd, (unsigned char *)daemon->namebuff, strlen(daemon->namebuff), 0))
 		err = 1;
-	      else 
+	      else
 		{
 		  while (retry_send(close(fd)));
 		  if (errno != 0)
@@ -573,7 +573,7 @@ int main (int argc, char **argv)
    /* if we are to run scripts, we need to fork a helper before dropping root. */
   daemon->helperfd = -1;
 #ifdef HAVE_SCRIPT 
-  if ((daemon->dhcp || daemon->dhcp6 || option_bool(OPT_TFTP) || option_bool(OPT_SCRIPT_ARP)) && 
+  if ((daemon->dhcp || daemon->dhcp6 || option_bool(OPT_TFTP) || option_bool(OPT_SCRIPT_ARP)) &&
       (daemon->lease_change_command || daemon->luascript))
       daemon->helperfd = create_helper(pipewrite, err_pipe[1], script_uid, script_gid, max_fd);
 #endif
@@ -583,7 +583,7 @@ int main (int argc, char **argv)
       int bad_capabilities = 0;
       gid_t dummy;
       
-      /* remove all supplementary groups */
+      /* remove all supplimentary groups */
       if (gp && 
 	  (setgroups(0, &dummy) == -1 ||
 	   setgid(gp->gr_gid) == -1))
@@ -655,7 +655,7 @@ int main (int argc, char **argv)
 	     (1 << CAP_NET_ADMIN) | (1 << CAP_NET_RAW);
 	  data->inheritable = 0;
 	  
-	  /* lose the setuid and setgid capabilities */
+	  /* lose the setuid and setgid capbilities */
 	  if (capset(hdr, data) == -1)
 	    {
 	      send_event(err_pipe[1], EVENT_CAP_ERR, errno, NULL);
@@ -714,16 +714,10 @@ int main (int argc, char **argv)
 
   if (daemon->port == 0)
     my_syslog(LOG_INFO, _("started, version %s DNS disabled"), VERSION);
-  else 
-    {
-      if (daemon->cachesize != 0)
-	my_syslog(LOG_INFO, _("started, version %s cachesize %d"), VERSION, daemon->cachesize);
-      else
-	my_syslog(LOG_INFO, _("started, version %s cache disabled"), VERSION);
-
-      if (option_bool(OPT_LOCAL_SERVICE))
-	my_syslog(LOG_INFO, _("DNS service limited to local subnets"));
-    }
+  else if (daemon->cachesize != 0)
+    my_syslog(LOG_INFO, _("started, version %s cachesize %d"), VERSION, daemon->cachesize);
+  else
+    my_syslog(LOG_INFO, _("started, version %s cache disabled"), VERSION);
   
   my_syslog(LOG_DEBUG, _("compile time options: %s"), compile_opts);
   
@@ -737,26 +731,28 @@ int main (int argc, char **argv)
     }
 #endif
 
+  if (option_bool(OPT_LOCAL_SERVICE))
+    my_syslog(LOG_INFO, _("DNS service limited to local subnets"));
+  
 #ifdef HAVE_DNSSEC
   if (option_bool(OPT_DNSSEC_VALID))
     {
       int rc;
 
       /* Delay creating the timestamp file until here, after we've changed user, so that
-	 it has the correct owner to allow updating the mtime later. 
+	 it has the correct owner to allow updating the mtime later.
 	 This means we have to report fatal errors via the pipe. */
       if ((rc = setup_timestamp()) == -1)
 	{
 	  send_event(err_pipe[1], EVENT_TIME_ERR, errno, daemon->timestamp_file);
 	  _exit(0);
 	}
-      
+
       my_syslog(LOG_INFO, _("DNSSEC validation enabled"));
-      
-      daemon->dnssec_no_time_check = option_bool(OPT_DNSSEC_TIME);
-      if (option_bool(OPT_DNSSEC_TIME) && !daemon->back_to_the_future)
+
+      if (option_bool(OPT_DNSSEC_TIME))
 	my_syslog(LOG_INFO, _("DNSSEC signature timestamps not checked until first cache reload"));
-      
+
       if (rc == 1)
 	my_syslog(LOG_INFO, _("DNSSEC signature timestamps not checked until system time valid"));
     }
@@ -771,8 +767,6 @@ int main (int argc, char **argv)
 
   if (option_bool(OPT_NOWILD))
     warn_bound_listeners();
-  else if (!option_bool(OPT_CLEVERBIND))
-    warn_wild_labels();
 
   warn_int_names();
   
@@ -820,7 +814,7 @@ int main (int argc, char **argv)
     my_syslog(MS_DHCP | LOG_INFO, _("DHCP, sockets bound exclusively to interface %s"), bound_device);
 #  endif
 
-  /* after dhcp_construct_contexts */
+  /* after dhcp_contruct_contexts */
   if (daemon->dhcp || daemon->doing_dhcp6)
     lease_find_interfaces(now);
 #endif
@@ -885,7 +879,7 @@ int main (int argc, char **argv)
   /* Using inotify, have to select a resolv file at startup */
   poll_resolv(1, 0, now);
 #endif
-  
+
   while (1)
     {
       int t, timeout = -1;
@@ -923,11 +917,11 @@ int main (int argc, char **argv)
 #ifdef HAVE_DHCP6
       if (daemon->doing_dhcp6 || daemon->relay6)
 	poll_listen(daemon->dhcp6fd, POLLIN);
-	
+
       if (daemon->doing_ra)
-	poll_listen(daemon->icmp6fd, POLLIN); 
+	poll_listen(daemon->icmp6fd, POLLIN);
 #endif
-    
+
 #ifdef HAVE_INOTIFY
       if (daemon->inotifyfd != -1)
 	poll_listen(daemon->inotifyfd, POLLIN);
@@ -938,12 +932,12 @@ int main (int argc, char **argv)
 #elif defined(HAVE_BSD_NETWORK)
       poll_listen(daemon->routefd, POLLIN);
 #endif
-      
+
       poll_listen(piperead, POLLIN);
 
 #ifdef HAVE_SCRIPT
 #    ifdef HAVE_DHCP
-      while (helper_buf_empty() && do_script_run(now)); 
+      while (helper_buf_empty() && do_script_run(now));
 #    endif
 
       /* Refresh cache */
@@ -975,10 +969,10 @@ int main (int argc, char **argv)
       /* must do this just before select(), when we know no
 	 more calls to my_syslog() can occur */
       set_log_writer();
-      
+
       if (do_poll(timeout) < 0)
 	continue;
-      
+
       now = dnsmasq_time();
 
       check_log_writer(0);
@@ -1009,7 +1003,7 @@ int main (int argc, char **argv)
 	{
 	  if (daemon->port != 0 && !option_bool(OPT_NO_POLL))
 	    poll_resolv(1, 1, now);
-	} 	  
+	}
 #else
       /* Check for changes to resolv files once per second max. */
       /* Don't go silent for long periods if the clock goes backwards. */
@@ -1211,7 +1205,7 @@ static void fatal_event(struct event_desc *ev, char *msg)
 
     case EVENT_TFTP_ERR:
       die(_("TFTP directory %s inaccessible: %s"), msg, EC_FILE);
-    
+
     case EVENT_TIME_ERR:
       die(_("cannot create timestamp file %s: %s" ), msg, EC_BADCONF);
     }
@@ -1231,13 +1225,11 @@ static void async_event(int pipe, time_t now)
     switch (ev.event)
       {
       case EVENT_RELOAD:
-	daemon->soa_sn++; /* Bump zone serial, as it may have changed. */
-
 #ifdef HAVE_DNSSEC
-	if (daemon->dnssec_no_time_check && option_bool(OPT_DNSSEC_VALID) && option_bool(OPT_DNSSEC_TIME))
+	if (option_bool(OPT_DNSSEC_VALID) && option_bool(OPT_DNSSEC_TIME))
 	  {
 	    my_syslog(LOG_INFO, _("now checking DNSSEC signature timestamps"));
-	    daemon->dnssec_no_time_check = 0;
+	    reset_option_bool(OPT_DNSSEC_TIME);
 	  } 
 #endif
 	/* fall through */
@@ -1302,7 +1294,6 @@ static void async_event(int pipe, time_t now)
 		daemon->tcp_pids[i] = 0;
 	break;
 	
-#if defined(HAVE_SCRIPT)	
       case EVENT_KILLED:
 	my_syslog(LOG_WARNING, _("script process killed by signal %d"), ev.data);
 	break;
@@ -1316,19 +1307,12 @@ static void async_event(int pipe, time_t now)
 		  daemon->lease_change_command, strerror(ev.data));
 	break;
 
-      case EVENT_SCRIPT_LOG:
-	my_syslog(MS_SCRIPT | LOG_DEBUG, "%s", msg ? msg : "");
-        free(msg);
-	msg = NULL;
-	break;
-
 	/* necessary for fatal errors in helper */
       case EVENT_USER_ERR:
       case EVENT_DIE:
       case EVENT_LUA_ERR:
 	fatal_event(&ev, msg);
 	break;
-#endif
 
       case EVENT_REOPEN:
 	/* Note: this may leave TCP-handling processes with the old file still open.
@@ -1383,7 +1367,7 @@ static void async_event(int pipe, time_t now)
 	/* update timestamp file on TERM if time is considered valid */
 	if (daemon->back_to_the_future)
 	  {
-	     if (utimes(daemon->timestamp_file, NULL) == -1)
+	     if (utime(daemon->timestamp_file, NULL) == -1)
 		my_syslog(LOG_ERR, _("failed to update mtime on %s: %s"), daemon->timestamp_file, strerror(errno));
 	  }
 #endif
@@ -1519,18 +1503,18 @@ static int set_dns_listeners(time_t now)
   
   for (serverfdp = daemon->sfds; serverfdp; serverfdp = serverfdp->next)
     poll_listen(serverfdp->fd, POLLIN);
-    
+
   if (daemon->port != 0 && !daemon->osport)
     for (i = 0; i < RANDOM_SOCKS; i++)
       if (daemon->randomsocks[i].refcount != 0)
 	poll_listen(daemon->randomsocks[i].fd, POLLIN);
-	  
+
   for (listener = daemon->listeners; listener; listener = listener->next)
     {
       /* only listen for queries if we have resources */
       if (listener->fd != -1 && wait == 0)
 	poll_listen(listener->fd, POLLIN);
-	
+
       /* death of a child goes through the select loop, so
 	 we don't need to explicitly arrange to wake up here */
       if  (listener->tcpfd != -1)
@@ -1698,7 +1682,7 @@ static void check_dns_listeners(time_t now)
 		}
 
 #ifndef NO_FORK
-	      /* Arrange for SIGALRM after CHILD_LIFETIME seconds to
+	      /* Arrange for SIGALARM after CHILD_LIFETIME seconds to
 		 terminate the process. */
 	      if (!option_bool(OPT_DEBUG))
 		alarm(CHILD_LIFETIME);
@@ -1763,15 +1747,29 @@ int icmp_ping(struct in_addr addr)
 {
   /* Try and get an ICMP echo from a machine. */
 
-  int fd;
+  /* Note that whilst in the three second wait, we check for 
+     (and service) events on the DNS and TFTP  sockets, (so doing that
+     better not use any resources our caller has in use...)
+     but we remain deaf to signals or further DHCP packets. */
+
+  /* There can be a problem using dnsmasq_time() to end the loop, since
+     it's not monotonic, and can go backwards if the system clock is
+     tweaked, leading to the code getting stuck in this loop and
+     ignoring DHCP requests. To fix this, we check to see if select returned
+     as a result of a timeout rather than a socket becoming available. We
+     only allow this to happen as many times as it takes to get to the wait time
+     in quarter-second chunks. This provides a fallback way to end loop. */
+
+  int fd, rc;
   struct sockaddr_in saddr;
   struct { 
     struct ip ip;
     struct icmp icmp;
   } packet;
   unsigned short id = rand16();
-  unsigned int i, j;
+  unsigned int i, j, timeout_count;
   int gotreply = 0;
+  time_t start, now;
 
 #if defined(HAVE_LINUX_NETWORK) || defined (HAVE_SOLARIS_NETWORK)
   if ((fd = make_icmp_sock()) == -1)
@@ -1798,69 +1796,37 @@ int icmp_ping(struct in_addr addr)
     j = (j & 0xffff) + (j >> 16);  
   packet.icmp.icmp_cksum = (j == 0xffff) ? j : ~j;
   
-  while (retry_send(sendto(fd, (char *)&packet.icmp, sizeof(struct icmp), 0, 
+  while (retry_send(sendto(fd, (char *)&packet.icmp, sizeof(struct icmp), 0,
 			   (struct sockaddr *)&saddr, sizeof(saddr))));
   
-  gotreply = delay_dhcp(dnsmasq_time(), PING_WAIT, fd, addr.s_addr, id);
-
-#if defined(HAVE_LINUX_NETWORK) || defined(HAVE_SOLARIS_NETWORK)
-  while (retry_send(close(fd)));
-#else
-  opt = 1;
-  setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &opt, sizeof(opt));
-#endif
-
-  return gotreply;
-}
-
-int delay_dhcp(time_t start, int sec, int fd, uint32_t addr, unsigned short id)
-{
-  /* Delay processing DHCP packets for "sec" seconds counting from "start".
-     If "fd" is not -1 it will stop waiting if an ICMP echo reply is received
-     from "addr" with ICMP ID "id" and return 1 */
-
-  /* Note that whilst waiting, we check for
-     (and service) events on the DNS and TFTP  sockets, (so doing that
-     better not use any resources our caller has in use...)
-     but we remain deaf to signals or further DHCP packets. */
-
-  /* There can be a problem using dnsmasq_time() to end the loop, since
-     it's not monotonic, and can go backwards if the system clock is
-     tweaked, leading to the code getting stuck in this loop and
-     ignoring DHCP requests. To fix this, we check to see if select returned
-     as a result of a timeout rather than a socket becoming available. We
-     only allow this to happen as many times as it takes to get to the wait time
-     in quarter-second chunks. This provides a fallback way to end loop. */
-
-  int rc, timeout_count;
-  time_t now;
-
-  for (now = dnsmasq_time(), timeout_count = 0;
-       (difftime(now, start) <= (float)sec) && (timeout_count < sec * 4);)
+  for (now = start = dnsmasq_time(), timeout_count = 0;
+       (difftime(now, start) < (float)PING_WAIT) && (timeout_count < PING_WAIT * 4);)
     {
+      struct sockaddr_in faddr;
+      socklen_t len = sizeof(faddr);
+      
       poll_reset();
-      if (fd != -1)
-        poll_listen(fd, POLLIN);
+      poll_listen(fd, POLLIN);
       set_dns_listeners(now);
       set_log_writer();
       
 #ifdef HAVE_DHCP6
       if (daemon->doing_ra)
-	poll_listen(daemon->icmp6fd, POLLIN); 
+	poll_listen(daemon->icmp6fd, POLLIN);
 #endif
       
       rc = do_poll(250);
-      
+
       if (rc < 0)
 	continue;
       else if (rc == 0)
 	timeout_count++;
 
       now = dnsmasq_time();
-      
+
       check_log_writer(0);
       check_dns_listeners(now);
-      
+
 #ifdef HAVE_DHCP6
       if (daemon->doing_ra && poll_check(daemon->icmp6fd, POLLIN))
 	icmp6_packet(now);
@@ -1870,26 +1836,27 @@ int delay_dhcp(time_t start, int sec, int fd, uint32_t addr, unsigned short id)
       check_tftp_listeners(now);
 #endif
 
-      if (fd != -1)
-        {
-          struct {
-            struct ip ip;
-            struct icmp icmp;
-          } packet;
-          struct sockaddr_in faddr;
-          socklen_t len = sizeof(faddr);
-	  
-          if (poll_check(fd, POLLIN) &&
-	      recvfrom(fd, &packet, sizeof(packet), 0, (struct sockaddr *)&faddr, &len) == sizeof(packet) &&
-	      addr == faddr.sin_addr.s_addr &&
-	      packet.icmp.icmp_type == ICMP_ECHOREPLY &&
-	      packet.icmp.icmp_seq == 0 &&
-	      packet.icmp.icmp_id == id)
-	    return 1;
+      if (poll_check(fd, POLLIN) &&
+	  recvfrom(fd, &packet, sizeof(packet), 0,
+		   (struct sockaddr *)&faddr, &len) == sizeof(packet) &&
+	  saddr.sin_addr.s_addr == faddr.sin_addr.s_addr &&
+	  packet.icmp.icmp_type == ICMP_ECHOREPLY &&
+	  packet.icmp.icmp_seq == 0 &&
+	  packet.icmp.icmp_id == id)
+	{
+	  gotreply = 1;
+	  break;
 	}
     }
+  
+#if defined(HAVE_LINUX_NETWORK) || defined(HAVE_SOLARIS_NETWORK)
+  while (retry_send(close(fd)));
+#else
+  opt = 1;
+  setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &opt, sizeof(opt));
+#endif
 
-  return 0;
+  return gotreply;
 }
 #endif
 

@@ -4,12 +4,12 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; version 2 dated June, 1991, or
    (at your option) version 3 dated 29 June, 2007.
- 
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-     
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -27,7 +27,7 @@
 struct arp_record {
   unsigned short hwlen, status;
   int family;
-  unsigned char hwaddr[DHCP_CHADDR_MAX]; 
+  unsigned char hwaddr[DHCP_CHADDR_MAX];
   struct all_addr addr;
   struct arp_record *next;
 };
@@ -54,7 +54,7 @@ static int filter_mac(int family, char *addrp, char *mac, size_t maclen, void *p
     {
       if (family != arp->family || arp->status == ARP_NEW)
 	continue;
-      
+
       if (family == AF_INET)
 	{
 	  if (arp->addr.addr.addr4.s_addr != ((struct in_addr *)addrp)->s_addr)
@@ -80,7 +80,7 @@ static int filter_mac(int family, char *addrp, char *mac, size_t maclen, void *p
 	arp->status = ARP_FOUND;
       else
 	continue;
-      
+
       break;
     }
 
@@ -94,7 +94,7 @@ static int filter_mac(int family, char *addrp, char *mac, size_t maclen, void *p
 	}
       else if (!(arp = whine_malloc(sizeof(struct arp_record))))
 	return 1;
-      
+
       arp->next = arps;
       arps = arp;
       arp->status = ARP_NEW;
@@ -108,7 +108,7 @@ static int filter_mac(int family, char *addrp, char *mac, size_t maclen, void *p
 	memcpy(&arp->addr.addr.addr6, addrp, IN6ADDRSZ);
 #endif
     }
-  
+
   return 1;
 }
 
@@ -119,7 +119,7 @@ int find_mac(union mysockaddr *addr, unsigned char *mac, int lazy, time_t now)
   int updated = 0;
 
  again:
-  
+
   /* If the database is less then INTERVAL old, look in there */
   if (difftime(now, last) < INTERVAL)
     {
@@ -131,17 +131,17 @@ int find_mac(union mysockaddr *addr, unsigned char *mac, int lazy, time_t now)
 	{
 	  if (addr->sa.sa_family != arp->family)
 	    continue;
-	    
+
 	  if (arp->family == AF_INET &&
 	      arp->addr.addr.addr4.s_addr != addr->in.sin_addr.s_addr)
 	    continue;
-	    
+
 #ifdef HAVE_IPV6
-	  if (arp->family == AF_INET6 && 
+	  if (arp->family == AF_INET6 &&
 	      !IN6_ARE_ADDR_EQUAL(&arp->addr.addr.addr6, &addr->in6.sin6_addr))
 	    continue;
 #endif
-	  
+
 	  /* Only accept positive entries unless in lazy mode. */
 	  if (arp->status != ARP_EMPTY || lazy || updated)
 	    {
@@ -162,14 +162,14 @@ int find_mac(union mysockaddr *addr, unsigned char *mac, int lazy, time_t now)
        for (arp = arps; arp; arp = arp->next)
 	 if (arp->status != ARP_EMPTY)
 	   arp->status = ARP_MARK;
-       
+
        iface_enumerate(AF_UNSPEC, NULL, filter_mac);
-       
+
        /* Remove all unconfirmed entries to old list. */
        for (arp = arps, up = &arps; arp; arp = tmp)
 	 {
 	   tmp = arp->next;
-	   
+
 	   if (arp->status == ARP_MARK)
 	     {
 	       *up = arp->next;
@@ -192,9 +192,9 @@ int find_mac(union mysockaddr *addr, unsigned char *mac, int lazy, time_t now)
     }
   else
     arp = whine_malloc(sizeof(struct arp_record));
-  
+
   if (arp)
-    {      
+    {
       arp->next = arps;
       arps = arp;
       arp->status = ARP_EMPTY;
@@ -208,14 +208,14 @@ int find_mac(union mysockaddr *addr, unsigned char *mac, int lazy, time_t now)
 	memcpy(&arp->addr.addr.addr6, &addr->in6.sin6_addr, IN6ADDRSZ);
 #endif
     }
-	  
+
    return 0;
 }
 
 int do_arp_script_run(void)
 {
   struct arp_record *arp;
-  
+
   /* Notify any which went, then move to free list */
   if (old)
     {
@@ -243,5 +243,3 @@ int do_arp_script_run(void)
 
   return 0;
 }
-
-

@@ -466,10 +466,10 @@ struct crec *cache_insert(char *name, struct all_addr *addr,
      are currently inserting. */
   if ((new = cache_scan_free(name, addr, now, flags)))
     {
-      /* We're trying to insert a record over one from 
-	 /etc/hosts or DHCP, or other config. If the 
+      /* We're trying to insert a record over one from
+	 /etc/hosts or DHCP, or other config. If the
 	 existing record is for an A or AAAA and
-	 the record we're trying to insert is the same, 
+	 the record we're trying to insert is the same,
 	 just drop the insert, but don't error the whole process. */
       if ((flags & (F_IPV4 | F_IPV6)) && (flags & F_FORWARD) && addr)
 	{
@@ -482,7 +482,7 @@ struct crec *cache_insert(char *name, struct all_addr *addr,
 	    return new;
 #endif
 	}
-      
+
       insert_error = 1;
       return NULL;
     }
@@ -774,8 +774,7 @@ static void add_hosts_cname(struct crec *target)
   struct cname *a;
   
   for (a = daemon->cnames; a; a = a->next)
-    if (a->alias[1] != '*' &&
-	hostname_isequal(cache_get_name(target), a->target) &&
+    if (hostname_isequal(cache_get_name(target), a->target) &&
 	(crec = whine_malloc(sizeof(struct crec))))
       {
 	crec->flags = F_FORWARD | F_IMMORTAL | F_NAMEP | F_CONFIG | F_CNAME;
@@ -817,9 +816,9 @@ static void add_hosts_entry(struct crec *cache, struct all_addr *addr, int addrl
      Only insert each unique address once into this hashing structure.
 
      This complexity avoids O(n^2) divergent CPU use whilst reading
-     large (10000 entry) hosts files. 
+     large (10000 entry) hosts files.
 
-     Note that we only do this process when bulk-reading hosts files, 
+     Note that we only do this process when bulk-reading hosts files,
      for incremental reads, rhash is NULL, and we use cache lookups
      instead.
   */
@@ -829,7 +828,7 @@ static void add_hosts_entry(struct crec *cache, struct all_addr *addr, int addrl
       /* hash address */
       for (j = 0, i = 0; i < addrlen; i++)
 	j = (j*2 +((unsigned char *)addr)[i]) % hashsz;
-      
+
       for (lookup = rhash[j]; lookup; lookup = lookup->next)
 	if ((lookup->flags & cache->flags & (F_IPV4 | F_IPV6)) &&
 	    memcmp(&lookup->addr.addr, addr, addrlen) == 0)
@@ -837,7 +836,7 @@ static void add_hosts_entry(struct crec *cache, struct all_addr *addr, int addrl
 	    cache->flags &= ~F_REVERSE;
 	    break;
 	  }
-      
+
       /* maintain address hash chain, insert new unique address */
       if (!lookup)
 	{
@@ -1004,9 +1003,9 @@ int read_hostsfile(char *filename, unsigned int index, int cache_size, struct cr
     } 
 
   fclose(f);
-  
+
   if (rhash)
-    rehash(name_count); 
+    rehash(name_count);
   
   my_syslog(LOG_INFO, _("read %s - %d addresses"), filename, addr_count);
   
@@ -1057,8 +1056,7 @@ void cache_reload(void)
   /* Add CNAMEs to interface_names to the cache */
   for (a = daemon->cnames; a; a = a->next)
     for (intr = daemon->int_names; intr; intr = intr->next)
-      if (a->alias[1] != '*' &&
-	  hostname_isequal(a->target, intr->name) &&
+      if (hostname_isequal(a->target, intr->name) &&
 	  ((cache = whine_malloc(sizeof(struct crec)))))
 	{
 	  cache->flags = F_FORWARD | F_NAMEP | F_CNAME | F_IMMORTAL | F_CONFIG;
@@ -1127,7 +1125,7 @@ void cache_reload(void)
     {
       if (!option_bool(OPT_NO_HOSTS))
 	total_size = read_hostsfile(HOSTSFILE, SRC_HOSTS, total_size, (struct crec **)daemon->packet, revhashsz);
-      
+
       daemon->addn_hosts = expand_filelist(daemon->addn_hosts);
       for (ah = daemon->addn_hosts; ah; ah = ah->next)
 	if (!(ah->flags & AH_INACTIVE))
@@ -1137,7 +1135,7 @@ void cache_reload(void)
 #ifdef HAVE_INOTIFY
   set_dynamic_inotify(AH_HOSTS, total_size, (struct crec **)daemon->packet, revhashsz);
 #endif
-  
+
 } 
 
 #ifdef HAVE_DHCP
@@ -1179,8 +1177,7 @@ static void add_dhcp_cname(struct crec *target, time_t ttd)
   struct cname *a;
   
   for (a = daemon->cnames; a; a = a->next)
-    if (a->alias[1] != '*' &&
-	hostname_isequal(cache_get_name(target), a->target))
+    if (hostname_isequal(cache_get_name(target), a->target))
       {
 	if ((aliasc = dhcp_spare))
 	  dhcp_spare = dhcp_spare->next;
@@ -1293,7 +1290,6 @@ void cache_add_dhcp_entry(char *host_name, int prot,
 }
 #endif
 
-#ifndef NO_ID
 int cache_make_stat(struct txt_record *t)
 { 
   static char *buff = NULL;
@@ -1389,9 +1385,8 @@ int cache_make_stat(struct txt_record *t)
   *buff = len;
   return 1;
 }
-#endif
 
-/* There can be names in the cache containing control chars, don't 
+/* There can be names in the cache containing control chars, don't
    mess up logging or open security holes. */
 static char *sanitise(char *name)
 {

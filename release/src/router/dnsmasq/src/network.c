@@ -178,7 +178,7 @@ int iface_check(int family, struct all_addr *addr, char *name, int *auth)
 }
 
 
-/* Fix for problem that the kernel sometimes reports the loopback interface as the
+/* Fix for problem that the kernel sometimes reports the loopback inerface as the
    arrival interface when a packet originates locally, even when sent to address of 
    an interface other than the loopback. Accept packet if it arrived via a loopback 
    interface, even when we're not accepting packets that way, as long as the destination
@@ -236,7 +236,7 @@ struct iface_param {
 };
 
 static int iface_allowed(struct iface_param *param, int if_index, char *label,
-			 union mysockaddr *addr, struct in_addr netmask, int prefixlen, int iface_flags) 
+			 union mysockaddr *addr, struct in_addr netmask, int prefixlen, int iface_flags)
 {
   struct irec *iface;
   int mtu = 0, loopback;
@@ -244,7 +244,6 @@ static int iface_allowed(struct iface_param *param, int if_index, char *label,
   int tftp_ok = !!option_bool(OPT_TFTP);
   int dhcp_ok = 1;
   int auth_dns = 0;
-  int is_label = 0;
 #if defined(HAVE_DHCP) || defined(HAVE_TFTP)
   struct iname *tmp;
 #endif
@@ -265,8 +264,6 @@ static int iface_allowed(struct iface_param *param, int if_index, char *label,
   
   if (!label)
     label = ifr.ifr_name;
-  else
-    is_label = strcmp(label, ifr.ifr_name);
  
   /* maintain a list of all addresses on all interfaces for --local-service option */
   if (option_bool(OPT_LOCAL_SERVICE))
@@ -485,7 +482,6 @@ static int iface_allowed(struct iface_param *param, int if_index, char *label,
       iface->found = 1;
       iface->done = iface->multicast_done = iface->warned = 0;
       iface->index = if_index;
-      iface->label = is_label;
       if ((iface->name = whine_malloc(strlen(ifr.ifr_name)+1)))
 	{
 	  strcpy(iface->name, ifr.ifr_name);
@@ -536,7 +532,7 @@ static int iface_allowed_v4(struct in_addr local, int if_index, char *label,
 {
   union mysockaddr addr;
   int prefix, bit;
- 
+
   (void)broadcast; /* warning */
 
   memset(&addr, 0, sizeof(addr));
@@ -648,7 +644,7 @@ int enumerate_interfaces(int reset)
       /* Garbage-collect listeners listening on addresses that no longer exist.
 	 Does nothing when not binding interfaces or for listeners on localhost, 
 	 since the ->iface field is NULL. Note that this needs the protections
-	 against reentrancy, hence it's here.  It also means there's a possibility,
+	 against re-entrancy, hence it's here.  It also means there's a possibility,
 	 in OPT_CLEVERBIND mode, that at listener will just disappear after
 	 a call to enumerate_interfaces, this is checked OK on all calls. */
       struct listener *l, *tmp, **up;
@@ -703,7 +699,7 @@ static int make_sock(union mysockaddr *addr, int type, int dienow)
   
   if ((fd = socket(family, type, 0)) == -1)
     {
-      int port, errsave;
+      int port, errsav;
       char *s;
 
       /* No error if the kernel just doesn't support this IP flavour */
@@ -713,7 +709,7 @@ static int make_sock(union mysockaddr *addr, int type, int dienow)
 	return -1;
       
     err:
-      errsave = errno;
+      errsav = errno;
       port = prettyprint_addr(addr, daemon->addrbuff);
       if (!option_bool(OPT_NOWILD) && !option_bool(OPT_CLEVERBIND))
 	sprintf(daemon->addrbuff, "port %d", port);
@@ -722,7 +718,7 @@ static int make_sock(union mysockaddr *addr, int type, int dienow)
       if (fd != -1)
 	close (fd);
 	
-      errno = errsave;
+      errno = errsav;
 
       if (dienow)
 	{
@@ -750,7 +746,7 @@ static int make_sock(union mysockaddr *addr, int type, int dienow)
   
   if (type == SOCK_STREAM)
     {
-      if (listen(fd, TCP_BACKLOG) == -1)
+      if (listen(fd, 5) == -1)
 	goto err;
     }
   else if (family == AF_INET)
@@ -836,7 +832,7 @@ int tcp_interface(int fd, int af)
 		  unsigned char *c;
 		  struct in_pktinfo *p;
 		} p;
-		
+
 		p.c = CMSG_DATA(cmptr);
 		if_index = p.p->ipi_ifindex;
 	      }
@@ -1038,15 +1034,6 @@ void warn_bound_listeners(void)
     my_syslog(LOG_WARNING, _("LOUD WARNING: use --bind-dynamic rather than --bind-interfaces to avoid DNS amplification attacks via these interface(s)")); 
 }
 
-void warn_wild_labels(void)
-{
-  struct irec *iface;
-
-  for (iface = daemon->interfaces; iface; iface = iface->next)
-    if (iface->found && iface->name && iface->label)
-      my_syslog(LOG_WARNING, _("warning: using interface %s instead"), iface->name);
-}
-
 void warn_int_names(void)
 {
   struct interface_name *intname;
@@ -1217,7 +1204,6 @@ int local_bind(int fd, union mysockaddr *addr, char *intname, int is_tcp)
 static struct serverfd *allocate_sfd(union mysockaddr *addr, char *intname)
 {
   struct serverfd *sfd;
-  unsigned int ifindex = 0;
   int errsave;
 
   /* when using random ports, servers which would otherwise use
@@ -1238,15 +1224,11 @@ static struct serverfd *allocate_sfd(union mysockaddr *addr, char *intname)
 	return NULL;
 #endif
     }
-
-  if (intname && strlen(intname) != 0)
-    ifindex = if_nametoindex(intname); /* index == 0 when not binding to an interface */
       
   /* may have a suitable one already */
   for (sfd = daemon->sfds; sfd; sfd = sfd->next )
     if (sockaddr_isequal(&sfd->source_addr, addr) &&
-	strcmp(intname, sfd->interface) == 0 &&
-	ifindex == sfd->ifindex) 
+	strcmp(intname, sfd->interface) == 0)
       return sfd;
   
   /* need to make a new one. */
@@ -1268,13 +1250,11 @@ static struct serverfd *allocate_sfd(union mysockaddr *addr, char *intname)
       errno = errsave;
       return NULL;
     }
-
+    
   strcpy(sfd->interface, intname); 
   sfd->source_addr = *addr;
   sfd->next = daemon->sfds;
-  sfd->ifindex = ifindex;
   daemon->sfds = sfd;
-
   return sfd; 
 }
 
@@ -1431,7 +1411,7 @@ void add_update_server(int flags,
       serv->queries = serv->failed_queries = 0;
 #ifdef HAVE_LOOP
       serv->uid = rand32();
-#endif      
+#endif
 
       if (domain)
 	serv->flags |= SERV_HAS_DOMAIN;
@@ -1449,17 +1429,12 @@ void check_servers(void)
 {
   struct irec *iface;
   struct server *serv;
-  struct serverfd *sfd, *tmp, **up;
   int port = 0, count;
-  int locals = 0;
 
   /* interface may be new since startup */
   if (!option_bool(OPT_NOWILD))
     enumerate_interfaces(0);
   
-  for (sfd = daemon->sfds; sfd; sfd = sfd->next)
-    sfd->used = 0;
-
 #ifdef HAVE_DNSSEC
  /* Disable DNSSEC validation when using server=/domain/.... servers
     unless there's a configured trust anchor. */
@@ -1474,33 +1449,33 @@ void check_servers(void)
 	  /* Init edns_pktsz for newly created server records. */
 	  if (serv->edns_pktsz == 0)
 	    serv->edns_pktsz = daemon->edns_pktsz;
-	  
+
 #ifdef HAVE_DNSSEC
 	  if (option_bool(OPT_DNSSEC_VALID))
-	    { 
+	    {
 	      if (serv->flags & SERV_HAS_DOMAIN)
 		{
 		  struct ds_config *ds;
 		  char *domain = serv->domain;
-		  
+
 		  /* .example.com is valid */
 		  while (*domain == '.')
 		    domain++;
-		  
+
 		  for (ds = daemon->ds; ds; ds = ds->next)
 		    if (ds->name[0] != 0 && hostname_isequal(domain, ds->name))
 		      break;
-		  
+
 		  if (!ds)
 		    serv->flags &= ~SERV_DO_DNSSEC;
 		}
-	      else if (serv->flags & SERV_FOR_NODOTS) 
+	      else if (serv->flags & SERV_FOR_NODOTS)
 		serv->flags &= ~SERV_DO_DNSSEC;
 	    }
 #endif
 
 	  port = prettyprint_addr(&serv->addr, daemon->namebuff);
-	  
+
 	  /* 0.0.0.0 is nothing, the stack treats it like 127.0.0.1 */
 	  if (serv->addr.sa.sa_family == AF_INET &&
 	      serv->addr.in.sin_addr.s_addr == 0)
@@ -1530,16 +1505,13 @@ void check_servers(void)
 	      serv->flags |= SERV_MARK;
 	      continue;
 	    }
-	  
-	  if (serv->sfd)
-	    serv->sfd->used = 1;
 	}
       
       if (!(serv->flags & SERV_NO_REBIND) && !(serv->flags & SERV_LITERAL_ADDRESS))
 	{
 	  if (++count > SERVERS_LOGGED)
 	    continue;
-	  
+
 	  if (serv->flags & (SERV_HAS_DOMAIN | SERV_FOR_NODOTS | SERV_USE_RESOLV))
 	    {
 	      char *s1, *s2, *s3 = "";
@@ -1555,19 +1527,15 @@ void check_servers(void)
 		s1 = _("domain"), s2 = serv->domain;
 	      
 	      if (serv->flags & SERV_NO_ADDR)
-		{
-		  count--;
-		  if (++locals <= LOCALS_LOGGED)
-			my_syslog(LOG_INFO, _("using local addresses only for %s %s"), s1, s2);
-	        }
+		my_syslog(LOG_INFO, _("using local addresses only for %s %s"), s1, s2);
 	      else if (serv->flags & SERV_USE_RESOLV)
 		my_syslog(LOG_INFO, _("using standard nameservers for %s %s"), s1, s2);
-	      else 
+	      else
 		my_syslog(LOG_INFO, _("using nameserver %s#%d for %s %s %s"), daemon->namebuff, port, s1, s2, s3);
 	    }
 #ifdef HAVE_LOOP
 	  else if (serv->flags & SERV_LOOP)
-	    my_syslog(LOG_INFO, _("NOT using nameserver %s#%d - query loop detected"), daemon->namebuff, port); 
+	    my_syslog(LOG_INFO, _("NOT using nameserver %s#%d - query loop detected"), daemon->namebuff, port);
 #endif
 	  else if (serv->interface[0] != 0)
 	    my_syslog(LOG_INFO, _("using nameserver %s#%d(via %s)"), daemon->namebuff, port, serv->interface); 
@@ -1575,26 +1543,10 @@ void check_servers(void)
 	    my_syslog(LOG_INFO, _("using nameserver %s#%d"), daemon->namebuff, port); 
 	}
     }
-  
-  if (locals > LOCALS_LOGGED)
-    my_syslog(LOG_INFO, _("using %d more local addresses"), locals - LOCALS_LOGGED);
+
   if (count - 1 > SERVERS_LOGGED)
     my_syslog(LOG_INFO, _("using %d more nameservers"), count - SERVERS_LOGGED - 1);
 
-  /* Remove unused sfds */
-  for (sfd = daemon->sfds, up = &daemon->sfds; sfd; sfd = tmp)
-    {
-       tmp = sfd->next;
-       if (!sfd->used) 
-	{
-	  *up = sfd->next;
-	  close(sfd->fd);
-	  free(sfd);
-	} 
-      else
-	up = &sfd->next;
-    }
-  
   cleanup_servers();
 }
 
