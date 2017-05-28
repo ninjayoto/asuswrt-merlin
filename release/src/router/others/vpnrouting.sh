@@ -10,10 +10,13 @@ fi
 create_client_list(){
 	OLDIFS=$IFS
 	IFS="<"
+	INDEX=0
 
 	for ENTRY in $VPN_IP_LIST
 	do
-		if [ "$ENTRY" == "" ]
+		let INDEX=$INDEX+1
+		RULE_ACTIVE=$(echo $VPN_ACT_LIST | tr " " ">" | cut -d ">" -f $INDEX)
+		if [ "$ENTRY" == "" -o "$RULE_ACTIVE" == "0" ]
 		then
 			continue
 		fi
@@ -100,6 +103,7 @@ init_table(){
 if [ "$dev" == "tun11" ]
 then
 	VPN_IP_LIST=$(nvram get vpn_client1_clientlist)
+	VPN_ACT_LIST=$(nvram get vpn_client1_activelist)
 	VPN_REDIR=$(nvram get vpn_client1_rgw)
 	VPN_FORCE=$(nvram get vpn_client1_enforce)
 	VPN_INSTANCE=1
@@ -107,6 +111,7 @@ then
 elif [ "$dev" == "tun12" ]
 then
 	VPN_IP_LIST=$(nvram get vpn_client2_clientlist)
+	VPN_ACT_LIST=$(nvram get vpn_client2_activelist)
 	VPN_REDIR=$(nvram get vpn_client2_rgw)
 	VPN_FORCE=$(nvram get vpn_client2_enforce)
 	VPN_INSTANCE=2
