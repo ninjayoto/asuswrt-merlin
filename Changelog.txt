@@ -4,6 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-25T3j9527  (28-May-2017)
+* CHANGED: Revert "dnsmasq: update to 2.77rc3"
+* CHANGED: dnsmasq: mark as 2.76 forked version
+* CHANGED: services: start dnscrypt before dnsmasq to allow for large host file processing
+* FIXED: dnsmasq: (upstream) when forwarding a query to a non-DNSSEC nameserver, don't verify the lack of DNSSEC
+* FIXED: dnsmasq: (upstream) improve connection handling when talking to TCP upsteam servers
+* FIXED: dnsmasq: (upstream) fix rrfilter bug leading to malformed replies
+* FIXED: dnsmasq: (upstream) Bump TCP connection backlog from 5 to 32
+* FIXED: dnsmasq: (upstream) fix problem with --dnssec-timestamp whereby receipt of SIGHUP would erroneously engage timestamp checking
+* FIXED: dnsmasq: (upstream) stop treating SERVFAIL as a successful response from upstream servers
+* FIXED: dnsmasq: (upstream) fix getsockname error return check
+* FIXED: dnsmasq: (upstream) log ipset errors
+* FIXED: dnsmasq: (upstream) don't reset packet length on transmission, in case of retransmission
+
+
 374.43_2-25E1j9527  (15-May-2017)
 * NEW: haveged: add support version 1.9.1
 * NEW: https: support moving https cert to jffs
