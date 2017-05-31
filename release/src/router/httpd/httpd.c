@@ -1202,6 +1202,7 @@ handle_request(void)
 				return;
 			}
 
+			if(fromapp == 0) set_referer_host();
 			send_headers( 200, "Ok", handler->extra_header, handler->mime_type );
 			if (strcasecmp(method, "head") != 0 && handler->output) {
 				handler->output(file, conn_fp);
@@ -1322,6 +1323,8 @@ void http_login(unsigned int ip, char *url) {
 
 	sprintf(login_port_str, "%u", http_port);
 	nvram_set("login_port", login_port_str);
+
+	set_referer_host();
 }
 
 int http_client_ip_check(void) {
