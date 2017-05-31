@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-25T4j9527  (31-May-2017)
+- FIXED: samba-3.5.8: patch against CVE-2017-7494 (Samba version used by AiDisk, unsure if it was vulnerable to this)
+* FIXED: webui: only show wan uptime syslog when in router mode
+* FIXED: samba36: work around bug in validating interfaces config
+* FIXED: httpd: fix missing set_referer_host from CVE-2017-5892 port
+* FIXED: webui: fix http/https options when no in router mode
+* FIXED: samba36: work around bug in validating interfaces config
+
+
 374.43_2-25T3j9527  (28-May-2017)
 * CHANGED: Revert "dnsmasq: update to 2.77rc3"
 * CHANGED: dnsmasq: mark as 2.76 forked version
