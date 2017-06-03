@@ -792,8 +792,9 @@ void force_stop_dms(void);
 void stop_mt_daapd(void);
 void start_dms(void);
 void start_mt_daapd(void);
-void set_invoke_later(int flag);
+void set_invoke_later(unsigned int flag);
 int get_invoke_later(void);
+int clear_invoke_later(unsigned int flag);
 #endif	/* RTCONFIG_MEDIA_SERVER */
 
 #ifdef RTCONFIG_WIRELESSREPEATER

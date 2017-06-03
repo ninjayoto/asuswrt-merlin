@@ -2002,6 +2002,14 @@ start_samba(void)
 		return;
 	}
 
+	if (!is_lan_connected()) {
+		set_invoke_later(INVOKELATER_SMB);
+		logmessage("Samba Server", "start deferred by lan state");
+		return;
+	}
+	else
+		clear_invoke_later(INVOKELATER_SMB);
+
 	if ((nvram_match("enable_samba", "0")) &&
 	    (nvram_match("smbd_master", "0")) &&
 	    (nvram_match("smbd_wins", "0"))) {
@@ -2097,7 +2105,7 @@ void stop_samba(void)
 	/* clean up */
 	unlink("/var/log/smb");
 	unlink("/var/log/nmb");
-
+	clear_invoke_later(INVOKELATER_SMB);
 	eval("rm", "-rf", "/var/run/samba");
 
 	logmessage("Samba Server", "smb daemon is stopped");
@@ -2222,8 +2230,13 @@ void start_dms(void)
 		return;
 	}
 
-	if (!is_routing_enabled() && !is_lan_connected())
+	if (!is_routing_enabled() && !is_lan_connected()) {
 		set_invoke_later(INVOKELATER_DMS);
+		logmessage("MediaServer", "start deferred by lan state");
+		return;
+	}
+	else
+		clear_invoke_later(INVOKELATER_DMS);
 
 	if (nvram_get_int("dms_sas") == 0)
 		once = 0;
@@ -2446,6 +2459,7 @@ void stop_dms(void)
 void force_stop_dms(void)
 {
 	killall_tk(MEDIA_SERVER_APP);
+	clear_invoke_later(INVOKELATER_DMS);
 	logmessage("MediaServer", "daemon is stopped");
 }
 

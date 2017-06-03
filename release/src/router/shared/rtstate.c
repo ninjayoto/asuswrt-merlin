@@ -271,9 +271,9 @@ wan_primary_ifunit(void)
 	return 0;
 }
 
-#ifdef RTCONFIG_MEDIA_SERVER
+#if defined(RTCONFIG_MEDIA_SERVER) || defined(RTCONFIG_SAMBASRV)
 void
-set_invoke_later(int flag)
+set_invoke_later(unsigned int flag)
 {
 	nvram_set_int("invoke_later", nvram_get_int("invoke_later")|flag);
 }
@@ -282,6 +282,12 @@ int
 get_invoke_later()
 {
 	return(nvram_get_int("invoke_later"));
+}
+
+void
+clear_invoke_later(unsigned int flag)
+{
+	nvram_set_int("invoke_later", nvram_get_int("invoke_later")&!flag);
 }
 #endif	/* RTCONFIG_MEDIA_SERVER */
 

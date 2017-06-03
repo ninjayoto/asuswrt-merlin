@@ -109,6 +109,18 @@ void update_lan_state(int state, int reason)
 		// keep ip info if it is stopped from connected
 		nvram_set_int(strcat_r(prefix, "sbstate_t", tmp), reason);
 	}
+#ifdef RTCONFIG_USB
+	else if(state==LAN_STATE_CONNECTED) {
+#ifdef RTCONFIG_MEDIA_SERVER
+		if(get_invoke_later()&INVOKELATER_DMS)
+			notify_rc("restart_dms");
+#endif
+#ifdef RTCONFIG_SAMBASRV
+		if(get_invoke_later()&INVOKELATER_SMB)
+			notify_rc("restart_samba");
+#endif
+	}
+#endif
 }
 
 #ifdef CONFIG_BCMWL5
@@ -2779,10 +2791,16 @@ lan_up(char *lan_ifname)
 	}
 #endif
 
+#if 0
 #ifdef RTCONFIG_USB
 #ifdef RTCONFIG_MEDIA_SERVER
 	if(get_invoke_later()&INVOKELATER_DMS)
 		notify_rc("restart_dms");
+#endif
+#ifdef RTCONFIG_SAMBASRV
+	if(get_invoke_later()&INVOKELATER_SMB)
+		notify_rc("restart_samba");
+#endif
 #endif
 #endif
 }

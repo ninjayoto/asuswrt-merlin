@@ -128,6 +128,7 @@ enum {
 
 // the following flag is used for noticing service that will be invoked after getting lan ip
 #define INVOKELATER_DMS	1
+#define INVOKELATER_SMB 2
 
 #ifdef RTCONFIG_USB
 enum {
