@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-25T5j9527  (3-June-2017)
+* FIXED: Revert "samba36: work around bug in validating interfaces config"
+* FIXED: samba: force samba to be invoked again later if lan is not yet up
+* FIXED: samba: respect jffs2_scripts for samba
+* FIXED: rstate: fix incorrect nvram var for checking lan_state
+
 374.43_2-25T4j9527  (31-May-2017)
 - FIXED: samba-3.5.8: patch against CVE-2017-7494 (Samba version used by AiDisk, unsure if it was vulnerable to this)
 * FIXED: webui: only show wan uptime syslog when in router mode
