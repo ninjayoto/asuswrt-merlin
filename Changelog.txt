@@ -4,6 +4,20 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-25E6j9527  (6-June-2017)
+* CHANGED: httpd: only add router.asus.com to cert if running in router mode
+* CHANGED: watchdog: restrict extended httpd checks to ARM, router mode only
+* CHANGED: kernel: only log suppressed messages warning on MIPS if count exceeds burst limit
+* CHANGED: kernel: change packet with own address log from warning to debug
+* CHANGED: openvpn: remove persist-tun from default client configuration
+- FIXED: openvpn: (backport) if initialization completes, ignore any errno from a previous temp conn/auth failure
+* FIXED: httpd: improve CVE-2017-5892 port
+* FIXED: webui: fix banner ssid display when in mediabridge mode
+* FIXED: wl: add default acs_dfs for all bcmwl6 routers
+* FIXED: services: fix miniupnpd restart test 75e305f9
+* FIXED: openvpn: clean up extra line after commit 23a68e3
+
+
 374.43_2-25T5j9527  (3-June-2017)
 * FIXED: Revert "samba36: work around bug in validating interfaces config"
 * FIXED: samba: force samba to be invoked again later if lan is not yet up
