@@ -1188,7 +1188,7 @@ int __printk_ratelimit(int ratelimit_jiffies, int ratelimit_burst)
 		missed = 0;
 		toks -= ratelimit_jiffies;
 		spin_unlock_irqrestore(&ratelimit_lock, flags);
-		if (lost)
+		if (lost >= ratelimit_burst)
 			printk(KERN_WARNING "printk: %d messages suppressed.\n", lost);
 		return 1;
 	}
