@@ -1428,8 +1428,9 @@ void httpd_check()
 		logmessage("watchdog", "restart httpd, process not found");
 		start_httpd();
 	}
-	else {
-		if (nvram_match("upgrade_fw_status", "0") && nvram_match("ntp_sync", "1")) {  //only check if not during upgrade and time is set
+#ifdef RTCONFIG_BCMARM
+	else {  //only do extended check if router mode, time is set and not during firmware upgrade
+		if (nvram_match("upgrade_fw_status", "0") && nvram_match("ntp_sync", "1") && nvram_match("sw_mode", "1")) {
 			http_enable = nvram_get_int("http_enable");
 			if ((http_enable == 0 || http_enable == 2) && (http_err < 5)){	//check http access
 				snprintf(url, sizeof(url), "http://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("http_lanport"));
@@ -1463,6 +1464,7 @@ void httpd_check()
 			}
 		}
 	}
+#endif
 }
 
 void sshd_check()
