@@ -41,8 +41,12 @@ echo "DNS.$I = $LANIP" >> /etc/openssl.config	# workaround for IE not supporting
 I=$(($I + 1))
 
 # Add DNS names to SAN
-echo "DNS.$I = router.asus.com" >> /etc/openssl.config
-I=$(($I + 1))
+SWMODE=$(nvram get sw_mode)
+if [ $SWMODE -eq 1 ] # only add DUT_DOMAIN for router mode
+then
+	echo "DNS.$I = router.asus.com" >> /etc/openssl.config
+	I=$(($I + 1))
+fi
 
 # Add hostnames
 LANDOMAIN=$(nvram get lan_domain)
