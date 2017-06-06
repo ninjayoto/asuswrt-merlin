@@ -766,15 +766,6 @@ int check_user_agent(char* user_agent){
 	return fromapp;
 }
 
-#ifdef RTCONFIG_IFTTT
-void add_ifttt_flag(void){
-
-	memset(user_agent, 0, sizeof(user_agent));
-	sprintf(user_agent, "%s",IFTTTUSERAGENT);
-	return;
-}
-#endif
-
 #if 0
 void
 do_file(char *path, FILE *stream)
@@ -986,6 +977,7 @@ handle_request(void)
 			cp += strspn( cp, " \t" );
 			sethost(cp);
 			cur = cp + strlen(cp) + 1;
+			_dprintf("httpd host = %s\n", host_name);
 		}
 		else if (strncasecmp( cur, "Content-Length:", 15 ) == 0) {
 			cp = &cur[15];
@@ -1147,8 +1139,10 @@ handle_request(void)
 							&& !strstr(url, ".js")
 							&& !strstr(url, ".css")
 							&& !strstr(url, ".gif")
-							&& !strstr(url, ".png"))
+							&& !strstr(url, ".png")) {
+						set_referer_host();
 						http_login(login_ip_tmp, url);
+						}
 				}
 			}else{
 				if(fromapp == 0 && (do_referer&CHECK_REFERER)){
@@ -1202,7 +1196,6 @@ handle_request(void)
 				return;
 			}
 
-			if(fromapp == 0) set_referer_host();
 			send_headers( 200, "Ok", handler->extra_header, handler->mime_type );
 			if (strcasecmp(method, "head") != 0 && handler->output) {
 				handler->output(file, conn_fp);

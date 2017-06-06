@@ -6715,7 +6715,7 @@ struct mime_handler mime_handlers[] = {
 	{ "chart.min.js", "text/javascript", cache_object, NULL, do_file, NULL },
 	{ "httpd_check.htm", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "get_webdavInfo.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
-	{ "manifest.appcache", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
+//	{ "manifest.appcache", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "manifest.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "help_content.js", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "**.xml", "text/xml", no_cache_IE7, do_html_post_and_get, do_ej, do_auth },
@@ -6778,9 +6778,8 @@ struct mime_handler mime_handlers[] = {
 struct except_mime_handler except_mime_handlers[] = {
 	{ "QIS_*", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "qis/*", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
-	{ "*.css", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
-#if 0
 	{ "result_of_get_changed_status_QIS.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
+#if 0
 	{ "*.css", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "ajax.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "state.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
@@ -6788,7 +6787,8 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "popup.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "general.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "help.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
-
+	{ "jquery.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
+//#if 0
 	{ "start_autodet.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "start_dsl_autodet.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "start_apply.htm", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
@@ -6807,6 +6807,13 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "WAN_info.asp", MIME_EXCEPTION_NOAUTH_ALL|MIME_EXCEPTION_NORESETTIME},
 	{ "result_of_get_changed_status.asp", MIME_EXCEPTION_NORESETTIME},
 	{ "detect_firmware.asp", MIME_EXCEPTION_NOAUTH_ALL},
+
+	{ "jquery.js", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "*.gz", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "*.tgz", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "*.tar", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "*.zip", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "*.ipk", MIME_EXCEPTION_NOAUTH_ALL},
 	
 	{ "gotoHomePage.htm", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "update_appstate.asp", MIME_EXCEPTION_NOAUTH_ALL},
@@ -6816,16 +6823,13 @@ struct except_mime_handler except_mime_handlers[] = {
 //	{ "jffsupload.cgi", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 //#endif
 #endif
+//	{ "manifest.appcache", MIME_EXCEPTION_NOAUTH_ALL},
+//	{ "manifest.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "Nologin.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "Logout.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "alertImg.gif", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "error_page.htm", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "jquery.js", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "*.gz", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "*.tgz", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "*.tar", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "*.zip", MIME_EXCEPTION_NOAUTH_ALL},
-	{ "*.ipk", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "httpd_check.htm", MIME_EXCEPTION_NOAUTH_ALL},
 	{ NULL, 0 }
 };
 
@@ -6833,7 +6837,6 @@ struct except_mime_handler except_mime_handlers[] = {
 struct mime_referer mime_referers[] = {
 	{ "start_apply.htm", CHECK_REFERER},
 	{ "start_apply2.htm", CHECK_REFERER},
-	{ "api.asp", CHECK_REFERER},
 	{ "applyapp.cgi", CHECK_REFERER},
 	{ "apply.cgi", CHECK_REFERER},
 	{ "upgrade.cgi", CHECK_REFERER},
@@ -6860,6 +6863,8 @@ struct mime_referer mime_referers[] = {
 	{ "login.cgi", CHECK_REFERER},
 	{ "get_webdavInfo.asp", CHECK_REFERER},
 	{ "update_clients.asp", CHECK_REFERER},
+	{ "WPS_info.asp", CHECK_REFERER},
+	{ "WAN_info.asp", CHECK_REFERER},
 	{ NULL, 0 }
 };
 
