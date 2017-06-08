@@ -34,6 +34,7 @@ var original_mr_enable = '<% nvram_get("mr_enable_x"); %>';
 
 var wans_lanport = '<% nvram_get("wans_lanport"); %>';
 var wans_dualwan_orig = '<% nvram_get("wans_dualwan"); %>';
+var machine_name = '<% get_machine_name(); %>';
 
 function initial(){
 	if (dsl_support) {
@@ -62,6 +63,10 @@ function initial(){
 		document.getElementById("IPTV_desc_DualWAN").style.display = "";
 	else	
 		document.getElementById("IPTV_desc").style.display = "";
+
+	if (machine_name.search("arm") != -1) {
+		$("enable_lan_brsnoop").style.display = "";
+	}
 }
 
 function load_ISP_profile() {
@@ -660,7 +665,7 @@ function validate_range_null(o, min, max, def) {		//Viz add 2013.03 allow to set
 					</select>
 				</td>
 			</tr>
-			<tr>
+			<tr id="enable_lan_brsnoop" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,14);">Enable LAN bridge multicast snooping</a></th>
 				<td>
 
