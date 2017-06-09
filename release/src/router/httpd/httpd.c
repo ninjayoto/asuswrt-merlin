@@ -1051,19 +1051,18 @@ handle_request(void)
 
 	_dprintf("httpd url: %s file: %s\n", url, file);
 
-	if(fromapp == 0)
-		set_referer_host();
-
+	http_login_timeout(login_ip_tmp);
+	set_referer_host();
 	mime_exception = 0;
 	do_referer = 0;
 
 	if(!fromapp) {
-		http_login_timeout(login_ip_tmp);	// 2008.07 James.
+
 		login_state = http_login_check();
 
 		// for each page, mime_exception is defined to do exception handler
 
-		// check exception first
+		// check exception
 		for (exhandler = &except_mime_handlers[0]; exhandler->pattern; exhandler++) {
 			if(match(exhandler->pattern, url))
 			{
@@ -1071,8 +1070,7 @@ handle_request(void)
 				break;
 			}
 		}
-
-		// check doreferer first
+		// check doreferer
 		for (doreferer = &mime_referers[0]; doreferer->pattern; doreferer++) {
 			if(match(doreferer->pattern, url))
 			{
@@ -1081,6 +1079,7 @@ handle_request(void)
 			}
 		}
 
+		// check for login conditions
 		if(login_state==1)
 		{
 			x_Setting = nvram_get_int("x_Setting");
@@ -1102,14 +1101,18 @@ handle_request(void)
 	for (handler = &mime_handlers[0]; handler->pattern; handler++) {
 		if (match(handler->pattern, url))
 		{
-			if (handler->auth) {
-				if(skip_auth) {
+			nvram_set("httpd_handle_request", url);
+			//nvram_set_int("httpd_handle_request_fromapp", fromapp);
 
+			if (handler->auth) {
+				if (skip_auth) {
+					//skip
 				}
 				else if ((mime_exception&MIME_EXCEPTION_NOAUTH_FIRST)&&!x_Setting) {
 					skip_auth=1;
 				}
 				else if((mime_exception&MIME_EXCEPTION_NOAUTH_ALL)) {
+					//noauth
 				}
 				else {
 					if(do_referer&CHECK_REFERER){
@@ -1130,6 +1133,12 @@ handle_request(void)
 					handler->auth(auth_userid, auth_passwd, auth_realm);
 					if (!auth_check(auth_realm, authorization, url))
 					{
+						_dprintf("referer_result(auth): realm: %s url: %s\n", auth_realm, url);
+						if(strcasecmp(method, "post") == 0){
+							if (handler->input) {
+								handler->input(file, conn_fp, cl, boundary);
+							}
+						}
 						if(!fromapp) {
 							http_logout(login_ip_tmp);
 						}
@@ -1142,10 +1151,8 @@ handle_request(void)
 							&& !strstr(url, ".js")
 							&& !strstr(url, ".css")
 							&& !strstr(url, ".gif")
-							&& !strstr(url, ".png")) {
-						set_referer_host();
+							&& !strstr(url, ".png"))
 						http_login(login_ip_tmp, url);
-						}
 				}
 			}else{
 				if(fromapp == 0 && (do_referer&CHECK_REFERER)){
@@ -1239,6 +1246,8 @@ handle_request(void)
 
 		}
 	}
+	nvram_unset("httpd_handle_request");
+	//nvram_unset("httpd_handle_request_fromapp");
 }
 
 //2008 magic{
@@ -1286,6 +1295,7 @@ void http_login(unsigned int ip, char *url) {
 	char login_ipstr[32], login_timestampstr[32];
 	char login_port_str[] = "65535XXX";
 
+	unsigned int login_port = nvram_get_int("login_port");
 	unsigned int http_lanport = nvram_get_int("http_lanport");
 	unsigned int https_lanport = nvram_get_int("https_lanport");
 	unsigned int webdav_https_port = nvram_get_int("webdav_https_port");
@@ -1297,29 +1307,31 @@ void http_login(unsigned int ip, char *url) {
 //	  && http_port != SERVER_PORT_SSL
 	  && http_port != webdav_https_port
 #endif
-	    ) || ip == 0x100007f)
+	    ) || ip == 0x100007f || ip == 0x0000000) // local or asusrouter
 		return;
 
-	_dprintf("httpd_login(%d)\n", ip);
-	login_ip = ip;
-	last_login_ip = 0;
-
-	login_ip_addr.s_addr = login_ip;
-	login_ip_str = inet_ntoa(login_ip_addr);
-	nvram_set("login_ip_str", login_ip_str);
-
 	login_timestamp = uptime();
-
-	memset(login_ipstr, 0, 32);
-	sprintf(login_ipstr, "%u", login_ip);
-	nvram_set("login_ip", login_ipstr);
-
 	memset(login_timestampstr, 0, 32);
 	sprintf(login_timestampstr, "%lu", login_timestamp);
 	nvram_set("login_timestamp", login_timestampstr);
 
-	sprintf(login_port_str, "%u", http_port);
-	nvram_set("login_port", login_port_str);
+	if(ip != login_ip || http_port != login_port) {
+		_dprintf("httpd_login(%u:%i)\n", ip, http_port);
+
+		login_ip = ip;
+		last_login_ip = 0;
+
+		login_ip_addr.s_addr = login_ip;
+		login_ip_str = inet_ntoa(login_ip_addr);
+		nvram_set("login_ip_str", login_ip_str);
+
+		memset(login_ipstr, 0, 32);
+		sprintf(login_ipstr, "%u", login_ip);
+		nvram_set("login_ip", login_ipstr);
+
+		sprintf(login_port_str, "%u", http_port);
+		nvram_set("login_port", login_port_str);
+	}
 
 	set_referer_host();
 }
@@ -1365,7 +1377,7 @@ int http_login_check(void)
 //	  && http_port != SERVER_PORT_SSL
 	  && http_port != webdav_https_port
 #endif
-	    ) || login_ip_tmp == 0x100007f)
+	    ) || login_ip_tmp == 0x100007f || login_ip_tmp == 0x0000000) // local or asusrouter
 		//return 1;
 		return 0;	// 2008.01 James.
 
@@ -1412,7 +1424,7 @@ void http_logout(unsigned int ip)
 	unsigned int https_lanport = nvram_get_int("https_lanport");
 
 	if ((ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) || ip == 0 ) {
-		_dprintf("httpd_logout(%d)\n", ip);
+		_dprintf("httpd_logout(%u:%i)\n", ip, http_port);
 		last_login_ip = login_ip;
 		login_ip = 0;
 		login_timestamp = 0;

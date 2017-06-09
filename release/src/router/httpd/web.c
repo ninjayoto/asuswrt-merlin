@@ -6715,7 +6715,7 @@ struct mime_handler mime_handlers[] = {
 	{ "chart.min.js", "text/javascript", cache_object, NULL, do_file, NULL },
 	{ "httpd_check.htm", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "get_webdavInfo.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
-//	{ "manifest.appcache", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
+	{ "manifest.appcache", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "manifest.asp", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "help_content.js", "text/html", no_cache_IE7, do_html_post_and_get, do_ej, NULL },
 	{ "**.xml", "text/xml", no_cache_IE7, do_html_post_and_get, do_ej, do_auth },
@@ -6744,6 +6744,7 @@ struct mime_handler mime_handlers[] = {
 	{ "**.js",  "text/javascript", no_cache_IE7, NULL, do_ej, do_auth },
 	{ "**.cab", "text/txt", NULL, NULL, do_file, do_auth },
 	{ "**.CFG", "application/force-download", NULL, NULL, do_prf_file, do_auth },
+	{ "**.TAR", "application/force-download", NULL, NULL, do_prf_file, do_auth },
 	{ "**.ovpn", "application/force-download", NULL, NULL, do_prf_ovpn_file, do_auth },
 	{ "apply.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
 	{ "applyapp.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
@@ -6764,7 +6765,7 @@ struct mime_handler mime_handlers[] = {
 	{ "change_lang.cgi*", "text/html", no_cache_IE7, do_lang_post, do_lang_cgi, do_auth },
 #endif //TRANSLATE_ON_FLY
 #if (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2))
-//	{ "backup_jffs.TAR", "application/force-download", NULL, NULL, do_jffs_file, do_auth },
+	{ "backup_jffs.TAR", "application/force-download", NULL, NULL, do_jffs_file, do_auth },
 	{ "JFFS_Backup_*.TAR", "application/force-download", NULL, NULL, do_jffs_file, do_auth },
 	{ "jffsupload.cgi*", "text/html", no_cache_IE7, do_jffsupload_post, do_jffsupload_cgi, do_auth },
 #endif
@@ -6778,7 +6779,6 @@ struct mime_handler mime_handlers[] = {
 struct except_mime_handler except_mime_handlers[] = {
 	{ "QIS_*", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "qis/*", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
-	{ "result_of_get_changed_status_QIS.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 #if 0
 	{ "*.css", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "ajax.js", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
@@ -6806,6 +6806,7 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "WPS_info.asp", MIME_EXCEPTION_NORESETTIME},
 	{ "WAN_info.asp", MIME_EXCEPTION_NOAUTH_ALL|MIME_EXCEPTION_NORESETTIME},
 	{ "result_of_get_changed_status.asp", MIME_EXCEPTION_NORESETTIME},
+	{ "result_of_get_changed_status_QIS.asp", MIME_EXCEPTION_NOAUTH_FIRST|MIME_EXCEPTION_NORESETTIME},
 	{ "detect_firmware.asp", MIME_EXCEPTION_NOAUTH_ALL},
 
 	{ "jquery.js", MIME_EXCEPTION_NOAUTH_ALL},
@@ -6863,11 +6864,10 @@ struct mime_referer mime_referers[] = {
 	{ "update_networkmapd.asp", CHECK_REFERER},
 	{ "get_real_ip.asp", CHECK_REFERER},
 	{ "WPS_info.xml", CHECK_REFERER},
+	{ "WPS_info.asp", CHECK_REFERER},
 	{ "login.cgi", CHECK_REFERER},
 	{ "get_webdavInfo.asp", CHECK_REFERER},
 	{ "update_clients.asp", CHECK_REFERER},
-	{ "WPS_info.asp", CHECK_REFERER},
-	{ "WAN_info.asp", CHECK_REFERER},
 	{ NULL, 0 }
 };
 
