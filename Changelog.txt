@@ -4,6 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-25E7j9527  (14-June-2017)
+* CHANGED: webui: change IPTV action_script to restart_wan_if if ipv6 is enabled
+* CHANGED: watchdog: changes to support httpd_check with CVE-2017-5892
+* CHANGED: radvd: add lan domain advertisement
+* CHANGED: kernel: suppress packet with own address log (expected in router environments)
+* CHANGED: services: open invokelater to non-usb services and call for httpd start
+* FIXED: dhcp6s: fix dhcp6s config errors when using stateful ipv6
+* FIXED: webui: ipv6 radvd mtu option incorrectly hidden when disabled
+* FIXED: network: bridge multicast snooping option is not valid on mips routers
+* FIXED: httpd: additional changes for CVE-2017-5892 port
+* FIXED: dnsmasq: remove unneccessary/incorrect ipv6 options
+* FIXED: webui: fix QIS wizard to preserve http password
+* FIXED: httpd: allow time in non-router mode for dhcp address to be set
+
+
 374.43_2-25E6j9527  (6-June-2017)
 * CHANGED: httpd: only add router.asus.com to cert if running in router mode
 * CHANGED: watchdog: restrict extended httpd checks to ARM, router mode only
