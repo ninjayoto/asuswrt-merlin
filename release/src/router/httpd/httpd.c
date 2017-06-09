@@ -816,15 +816,15 @@ void set_referer_host(void)
 {
 	const int d_len = strlen(DUT_DOMAIN_NAME);
 	int port = 0;
-	int referer_from_https = 0;
+	int referer_includes_port = 0;
 
 	memset(referer_host, 0, sizeof(referer_host));
 	if (*(host_name + d_len) == ':' && (port = atoi(host_name + d_len + 1)) > 0 && port < 65536){
-		referer_from_https = 1;
+		referer_includes_port = 1;
 	}
 	if (((strlen(host_name) == d_len) || (*(host_name + d_len) == ':' && atoi(host_name + d_len + 1) > 0))
 	   && strncmp(DUT_DOMAIN_NAME, host_name, d_len)==0){
-		if(referer_from_https)
+		if(referer_includes_port)
 			snprintf(referer_host,sizeof(referer_host),"%s:%d",nvram_safe_get("lan_ipaddr"), port);
 		else
 			snprintf(referer_host,sizeof(referer_host),"%s",nvram_safe_get("lan_ipaddr"));
@@ -1050,6 +1050,9 @@ handle_request(void)
 	//_dprintf("fromapp(check_user_agent): %i\n", fromapp);
 
 	_dprintf("httpd url: %s file: %s\n", url, file);
+
+	if(fromapp == 0)
+		set_referer_host();
 
 	mime_exception = 0;
 	do_referer = 0;
@@ -1297,6 +1300,7 @@ void http_login(unsigned int ip, char *url) {
 	    ) || ip == 0x100007f)
 		return;
 
+	_dprintf("httpd_login(%d)\n", ip);
 	login_ip = ip;
 	last_login_ip = 0;
 
@@ -1408,6 +1412,7 @@ void http_logout(unsigned int ip)
 	unsigned int https_lanport = nvram_get_int("https_lanport");
 
 	if ((ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) || ip == 0 ) {
+		_dprintf("httpd_logout(%d)\n", ip);
 		last_login_ip = login_ip;
 		login_ip = 0;
 		login_timestamp = 0;
