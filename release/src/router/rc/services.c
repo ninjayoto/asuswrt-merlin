@@ -1587,6 +1587,9 @@ void start_radvd(void)
 			if (cnt) fprintf(f, "{};\n");
 		}
 
+		if (nvram_invmatch("lan_domain", ""))
+			fprintf(f, " DNSSL %s {};\n", nvram_safe_get("lan_domain"));
+
 		fprintf(f,
 			"};\n");	// close "interface" section
 
