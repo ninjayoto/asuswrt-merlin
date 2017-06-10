@@ -1367,7 +1367,7 @@ void start_dhcp6s(void)
 		fprintf(fp,	"option domain-name \"%s\";\n", p);
 
 	/* set interface options */
-	if ((nvram_get_int("ipv6_isp_opt") & 16) == 0) {
+	if (((nvram_get_int("ipv6_isp_opt") & 16) == 0) && (!nvram_get_int("ipv6_autoconf_type"))) {
 		fprintf(fp,	"interface %s {\n", nvram_safe_get("lan_ifname"));
 		fprintf(fp,	"	allow rapid-commit;\n");
 		fprintf(fp,	"};\n");
@@ -1403,10 +1403,13 @@ void start_dhcp6s(void)
 
 		fprintf(fp,	"host kame {\n"
 					"\tprefix %s/%d infinity;\n"
-				"};\n", nvram_safe_get("ipv6_rtr_addr"), nvram_get_int("ipv6_prefix_length"));
-		fprintf(fp,	"interface %s {\n"
-					"\taddress-pool pool1 %d;\n"
-				"};\n", nvram_safe_get("lan_ifname"), (nvram_get_int("ipv6_dhcp_lifetime") > 0) ? nvram_get_int("ipv6_dhcp_lifetime") : 86400);
+				"};\n", nvram_safe_get("ipv6_prefix"), nvram_get_int("ipv6_prefix_length"));
+		fprintf(fp,	"interface %s {\n",
+				nvram_safe_get("lan_ifname"));
+		if ((nvram_get_int("ipv6_isp_opt") & 16) == 0)
+			fprintf(fp,	"\tallow rapid-commit;\n");
+		fprintf(fp,		"\taddress-pool pool1 %d;\n"
+				"};\n", (nvram_get_int("ipv6_dhcp_lifetime") > 0) ? nvram_get_int("ipv6_dhcp_lifetime") : 86400);
 		fprintf(fp,	"pool pool1 {\n"
 					"\trange %s to %s;\n"
 				"};\n", nvram_safe_get("ipv6_dhcp_start"), nvram_safe_get("ipv6_dhcp_end"));
