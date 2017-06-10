@@ -772,8 +772,6 @@ void start_dnsmasq(int force)
 		nv = nvram_safe_get("lan_domain");
 		if (*nv) {
 			fprintf(fp, "dhcp-option=lan,15,%s\n", nv);
-			if (ipv6_enabled() && nvram_match("ipv6_dns_router", "1"))
-				fprintf(fp, "dhcp-option=lan,option6:24,%s\n", nv);
 		}
 
 		/* Gateway, if not set, force use lan ipaddr to avoid repeater issue */
@@ -790,12 +788,10 @@ void start_dnsmasq(int force)
 				(*nv2 && inet_addr(nv2) ? "," : ""),
 				(*nv2 && inet_addr(nv2) ? nv2 : ""),
 				(nvram_match("dhcpd_dns_router","1") ? ",0.0.0.0" : ""));
-		}
-#ifdef RTCONFIG_IPV6
-		/* IPv6 DNS server */
-		if (ipv6_enabled() && nvram_match("ipv6_dns_router", "1"))
-			fprintf(fp, "dhcp-option=lan,option6:23,[::]\n");
-#endif
+		} else
+			fprintf(fp, "dhcp-option=lan,6,%s\n",
+				lan_ipaddr);
+
 		/* WINS server */
 		nv = nvram_safe_get("dhcp_wins_x");
 		if (*nv && inet_addr(nv)) {
