@@ -35,6 +35,7 @@ var original_mr_enable = '<% nvram_get("mr_enable_x"); %>';
 var wans_lanport = '<% nvram_get("wans_lanport"); %>';
 var wans_dualwan_orig = '<% nvram_get("wans_dualwan"); %>';
 var machine_name = '<% get_machine_name(); %>';
+var ipv6_enabled = '<% nvram_get("ipv6_service"); %>';
 
 function initial(){
 	if (dsl_support) {
@@ -406,6 +407,11 @@ function applyRule(){
 					document.form.udpxy_enable_x.select();
 					return false;
 			}
+		}
+
+		if(ipv6_enabled != "disabled"){
+			document.form.action_script.value = "restart_wan_if";
+			document.form.action_wait.value = eval("<% get_default_reboot_time(); %> / 2");
 		}
 
 		showLoading();
