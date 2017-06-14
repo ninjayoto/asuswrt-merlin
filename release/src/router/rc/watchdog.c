@@ -1424,6 +1424,9 @@ void httpd_check()
 	char url[64];
 	char *args[] = {"/usr/sbin/curl", "--silent", "--connect-timeout", "10", "--head", "--user-agent", "asusrouter-asuswrt-curl", "--referer", NULL, NULL, NULL, NULL, NULL};
 
+	if(get_invoke_later()&INVOKELATER_HTTPD) // don't check if start was deferred
+		return;
+
 	if (!pids("httpd")){
 		logmessage("watchdog", "restart httpd, process not found");
 		start_httpd();
