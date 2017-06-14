@@ -3199,6 +3199,14 @@ start_httpd(void)
 		return;
 	}
 
+	if (!is_lan_connected()) {
+		set_invoke_later(INVOKELATER_HTTPD);
+		logmessage("HTTPD Server", "start deferred by lan state");
+		return;
+	}
+	else
+		clear_invoke_later(INVOKELATER_HTTPD);
+
 #ifdef DEBUG_RCTEST // Left for UI debug
 	httpd_dir = nvram_safe_get("httpd_dir");
 	if(strlen(httpd_dir)) chdir(httpd_dir);
