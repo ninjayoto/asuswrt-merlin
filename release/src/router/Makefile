@@ -181,6 +181,8 @@ obj-y += etc
 # obj-y += vlan # use Busybox vconfig
 #obj-y += utils
 obj-y += ntpclient
+obj-y += zlib # for libxml2, curl
+obj-y += curl # include for all builds
 
 ifneq ($(RTCONFIG_4M_SFP),y)
 obj-y += rstats
@@ -344,7 +346,7 @@ MEDIA_SERVER_STATIC=y
 #add by gauss for cloudsync
 obj-$(RTCONFIG_CLOUDSYNC) += openssl
 obj-$(RTCONFIG_CLOUDSYNC) += libxml2
-obj-$(RTCONFIG_CLOUDSYNC) += curl-7.21.7
+obj-$(RTCONFIG_CLOUDSYNC) += curl
 obj-$(RTCONFIG_CLOUDSYNC) += asuswebstorage$(BCMEX)
 obj-$(RTCONFIG_CLOUDSYNC) += inotify
 
@@ -399,8 +401,6 @@ obj-$(RTCONFIG_WEBDAV) += libexif
 obj-$(RTCONFIG_IXIAEP) += ixia_endpoint$(BCMEX)
 
 # Add for ASUS Components
-obj-y += zlib # for libxml2, curl
-obj-y += curl-7.21.7 # include for all builds
 obj-$(RTCONFIG_UPNPC) += miniupnpc
 obj-y += miniupnpd
 obj-y += igmpproxy
@@ -434,7 +434,7 @@ obj-$(RTCONFIG_IPERF) += iperf
 obj-$(RTCONFIG_PUSH_EMAIL) += zlib # for libxml2, curl.
 obj-$(RTCONFIG_PUSH_EMAIL) += openssl
 obj-$(RTCONFIG_PUSH_EMAIL) += libxml2
-obj-$(RTCONFIG_PUSH_EMAIL) += curl-7.21.7
+obj-$(RTCONFIG_PUSH_EMAIL) += curl
 obj-$(RTCONFIG_PUSH_EMAIL) += wb
 obj-$(RTCONFIG_PUSH_EMAIL) += email-3.1.3
 obj-$(RTCONFIG_PUSH_EMAIL) += push_log
@@ -881,10 +881,6 @@ ifeq ($(RTCONFIG_QTN),y)
 	install -D qtnimage/u-boot.bin $(TARGETDIR)/rom/qtn/u-boot.bin
 endif
 
-# Default curl install
-	install -D curl-7.21.7/src/.libs/curl $(TARGETDIR)/usr/sbin/curl
-	$(STRIP) $(TARGETDIR)/usr/sbin/curl
-
 ifeq ($(RTCONFIG_BWDPI),y)
 	install -d $(TARGETDIR)/usr/bwdpi/
 	cp -f bwdpi_bin/*.so $(TARGETDIR)/usr/bwdpi/
@@ -1220,7 +1216,7 @@ mssl:	openssl
 
 mdu:	shared mssl
 
-wb: openssl libxml2 curl-7.21.7
+wb: openssl libxml2 curl
 
 push_log: wb
 
@@ -3007,30 +3003,30 @@ webdav_client$(BCMEX)-clean:
 
 #add by gauss
 #add install libcurl
-curl-7.21.7/stamp-h1:
-	cd curl-7.21.7 && \
-	$(CONFIGURE) CC=$(CC) \
-	--prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
-	--enable-http --with-ssl=$(TOP)/openssl LDFLAGS="-ldl" \
-	$(if $(RTCONFIG_IPV6),--enable-ipv6) \
-	--disable-gopher --disable-dict --disable-telnet \
-	--with-ca-bundle=/rom/ca-bundle.crt
-	touch $@
+curl: curl/Makefile
+	@$(MAKE) -C $@ $(PARALLEL_BUILD)
 
-curl-7.21.7: curl-7.21.7/stamp-h1
-	@$(MAKE) -C curl-7.21.7 $(PARALLEL_BUILD)
+curl/Makefile: curl/configure
+	@cd curl && CC=$(CC) \
+	CFLAGS="-Os -Wall -ffunction-sections -fdata-sections" \
+	./$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
+	--enable-http --with-ssl=$(TOP)/openssl/ssl \
+	$(if $(RTCONFIG_IPV6),--enable-ipv6,--disable-ipv6) \
+	--disable-gopher --disable-dict --disable-telnet --with-ca-bundle=/rom/ca-bundle.crt \
+	CPPFLAGS='-I$(TOP)/openssl/include' \
+	LDFLAGS='$(LDFLAGS) -L$(TOP)/openssl' LIBS='-lcrypto -lssl -ldl'
 
-curl-7.21.7-install: curl-7.21.7
+curl-install: curl
 	@$(SEP)
-	install -D curl-7.21.7/lib/.libs/libcurl.so.4.2.0 $(INSTALLDIR)/curl-7.21.7/usr/lib/libcurl.so.4.2.0
-	$(STRIP) $(INSTALLDIR)/curl-7.21.7/usr/lib/libcurl.so.4.2.0
-	cd $(INSTALLDIR)/curl-7.21.7/usr/lib && ln -sf libcurl.so.4.2.0 libcurl.so && ln -sf libcurl.so.4.2.0 libcurl.so.4
-	install -D curl-7.21.7/src/.libs/curl $(INSTALLDIR)/curl/usr/sbin/curl
+	install -D curl/lib/.libs/libcurl.so.4.4.0 $(INSTALLDIR)/curl/usr/lib/libcurl.so.4.4.0
+	$(STRIP) $(INSTALLDIR)/curl/usr/lib/libcurl.so.4.4.0
+	cd $(INSTALLDIR)/curl/usr/lib && ln -sf libcurl.so.4.4.0 libcurl.so && ln -sf libcurl.so.4.4.0 libcurl.so.4
+	install -D curl/src/.libs/curl $(INSTALLDIR)/curl/usr/sbin/curl
 	$(STRIP) $(INSTALLDIR)/curl/usr/sbin/curl
-	
-curl-7.21.7-clean:
-	-@$(MAKE) -C curl-7.21.7 clean
-	@rm -f curl-7.21.7/stamp-h1
+
+curl-clean:
+	[ ! -f curl/Makefile ] || $(MAKE) -C curl clean
+	@rm -f curl/Makefile
 
 #asuswebstorage
 asuswebstorage$(BCMEX):
