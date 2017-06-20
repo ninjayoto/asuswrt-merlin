@@ -3011,7 +3011,9 @@ curl/Makefile: curl/configure
 	./$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
 	--enable-http --with-ssl=$(TOP)/openssl/ssl \
 	$(if $(RTCONFIG_IPV6),--enable-ipv6,--disable-ipv6) \
-	--disable-gopher --disable-dict --disable-telnet --with-ca-bundle=/rom/ca-bundle.crt \
+	--disable-gopher --disable-dict --disable-telnet \
+	--disable-proxy --disable-manual --disable-libcurl-option \
+	--with-ca-bundle=/rom/ca-bundle.crt \
 	CPPFLAGS='-I$(TOP)/openssl/include' \
 	LDFLAGS='$(LDFLAGS) -L$(TOP)/openssl' LIBS='-lcrypto -lssl -ldl'
 
