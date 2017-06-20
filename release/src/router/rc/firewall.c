@@ -4451,8 +4451,6 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 #endif
 
 /* For NAT loopback */
-/* Untested yet */
-#if 0
 	for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
 		snprintf(prefix, sizeof(prefix), "wan%d_", unit);
 		if(nvram_get_int(strcat_r(prefix, "state_t", tmp)) != WAN_STATE_CONNECTED)
@@ -4465,7 +4463,6 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 		eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
 		     "-d", wan_ip, "-j", "MARK", "--set-mark", "0x8000/0x8000");
 	}
-#endif
 
 /* Workaround for incorrect DSCP from Comcast */
 	if (nvram_get_int("DSCP_fix_enable")) {
