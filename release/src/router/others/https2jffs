@@ -12,6 +12,10 @@ err=0
 VARNAME=$https_var
     FILEPATH="${https_jffs}${https_file}"
     tar -C / -czf $FILEPATH ${https_certs} > /dev/null 2>&1
+    for fn in ${https_certs}
+    do
+	cp -af $fn ${https_jffs}
+    done
     printf "%-25s" "Processing $VARNAME"
     if [ -f $FILEPATH ]; then
 	echo -e "\tDone"
