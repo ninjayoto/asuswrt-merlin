@@ -961,7 +961,8 @@ handle_request(void)
 			cp += strspn( cp, " \t" );
 			useragent = cp;
 			cur = cp + strlen(cp) + 1;
-			//_dprintf("httpd user-agent = %s\n", useragent);
+			if (nvram_match("debug_httpd", "1"))
+				_dprintf("httpd user-agent = %s\n", useragent);
 		}
 		else if ( strncasecmp( cur, "Referer:", 8 ) == 0 )
 		{
@@ -969,7 +970,8 @@ handle_request(void)
 			cp += strspn( cp, " \t" );
 			referer = cp;
 			cur = cp + strlen(cp) + 1;
-			_dprintf("httpd referer = %s\n", referer);
+			if (nvram_match("debug_httpd", "1"))
+				_dprintf("httpd referer = %s\n", referer);
 		}
 		else if ( strncasecmp( cur, "Host:", 5 ) == 0 )
 		{
@@ -977,7 +979,8 @@ handle_request(void)
 			cp += strspn( cp, " \t" );
 			sethost(cp);
 			cur = cp + strlen(cp) + 1;
-			_dprintf("httpd host = %s\n", host_name);
+			if (nvram_match("debug_httpd", "1"))
+				_dprintf("httpd host = %s\n", host_name);
 		}
 		else if (strncasecmp( cur, "Content-Length:", 15 ) == 0) {
 			cp = &cur[15];
@@ -1032,13 +1035,17 @@ handle_request(void)
 	}
 // 2007.11 James. }
 
+	if (nvram_match("debug_httpd", "1"))
+		_dprintf("httpd url: %s file: %s\n", url, file);
+
 	if(strncmp(url, APPLYAPPSTR, strlen(APPLYAPPSTR))==0)  fromapp=1;
 	else if(strncmp(url, GETAPPSTR, strlen(GETAPPSTR))==0)  {
 		fromapp=1;
 		strlcpy(url, url+strlen(GETAPPSTR), sizeof(url));
 		file += strlen(GETAPPSTR);
 	}
-	//_dprintf("fromapp(url): %i\n", fromapp);
+	if (nvram_match("debug_httpd", "1"))
+		_dprintf("fromapp(url): %i\n", fromapp);
 
 	memset(user_agent, 0, sizeof(user_agent));
 	if(useragent != NULL)
@@ -1047,9 +1054,8 @@ handle_request(void)
 		strcpy(user_agent, "");
 
 	fromapp = check_user_agent(useragent);
-	//_dprintf("fromapp(check_user_agent): %i\n", fromapp);
-
-	_dprintf("httpd url: %s file: %s\n", url, file);
+	if (nvram_match("debug_httpd", "1"))
+		_dprintf("fromapp(check_user_agent): %i\n", fromapp);
 
 	http_login_timeout(login_ip_tmp);
 	set_referer_host();
@@ -1117,7 +1123,8 @@ handle_request(void)
 				else {
 					if(do_referer&CHECK_REFERER){
 						referer_result = referer_check(referer, fromapp);
-						_dprintf("referer_result(check): %i, referer: %s fromapp: %i\n", referer_result, referer, fromapp);
+						if (nvram_match("debug_httpd", "1"))
+							_dprintf("referer_result(check): %i, referer: %s fromapp: %i\n", referer_result, referer, fromapp);
 						if(referer_result != 0){
 							if(strcasecmp(method, "post") == 0){
 								if (handler->input) {
@@ -1133,7 +1140,8 @@ handle_request(void)
 					handler->auth(auth_userid, auth_passwd, auth_realm);
 					if (!auth_check(auth_realm, authorization, url))
 					{
-						_dprintf("referer_result(auth): realm: %s url: %s\n", auth_realm, url);
+						if (nvram_match("debug_httpd", "1"))
+							_dprintf("referer_result(auth): realm: %s url: %s\n", auth_realm, url);
 						if(strcasecmp(method, "post") == 0){
 							if (handler->input) {
 								handler->input(file, conn_fp, cl, boundary);
@@ -1157,7 +1165,8 @@ handle_request(void)
 			}else{
 				if(fromapp == 0 && (do_referer&CHECK_REFERER)){
 					referer_result = check_noauth_referrer(referer, fromapp);
-					_dprintf("referer_result(noauth): %i, referer: %s fromapp: %i\n", referer_result, referer, fromapp);
+					if (nvram_match("debug_httpd", "1"))
+						_dprintf("referer_result(noauth): %i, referer: %s fromapp: %i\n", referer_result, referer, fromapp);
 					if(referer_result != 0){
 						if(strcasecmp(method, "post") == 0){
 							if (handler->input) {
@@ -1316,7 +1325,8 @@ void http_login(unsigned int ip, char *url) {
 	nvram_set("login_timestamp", login_timestampstr);
 
 	if(ip != login_ip || http_port != login_port) {
-		_dprintf("httpd_login(%u:%i)\n", ip, http_port);
+		if (nvram_match("debug_httpd", "1"))
+			_dprintf("httpd_login(%u:%i)\n", ip, http_port);
 
 		login_ip = ip;
 		last_login_ip = 0;
@@ -1424,7 +1434,8 @@ void http_logout(unsigned int ip)
 	unsigned int https_lanport = nvram_get_int("https_lanport");
 
 	if ((ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) || ip == 0 ) {
-		_dprintf("httpd_logout(%u:%i)\n", ip, http_port);
+		if (nvram_match("debug_httpd", "1"))
+			_dprintf("httpd_logout(%u:%i)\n", ip, http_port);
 		last_login_ip = login_ip;
 		login_ip = 0;
 		login_timestamp = 0;
