@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-25E8j9527  (27-June-2017)
+- CHANGED: openssl: update to 1.0.2l
+* CHANGED: openvpn: update to 2.4.3
+- CHANGED: entware: (backport) update entware-setup.sh
+* FIXED: httpd-web: fix saving of jffs backup
+- FIXED: services: fix miniupnpd allowed ports configuration
+
+
 374.43_2-25E7j9527  (15-June-2017)
 * CHANGED: webui: change IPTV action_script to restart_wan_if if ipv6 is enabled
 * CHANGED: watchdog: changes to support httpd_check with CVE-2017-5892
