@@ -448,8 +448,6 @@ auth_check( char* dirname, char* authorization ,char* url)
 	if(isLogout == 1){
 		isLogout = 0;
 		send_authenticate( dirname );
-		// Send login msg to syslog
-		//logmessage(HEAD_HTTP_LOGIN, "login user %s", temp_ip_str);
 		return 0;
 	}
 
@@ -503,12 +501,12 @@ auth_check( char* dirname, char* authorization ,char* url)
 	{
 		//fprintf(stderr, "login check : %x %x\n", login_ip, last_login_ip);
 		/* Is this is the first login after logout */
-		//if (login_ip==0 && last_login_ip==login_ip_tmp)
-		//{
-		//	send_authenticate(dirname);
-		//	last_login_ip=0;
-		//	return 0;
-		//}
+		if (login_ip==0 && last_login_ip==login_ip_tmp)
+		{
+			send_authenticate(dirname);
+			last_login_ip=0;
+			return 0;
+		}
 		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp ) {
 			// Send login msg to syslog
 			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s:%d", authinfo, temp_ip_str, http_port);
@@ -1419,6 +1417,7 @@ void http_login_timeout(unsigned int ip)
 	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port)) && ((unsigned long)(now-login_ts) > MAX_DISC_TIMEOUT))
 // 2007.10 James }
 	{
+		isLogout = 1;
 		http_logout(login_ip);
 		if (login_ip)
 			logmessage(HEAD_HTTP_LOGIN, "logout successful (ip %s disconnected)", temp_ip_str);
