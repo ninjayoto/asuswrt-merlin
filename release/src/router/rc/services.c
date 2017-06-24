@@ -3454,12 +3454,20 @@ TRACE_PT("config 5\n");
 
 void stop_upnp(void)
 {
+	int upnp_flush = 0;
+
 	if (getpid() != 1) {
 		notify_rc("stop_upnp");
 		return;
 	}
 
 	killall_tk("miniupnpd");
+
+	upnp_flush = nvram_get_int("upnp_flush");
+	if (upnp_flush > 0)
+		unlink("/var/lib/misc/upnp.leases"); //clear existing leases
+	if (upnp_flush == 1)
+		nvram_set_int("upnp_flush", 0); //reset flag if single clear
 }
 
 int
