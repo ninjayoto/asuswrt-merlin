@@ -3417,9 +3417,9 @@ void start_upnp(void)
 				    (ports[3] = nvram_get_int("upnp_max_port_ext")) > 0) {
 					fprintf(f,
 						"allow %d-%d %s/%s %d-%d\n",
-						ports[0], ports[1],
+						ports[2], ports[3],
 						lanip, lanmask,
-						ports[2], ports[3]
+						ports[0], ports[1]
 					);
 				}
 				else {
