@@ -6725,6 +6725,7 @@ struct mime_handler mime_handlers[] = {
 
 	{ "**.gz", "application/octet-stream", NULL, NULL, do_file, NULL },
 	{ "**.tgz", "application/octet-stream", NULL, NULL, do_file, NULL },
+	{ "**.tar", "application/octet-stream", NULL, NULL, do_file, NULL },
 	{ "**.zip", "application/octet-stream", NULL, NULL, do_file, NULL },
 	{ "**.ipk", "application/octet-stream", NULL, NULL, do_file, NULL },
 	{ "**.css", "text/css", cache_object, NULL, do_file, NULL },
@@ -6744,7 +6745,6 @@ struct mime_handler mime_handlers[] = {
 	{ "**.js",  "text/javascript", no_cache_IE7, NULL, do_ej, do_auth },
 	{ "**.cab", "text/txt", NULL, NULL, do_file, do_auth },
 	{ "**.CFG", "application/force-download", NULL, NULL, do_prf_file, do_auth },
-	{ "**.TAR", "application/force-download", NULL, NULL, do_prf_file, do_auth },
 	{ "**.ovpn", "application/force-download", NULL, NULL, do_prf_ovpn_file, do_auth },
 	{ "apply.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
 	{ "applyapp.cgi*", "text/html", no_cache_IE7, do_html_post_and_get, do_apply_cgi, do_auth },
@@ -6831,6 +6831,7 @@ struct except_mime_handler except_mime_handlers[] = {
 	{ "alertImg.gif", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "error_page.htm", MIME_EXCEPTION_NOAUTH_ALL},
 	{ "httpd_check.htm", MIME_EXCEPTION_NOAUTH_ALL},
+	{ "UploadError.asp", MIME_EXCEPTION_NOAUTH_ALL},
 	{ NULL, 0 }
 };
 
@@ -6868,6 +6869,7 @@ struct mime_referer mime_referers[] = {
 	{ "login.cgi", CHECK_REFERER},
 	{ "get_webdavInfo.asp", CHECK_REFERER},
 	{ "update_clients.asp", CHECK_REFERER},
+	{ "UploadingJFFS.asp", CHECK_REFERER},
 	{ NULL, 0 }
 };
 
