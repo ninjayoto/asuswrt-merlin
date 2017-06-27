@@ -241,6 +241,8 @@ int isLogout = 0;
 char url[128];
 char cloud_file[128];
 int http_port;
+unsigned int logout_ip[8];
+char logout_ip_str[132];
 
 /* Added by Joey for handle one people at the same time */
 unsigned int login_ip=0; // the logined ip
@@ -436,7 +438,8 @@ auth_check( char* dirname, char* authorization ,char* url)
 {
 	char authinfo[500];
 	char* authpass;
-	int l;
+	int i,l;
+	int auth_req;
 	struct in_addr temp_ip_addr;
 	char *temp_ip_str;
 	time_t dt;
@@ -445,9 +448,20 @@ auth_check( char* dirname, char* authorization ,char* url)
 	temp_ip_addr.s_addr = login_ip_tmp;
 	temp_ip_str = inet_ntoa(temp_ip_addr);
 
-	if(isLogout == 1){
-		isLogout = 0;
-		send_authenticate( dirname );
+	auth_req = -1;
+	for (i=0; i<ARRAY_SIZE(logout_ip); i++) {
+		if (logout_ip[i] != 0 && logout_ip[i] == login_ip_tmp)
+		{
+			auth_req = i;
+			break;
+		}
+	}
+	if ( login_ip == 0 && auth_req >= 0 ) {
+		if (nvram_get_int("debug_httpd") & 2)
+			_dprintf("httpd auth forced for %u, array location %i\n", login_ip_tmp, auth_req);
+		send_authenticate(dirname);
+		last_login_ip = 0;
+		logout_ip[auth_req] = 0; //clear ip from active logouts
 		return 0;
 	}
 
@@ -499,15 +513,8 @@ auth_check( char* dirname, char* authorization ,char* url)
 	/* Is this the right user and password? */
 	if ( strcmp( auth_userid, authinfo ) == 0 && strcmp( auth_passwd, authpass ) == 0)
 	{
-		//fprintf(stderr, "login check : %x %x\n", login_ip, last_login_ip);
-		/* Is this is the first login after logout */
-		if (login_ip==0 && last_login_ip==login_ip_tmp)
+		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp )
 		{
-			send_authenticate(dirname);
-			last_login_ip=0;
-			return 0;
-		}
-		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp ) {
 			// Send login msg to syslog
 			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s:%d", authinfo, temp_ip_str, http_port);
 		}
@@ -1246,7 +1253,6 @@ handle_request(void)
 			temp_ip_addr.s_addr = login_ip_tmp;
 			temp_ip_str = inet_ntoa(temp_ip_addr);
 
-			isLogout = 1;
 			http_logout(login_ip_tmp);
 			// Send logout msg to syslog
 			logmessage (HEAD_HTTP_LOGIN, "logout successful %s:%d", temp_ip_str, http_port);
@@ -1417,7 +1423,6 @@ void http_login_timeout(unsigned int ip)
 	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port)) && ((unsigned long)(now-login_ts) > MAX_DISC_TIMEOUT))
 // 2007.10 James }
 	{
-		isLogout = 1;
 		http_logout(login_ip);
 		if (login_ip)
 			logmessage(HEAD_HTTP_LOGIN, "logout successful (ip %s disconnected)", temp_ip_str);
@@ -1431,10 +1436,22 @@ void http_logout(unsigned int ip)
 	unsigned int login_port = nvram_get_int("login_port");
 	unsigned int http_lanport = nvram_get_int("http_lanport");
 	unsigned int https_lanport = nvram_get_int("https_lanport");
+	int i;
 
 	if (ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) {
 		if (nvram_get_int("debug_httpd") & 2)
 			_dprintf("httpd_logout(%u:%i)\n", ip, http_port);
+		for (i=0; i<ARRAY_SIZE(logout_ip); i++) {
+			if (logout_ip[i] == 0) {
+				logout_ip[i] = ip; // save ip needing re-authorization
+				if (nvram_get_int("debug_httpd") & 2)
+					_dprintf("httpd re-auth set for %u, array location %i\n", ip, i);
+				break;
+			}
+		}
+		if (i>=ARRAY_SIZE(logout_ip)) //overflow array failsafe, overwrite oldest entry
+			logout_ip[0] = ip;
+
 		last_login_ip = login_ip;
 		login_ip = 0;
 		login_timestamp = 0;
