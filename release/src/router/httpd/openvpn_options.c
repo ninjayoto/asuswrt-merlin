@@ -594,8 +594,8 @@ add_option (char *p[], int line, int unit)
 	// These are already added by us
 	else if (streq (p[0], "client") ||
 		 streq (p[0], "nobind") ||
-		 streq (p[0], "persist-key") ||
-		 streq (p[0], "persist-tun"))
+		 streq (p[0], "persist-key"))
+//		 || streq (p[0], "persist-tun"))
 	{
 		return 0;	// Don't duplicate them
 	}
