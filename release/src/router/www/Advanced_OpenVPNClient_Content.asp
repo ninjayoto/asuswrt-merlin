@@ -1009,6 +1009,7 @@ function defaultSettings() {
 <input type="hidden" name="vpn_client_activelist" value="<% nvram_clean_get("vpn_client_activelist"); %>">
 <input type="hidden" name="dnsfilter_enable_x" value="<% nvram_get("dnsfilter_enable_x"); %>">
 <input type="hidden" name="vpn_reverse_strict" value="<% nvram_get("vpn_reverse_strict"); %>">
+<input type="hidden" name="vpn_client_enabled" value="<% nvram_get("vpn_client_enabled"); %>">
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>

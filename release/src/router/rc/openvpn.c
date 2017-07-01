@@ -510,6 +510,8 @@ void start_vpnclient(int clientNum)
 	}
 
 	// Start the VPN client
+	sprintf(&buffer[0], "vpn_client%d_enabled", clientNum);
+	nvram_set(&buffer[0], "1");
 #ifdef RTCONFIG_BCMARM
         if (cpu_num > 1)
 		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", (clientNum % 2 ? 1 : 0), clientNum, clientNum);
@@ -578,6 +580,8 @@ void stop_vpnclient(int clientNum)
 
 	// Stop the VPN client
 	vpnlog(VPN_LOG_EXTRA,"Stopping OpenVPN client.");
+	sprintf(&buffer[0], "vpn_client%d_enabled", clientNum);
+	nvram_set(&buffer[0], "0");
 	sprintf(&buffer[0], "vpnclient%d", clientNum);
 	if ( !ovpn_waitfor(&buffer[0]) )
 		vpnlog(VPN_LOG_EXTRA,"OpenVPN client stopped.");
@@ -1737,6 +1741,8 @@ void start_vpn_eas()
 		}
 
 		// Setup client routing in case some are set to be blocked when tunnel is down
+		sprintf(&buffer[0], "vpn_client%d_enabled", nums[i]);
+		nvram_set(&buffer[0], "1");
 		update_vpnrouting(nums[i]);
 
 		// Start client

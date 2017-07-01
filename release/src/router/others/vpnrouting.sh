@@ -106,6 +106,7 @@ then
 	VPN_ACT_LIST=$(nvram get vpn_client1_activelist)
 	VPN_REDIR=$(nvram get vpn_client1_rgw)
 	VPN_FORCE=$(nvram get vpn_client1_enforce)
+	VPN_ENABLED=$(nvram get vpn_client1_enabled)
 	VPN_INSTANCE=1
 
 elif [ "$dev" == "tun12" ]
@@ -114,6 +115,7 @@ then
 	VPN_ACT_LIST=$(nvram get vpn_client2_activelist)
 	VPN_REDIR=$(nvram get vpn_client2_rgw)
 	VPN_FORCE=$(nvram get vpn_client2_enforce)
+	VPN_ENABLED=$(nvram get vpn_client2_enabled)
 	VPN_INSTANCE=2
 else
 	run_custom_script
@@ -126,7 +128,7 @@ END_PRIO=$(($START_PRIO+199))
 WAN_PRIO=$START_PRIO
 VPN_PRIO=$(($START_PRIO+100))
 
-export VPN_GW VPN_IP VPN_TBL VPN_FORCE
+export VPN_GW VPN_IP VPN_TBL VPN_FORCE VPN_ENABLED
 
 
 # webui reports that vpn_force changed while vpn client was down
@@ -135,7 +137,7 @@ then
 	logger -t "openvpn-routing" "Refreshing policy rules for client $VPN_INSTANCE"
 	purge_client_list
 
-	if [ "$VPN_FORCE" == "1" -a "$VPN_REDIR" == "2" ]
+	if [ "$VPN_FORCE" == "1" -a "$VPN_ENABLED" == "1" -a "$VPN_REDIR" == "2" ]
 	then
 		init_table
 		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
@@ -163,7 +165,7 @@ if [ $script_type == 'route-pre-down' ]
 then
 	purge_client_list
 
-	if [ "$VPN_FORCE" == "1" -a "$VPN_REDIR" == "2" ]
+	if [ "$VPN_FORCE" == "1" -a "$VPN_ENABLED" == "1" -a "$VPN_REDIR" == "2" ]
 	then
 		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
 		ip route change prohibit default table $VPN_TBL
