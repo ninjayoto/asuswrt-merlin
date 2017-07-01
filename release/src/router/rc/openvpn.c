@@ -481,6 +481,11 @@ void start_vpnclient(int clientNum)
 		fp = fopen(&buffer[0], "w");
 		chmod(&buffer[0], S_IRUSR|S_IWUSR|S_IXUSR);
 		fprintf(fp, "#!/bin/sh\n");
+		sprintf(&buffer[0], "vpn_client%d_proto", clientNum);
+		strncpy(&buffer[0], nvram_safe_get(&buffer[0]), BUF_SIZE);
+		fprintf(fp, "iptables -I INPUT -p %s ", strtok(&buffer[0], "-"));
+		sprintf(&buffer[0], "vpn_client%d_port", clientNum);
+		fprintf(fp, "--dport %d -j ACCEPT\n", nvram_get_int(&buffer[0]));
 		fprintf(fp, "iptables -I INPUT -i %s -j ACCEPT\n", &iface[0]);
 		fprintf(fp, "iptables -I FORWARD %d -i %s -j ACCEPT\n", (nvram_match("cstats_enable", "1") ? 4 : 2), &iface[0]);
 		if (nvram_match("ctf_disable", "0")) {
