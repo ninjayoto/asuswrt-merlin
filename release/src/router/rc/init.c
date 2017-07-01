@@ -1007,6 +1007,10 @@ restore_defaults(void)
 	nvram_set("wan_uptime", "0");
 	nvram_set("wan_bootdly", "0");
 
+	/* reset vpn client status */
+	nvram_set("vpn_client1_enabled", "0");
+	nvram_set("vpn_client2_enabled", "0");
+
 #ifdef RTCONFIG_QTN
 	nvram_unset("qtn_ready");
 #endif
