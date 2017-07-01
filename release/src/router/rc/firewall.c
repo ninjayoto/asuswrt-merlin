@@ -1763,6 +1763,7 @@ start_default_filter(int lanunit)
 	// TODO: handle multiple lan
 	FILE *fp;
 	int i;
+	char default_fn[32];
 
 	printf("\nset default filter settings\n");	// tmp test
 	if ((fp=fopen("/tmp/filter.default", "w"))==NULL) return;
@@ -1770,6 +1771,16 @@ start_default_filter(int lanunit)
 	fprintf(fp, "*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n:logaccept - [0:0]\n:logdrop - [0:0]\n");
 	fprintf(fp, "-A INPUT -m state --state INVALID -j DROP\n");
 	fprintf(fp, "-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT\n");
+#ifdef RTCONFIG_PROTECTION_SERVER
+	if (nvram_get_int("telnetd_enable") != 0
+#ifdef RTCONFIG_SSH
+	    || nvram_get_int("sshd_enable") != 0
+#endif
+	) {
+		fprintf(fp, "-A INPUT ! -i br0 -j %sWAN\n", PROTECT_SRV_RULE_CHAIN);
+		fprintf(fp, "-A INPUT -i br0 -j %sLAN\n", PROTECT_SRV_RULE_CHAIN);
+	}
+#endif
 	fprintf(fp, "-A INPUT -i lo -m state --state NEW -j ACCEPT\n");
 	fprintf(fp, "-A INPUT -i br0 -m state --state NEW -j ACCEPT\n");
 	fprintf(fp, "-A INPUT -j DROP\n");
@@ -1788,17 +1799,72 @@ start_default_filter(int lanunit)
 	fprintf(fp, "COMMIT\n\n");
 	fclose(fp);
 
+	if (f_exists("/tmp/filter_rules"))
+		strcpy(default_fn, "/tmp/filter_rules");
+	else
+		strcpy(default_fn, "/tmp/filter.default");
+
 	//system("iptables -F");
 	// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
 	// Retry a few times with increasing wait time to resolve collision.
 	for ( i = 1; i < 4; i++ ) {
-		if (eval("iptables-restore", "/tmp/filter_rules")) {
+		if (eval("iptables-restore", default_fn)) {
 			_dprintf("iptables-restore failed - retrying in %d secs...\n", i*i);
 			sleep(i*i);
 		} else {
 			i = 4;
 		}
 	}
+
+#ifdef RTCONFIG_IPV6
+	if ((fp = fopen("/tmp/filter_ipv6.default", "w")) == NULL)
+		return;
+	fprintf(fp, "*filter\n"
+		":INPUT DROP [0:0]\n"
+		":FORWARD DROP [0:0]\n"
+		":OUTPUT %s [0:0]\n"
+		":logaccept - [0:0]\n"
+		":logdrop - [0:0]\n",
+		ipv6_enabled() ? "ACCEPT" : "DROP");
+
+	if (ipv6_enabled()) {
+		fprintf(fp, "-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT\n");
+		fprintf(fp, "-A INPUT -m state --state INVALID -j DROP\n");
+		fprintf(fp, "-A INPUT -i br0 -m state --state NEW -j ACCEPT\n");
+		fprintf(fp, "-A INPUT -i lo -m state --state NEW -j ACCEPT\n");
+		//fprintf(fp, "-A FORWARD -m state --state INVALID -j DROP\n");
+		fprintf(fp, "-A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT\n");
+		fprintf(fp, "-A FORWARD -i br0 -o br0 -j ACCEPT\n");
+		fprintf(fp, "-A FORWARD -i lo -o lo -j ACCEPT\n");
+	}
+
+	fprintf(fp, "-A logaccept -m state --state NEW -j LOG --log-prefix \"ACCEPT \" "
+		  "--log-tcp-sequence --log-tcp-options --log-ip-options\n"
+		  "-A logaccept -j ACCEPT\n");
+	fprintf(fp,"-A logdrop -m state --state NEW -j LOG --log-prefix \"DROP \" "
+		  "--log-tcp-sequence --log-tcp-options --log-ip-options\n"
+		  "-A logdrop -j DROP\n");
+
+	fprintf(fp, "COMMIT\n\n");
+	fclose(fp);
+
+	if (f_exists("/tmp/filter_rules_ipv6"))
+		strcpy(default_fn, "/tmp/filter_rules_ipv6");
+	else
+		strcpy(default_fn, "/tmp/filter_ipv6.default");
+
+	//system("iptables -F");
+	// Quite a few functions will blindly attempt to manipulate iptables, colliding with us.
+	// Retry a few times with increasing wait time to resolve collision.
+	for ( i = 1; i < 4; i++ ) {
+		if (eval("ip6tables-restore", default_fn)) {
+			_dprintf("iptables-restore failed - retrying in %d secs...\n", i*i);
+			sleep(i*i);
+		} else {
+			i = 4;
+		}
+	}
+#endif
 }
 
 #ifdef WEBSTRFILTER
