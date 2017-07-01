@@ -238,12 +238,11 @@ int change_passwd = 0;
 int reget_passwd = 0;
 int x_Setting = 0;
 int skip_auth = 0;
-int isLogout = 0;
 char url[128];
 char cloud_file[128];
 int http_port;
-unsigned int logout_ip[8];
-char logout_ip_str[132];
+unsigned int logout_hst[8];
+unsigned int login_hst[8];
 
 /* Added by Joey for handle one people at the same time */
 unsigned int login_ip=0; // the logined ip
@@ -440,7 +439,7 @@ auth_check( char* dirname, char* authorization ,char* url)
 	char authinfo[500];
 	char* authpass;
 	int i,l;
-	int auth_req;
+	int login_auth_req, logout_auth_req, login_auth_index;
 	struct in_addr temp_ip_addr;
 	char *temp_ip_str;
 	time_t dt;
@@ -449,20 +448,42 @@ auth_check( char* dirname, char* authorization ,char* url)
 	temp_ip_addr.s_addr = login_ip_tmp;
 	temp_ip_str = inet_ntoa(temp_ip_addr);
 
-	auth_req = -1;
-	for (i=0; i<ARRAY_SIZE(logout_ip); i++) {
-		if (logout_ip[i] != 0 && logout_ip[i] == login_ip_tmp)
+	login_auth_req = 1;
+	login_auth_index = -1;
+	for (i=0; i<ARRAY_SIZE(login_hst); i++) { //check if ever logged in
+		if (login_hst[i] != 0 && login_hst[i] == login_ip_tmp)
 		{
-			auth_req = i;
+			login_auth_req = 0;
+			break;
+		}
+		if (login_hst[i] == 0)
+		{
+			login_auth_index = i;
 			break;
 		}
 	}
-	if ( login_ip == 0 && auth_req >= 0 ) {
-		if (nvram_get_int("debug_httpd") & 2)
-			_dprintf("httpd auth forced for %u, array location %i\n", login_ip_tmp, auth_req);
+	logout_auth_req = -1;
+	for (i=0; i<ARRAY_SIZE(logout_hst); i++) { // check if logged out
+		if (logout_hst[i] != 0 && logout_hst[i] == login_ip_tmp)
+		{
+			logout_auth_req = i;
+			break;
+		}
+	}
+	if ( login_ip == 0 && (logout_auth_req >= 0 || login_auth_req == 1) ) {
+		if (nvram_get_int("debug_httpd") & 2) {
+			if (logout_auth_req >= 0)
+				_dprintf("httpd logout auth forced for %u, array location %i\n", login_ip_tmp, logout_auth_req);
+			if (login_auth_req == 1)
+				_dprintf("httpd login auth forced for %u\n", login_ip_tmp);
+		}
 		send_authenticate(dirname);
 		last_login_ip = 0;
-		logout_ip[auth_req] = 0; //clear ip from active logouts
+		logout_hst[logout_auth_req] = 0; //clear ip from active logouts
+		if (login_auth_index == -1) //overflow array failsafe, overwrite oldest entry
+			login_hst[0] = login_ip_tmp;
+		else
+			login_hst[login_auth_index] = login_ip_tmp; //update logins
 		return 0;
 	}
 
@@ -1442,16 +1463,16 @@ void http_logout(unsigned int ip)
 	if (ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) {
 		if (nvram_get_int("debug_httpd") & 2)
 			_dprintf("httpd_logout(%u:%i)\n", ip, http_port);
-		for (i=0; i<ARRAY_SIZE(logout_ip); i++) {
-			if (logout_ip[i] == 0) {
-				logout_ip[i] = ip; // save ip needing re-authorization
+		for (i=0; i<ARRAY_SIZE(logout_hst); i++) {
+			if (logout_hst[i] == 0) {
+				logout_hst[i] = ip; // save ip needing re-authorization
 				if (nvram_get_int("debug_httpd") & 2)
 					_dprintf("httpd re-auth set for %u, array location %i\n", ip, i);
 				break;
 			}
 		}
-		if (i>=ARRAY_SIZE(logout_ip)) //overflow array failsafe, overwrite oldest entry
-			logout_ip[0] = ip;
+		if (i>=ARRAY_SIZE(logout_hst)) //overflow array failsafe, overwrite oldest entry
+			logout_hst[0] = ip;
 
 		last_login_ip = login_ip;
 		login_ip = 0;
