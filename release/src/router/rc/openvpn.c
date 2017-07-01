@@ -1830,7 +1830,7 @@ void run_vpn_firewall_scripts()
 	DIR *dir;
 	struct dirent *file;
 	char *fn;
-	char *argv[3];
+	char *argv[8];
 
 	if ( chdir("/etc/openvpn/fw") )
 		return;
@@ -1843,6 +1843,23 @@ void run_vpn_firewall_scripts()
 		fn = file->d_name;
 		if ( fn[0] == '.' )
 			continue;
+		// Remove existing firewall rules if they exist
+		vpnlog(VPN_LOG_EXTRA,"Removing existing firewall rules: %s", fn);
+		argv[0] = "sed";
+		argv[1] = "s/-A/-D/g;s/-I/-D/g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
+		argv[2] = fn;
+		argv[3] = ">";
+		argv[4] = "/etc/openvpn/fw/clear-fw-tmp.sh";
+		argv[5] = NULL;
+		if (!_eval(argv, NULL, 0, NULL))
+		{
+			argv[0] = "/etc/openvpn/fw/clear-fw-tmp.sh";
+			argv[1] = NULL;
+			_eval(argv, NULL, 0, NULL);
+		}
+		unlink("/etc/openvpn/fw/clear-fw-tmp.sh");
+
+		// Add firewall rules
 		vpnlog(VPN_LOG_INFO,"Running firewall script: %s", fn);
 		argv[0] = "/bin/sh";
 		argv[1] = fn;
