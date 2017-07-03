@@ -462,6 +462,10 @@ auth_check( char* dirname, char* authorization ,char* url)
 			break;
 		}
 	}
+	if (nvram_get_int("login_ip_restart") == login_ip_tmp)
+		login_auth_req = 0;
+	nvram_unset("login_ip_restart"); //clear ip from last reboot or upgrade
+
 	logout_auth_req = -1;
 	for (i=0; i<ARRAY_SIZE(logout_hst); i++) { // check if logged out
 		if (logout_hst[i] != 0 && logout_hst[i] == login_ip_tmp)

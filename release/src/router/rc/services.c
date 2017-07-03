@@ -4450,6 +4450,8 @@ again:
 
 	if (strcmp(script, "reboot") == 0 || strcmp(script,"rebootandrestore")==0) {
 		g_reboot = 1;
+		nvram_set("login_ip_restart", nvram_safe_get("login_ip"));  //save ip initiating reboot
+		nvram_commit();
 		stop_wan();
 #ifdef RTCONFIG_USB
 		if (get_model() == MODEL_RTN53){
@@ -4501,6 +4503,8 @@ again:
 	}
 	else if(strcmp(script, "upgrade") == 0) {
 		if(action&RC_SERVICE_STOP) {
+			nvram_set("login_ip_restart", nvram_safe_get("login_ip"));  //save ip initiating upgrade
+			nvram_commit();
 #ifdef RTCONFIG_WIRELESSREPEATER
 		if(nvram_get_int("sw_mode") == SW_MODE_REPEATER)
 			stop_wlcconnect();
