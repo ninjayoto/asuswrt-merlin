@@ -362,7 +362,7 @@ obj-$(RTCONFIG_TIMEMACHINE) += db-4.8.30
 obj-$(RTCONFIG_TIMEMACHINE) += netatalk-3.0.5
 ifeq ($(or $(RTCONFIG_TIMEMACHINE),$(RTCONFIG_MDNS)),y)
 obj-$(RTCONFIG_TIMEMACHINE) += avahi-0.6.32
-obj-$(RTCONFIG_TIMEMACHINE) += expat-2.0.1
+obj-$(RTCONFIG_TIMEMACHINE) += expat-2.2.0
 else
 obj-$(RTCONFIG_MEDIA_SERVER) += mDNSResponder
 endif
@@ -3209,29 +3209,29 @@ netatalk-3.0.5-clean:
 	-@$(MAKE) -C netatalk-3.0.5 clean
 	@rm -f netatalk-3.0.5/stamp-h1
 
-#expat-2.0.1
-expat-2.0.1/stamp-h1:
-	cd $(TOP)/expat-2.0.1 && \
-	$(CONFIGURE) --build=i686-linux --prefix=$(INSTALLDIR)/expat-2.0.1/usr
+#expat-2.2.0
+expat-2.2.0/stamp-h1:
+	cd $(TOP)/expat-2.2.0 && \
+	$(CONFIGURE) --build=i686-linux --prefix=$(INSTALLDIR)/expat-2.2.0/usr
 	touch $@
 
-expat-2.0.1: expat-2.0.1/stamp-h1
+expat-2.2.0: expat-2.2.0/stamp-h1
 	@$(SEP)
-	@$(MAKE) -C expat-2.0.1 $(PARALLEL_BUILD)
+	@$(MAKE) -C expat-2.2.0 $(PARALLEL_BUILD)
 
-expat-2.0.1-install: expat-2.0.1
-	install -D expat-2.0.1/.libs/libexpat.so.1.5.2 $(INSTALLDIR)/expat-2.0.1/usr/lib/libexpat.so.1.5.2
-	$(STRIP) $(INSTALLDIR)/expat-2.0.1/usr/lib/libexpat.so.1.5.2
-	cd $(INSTALLDIR)/expat-2.0.1/usr/lib && ln -sf libexpat.so.1.5.2 libexpat.so.1
+expat-2.2.0-install: expat-2.2.0
+	install -D expat-2.2.0/.libs/libexpat.so.1.6.2 $(INSTALLDIR)/expat-2.2.0/usr/lib/libexpat.so.1.6.2
+	$(STRIP) $(INSTALLDIR)/expat-2.2.0/usr/lib/libexpat.so.1.6.2
+	cd $(INSTALLDIR)/expat-2.2.0/usr/lib && ln -sf libexpat.so.1.6.2 libexpat.so.1
 
-expat-2.0.1-clean:
-	-@$(MAKE) -C expat-2.0.1 clean
-	@rm -f expat-2.0.1/stamp-h1
+expat-2.2.0-clean:
+	-@$(MAKE) -C expat-2.2.0 clean
+	@rm -f expat-2.2.0/stamp-h1
 
 #avahi-0.6.32
-avahi-0.6.32/stamp-h1: shared nvram$(BCMEX) expat-2.0.1 libdaemon
+avahi-0.6.32/stamp-h1: shared nvram$(BCMEX) expat-2.2.0 libdaemon
 	cd $(TOP)/avahi-0.6.32 && \
-	$(CONFIGURE) LDFLAGS="-L$(TOP)/expat-2.0.1/.libs -ldl -lpthread" CFLAGS="-I$(TOP)/expat-2.0.1/lib -I$(TOP)/shared -I$(SRCBASE)/include" --prefix=$(INSTALLDIR)/avahi-0.6.32/usr --with-distro=archlinux --disable-glib --disable-gobject --disable-qt3 --disable-qt4 --disable-gtk --disable-dbus --disable-expat --disable-gdbm --disable-python --disable-pygtk --disable-python-dbus --disable-mono --disable-monodoc --disable-gtk3 --with-xml=none  LIBDAEMON_LIBS="-L$(TOP)/libdaemon/libdaemon/.libs -ldaemon -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client)" LIBDAEMON_CFLAGS="-I$(TOP)/libdaemon" --disable-autoipd --with-xml=expat --disable-stack-protector --with-avahi-user="admin" --with-avahi-group="root"
+	$(CONFIGURE) LDFLAGS="-L$(TOP)/expat-2.2.0/.libs -ldl -lpthread" CFLAGS="-I$(TOP)/expat-2.2.0/lib -I$(TOP)/shared -I$(SRCBASE)/include" --prefix=$(INSTALLDIR)/avahi-0.6.32/usr --with-distro=archlinux --disable-glib --disable-gobject --disable-qt3 --disable-qt4 --disable-gtk --disable-dbus --disable-expat --disable-gdbm --disable-python --disable-pygtk --disable-python-dbus --disable-mono --disable-monodoc --disable-gtk3 --with-xml=none  LIBDAEMON_LIBS="-L$(TOP)/libdaemon/libdaemon/.libs -ldaemon -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client)" LIBDAEMON_CFLAGS="-I$(TOP)/libdaemon" --disable-autoipd --with-xml=expat --disable-stack-protector --with-avahi-user="admin" --with-avahi-group="root"
 	touch $@
 
 avahi-0.6.32: avahi-0.6.32/stamp-h1
