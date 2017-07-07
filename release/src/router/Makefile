@@ -476,9 +476,9 @@ obj-$(RTCONFIG_TCPDUMP) += tcpdump-4.4.0
 # Merlin/fork addons
 obj-y += haveged
 ifneq ($(or $(findstring linux-2.6.36,$(LINUXDIR)),$(findstring linux-3.x,$(LINUXDIR))),)
-obj-y += ipset_arm
-obj-y += libmnl
 obj-y += libnfnetlink
+obj-y += libmnl
+obj-y += ipset_arm
 else
 obj-y += ipset
 endif
@@ -3378,12 +3378,13 @@ ipset_arm/stamp-h1: libmnl
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 	LDFLAGS="-ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	libmnl_CFLAGS="-I$(TOP)/libmnl/staged/usr/include" \
-	libmnl_LIBS="-L$(TOP)/libmnl/staged/usr/lib -l:libmnl.so" \
-	$(CONFIGURE) --prefix=/usr --with-kmod=no
+	libmnl_LIBS="-L$(TOP)/libmnl/staged/usr/lib -lmnl" \
+	$(CONFIGURE) --prefix=/usr --with-kmod=yes --with-kbuild=$(LINUXDIR)
 	touch ipset_arm/stamp-h1
 
 ipset_arm: ipset_arm/stamp-h1
 	$(MAKE) -C ipset_arm
+	$(MAKE) -C ipset_arm modules
 
 ipset_arm-install: ipset_arm
 	install -D ipset_arm/src/ipset $(INSTALLDIR)/ipset_arm/usr/sbin/ipset
@@ -3397,6 +3398,7 @@ ipset_arm-install: ipset_arm
 
 ipset_arm-clean:
 	-@$(MAKE) -C ipset_arm clean
+	-@$(MAKE) -C ipset_arm modules_clean
 	-@rm -rf ipset_arm/Makefile ipset_arm/stamp-h1
 
 ncurses/Makefile:
