@@ -143,10 +143,12 @@ then
 		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
 		ip route del default table $VPN_TBL
 		ip route add prohibit default table $VPN_TBL
+		$(nvram set vpn_client${VPN_INSTANCE}_block=1)
 		create_client_list
 	else
 		logger -t "openvpn-routing" "Allow WAN access to all VPN clients"
 		ip route flush table $VPN_TBL
+		$(nvram set vpn_client${VPN_INSTANCE}_block=0)
 	fi
 	ip route flush cache
 	exit 0
@@ -169,9 +171,11 @@ then
 	then
 		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
 		ip route change prohibit default table $VPN_TBL
+		$(nvram set vpn_client${VPN_INSTANCE}_block=1)
 		create_client_list
 	else
 		ip route flush table $VPN_TBL
+		$(nvram set vpn_client${VPN_INSTANCE}_block=0)
 		logger -t "openvpn-routing" "Flushing client routing table"
 	fi
 fi	# End route down
@@ -225,6 +229,7 @@ then
 	then
 		ip route del default
 		ip route add default via $route_net_gateway
+		$(nvram set vpn_client${VPN_INSTANCE}_block=0)
 	fi
 fi	# End route-up
 
