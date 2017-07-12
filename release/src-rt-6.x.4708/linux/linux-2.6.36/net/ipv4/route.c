@@ -1857,8 +1857,12 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 		return -EINVAL;
 
 	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr) ||
-	    ipv4_is_loopback(saddr) || skb->protocol != htons(ETH_P_IP))
+	    skb->protocol != htons(ETH_P_IP))
 		goto e_inval;
+
+	if (likely(!IN_DEV_ROUTE_LOCALNET(in_dev)))
+		if (ipv4_is_loopback(saddr))
+			goto e_inval;
 
 	if (ipv4_is_zeronet(saddr)) {
 		if (!ipv4_is_local_multicast(daddr))
@@ -2120,8 +2124,7 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 	   by fib_lookup.
 	 */
 
-	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr) ||
-	    ipv4_is_loopback(saddr))
+	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr))
 		goto martian_source;
 
 	if (daddr == htonl(0xFFFFFFFF) || (saddr == 0 && daddr == 0))
@@ -2133,9 +2136,16 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 	if (ipv4_is_zeronet(saddr))
 		goto martian_source;
 
-	if (ipv4_is_lbcast(daddr) || ipv4_is_zeronet(daddr) ||
-	    ipv4_is_loopback(daddr))
+	if (ipv4_is_zeronet(daddr))
 		goto martian_destination;
+
+	if (likely(!IN_DEV_ROUTE_LOCALNET(in_dev))) {
+		if (ipv4_is_loopback(daddr))
+			goto martian_destination;
+
+		if (ipv4_is_loopback(saddr))
+			goto martian_source;
+	}
 
 	/*
 	 *	Now we are ready to route packet.
@@ -2367,8 +2377,13 @@ static int __mkroute_output(struct rtable **result,
 	u32 tos = RT_FL_TOS(oldflp);
 	int err = 0;
 
-	if (ipv4_is_loopback(fl->fl4_src) && !(dev_out->flags&IFF_LOOPBACK))
+	in_dev = in_dev_get(dev_out);
+	if (!in_dev)
 		return -EINVAL;
+
+	if (likely(!IN_DEV_ROUTE_LOCALNET(in_dev)))
+		if (ipv4_is_loopback(fl->fl4_src) && !(dev_out->flags & IFF_LOOPBACK))
+			return -EINVAL;
 
 	if (fl->fl4_dst == htonl(0xFFFFFFFF))
 		res->type = RTN_BROADCAST;
@@ -2379,11 +2394,6 @@ static int __mkroute_output(struct rtable **result,
 
 	if (dev_out->flags & IFF_LOOPBACK)
 		flags |= RTCF_LOCAL;
-
-	/* get work reference to inet device */
-	in_dev = in_dev_get(dev_out);
-	if (!in_dev)
-		return -EINVAL;
 
 	if (res->type == RTN_BROADCAST) {
 		flags |= RTCF_BROADCAST | RTCF_LOCAL;

@@ -672,6 +672,9 @@ static __inline__ ssize_t tun_get_user(struct tun_struct *tun,
 		skb_shinfo(skb)->gso_segs = 0;
 	}
 
+	//test backport of wl500g commit d251010
+	skb_orphan(skb);
+
 	netif_rx_ni(skb);
 
 	tun->dev->stats.rx_packets++;
