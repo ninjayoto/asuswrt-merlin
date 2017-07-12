@@ -1,7 +1,7 @@
 /*
  * Broadcom NAND core interface
  *
- * Copyright (C) 2013, Broadcom Corporation. All Rights Reserved.
+ * Copyright (C) 2015, Broadcom Corporation. All Rights Reserved.
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -405,8 +405,12 @@ nandcore_check_id(uint8 *id)
 	case NFL_VENDOR_ZENTEL:
 		name = "Zentel";
 		break;
+	case NFL_VENDOR_WINBOND:
+		name = "Winbond";
+		break;
 	default:
-		printf("No NAND flash type found\n");
+//		printf("No NAND flash type found\n");
+		name = "Unknown";
 		break;
 	}
 

@@ -822,6 +822,12 @@ void __init setup_arch(char **cmdline_p)
 	arm_memblock_init(&meminfo, mdesc);
 
 	paging_init(mdesc);
+
+#ifdef CONFIG_DUMP_PREV_OOPS_MSG
+        //if( reserve_bootmem(0x0, 0x2000, BOOTMEM_EXCLUSIVE) < 0 )
+	reserve_bootmem(virt_to_phys((void *)CONFIG_DUMP_PREV_OOPS_MSG_BUF_ADDR), CONFIG_DUMP_PREV_OOPS_MSG_BUF_LEN, BOOTMEM_EXCLUSIVE);
+#endif
+
 	request_standard_resources(&meminfo, mdesc);
 
 #ifdef CONFIG_SMP

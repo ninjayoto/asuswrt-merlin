@@ -42,6 +42,8 @@
 #include "initdata.h"
 #include "bsp_priv.h"
 
+#include <rtk_types.h>
+
 #ifdef RESCUE_MODE
 unsigned char DETECT(void);
 bool mmode_set(void);
@@ -77,11 +79,6 @@ extern void FANON(void);
 #endif
 #ifdef RTAC68U
 #define	TURBO_LED_GPIO	(1 << 4)	// GPIO 4
-#if 0
-#define	USB_LED_GPIO	(1 << 0)	// GPIO 0
-#define	WL5G_LED_GPIO	(1 << 6)	// GPIO 6
-#define	USB3_LED_GPIO	(1 << 14)	// GPIO 14
-#endif
 #define WPS_BTN_GPIO	(1 << 7)	// GPIO 7
 #else
 #ifdef RTN18U
@@ -95,6 +92,11 @@ extern void FANON(void);
 #endif	/* end of RTAC87U */
 
 #endif	//end of DSLAC68U
+
+#ifdef RTL8365MB
+#define SMI_SCK_GPIO	(1 << 6)	// GPIO 6
+#define SMI_SDA_GPIO	(1 << 7)	// GPIO 7
+#endif	/*~RTL8365MB*/
 
 static int
 ui_cmd_reboot(ui_cmdline_t *cmd, int argc, char *argv[])
@@ -273,6 +275,29 @@ done:
 	return ret;
 }
 
+#ifdef RTL8365MB
+void set_gpio_dir(rtk_uint32 gpioid, rtk_uint32 dir)
+{
+	sih = si_kattach(SI_OSH);
+	ASSERT(sih);
+	si_gpioouten(sih, 1<<gpioid, !dir?1<<gpioid:0, GPIO_DRV_PRIORITY);
+}
+
+void set_gpio_data(rtk_uint32 gpioid, rtk_uint32 data)
+{
+	sih = si_kattach(SI_OSH);
+	ASSERT(sih);
+	si_gpioout(sih, 1<<gpioid, data?1<<gpioid:0, GPIO_DRV_PRIORITY);
+}
+
+void get_gpio_data(rtk_uint32 gpioid, rtk_uint32 *pdata)
+{
+	sih = si_kattach(SI_OSH);
+	ASSERT(sih);
+	*pdata = (si_gpioin(sih) & 1<<gpioid) == 0 ? 0 : 1;
+}
+#endif
+
 #ifdef RESCUE_MODE
 bool mmode_set(void)
 {
@@ -318,12 +343,23 @@ extern void GPIO_INIT(void)
 	sih = si_kattach(SI_OSH);
 	ASSERT(sih);
 	si_gpiocontrol(sih, PWR_LED_GPIO, 0, GPIO_DRV_PRIORITY);
+#ifdef RTL8365MB
+	si_gpiocontrol(sih, SMI_SCK_GPIO, 0, GPIO_DRV_PRIORITY);
+	si_gpiocontrol(sih, SMI_SDA_GPIO, 0, GPIO_DRV_PRIORITY);
+#else
 #if defined(RTAC68U) || defined(RTAC87U)
 	si_gpiocontrol(sih, TURBO_LED_GPIO, 0, GPIO_DRV_PRIORITY);
 #endif
+#endif
+
 	si_gpioouten(sih, PWR_LED_GPIO, 0, GPIO_DRV_PRIORITY);
+#ifdef RTL8365MB
+	si_gpioouten(sih, SMI_SCK_GPIO, 0, GPIO_DRV_PRIORITY);
+	si_gpioouten(sih, SMI_SDA_GPIO, 0, GPIO_DRV_PRIORITY);
+#else
 #if defined(RTAC68U) || defined(RTAC87U)
 	si_gpioouten(sih, TURBO_LED_GPIO, 0, GPIO_DRV_PRIORITY);
+#endif
 #endif
 }
 
@@ -340,21 +376,7 @@ extern void LEDOFF(void)
 	si_gpioout(sih, TURBO_LED_GPIO, TURBO_LED_GPIO, GPIO_DRV_PRIORITY);
 #endif
 }
-#if 0
-#if defined(RTAC68U) || defined(RTAC87U)
-extern void OTHERLEDOFF(void)
-{
-        sih = si_kattach(SI_OSH);
-        ASSERT(sih);
-        si_gpioouten(sih, WL5G_LED_GPIO, WL5G_LED_GPIO, GPIO_DRV_PRIORITY);
-        si_gpioout(sih, WL5G_LED_GPIO, WL5G_LED_GPIO, GPIO_DRV_PRIORITY);
-        si_gpioouten(sih, USB_LED_GPIO, USB_LED_GPIO, GPIO_DRV_PRIORITY);
-        si_gpioout(sih, USB_LED_GPIO, USB_LED_GPIO, GPIO_DRV_PRIORITY);
-        si_gpioouten(sih, USB3_LED_GPIO, USB3_LED_GPIO, GPIO_DRV_PRIORITY);
-        si_gpioout(sih, USB3_LED_GPIO, USB3_LED_GPIO, GPIO_DRV_PRIORITY);
-}
-#endif
-#endif
+
 unsigned char DETECT(void)
 {
         unsigned char d = 0;
@@ -567,6 +589,11 @@ ui_cmd_go(ui_cmdline_t *cmd, int argc, char *argv[])
 	int FW_err_count;
 	char FW_err[4];
 
+#ifdef DUAL_TRX
+        char *trx2_name = "nflash1.trx2";
+        int trx1_ret, trx2_ret;
+#endif
+
 	val = nvram_get("os_ram_addr");
 	if (val)
 		osaddr = bcm_strtoul(val, NULL, 16);
@@ -618,8 +645,26 @@ ui_cmd_go(ui_cmdline_t *cmd, int argc, char *argv[])
 #endif
         else {
                 xprintf("boot the image...\n"); // tmp test
+#ifdef DUAL_TRX
+                trx1_ret = check_trx(trx_name);
+                trx2_ret = check_trx(trx2_name);
+                xprintf("Check 2 trx result: %d, %d\n", trx1_ret, trx2_ret);
 
+                if( trx1_ret == 0 && trx2_ret != 0 ) {
+                        //copy trx1 -> trx2
+                        ret = ui_docommand("flash -size=48234496 nflash1.trx nflash1.trx2 -cfe");
+                }
+                else if( trx1_ret != 0 && trx2_ret == 0 ) {
+                        //copy trx2 -> trx1
+                        ret = ui_docommand("flash -size=50331648 nflash1.trx2 nflash1.trx -cfe");
+                        //check trx1 again
+                        trx1_ret = check_trx(trx_name);
+                        xprintf("Check trx1 result= %d\n", trx1_ret);
+                }
+                if(trx1_ret) { //trx1 failed
+#else
                 if (check_trx(trx_name) || nvram_match("asus_trx_test", "1")) {
+#endif
                         xprintf("Hello!! Enter Rescue Mode: (Check error)\n\n");
 			FW_err_count = atoi(nvram_get("Ate_FW_err"));
 			FW_err_count++;

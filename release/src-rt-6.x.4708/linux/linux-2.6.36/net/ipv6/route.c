@@ -669,7 +669,7 @@ static struct rt6_info *rt6_alloc_cow(struct rt6_info *ort, struct in6_addr *dad
 			}
 
 			if (net_ratelimit())
-				printk(KERN_WARNING
+				printk(KERN_DEBUG
 				       "ipv6: Neighbour table overflow.\n");
 			dst_free(&rt->dst);
 			return NULL;
@@ -1162,8 +1162,6 @@ int ip6_route_add(struct fib6_config *cfg)
 
 	if (addr_type & IPV6_ADDR_MULTICAST)
 		rt->dst.input = ip6_mc_input;
-	else if (cfg->fc_flags & RTF_LOCAL)
-		rt->dst.input = ip6_input;
 	else
 		rt->dst.input = ip6_forward;
 
@@ -1185,8 +1183,7 @@ int ip6_route_add(struct fib6_config *cfg)
 	   they would result in kernel looping; promote them to reject routes
 	 */
 	if ((cfg->fc_flags & RTF_REJECT) ||
-	    (dev && (dev->flags&IFF_LOOPBACK) && !(addr_type&IPV6_ADDR_LOOPBACK)
-					      && !(cfg->fc_flags&RTF_LOCAL))) {
+	    (dev && (dev->flags&IFF_LOOPBACK) && !(addr_type&IPV6_ADDR_LOOPBACK))) {
 		/* hold loopback dev/idev if we haven't done so. */
 		if (dev != net->loopback_dev) {
 			if (dev) {
@@ -1853,14 +1850,6 @@ int ipv6_route_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 
 		rtmsg_to_fib6_config(net, &rtmsg, &cfg);
 
-		printk(KERN_DEBUG "IPV6 ROUTE %S via IOCTL\n",
-			(cmd == SIOCADDRT) ? "ADD" : "REMOVE"); 
-		printk(KERN_DEBUG "SOURCE is %pI6c\n", &cfg.fc_src);
-		printk(KERN_DEBUG "DST is %pI6c\n", &cfg.fc_dst);
-		printk(KERN_DEBUG "PROCESS is %d(%s)\n", current->pid, current->comm);
-		printk(KERN_DEBUG "PARENT PROCESS is %d(%s)\n", current->parent->pid,
-							       current->parent->comm);
-
 		rtnl_lock();
 		switch (cmd) {
 		case SIOCADDRT:
@@ -2106,9 +2095,6 @@ static int rtm_to_fib6_config(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (rtm->rtm_type == RTN_UNREACHABLE)
 		cfg->fc_flags |= RTF_REJECT;
 
-	if (rtm->rtm_type == RTN_LOCAL)
-		cfg->fc_flags |= RTF_LOCAL;
-
 	cfg->fc_nlinfo.pid = NETLINK_CB(skb).pid;
 	cfg->fc_nlinfo.nlh = nlh;
 	cfg->fc_nlinfo.nl_net = sock_net(skb->sk);
@@ -2176,13 +2162,6 @@ static int inet6_rtm_newroute(struct sk_buff *skb, struct nlmsghdr* nlh, void *a
 	if (err < 0)
 		return err;
 
-	printk(KERN_DEBUG "IPV6 ROUTE ADD via NETLINK\n");
-	printk(KERN_DEBUG "SOURCE is %pI6c\n", &cfg.fc_src);
-	printk(KERN_DEBUG "DST is %pI6c\n", &cfg.fc_dst);
-	printk(KERN_DEBUG "PROCESS is %d(%s)\n", current->pid, current->comm);
-	printk(KERN_DEBUG "PARENT PROCESS is %d(%s)\n", current->parent->pid,
-						       current->parent->comm);
-
 	return ip6_route_add(&cfg);
 }
 
@@ -2236,8 +2215,6 @@ static int rt6_fill_node(struct net *net,
 	NLA_PUT_U32(skb, RTA_TABLE, table);
 	if (rt->rt6i_flags&RTF_REJECT)
 		rtm->rtm_type = RTN_UNREACHABLE;
-	else if (rt->rt6i_flags&RTF_LOCAL)
-		rtm->rtm_type = RTN_LOCAL;
 	else if (rt->rt6i_dev && (rt->rt6i_dev->flags&IFF_LOOPBACK))
 		rtm->rtm_type = RTN_LOCAL;
 	else
