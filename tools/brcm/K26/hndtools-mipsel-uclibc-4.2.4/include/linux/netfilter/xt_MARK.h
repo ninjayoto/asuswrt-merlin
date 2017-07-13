@@ -3,13 +3,8 @@
 
 /* Version 0 */
 struct xt_mark_target_info {
-#ifdef KERNEL_64_USERSPACE_32
-	unsigned long long mark, mask;
-#else
-	unsigned long mark, mask;
-#endif
+	unsigned long mark;
 };
-
 
 /* Version 1 */
 enum {
@@ -19,11 +14,7 @@ enum {
 };
 
 struct xt_mark_target_info_v1 {
-#ifdef KERNEL_64_USERSPACE_32
-	unsigned long long mark, mask;
-#else
-	unsigned long mark, mask;
-#endif
+	unsigned long mark;
 	u_int8_t mode;
 };
 
