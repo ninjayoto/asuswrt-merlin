@@ -69,22 +69,24 @@ install:
 ifeq ($(RTCONFIG_TFAT),y)
 	@cp -f $(SRCFILE)/fat/kernel-module/tfat.ko $(DSTDIR)
 	install -D $(SRCFILE)/fat/tools/fatfsck $(INSTALLDIR)/usr/sbin/fatfsck
+	ln -sf fatfsck $(INSTALLDIR)/usr/sbin/fsck.tfat
 ifneq ($(NO_MKTOOLS),y)
 	install -D $(SRCFILE)/fat/tools/mkfatfs $(INSTALLDIR)/usr/sbin/mkfatfs
 	#install -D $(SRCFILE)/fat/tools/fatdebug $(INSTALLDIR)/usr/sbin/fatdebug
 	#install -D $(SRCFILE)/fat/tools/fatinfo $(INSTALLDIR)/usr/sbin/fatinfo
-	#install -D $(SRCFILE)/fat/tools/fatlabel $(INSTALLDIR)/usr/sbin/fatlabel
+	install -D $(SRCFILE)/fat/tools/fatlabel $(INSTALLDIR)/usr/sbin/fatlabel
 	#install -D $(SRCFILE)/fat/tools/fatdump $(INSTALLDIR)/usr/sbin/fatdump
 endif
 endif
 ifeq ($(RTCONFIG_TUXERA_NTFS),y)
 	@cp -f $(SRCFILE)/ntfs/kernel-module/tntfs.ko $(DSTDIR)
 	install -D $(SRCFILE)/ntfs/tools/ntfsck $(INSTALLDIR)/usr/sbin/ntfsck
+	ln -sf ntfsck $(INSTALLDIR)/usr/sbin/fsck.tntfs
 ifneq ($(NO_MKTOOLS),y)
 	install -D $(SRCFILE)/ntfs/tools/mkntfs $(INSTALLDIR)/usr/sbin/mkntfs
 	#install -D $(SRCFILE)/ntfs/tools/ntfsdebug $(INSTALLDIR)/usr/sbin/ntfsdebug
 	#install -D $(SRCFILE)/ntfs/tools/ntfsinfo $(INSTALLDIR)/usr/sbin/ntfsinfo
-	#install -D $(SRCFILE)/ntfs/tools/ntfslabel $(INSTALLDIR)/usr/sbin/ntfslabel
+	install -D $(SRCFILE)/ntfs/tools/ntfslabel $(INSTALLDIR)/usr/sbin/ntfslabel
 endif
 endif
 ifeq ($(RTCONFIG_TUXERA_HFS),y)
@@ -92,9 +94,20 @@ ifeq ($(RTCONFIG_TUXERA_HFS),y)
 	install -D $(SRCFILE)/hfsplus/tools/fsck_hfs $(INSTALLDIR)/usr/sbin/fsck_hfs
 ifneq ($(NO_MKTOOLS),y)
 	install -D $(SRCFILE)/hfsplus/tools/newfs_hfs $(INSTALLDIR)/usr/sbin/newfs_hfs
-	#install -D $(SRCFILE)/hfsplus/tools/thfslabel $(INSTALLDIR)/usr/sbin/thfslabel
+	install -D $(SRCFILE)/hfsplus/tools/thfslabel $(INSTALLDIR)/usr/sbin/thfslabel
 endif
 endif
+ifeq ($(RTCONFIG_EXFAT),y)
+	cp -f $(SRCFILE)/exfat/kernel-module/texfat.ko $(DSTDIR)
+	install -D $(SRCFILE)/exfat/tools/exfatck $(INSTALLDIR)/usr/sbin/exfatck
+	ln -sf exfatck $(INSTALLDIR)/usr/sbin/fsck.texfat
+ifneq ($(NO_MKTOOLS),y)
+	install -D $(SRCFILE)/exfat/tools/mkexfat $(INSTALLDIR)/usr/sbin/mkexfat
+	#install -D $(SRCFILE)/exfat/tools/exfatdebug $(INSTALLDIR)/usr/sbin/exfatdebug
+	#install -D $(SRCFILE)/exfat/tools/exfatinfo $(INSTALLDIR)/usr/sbin/exfatinfo
+	install -D $(SRCFILE)/exfat/tools/exfatlabel $(INSTALLDIR)/usr/sbin/exfatlabel
++endif
++endif
 ifeq ($(or $(RTCONFIG_TFAT),$(RTCONFIG_TUXERA_NTFS),$(RTCONFIG_TUXERA_HFS)),y)
 	install  -m 0644 -D $(SRCFILE)/VERSION-INFO $(INSTALLDIR)/rom/Tuxera-VERSION-INFO
 #ifeq ($(and $(RTCONFIG_BCMARM),$(RTCONFIG_SAMBA3)),y)
