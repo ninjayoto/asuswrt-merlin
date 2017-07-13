@@ -3512,7 +3512,7 @@ int init_nvram(void)
 	add_rc_support("user_low_rssi");
 #endif
 
-#if defined(RTCONFIG_NTFS) && !defined(RTCONFIG_NTFS3G)
+#if defined(RTCONFIG_NTFS) && !defined(RTCONFIG_OPEN_NTFS3G)
 	add_rc_support("ufsd");
 #endif
 
@@ -3609,7 +3609,7 @@ int limit_page_cache_ratio(int ratio)
 		return -1;
 
 	if (ratio < 90) {
-#if defined(RTCONFIG_NTFS3G)
+#if defined(RTCONFIG_OPEN_NTFS3G)
 		min = 90;
 #endif
 

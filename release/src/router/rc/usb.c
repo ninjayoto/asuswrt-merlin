@@ -274,11 +274,11 @@ void start_usb(void)
 #endif
 			}
 #ifdef RTCONFIG_NTFS
-#ifndef RTCONFIG_NTFS3G
+#ifndef RTCONFIG_OPEN_NTFS3G
 			if(nvram_get_int("usb_fs_ntfs")){
-#ifdef RTCONFIG_TUXERA
+#ifdef RTCONFIG_TUXERA_NTFS
 				modprobe("tntfs");
-#else
+#elif defined(RTCONFIG_PARAGON_NTFS)
 #ifdef RTCONFIG_UFSD_DEBUG
 				modprobe("ufsd_debug");
 #else
@@ -303,7 +303,7 @@ void start_usb(void)
 #endif
 #ifdef RTCONFIG_EXFAT
 			if(nvram_get_int("usb_fs_exfat")){
-#ifdef RTCONFIG_TUXERA
+#ifdef RTCONFIG_TUXERA_NTFS
 				modprobe("texfat");
 #endif
 			}
@@ -410,10 +410,10 @@ void remove_usb_storage_module(void)
 	modprobe_r("fat");
 #endif
 #ifdef RTCONFIG_NTFS
-#ifndef RTCONFIG_NTFS3G
-#ifdef RTCONFIG_TUXERA
+#ifndef RTCONFIG_OPEN_NTFS3G
+#ifdef RTCONFIG_TUXERA_NTFS
 	modprobe_r("tntfs");
-#else
+#elif defined(RTCONFIG_PARAGON_NTFS)
 #ifdef RTCONFIG_UFSD_DEBUG
 	modprobe_r("ufsd_debug");
 	modprobe_r("jnl_debug");
@@ -438,7 +438,7 @@ void remove_usb_storage_module(void)
 #endif
 #endif
 #ifdef RTCONFIG_EXFAT
-#ifdef RTCONFIG_TUXERA
+#ifdef RTCONFIG_TUXERA_NTFS
 	modprobe_r("texfat");
 #endif
 #endif
@@ -717,8 +717,10 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *_type)
 			sprintf(options + strlen(options), ",noatime" + (options[0] ? 0 : 1));
 #endif
 
-#ifdef RTCONFIG_TUXERA
+#if 0
+#ifdef RTCONFIG_TUXERA_NTFS
 			sprintf(options + strlen(options), ",iostreaming" + (options[0] ? 0 : 1));
+#endif
 #endif
 
 			if (nvram_invmatch("usb_ntfs_opt", ""))
@@ -791,14 +793,14 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *_type)
 			/* try ntfs-3g in case it's installed */
 			if (ret != 0 && strncmp(type, "ntfs", 4) == 0) {
 				if (nvram_get_int("usb_fs_ntfs")) {
-#ifdef RTCONFIG_NTFS3G
+#ifdef RTCONFIG_OPEN_NTFS3G
 					ret = eval("ntfs-3g", "-o", options, mnt_dev, mnt_dir);
-#elif defined(RTCONFIG_TUXERA)
-					if(nvram_get_int("usb_fs_ntfs_sparse"))
-						ret = eval("mount", "-t", "tntfs", "-o", options, "-o", "sparse", mnt_dev, mnt_dir);
-					else
+#elif defined(RTCONFIG_TUXERA_NTFS)
+//					if(nvram_get_int("usb_fs_ntfs_sparse"))  //sparse option not supported on tuxera
+//						ret = eval("mount", "-t", "tntfs", "-o", options, "-o", "sparse", mnt_dev, mnt_dir);
+//					else
 						ret = eval("mount", "-t", "tntfs", "-o", options, mnt_dev, mnt_dir);
-#else
+#elif defined(RTCONFIG_PARAGON_NTFS)
 					if(nvram_get_int("usb_fs_ntfs_sparse"))
 						ret = eval("mount", "-t", "ufsd", "-o", options, "-o", "force", "-o", "sparse", mnt_dev, mnt_dir);
 					else
@@ -812,13 +814,13 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *_type)
 			/* try HFS in case it's installed */
 			if(ret != 0 && !strncmp(type, "hfs", 3)){
 				if (nvram_get_int("usb_fs_hfs")) {
-#ifdef RTCONFIG_TUXERA_HFS
+#ifdef RTCONFIG_KERNEL_HFSPLUS
+					eval("fsck.hfsplus", "-f", mnt_dev);//Scan
+					ret = eval("mount", "-t", "hfsplus", "-o", options, mnt_dev, mnt_dir);
+#elif defined(RTCONFIG_TUXERA_HFS)
 					ret = eval("mount", "-t", "thfsplus", "-o", options, mnt_dev, mnt_dir);
 #elif defined(RTCONFIG_PARAGON_HFS)
 					ret = eval("mount", "-t", "ufsd", "-o", options, mnt_dev, mnt_dir);
-#elif defined(RTCONFIG_KERNEL_HFSPLUS)
-					eval("fsck.hfsplus", "-f", mnt_dev);//Scan
-					ret = eval("mount", "-t", "hfsplus", "-o", options, mnt_dev, mnt_dir);
 #endif
 				}
 			}
@@ -832,7 +834,7 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *_type)
 					sprintf(options + strlen(options), "%s%s", options[0] ? "," : "", nvram_safe_get("usb_exfat_opt"));
 
 				if(nvram_get_int("usb_fs_exfat")){
-#ifdef RTCONFIG_TUXERA
+#ifdef RTCONFIG_TUXERA_NTFS
 					ret = eval("mount", "-t", "texfat", "-o", options, mnt_dev, mnt_dir);
 #endif
 				}
@@ -1987,6 +1989,7 @@ start_samba(void)
 	int cpu_num = sysconf(_SC_NPROCESSORS_CONF);
 	int taskset_ret = -1;
 #endif
+	char smbd_cmd[32];
 
 	if (getpid() != 1) {
 		notify_rc_after_wait("start_samba");
@@ -2067,6 +2070,16 @@ _dprintf("%s: cmd=%s.\n", __FUNCTION__, cmd);
 		free(nv);
 
 	xstart("nmbd", "-D", "-s", "/etc/smb.conf");
+
+#if defined(RTCONFIG_TFAT) || defined(RTCONFIG_TUXERA_NTFS) || defined(RTCONFIG_TUXERA_HFS)
+	if(nvram_get_int("enable_samba_tuxera") == 1)
+		snprintf(smbd_cmd, 32, "%s/smbd", "/usr/bin");
+	else
+		snprintf(smbd_cmd, 32, "%s/smbd", "/usr/sbin");
+#else
+	snprintf(smbd_cmd, 32, "%s/smbd", "/usr/sbin");
+#endif
+
 #ifdef RTCONFIG_BCMARM
 #ifdef SMP
 #if 0
@@ -2076,15 +2089,15 @@ _dprintf("%s: cmd=%s.\n", __FUNCTION__, cmd);
 		taskset_ret = eval("ionice", "-c1", "-n0", "smbd", "-D", "-s", "/etc/smb.conf");
 #else
 	if(cpu_num > 1)
-		taskset_ret = cpu_eval(NULL, "1", "smbd", "-D", "-s", "/etc/smb.conf");
+		taskset_ret = cpu_eval(NULL, "1", smbd_cmd, "-D", "-s", "/etc/smb.conf");
 	else
-		taskset_ret = eval("smbd", "-D", "-s", "/etc/smb.conf");
+		taskset_ret = eval(smbd_cmd, "-D", "-s", "/etc/smb.conf");
 #endif
 
 	if(taskset_ret != 0)
 #endif
 #endif
-		xstart("smbd", "-D", "-s", "/etc/smb.conf");
+		xstart(smbd_cmd, "-D", "-s", "/etc/smb.conf");
 
 	logmessage("Samba Server", "daemon is started");
 
