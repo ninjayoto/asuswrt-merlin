@@ -96,6 +96,11 @@ CFLAGS += -I$(SRCBASE)/include -I$(SRCBASE)/wps/common/include	\
 
 LDFLAGS += $(EXTRA_LDFLAGS)
 
+ifeq ($(RTCONFIG_HTTPS),y)
+CFLAGS += -I$(TOP)/openssl/include/openssl
+LDFLAGS += -L$(TOP)/openssl -lcrypto -lssl
+endif
+
 ifeq ($(RTCONFIG_QTN),y)
 LDFLAGS += -L$(TOP)/libqcsapi_client -lqcsapi_client
 endif
@@ -110,9 +115,9 @@ export LIBPATH += -L$(SRCBASE)/router/wps/lib
 export LIBPATH += -L$(SRCBASE)/router/wps/prebuilt
 ifeq ($(WPS_UPNP_DEVICE),1)
 # Always use LIBUPNP
-export LIBPATH += -L$(TOP)/libupnp -L$(INSTALLDIR)/libupnp/usr/lib
+export LIBPATH += -L$(TOP)/libupnp${BCMEX}$(EX7) -L$(INSTALLDIR)/libupnp/usr/lib
 WPSM_LIBS += -lupnp
-CFLAGS += -I$(SRCBASE)/router/libupnp/include -I$(SRCBASE)/wps/brcm_apps/upnp/WFADevice
+CFLAGS += -I$(SRCBASE)/router/libupnp${BCMEX}$(EX7)/include -I$(SRCBASE)/wps/brcm_apps/upnp/WFADevice
 endif
 
 WPS_OSL := $(WPS_ROUTERHALFILES)
@@ -200,7 +205,11 @@ clean:
 install: all
 	install -d $(INSTALLDIR)/wps$(BCMEX)/bin
 ifeq ($(REBUILD),0)
+ifeq ($(RTCONFIG_QTN),y)
+	install prebuilt/wps_monitor_qtn $(INSTALLDIR)/wps$(BCMEX)/bin/wps_monitor
+else
 	install prebuilt/wps_monitor $(INSTALLDIR)/wps$(BCMEX)/bin
+endif
 else
 	install wps_monitor $(INSTALLDIR)/wps$(BCMEX)/bin
 endif
