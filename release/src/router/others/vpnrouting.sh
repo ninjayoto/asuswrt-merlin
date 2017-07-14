@@ -137,18 +137,21 @@ then
 	logger -t "openvpn-routing" "Refreshing policy rules for client $VPN_INSTANCE"
 	purge_client_list
 
-	if [ "$VPN_FORCE" == "1" -a "$VPN_ENABLED" == "1" -a "$VPN_REDIR" == "2" ]
+	if [ "$VPN_REDIR" == "2" ]
 	then
-		init_table
-		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
-		ip route del default table $VPN_TBL
-		ip route add prohibit default table $VPN_TBL
-		$(nvram set vpn_client${VPN_INSTANCE}_block=1)
-		create_client_list
-	else
-		logger -t "openvpn-routing" "Allow WAN access to all VPN clients"
-		ip route flush table $VPN_TBL
-		$(nvram set vpn_client${VPN_INSTANCE}_block=0)
+		if [ "$VPN_FORCE" == "1" -o "$VPN_FORCE" == "2" -a "$VPN_ENABLED" == "1" ]
+		then
+			init_table
+			logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
+			ip route del default table $VPN_TBL
+			ip route add prohibit default table $VPN_TBL
+			$(nvram set vpn_client${VPN_INSTANCE}_block=1)
+			create_client_list
+		else
+			logger -t "openvpn-routing" "Allow WAN access to all VPN clients"
+			ip route flush table $VPN_TBL
+			$(nvram set vpn_client${VPN_INSTANCE}_block=0)
+		fi
 	fi
 	ip route flush cache
 	exit 0
@@ -167,16 +170,19 @@ if [ $script_type == 'route-pre-down' ]
 then
 	purge_client_list
 
-	if [ "$VPN_FORCE" == "1" -a "$VPN_ENABLED" == "1" -a "$VPN_REDIR" == "2" ]
+	if [ "$VPN_REDIR" == "2" ]
 	then
-		logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
-		ip route change prohibit default table $VPN_TBL
-		$(nvram set vpn_client${VPN_INSTANCE}_block=1)
-		create_client_list
-	else
-		ip route flush table $VPN_TBL
-		$(nvram set vpn_client${VPN_INSTANCE}_block=0)
-		logger -t "openvpn-routing" "Flushing client routing table"
+		if [ "$VPN_FORCE" == "1" -o "$VPN_FORCE" == "2" -a "$VPN_ENABLED" == "1" ]
+		then
+			logger -t "openvpn-routing" "Tunnel down - VPN client access blocked"
+			ip route change prohibit default table $VPN_TBL
+			$(nvram set vpn_client${VPN_INSTANCE}_block=1)
+			create_client_list
+		else
+			ip route flush table $VPN_TBL
+			$(nvram set vpn_client${VPN_INSTANCE}_block=0)
+			logger -t "openvpn-routing" "Flushing client routing table"
+		fi
 	fi
 fi	# End route down
 
@@ -206,7 +212,7 @@ then
 # Setup table default route
 	if [ "$VPN_IP_LIST" != "" ]
 	then
-		if [ "$VPN_FORCE" == "1" ]
+		if [ "$VPN_FORCE" == "1" -o "$VPN_FORCE" == "2" ]
 		then
 			logger -t "openvpn-routing" "Tunnel re-established, restoring WAN access to clients"
 		fi

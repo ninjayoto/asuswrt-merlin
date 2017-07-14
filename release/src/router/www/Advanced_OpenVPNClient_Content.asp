@@ -1352,8 +1352,9 @@ function defaultSettings() {
 					<tr id="client_enforce">
 						<th>Block routed clients if tunnel goes down</th>
 						<td>
-							<input type="radio" name="vpn_client_enforce" class="input" value="1" <% nvram_match_x("", "vpn_client_enforce", "1", "checked"); %>><#checkbox_Yes#>
-							<input type="radio" name="vpn_client_enforce" class="input" value="0" <% nvram_match_x("", "vpn_client_enforce", "0", "checked"); %>><#checkbox_No#>
+							<input type="radio" name="vpn_client_enforce" class="input" value="1" <% nvram_match_x("", "vpn_client_enforce", "1", "checked"); %>>Always
+							<input type="radio" name="vpn_client_enforce" class="input" value="2" <% nvram_match_x("", "vpn_client_enforce", "2", "checked"); %>>Only when client is enabled
+							<input type="radio" name="vpn_client_enforce" class="input" value="0" <% nvram_match_x("", "vpn_client_enforce", "0", "checked"); %>>Never
 						</td>
 					</tr>
 				</table>
