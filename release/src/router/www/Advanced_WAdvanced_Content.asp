@@ -258,15 +258,30 @@ function changeRSSI(_switch){
 }
 
 function applyRule(){
+	var translated_value = 0;
 	if(validForm()){
 		if(wifi_hw_sw_support) { //For N55U
 			document.form.wl_HW_switch.value = "0";
 			document.form.wl_HW_switch.disabled = false;
 		}
 		
-		if(power_support && Rawifi_support){
-			document.form.wl_TxPower.disabled = false;
-			document.form.wl_TxPower.value = document.form.wl_TxPower_ra.value;
+		if(power_support) {
+			if(Rawifi_support) {
+				document.form.wl_TxPower.disabled = false;
+				document.form.wl_TxPower.value = document.form.wl_TxPower_ra.value;
+			}
+			else {
+				if( based_modelid == "RT-AC68U" ) { //convert for new wl driver
+					translated_value = parseInt(document.form.wl_TxPower.value/80*100);
+					if(translated_value >=250){
+						translated_value = 250;
+					}
+					else if(translated_value <=1){
+						translated_value = 1;
+					}
+					document.form.wl_txpower.value = translated_value;
+				}
+			}
 		}		
 
 		if(document.form.usb_usb3.disabled == false && document.form.usb_usb3.value != '<% nvram_get("usb_usb3"); %>'){
@@ -565,6 +580,7 @@ function check_ampdu_rts(){
 <input type="hidden" name="wl_radio_time2_x" value="<% nvram_get("wl_radio_time2_x"); %>">
 <input type="hidden" name="wl_subunit" value="-1">
 <input type="hidden" name="wl_amsdu" value="<% nvram_get("wl_amsdu"); %>">
+<input type="hidden" name="wl_txpower" value="<% nvram_get("wl_txpower"); %>">
 <input type="hidden" name="wl_TxPower_orig" value="<% nvram_get("wl_TxPower"); %>" disabled>
 <input type="hidden" name="wl0_country_code" value="<% nvram_get("wl0_country_code"); %>" disabled>
 <input type="hidden" name="wl_country_code" value="<% nvram_get("wl_country_code"); %>" disabled>

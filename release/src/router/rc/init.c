@@ -50,6 +50,7 @@
 #define CTF_FA_NORMAL		2
 #define CTF_FA_SW_ACC		3
 #define FA_ON(mode)		(mode == CTF_FA_BYPASS || mode == CTF_FA_NORMAL)
+#define min(x,y) ((x)<(y)?(x):(y))
 
 int fa_mode;
 #endif
@@ -677,6 +678,25 @@ void usbctrl_default()
 }
 #endif
 
+void
+convert_defaults()
+{
+	if (nvram_get("wl_TxPower")) {
+#ifdef RTCONFIG_RALINK
+		nvram_set_int("wl0_txpower", nvram_get_int("wl0_TxPower"));
+		nvram_set_int("wl1_txpower", nvram_get_int("wl1_TxPower"));
+#else
+		nvram_set_int("wl0_txpower", min(100 * nvram_get_int("wl0_TxPower") / 80, 250));
+		nvram_set_int("wl1_txpower", min(100 * nvram_get_int("wl1_TxPower") / 80, 250));
+#endif
+//		nvram_unset("wl_TxPower");
+//		nvram_unset("wl0_TxPower");
+//		nvram_unset("wl1_TxPower");
+
+		nvram_commit();
+	}
+}
+
 /* ASUS use erase nvram to reset default only */
 static void
 restore_defaults(void)
@@ -817,6 +837,8 @@ restore_defaults(void)
 	fa_mode_init();
 #endif
 #endif
+	convert_defaults(); // update txpower settings
+
 	/* default for state control variables */
 	for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
 		snprintf(prefix, sizeof(prefix), "wan%d_", unit);
