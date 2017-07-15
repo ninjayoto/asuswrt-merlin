@@ -278,7 +278,8 @@ else
 NEED_SAMBA2 = y
 endif
 endif
-endif
+
+endif #RTCONFIG_USB
 
 ifeq ($(RTCONFIG_IPV6),y)
 export RTCONFIG_IPV6 := y
@@ -287,14 +288,22 @@ else
 RTCONFIG_IPV6 :=
 IPTABLES_IPV6_OPT := --disable-ipv6
 endif
+
 # install before samba3 for not overwriting some binaries
 obj-$(RTCONFIG_WEBDAV) += samba-3.5.8
 obj-$(NEED_SAMBA2) += samba
+
+ifeq ($(or $(RTCONFIG_SAMBA_MODERN),$(RTCONFIG_SAMBA36X)),y)
+obj-$(NEED_SAMBA3) += libiconv-1.14
+obj-$(NEED_SAMBA3) += samba36
+else
 ifeq ($(RTCONFIG_BCMARM),y)
 obj-$(NEED_SAMBA3) += samba-3.0.25b
 else
 obj-$(NEED_SAMBA3) += samba3
 endif
+endif
+
 ifeq ($(RTCONFIG_NTFS3G),y)
 obj-$(RTCONFIG_NTFS) += ntfs-3g
 else
@@ -1897,14 +1906,16 @@ p910nd:
 samba:
 samba3:
 	@$(MAKE) -C samba3
+samba-3.0.25b:
+	@$(MAKE) -C samba-3.0.25b $(PARALLEL_BUILD)
+samba36: libiconv-1.14
+	@$(MAKE) -C samba36 $(PARALLEL_BUILD)
 samba-3.5.8:
 	@$(MAKE) -C samba-3.5.8 $(PARALLEL_BUILD)
 
 #samba-3.5.8-install:
 #    install -D samba-3.5.8/source3/bin/libsmbclient.so $(INSTALLDIR)/samba-3.5.8/usr/lib/libsmbclient.so
 #    $(STRIP) $(INSTALLDIR)/samba-3.5.8/usr/lib/libsmbclient.so
-
-
 
 nvram$(BCMEX): shared
 
@@ -2942,6 +2953,29 @@ libxml2-install: libxml2
 libxml2-clean:
 	-@$(MAKE) -C libxml2 clean
 	@rm -f libxml2/stamp-h1
+
+#libiconv-1.14
+libiconv-1.14/stamp-h1:
+	cd libiconv-1.14 && \
+	$(CONFIGURE) CC=$(CC) --prefix=$(TOP)/libiconv-1.14/out
+	touch $@
+
+libiconv-1.14:libiconv-1.14/stamp-h1
+	@$(MAKE) -C libiconv-1.14
+
+libiconv-1.14-install: libiconv-1.14
+	@$(SEP)
+	install -D libiconv-1.14/lib/.libs/libiconv.so.2.5.1 $(INSTALLDIR)/libiconv-1.14/usr/lib/libiconv.so.2.5.1
+	$(STRIP) $(INSTALLDIR)/libiconv-1.14/usr/lib/libiconv.so.2.5.1
+	cd $(INSTALLDIR)/libiconv-1.14/usr/lib && ln -sf libiconv.so.2.5.1 libiconv.so && ln -sf libiconv.so.2.5.1 libiconv.so.2
+ifeq ($(RTCONFIG_USB_SMS_MODEM),y)
+	install -D libiconv-1.14/src/.libs/iconv_no_i18n $(INSTALLDIR)/libiconv-1.14/usr/bin/iconv
+	$(STRIP) $(INSTALLDIR)/libiconv-1.14/usr/bin/iconv
+endif
+
+libiconv-1.14-clean:
+	-@$(MAKE) -C libiconv-1.14 clean
+	@rm -f libiconv-1.14/stamp-h1
 
 #add by alan 
 #add install neon 
