@@ -122,12 +122,6 @@ char *detect_fs_type(char *device)
 	{
 		return "ntfs";
 	}
-	/* detect exfat */
-	else if (buf[510] == 0x55 && buf[511] == 0xAA && /* signature */
-		memcmp(buf + 3, "EXFAT   ", 8) == 0)
-	{
-		return "exfat";
-	}
 	/* detect vfat */
 	else if (buf[510] == 0x55 && buf[511] == 0xAA && /* signature */
 		buf[11] == 0 && buf[12] >= 1 && buf[12] <= 8 /* sector size 512 - 4096 */ &&

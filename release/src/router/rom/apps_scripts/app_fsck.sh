@@ -119,10 +119,6 @@ elif [ "$1" == "hfs" ] || [ "$1" == "hfsplus" ] || [ "$1" == "thfsplus" ] || [ "
 			break;
 		fi
 	done
-elif [ "$1" == "exfat" ]; then
-	echo `date` >$log_file
-	echo "Scanning of exFAT partitions is not supported" >>$log_file 2>&1
-	RET=0
 else
 	echo `date` >$log_file
 	eval fsck.$1 -$autocheck_option$autofix_option -v $2 >>$log_file 2>&1

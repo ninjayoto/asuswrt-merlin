@@ -90,7 +90,6 @@ ID_OBJS  = $(TOP)/busybox/util-linux/volume_id/util.o
 ID_OBJS += $(TOP)/busybox/util-linux/volume_id/linux_swap.o
 ID_OBJS += $(TOP)/busybox/util-linux/volume_id/ext.o
 ID_OBJS += $(TOP)/busybox/util-linux/volume_id/fat.o
-ID_OBJS += $(TOP)/busybox/util-linux/volume_id/exfat.o
 ID_OBJS += $(TOP)/busybox/util-linux/volume_id/ntfs.o
 ID_OBJS += $(if $(HFS),$(TOP)/busybox/util-linux/volume_id/hfs.o)
 ID_OBJS += $(if $(HFS),$(patsubst %.c,%.o,$(wildcard $(TOP)/busybox/libbb/hash_md5.c)))

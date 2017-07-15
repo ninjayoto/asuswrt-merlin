@@ -305,8 +305,6 @@ void start_usb(void)
 			if(nvram_get_int("usb_fs_exfat")){
 #ifdef RTCONFIG_TUXERA
 				modprobe("texfat");
-#else
-				modprobe("exfat");
 #endif
 			}
 #endif
@@ -442,8 +440,6 @@ void remove_usb_storage_module(void)
 #ifdef RTCONFIG_EXFAT
 #ifdef RTCONFIG_TUXERA
 	modprobe_r("texfat");
-#else
-	modprobe_r("exfat");
 #endif
 #endif
 	modprobe_r("fuse");
@@ -838,8 +834,6 @@ int mount_r(char *mnt_dev, char *mnt_dir, char *_type)
 				if(nvram_get_int("usb_fs_exfat")){
 #ifdef RTCONFIG_TUXERA
 					ret = eval("mount", "-t", "texfat", "-o", options, mnt_dev, mnt_dir);
-#else
-					ret = eval("mount", "-t", "exfat", "-o", options, mnt_dev, mnt_dir);
 #endif
 				}
 			}
