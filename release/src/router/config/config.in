@@ -251,6 +251,10 @@ config RTCONFIG_NFS
 	depends on RTCONFIG_USB
 	default n
 
+config RTCONFIG_UPNPIGD2
+	bool "miniupnpd: Enable IGD2 support"
+	default n
+
 config RTCONFIG_DNSSEC
 	bool "dnsmasq: Enable DNSSEC support"
 	default n

@@ -134,6 +134,7 @@ RTCONFIG_PROTECTION_SERVER=y
 # RTCONFIG_IPERF is not set
 # RTCONFIG_TCPDUMP is not set
 # RTCONFIG_NFS is not set
+# RTCONFIG_UPNPIGD2 is not set
 # RTCONFIG_DNSSEC is not set
 # RTCONFIG_DNSCRYPT is not set
 # RTCONFIG_NANO is not set
