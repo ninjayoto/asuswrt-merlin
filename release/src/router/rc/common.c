@@ -1487,13 +1487,13 @@ void run_custom_script(char *name, char *args)
 
 	if(f_exists(script)) {
 		if (nvram_match("jffs2_scripts", "0")) {
-			logmessage("custom script", "Found %s, but custom script execution is disabled!", name);
+			logmessage("custom_script", "Found %s, but custom script execution is disabled!", name);
 			return;
 		}
 		if (args)
-			logmessage("custom script" ,"Running %s (args: %s)", script, args);
+			logmessage("custom_script" ,"Running %s (args: %s)", script, args);
 		else
-			logmessage("custom script" ,"Running %s", script);
+			logmessage("custom_script" ,"Running %s", script);
 		xstart(script, args);
 	}
 }
@@ -1506,13 +1506,13 @@ void run_custom_script_blocking(char *name, char *args)
 
 	if(f_exists(script)) {
 		if (nvram_match("jffs2_scripts", "0")) {
-			logmessage("custom script", "Found %s, but custom script execution is disabled!", name);
+			logmessage("custom_script", "Found %s, but custom script execution is disabled!", name);
 			return;
 		}
 		if (args)
-			logmessage("custom script" ,"Running %s (args: %s)", script, args);
+			logmessage("custom_script" ,"Running %s (args: %s)", script, args);
 		else
-			logmessage("custom script" ,"Running %s", script);
+			logmessage("custom_script" ,"Running %s", script);
 		eval(script, args);
 	}
 
@@ -1535,10 +1535,10 @@ void use_custom_config(char *config, char *target)
 
 	if (check_if_file_exist(filename)) {
 		if (nvram_match("jffs2_scripts", "0")) {
-			logmessage("custom config", "Found %s, but custom configs are disabled!", filename);
+			logmessage("custom_config", "Found %s, but custom configs are disabled!", filename);
 			return;
 		}
-		logmessage("custom config", "Using custom %s config file.", filename);
+		logmessage("custom_config", "Using custom %s config file.", filename);
 		eval("cp", filename, target, NULL);
 	}
 }
@@ -1552,10 +1552,10 @@ void append_custom_config(char *config, FILE *fp)
 
 	if (check_if_file_exist(filename)) {
 		if (nvram_match("jffs2_scripts", "0")) {
-			logmessage("custom config", "Found %s, but custom configs are disabled!", filename);
+			logmessage("custom_config", "Found %s, but custom configs are disabled!", filename);
 			return;
 		}
-		logmessage("custom config", "Appending content of %s.", filename);
+		logmessage("custom_config", "Appending content of %s.", filename);
 		fappend(fp, filename);
 	}
 }
