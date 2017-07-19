@@ -78,14 +78,22 @@
 
 #ifndef rcu_dereference_bh_check
 #define rcu_dereference_bh_check(p, c)	rcu_dereference_bh(p)
+/*#define rcu_dereference_bh_check(p, c) \
+	__rcu_dereference_check((p), rcu_read_lock_bh_held() || (c), __rcu) */
 #endif
 
 #ifndef __rcu
 #define	__rcu
 #ifndef RCU_INIT_POINTER
+/*
 #define RCU_INIT_POINTER(p, v) \
 	do { \
 		p = v; \
+	} while (0)
+*/
+#define RCU_INIT_POINTER(p, v) \
+	do { \
+		p = (typeof(*v) __force __rcu *)(v); \
 	} while (0)
 #endif
 #else
@@ -94,7 +102,7 @@
 #define RCU_INITIALIZER(v)	(typeof(*(v)) __force __rcu *)(v)
 #endif
 #ifndef RCU_INIT_POINTER
-#define RCU_INIT_POINTER(p, v)	\
+#define RCU_INIT_POINTER(p, v) \
 	do { \
 		p = RCU_INITIALIZER(v); \
 	} while (0)
@@ -102,7 +110,6 @@
 #endif
 
 #ifndef kfree_rcu
-
 static inline void kfree_call_rcu(struct rcu_head *head,
 				  void (*func)(struct rcu_head *rcu))
 {
@@ -111,13 +118,13 @@ static inline void kfree_call_rcu(struct rcu_head *head,
 
 #define __is_kfree_rcu_offset(offset) ((offset) < 4096)
 
-#define __kfree_rcu(head, offset)	\
-do {				\
-	BUILD_BUG_ON(!__is_kfree_rcu_offset(offset));	\
-	kfree_call_rcu(head, (void (*)(struct rcu_head *))(unsigned long)(offset)); \
-} while (0)
+#define __kfree_rcu(head, offset) \
+	do { \
+		BUILD_BUG_ON(!__is_kfree_rcu_offset(offset)); \
+		kfree_call_rcu(head, (void (*)(struct rcu_head *))(unsigned long)(offset)); \
+	} while (0)
 
-#define kfree_rcu(ptr, rcu_head)	\
+#define kfree_rcu(ptr, rcu_head) \
 	__kfree_rcu(&((ptr)->rcu_head), offsetof(typeof(*(ptr)), rcu_head))
 #endif
 
