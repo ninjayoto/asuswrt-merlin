@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-26E3j9527  (20-July-2017)
+* CHANGED: ipset_arm: update rcu locking in delete for settype hash
+* CHANGED: ipset_arm: update rcu locking in add for settype hash
+* CHANGED: ipset_arm: take rcu lock when expiring entries from settype hash
+* CHANGED: ipset_arm: update ip_set_comment.h to eliminate unneccessary use of kfree_rcu
+* CHANGED: ipset_arm: update rcu functions in compat include
+* CHANGED: webui: allow for 9999 hours of connect time in wireless log
+* FIXED: openvpn: (upstream) undo cipher push in client options state if cipher is rejected
+
+
 374.43_2-26E2j9527  (15-July-2017)
 * FIXED: services: run services-stop during reboot, restore and upgrade prior to stopping usb
 * FIXED: iptables: fix iptables-save for trigger rules
