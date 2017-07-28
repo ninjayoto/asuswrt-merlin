@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
 #else
 #if defined(RTCONFIG_SAMBA36X) || defined(RTCONFIG_SAMBA_MODERN)
 		fprintf(fp, "auth methods = guest\n");
-		fprintf(fp, "guest account = admin\n");
+		fprintf(fp, "guest account = %s\n", nvram_safe_get("http_username"));
 		fprintf(fp, "map to guest = Bad Password\n");
 		fprintf(fp, "guest ok = yes\n");
 #else
