@@ -4452,7 +4452,7 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 			     "-m", "state", "--state", "NEW", "-j", "MARK", "--set-mark", "0x01/0x1ff");
 		}
 
-		if (nvram_match("fw_nat_loopback", "1")) { 
+//		if (nvram_match("fw_nat_loopback", "1")) {
 			/* mark VTS loopback connections */ 
 			if (nvram_match("vts_enable_x", "1") || !nvram_match("dmz_ip", "") ||
 				(is_nat_enabled() && nvram_get_int("upnp_enable"))) {
@@ -4462,8 +4462,8 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 				eval("iptables", "-t", "mangle", "-A", "FORWARD", 
 				     "-o", lan_if, "-s", lan_class, "-d", lan_class, 
 				     "-j", "MARK", "--set-mark", "0x01/0x1ff");
-			} 
-		} 
+			}
+//		}
 
 #ifdef RTCONFIG_BCMARM
 		/* mark STUN connection*/
@@ -4599,7 +4599,7 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 			     "-m", "state", "--state NEW", "-j", "MARK", "--set-mark", "0x01/0x1ff");
 		}
 
-		if (nvram_match("fw_nat_loopback", "1")) { 
+//		if (nvram_match("fw_nat_loopback", "1")) {
 			/* mark VTS loopback connections */ 
 			if (nvram_match("vts_enable_x", "1")||!nvram_match("dmz_ip", "")) { 
 				char lan_class[32]; 
@@ -4608,8 +4608,8 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 				eval("iptables", "-t", "mangle", "-A", "FORWARD", 
 				     "-o", lan_if, "-s", lan_class, "-d", lan_class, 
 				     "-j", "MARK", "--set-mark", "0x01/0x1ff");
-			} 
-		} 
+			}
+//		}
 
 #ifdef RTCONFIG_BCMARM
                 /* mark STUN connection*/
