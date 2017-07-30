@@ -65,31 +65,22 @@ function initial(){
 	if(downsize_4m_support)
 		$("guest_image").parentNode.style.display = "none";
 
-	if(document.form.qos_enable.value==1){
-		if(qos_type == 0){
-			document.form.qos_obw.parentNode.parentNode.style.display = "";
-			document.form.qos_ibw.parentNode.parentNode.style.display = "";
-			document.form.qos_default.parentNode.parentNode.style.display = "";
-			if (codel_support)
-				document.getElementById('qos_sched_tr').style.display = "";
-			if (overhead_support)
-				document.getElementById('qos_overhead_tr').style.display = "";
-		}else{
-			document.form.qos_obw.parentNode.parentNode.style.display = "none";
-			document.form.qos_ibw.parentNode.parentNode.style.display = "none";
-			document.form.qos_default.parentNode.parentNode.style.display = "none";
-			if (codel_support)
-				document.getElementById('qos_sched_tr').style.display = "";
-			document.getElementById('qos_overhead_tr').style.display = "none";
-		}
+	if(qos_type == 0){
+		document.form.qos_obw.parentNode.parentNode.style.display = "";
+		document.form.qos_ibw.parentNode.parentNode.style.display = "";
+		document.form.qos_default.parentNode.parentNode.style.display = "";
+		if (codel_support)
+			document.getElementById('qos_sched_tr').style.display = "";
+		if (overhead_support)
+			document.getElementById('qos_overhead_tr').style.display = "";
 	}else{
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
 		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
 		document.form.qos_default.parentNode.parentNode.style.display = "none";
-		document.getElementById('qos_sched_tr').style.display = "none";
+		if (codel_support)
+			document.getElementById('qos_sched_tr').style.display = "";
 		document.getElementById('qos_overhead_tr').style.display = "none";
 	}
-
 
 	init_changeScale("qos_obw");
 	init_changeScale("qos_ibw");
@@ -99,6 +90,7 @@ function initial(){
 	else if(qos_type == "2"){
 		showqos_bw_rulelist();
 	}
+
 	addOnlineHelp($("faq"), ["ASUSWRT", "QoS"]);
 }
 
@@ -118,13 +110,20 @@ function changeRule(obj){
 		showqos_rulelist();
 	}else if($(obj).value == "2"){
 		document.form.qos_obw.parentNode.parentNode.style.display = "none";
-                document.form.qos_ibw.parentNode.parentNode.style.display = "none";
-                document.form.qos_default.parentNode.parentNode.style.display = "none";
+		document.form.qos_ibw.parentNode.parentNode.style.display = "none";
+		document.form.qos_default.parentNode.parentNode.style.display = "none";
 		if (codel_support)
 			document.getElementById('qos_sched_tr').style.display = "";
 		else
 			document.getElementById('qos_sched_tr').style.display = "none";
 		document.getElementById('qos_overhead_tr').style.display = "none";
+		showqos_bw_rulelist();
+	}
+
+	if($(obj).value == "0"){
+		showqos_rulelist();
+	}
+	else if($(obj).value == "2"){
 		showqos_bw_rulelist();
 	}
 }
@@ -154,6 +153,34 @@ function switchPage(page){
 		return false;
 }
 
+function applyRule(){
+	if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
+		alert("<#JS_fieldblank#>");
+		document.form.qos_obw.focus();
+		document.form.qos_obw.select();
+		return false;
+	}
+	if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
+		alert("<#JS_fieldblank#>");
+		document.form.qos_ibw.focus();
+		document.form.qos_ibw.select();
+		return false;
+	}
+
+	if($("qos_obw_scale").value == "Mb/s")
+		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
+	if($("qos_ibw_scale").value == "Mb/s")
+		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+
+	if(document.form.qos_enable.value == "0")
+		document.form.action_script.value = "";
+	else
+		document.form.action_script.value = "restart_qos";
+
+	parent.showLoading();
+	document.form.submit();
+}
+
 function submitQoS(){
 	if(document.form.qos_enable.value == 1){
 		// Jieming To Do: please add a hint here when error occurred, and qos_ibw & qos_obw should allow number only.
@@ -170,7 +197,7 @@ function submitQoS(){
 				return;
 		}
 		// end
-  }	
+	}
 
 	if($("qos_obw_scale").value == "Mb/s")
 		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
@@ -454,31 +481,17 @@ function showqos_bw_rulelist(){
 										<th><#Enable_defaule_rule#></th>
 											<td>
 												<div class="left" style="width:94px; float:left; cursor:pointer;" id="radio_qos_enable"></div>
-												<div class="iphone_switch_container" style="height:32px; width:74px; position: relative; overflow: hidden">
+												<div class="iphone_switch_container" style="height:32px; width:160px; position: relative; overflow: hidden">
 												<script type="text/javascript">
 													$j('#radio_qos_enable').iphoneSwitch('<% nvram_get("qos_enable"); %>', 
 														 function() {
 															document.form.qos_enable.value = "1";
-															document.form.qos_obw.parentNode.parentNode.style.display = "";
-															document.form.qos_ibw.parentNode.parentNode.style.display = "";
-															document.form.qos_default.parentNode.parentNode.style.display = "";
-															if (codel_support)
-																document.getElementById('qos_sched_tr').style.display = "";
-															else
-																document.getElementById('qos_sched_tr').style.display = "none";
-															if (overhead_support)
-																document.getElementById('qos_overhead_tr').style.display = "";
-															else
-																document.getElementById('qos_overhead_tr').style.display = "none";
+															submitQoS();
 
 														 },
 														 function() {
 															document.form.qos_enable.value = "0";
-															document.form.qos_obw.parentNode.parentNode.style.display = "none";
-															document.form.qos_ibw.parentNode.parentNode.style.display = "none";
-															document.form.qos_default.parentNode.parentNode.style.display = "none";
-															document.getElementById('qos_sched_tr').style.display = "none";
-															document.getElementById('qos_overhead_tr').style.display = "none";
+															submitQoS();
 
 														 },
 														 {
@@ -565,7 +578,7 @@ function showqos_bw_rulelist(){
 
         			<tr>
           				<td height="50" >
-						<div style=" *width:136px;margin-left:300px;" id="applybutton" style="color:#FFFFFF" class="titlebtn" align="center" onClick="submitQoS();"><span><#CTL_onlysave#></span></div>
+						<div style=" *width:136px;margin-left:300px;" id="applybutton" style="color:#FFFFFF" class="titlebtn" align="center" onClick="applyRule();"><span><#CTL_onlysave#></span></div>
           				</td>
         			</tr>
 			</table>
