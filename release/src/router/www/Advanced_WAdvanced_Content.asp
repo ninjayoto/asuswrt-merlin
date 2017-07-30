@@ -199,6 +199,8 @@ function initial(){
 	        add_option(document.form.wl_reg_mode, "802.11d+h", "h", (reg_mode == "h") ? 1 : 0);
 	}
 
+	if(based_modelid == "RT-AC56U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U")
+		$("RegMode").style.display = "none";  //disable for new sdk/wireless drivers
 
 	if(repeater_support || psta_support){		//with RE mode
 		$("DLSCapable").style.display = "none";	
@@ -923,7 +925,7 @@ function check_ampdu_rts(){
 						</td>
 					</tr>					
 
-					<tr class="rept">
+					<tr id="RegMode" class="rept">
 						<th>Regulation mode</th>
 						<td>
 							<select name="wl_reg_mode" class="input_option">
