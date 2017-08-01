@@ -252,6 +252,7 @@ time_t last_login_timestamp=0; // the timestamp of the current session.
 unsigned int login_ip_tmp=0; // the ip of the current session.
 unsigned int login_try=0;
 unsigned int last_login_ip = 0;	// the last logined ip 2008.08 magic
+unsigned int login_ip_restart = 0;
 /* limit login IP addr; 2012.03 Yau */
 unsigned int access_ip[4];
 unsigned int MAX_login;
@@ -454,6 +455,7 @@ auth_check( char* dirname, char* authorization ,char* url)
 		if (login_hst[i] != 0 && login_hst[i] == login_ip_tmp)
 		{
 			login_auth_req = 0;
+			login_auth_index = i;
 			break;
 		}
 		if (login_hst[i] == 0)
@@ -462,9 +464,6 @@ auth_check( char* dirname, char* authorization ,char* url)
 			break;
 		}
 	}
-	if (nvram_get_int("login_ip_restart") == login_ip_tmp)
-		login_auth_req = 0;
-	nvram_unset("login_ip_restart"); //clear ip from last reboot or upgrade
 
 	logout_auth_req = -1;
 	for (i=0; i<ARRAY_SIZE(logout_hst); i++) { // check if logged out
@@ -539,7 +538,7 @@ auth_check( char* dirname, char* authorization ,char* url)
 	/* Is this the right user and password? */
 	if ( strcmp( auth_userid, authinfo ) == 0 && strcmp( auth_passwd, authpass ) == 0)
 	{
-		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp )
+		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp || (nvram_get_int("login_ip_restart")) != 0 )
 		{
 			// Send login msg to syslog
 			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s:%d", authinfo, temp_ip_str, http_port);
@@ -548,6 +547,7 @@ auth_check( char* dirname, char* authorization ,char* url)
                 last_login_timestamp = 0;
 		last_login_ip = 0;
 		set_referer_host();
+		nvram_unset("login_ip_restart");
 		return 1;
 	}
 	else
@@ -1434,6 +1434,7 @@ void http_login_timeout(unsigned int ip)
 	time_t now, login_ts;
 	struct in_addr temp_ip_addr;
 	char *temp_ip_str;
+	unsigned int disc_timeout;
 	unsigned int login_port = nvram_get_int("login_port");
 
 	temp_ip_addr.s_addr = login_ip;
@@ -1443,15 +1444,21 @@ void http_login_timeout(unsigned int ip)
 	now = uptime();
 	login_ts = atol(nvram_safe_get("login_timestamp"));
 
+	if (nvram_get_int("login_ip_restart") != 0) //check for reboot and increase disconnect time
+		disc_timeout = nvram_get_int("reboot_time") + 30;
+	else
+		disc_timeout = max_disc_timeout();
+
 // 2007.10 James. for really logout. {
-	//if (login_ip!=ip && (unsigned long)(now-login_timestamp) > 60) //one minitues
+//	if (login_ip!=ip && (unsigned long)(now-login_timestamp) > 60) //one minitues
 //	if (((login_ip != 0 && login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
-	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port)) && ((unsigned long)(now-login_ts) > max_disc_timeout()))
+	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port != 0)) && ((unsigned long)(now-login_ts) > disc_timeout))
 // 2007.10 James }
 	{
 		http_logout(login_ip);
-		if (login_ip)
-			logmessage(HEAD_HTTP_LOGIN, "logout successful (ip %s disconnected)", temp_ip_str);
+		if (last_login_ip != 0 && login_port != 0)
+			logmessage(HEAD_HTTP_LOGIN, "logout successful (%s:%d disconnected)", temp_ip_str, login_port);
+		else
 		if (login_port)
 			logmessage(HEAD_HTTP_LOGIN, "logout successful (port %d disconnected)", login_port);
 	}
@@ -2017,10 +2024,22 @@ QTN_RESET:
 
 	//websSetVer();
 	//2008.08 magic
-	nvram_unset("login_timestamp");
-	nvram_unset("login_ip");
-	nvram_unset("login_ip_str");
-	nvram_unset("login_port");
+	char login_timestampstr[32];
+	login_ip_restart = nvram_get_int("login_ip_restart");
+	if((login_ip_restart == nvram_get_int("login_ip")) && (login_ip_restart != 0)) { //restore login prior to reboot
+		login_ip = login_ip_restart;
+		login_hst[0] = login_ip;
+		login_timestamp = uptime();
+		memset(login_timestampstr, 0, 32);
+		sprintf(login_timestampstr, "%lu", login_timestamp);
+		nvram_set("login_timestamp", login_timestampstr);
+	} else {
+		nvram_unset("login_timestamp");
+		nvram_unset("login_ip");
+		nvram_unset("login_ip_str");
+		nvram_unset("login_port");
+	}
+
 	MAX_login = nvram_get_int("login_max_num");
 	if(MAX_login <= DEFAULT_LOGIN_MAX_NUM)
 		MAX_login = DEFAULT_LOGIN_MAX_NUM;
