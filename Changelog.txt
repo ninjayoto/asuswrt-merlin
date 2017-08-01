@@ -4,6 +4,19 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_2-26E4j9527  (5-August-2017)
+* CHANGED: httpd: improve forced http authorization
+* CHANGED: httpd: set default disconnect timeout to 60sec, change via nvram
+* CHANGED: webui: change qos slider to be true On/Off; fix display of qos options
+- CHANGED: ipset_arm: (backport) add new modules to modprobe.conf, for automagic module loading
+- CHANGED: busybox: add hostname applet, required by some Entware packages
+- FIXED: rc: (backport) always mark LAN/LAN packets, not just with Asus NAT loopback
+- FIXED: networkmap: (backport) fixes CVE-2017-11344, CVE-2017-11345 and CVE-2017-11420
+* FIXED: samba36: update guest account if http username has been changed
+* FIXED: httpd: ensure restart ip address is properly cast as unsigned int
+* FIXED: httpd: execute logout for any port
+
+
 374.43_2-26E3j9527  (20-July-2017)
 * CHANGED: ipset_arm: update rcu locking in delete for settype hash
 * CHANGED: ipset_arm: update rcu locking in add for settype hash
