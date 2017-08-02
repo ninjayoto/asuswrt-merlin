@@ -538,7 +538,8 @@ auth_check( char* dirname, char* authorization ,char* url)
 	/* Is this the right user and password? */
 	if ( strcmp( auth_userid, authinfo ) == 0 && strcmp( auth_passwd, authpass ) == 0)
 	{
-		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp || (nvram_get_int("login_ip_restart")) != 0 )
+		login_ip_restart = (unsigned int)atoll(nvram_safe_get("login_ip_restart"));
+		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp || login_ip_restart != 0 )
 		{
 			// Send login msg to syslog
 			logmessage(HEAD_HTTP_LOGIN, "login '%s' successful from %s:%d", authinfo, temp_ip_str, http_port);
@@ -547,6 +548,7 @@ auth_check( char* dirname, char* authorization ,char* url)
                 last_login_timestamp = 0;
 		last_login_ip = 0;
 		set_referer_host();
+		login_ip_restart = 0;
 		nvram_unset("login_ip_restart");
 		return 1;
 	}
@@ -1444,7 +1446,7 @@ void http_login_timeout(unsigned int ip)
 	now = uptime();
 	login_ts = atol(nvram_safe_get("login_timestamp"));
 
-	if (nvram_get_int("login_ip_restart") != 0) //check for reboot and increase disconnect time
+	if ((unsigned int)atoll(nvram_safe_get("login_ip_restart")) != 0) //check for reboot and increase disconnect time
 		disc_timeout = nvram_get_int("reboot_time") + 30;
 	else
 		disc_timeout = max_disc_timeout();
@@ -2022,11 +2024,9 @@ QTN_RESET:
 	nvram_set("qtn_ready", "1");
 #endif
 
-	//websSetVer();
-	//2008.08 magic
 	char login_timestampstr[32];
-	login_ip_restart = nvram_get_int("login_ip_restart");
-	if((login_ip_restart == nvram_get_int("login_ip")) && (login_ip_restart != 0)) { //restore login prior to reboot
+	login_ip_restart = (unsigned int)atoll(nvram_safe_get("login_ip_restart"));
+	if((login_ip_restart == (unsigned int)atoll(nvram_safe_get("login_ip"))) && (login_ip_restart != 0)) { //restore login prior to reboot
 		login_ip = login_ip_restart;
 		login_hst[0] = login_ip;
 		login_timestamp = uptime();
@@ -2034,6 +2034,8 @@ QTN_RESET:
 		sprintf(login_timestampstr, "%lu", login_timestamp);
 		nvram_set("login_timestamp", login_timestampstr);
 	} else {
+	//websSetVer();
+	//2008.08 magic
 		nvram_unset("login_timestamp");
 		nvram_unset("login_ip");
 		nvram_unset("login_ip_str");
