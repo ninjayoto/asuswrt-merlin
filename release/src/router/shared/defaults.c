@@ -457,6 +457,10 @@ struct nvram_tuple router_defaults[] = {
 // Wireless Mac Filter
 	{ "wl_maclist_x", ""},					// xxxxxxxxxxxx ... xxxxxxxxxxx
 
+#if defined(RTCONFIG_BCMARM)
+	{ "wl_atf", "0", 0 },
+#endif
+
 #ifdef RTCONFIG_BCMWL6
 	{ "acs_ifnames", "", 0 },
 //#ifdef RTAC68U
