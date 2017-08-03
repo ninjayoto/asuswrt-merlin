@@ -185,14 +185,14 @@ int asusdiscovery()
 	lan_gateway = inet_addr(nvram_safe_get("lan_gateway"));
 
 	char asus_device_buf[128];
-	char asus_device_list_buf[1024] = {0};
+	char asus_device_list_buf[1025] = {0};
 	int getRouterIndex;
 	//printf("a_GetRouterCount = %d\n",a_GetRouterCount);
-	for (getRouterIndex = 0; getRouterIndex < a_GetRouterCount; getRouterIndex++)
+	for (getRouterIndex = 0; getRouterIndex < a_GetRouterCount && getRouterIndex < MAX_SEARCH_ROUTER; getRouterIndex++)
 	{
 		
 		ip_addr_t = inet_addr(searchRouterInfo[getRouterIndex].IPAddress);
-		sprintf(asus_device_buf, "<%d>%s>%s>%s>%d>>>%s>%s",
+		snprintf(asus_device_buf, sizeof(asus_device_buf), "<%d>%s>%s>%s>%d>>>%s>%s",
 		3,
 		searchRouterInfo[getRouterIndex].ProductID,
 		searchRouterInfo[getRouterIndex].IPAddress,
@@ -202,7 +202,15 @@ int asusdiscovery()
 		searchRouterInfo[getRouterIndex].SubMask
 		);
 
-		strcat(asus_device_list_buf, asus_device_buf); 
+		if ((sizeof(asus_device_list_buf) - strlen(asus_device_list_buf)) > strlen(asus_device_buf))
+		{
+			strncat(asus_device_list_buf, asus_device_buf, strlen(asus_device_buf));
+		}
+		else
+		{
+			iRet = 1;
+			break;
+		}
 	}
 	//printf("asus_device_list_buf = %s\n",asus_device_list_buf);
 	nvram_set("asus_device_list", asus_device_list_buf);
