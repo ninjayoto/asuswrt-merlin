@@ -105,7 +105,7 @@ typedef union {
 #define MAX_CONN_ACCEPT 64
 #define MAX_CONN_TIMEOUT 60
 /* #define MAX_DISC_TIMEOUT 15 */
-#define max_disc_timeout() ((nvram_get_int("reboot_time") / 2) + 10)
+#define max_disc_timeout() (nvram_get_int("http_disc_timeout") ? : 60)
 
 typedef struct conn_item {
 	TAILQ_ENTRY(conn_item) entry;
@@ -1436,7 +1436,6 @@ void http_login_timeout(unsigned int ip)
 	time_t now, login_ts;
 	struct in_addr temp_ip_addr;
 	char *temp_ip_str;
-	unsigned int disc_timeout;
 	unsigned int login_port = nvram_get_int("login_port");
 
 	temp_ip_addr.s_addr = login_ip;
@@ -1446,15 +1445,9 @@ void http_login_timeout(unsigned int ip)
 	now = uptime();
 	login_ts = atol(nvram_safe_get("login_timestamp"));
 
-	if ((unsigned int)atoll(nvram_safe_get("login_ip_restart")) != 0) //check for reboot and increase disconnect time
-		disc_timeout = nvram_get_int("reboot_time") + 30;
-	else
-		disc_timeout = max_disc_timeout();
-
 // 2007.10 James. for really logout. {
 //	if (login_ip!=ip && (unsigned long)(now-login_timestamp) > 60) //one minitues
-//	if (((login_ip != 0 && login_ip != ip) || (login_port != http_port || !login_port)) && ((unsigned long)(now-login_ts) > 60)) //one minitues
-	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port != 0)) && ((unsigned long)(now-login_ts) > disc_timeout))
+	if (((login_ip != 0 && login_ip != ip) || ((login_port != http_port) && login_port != 0)) && ((unsigned long)(now-login_ts) > max_disc_timeout()))
 // 2007.10 James }
 	{
 		http_logout(login_ip);
