@@ -54,8 +54,7 @@ function restoreRule(){
 }
 
 function saveSetting(){
-	var i = extendno.indexOf('-');
-	extendno = (extendno ? "_"+extendno.substring(0, i) : "");
+	extendno = (extendno ? "_"+extendno.replace(/(^\d+)(.+$)/i,'$1') : "");
 	location.href='Settings_'+daapd_name+'_'+buildno+extendno+'.CFG';
 }
 
