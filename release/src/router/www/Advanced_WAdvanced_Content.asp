@@ -201,7 +201,7 @@ function initial(){
 
 	if(based_modelid == "RT-AC56U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U"){
 		/* Disable RegMode for new sdk/wireless drivers */
-		$("RegMode").style.display = "none";
+		//$("RegMode").style.display = "none";
 		/* Add Airtime Fairness for new sdk/wireless drivers */
 		inputCtrl(document.form.wl_atf, 1);
 		/* 2.4GHz Bluetooth Coexisistence mode, only for Broadcom platform */
