@@ -199,8 +199,21 @@ function initial(){
 	        add_option(document.form.wl_reg_mode, "802.11d+h", "h", (reg_mode == "h") ? 1 : 0);
 	}
 
-	if(based_modelid == "RT-AC56U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U")
-		$("RegMode").style.display = "none";  //disable for new sdk/wireless drivers
+	if(based_modelid == "RT-AC56U" || based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U"){
+		/* Disable RegMode for new sdk/wireless drivers */
+		$("RegMode").style.display = "none";
+		/* Add Airtime Fairness for new sdk/wireless drivers */
+		inputCtrl(document.form.wl_atf, 1);
+		/* 2.4GHz Bluetooth Coexisistence mode, only for Broadcom platform */
+		if ('<% nvram_get("wl_unit"); %>' == '0')
+			inputCtrl(document.form.wl_btc_mode, 1);
+		else
+			inputCtrl(document.form.wl_btc_mode, 0);
+	}
+	else{
+		inputCtrl(document.form.wl_atf, 0);
+		inputCtrl(document.form.wl_btc_mode, 0);
+	}
 
 	if(repeater_support || psta_support){		//with RE mode
 		$("DLSCapable").style.display = "none";	
@@ -726,6 +739,18 @@ function check_ampdu_rts(){
 						</td>
 					</tr>
 
+					<!-- 2.4GHz Bluetooth Coexisistence mode, only for Broadcom platform -->
+					<tr>
+						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,34);">Bluetooth Coexistence</a></th>
+						<td>
+							<select name="wl_btc_mode" class="input_option">
+									<option value="0" <% nvram_match("wl_btc_mode", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
+									<option value="1" <% nvram_match("wl_btc_mode", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
+									<option value="2" <% nvram_match("wl_btc_mode", "2","selected"); %> >Pre-emptive</option>
+							</select>
+						</td>
+					</tr>
+
 					<tr>
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3, 22);"><#WLANConfig11b_x_IgmpSnEnable_itemname#></a></th>
 						<td>
@@ -901,6 +926,17 @@ function check_ampdu_rts(){
 							<select name="wl_turbo_qam" class="input_option">
 									<option value="0" <% nvram_match("wl_turbo_qam", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
 									<option value="1" <% nvram_match("wl_turbo_qam", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
+							</select>
+						</td>
+					</tr>
+
+					<!--Broadcom ARM platform only, except RT-AC87U(5G) -->
+					<tr>
+						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(3,32);">Airtime Fairness</a></th>
+						<td>
+							<select name="wl_atf" class="input_option">
+									<option value="0" <% nvram_match("wl_atf", "0","selected"); %> ><#WLANConfig11b_WirelessCtrl_buttonname#></option>
+									<option value="1" <% nvram_match("wl_atf", "1","selected"); %> ><#WLANConfig11b_WirelessCtrl_button1name#></option>
 							</select>
 						</td>
 					</tr>

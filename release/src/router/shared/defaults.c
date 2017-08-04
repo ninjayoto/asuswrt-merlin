@@ -458,7 +458,11 @@ struct nvram_tuple router_defaults[] = {
 	{ "wl_maclist_x", ""},					// xxxxxxxxxxxx ... xxxxxxxxxxx
 
 #if defined(RTCONFIG_BCMARM)
-	{ "wl_atf", "0", 0 },
+	{ "wl_atf", "0"},			/* Airtime Fairness */
+	{ "wl_btc_mode", "0"},			/* bluetooth coexistance(BTC) mode Disable(0), Enable(1), Pre-emptive mode(2) */
+	{ "wl_atf_mode", "0"},			/* ATF mode: 0/1/2(by client/SSID/client+SSID) */
+	{ "wl_atf_sta", ""},			/* ATF by client: <MAC>%<MAC>% */
+	{ "wl_atf_ssid", ""},			/* ATF by SSID: <%<%<%<% */
 #endif
 
 #ifdef RTCONFIG_BCMWL6

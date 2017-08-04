@@ -59,15 +59,18 @@ helpcontent[3] = new Array("",
 						   "<#WLANConfig11b_x_EnhanInter_itemdesc#>", //21
 						   "<#WLANConfig11b_x_IgmpSnEnable_itemdesc#>",
 						   "<#WLANConfig11b_x_SchedEnable_itemdesc#>",
-							 "<#WLANConfig11b_x_ExpBeam_desc#> (It's also called [Explicit Beamforming].)",
-							 "<#WLANConfig11b_x_ImpBeam_desc#> (It's also called [Implicit Beamforming].)",
-							 "<#WLANConfig11b_x_AMPDU_desc#>",
-							 "<#WLANConfig11b_x_ACK_desc#>",
-							 "<#WLANConfig11b_x_TurboQAM_desc#>",
-							 "<#WLANConfig11b_x_ReduceUSB3_desc#>",
-							 "<#RTS_for_AMPDU#>",
-							 "<#WLANConfig11b_x_roamingassit_desc#>"
-							 );
+						   "<#WLANConfig11b_x_ExpBeam_desc#> (It's also called [Explicit Beamforming].)",
+						   "<#WLANConfig11b_x_ImpBeam_desc#> (It's also called [Implicit Beamforming].)",
+						   "<#WLANConfig11b_x_AMPDU_desc#>",
+						   "<#WLANConfig11b_x_ACK_desc#>",
+						   "<#WLANConfig11b_x_TurboQAM_desc#>",
+						   "<#WLANConfig11b_x_ReduceUSB3_desc#>",
+						   "<#RTS_for_AMPDU#>",
+						   "<#WLANConfig11b_x_roamingassit_desc#>", //31
+						   "Provide Airtime Fairness between multiple links",	/* untranslated */
+						   "NOT DEFINED",
+						   "Enable/Disable Bluetooth Coexisistence. Data rate 1Mbps and 2 Mbps are not allowed in Pre-emptive mode. TX Bursting is also not allowed in Pre-emptive mode."
+						   );
 
 helpcontent[4] = new Array("",
 						   "<#LANHostConfig_IPRouters_itemdesc#>",
