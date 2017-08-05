@@ -1462,11 +1462,11 @@ void http_login_timeout(unsigned int ip)
 void http_logout(unsigned int ip)
 {
 	unsigned int login_port = nvram_get_int("login_port");
-	unsigned int http_lanport = nvram_get_int("http_lanport");
-	unsigned int https_lanport = nvram_get_int("https_lanport");
+//	unsigned int http_lanport = nvram_get_int("http_lanport");
+//	unsigned int https_lanport = nvram_get_int("https_lanport");
 	int i;
 
-	if (ip == login_ip && (login_port == http_lanport || login_port == https_lanport || !login_port)) {
+	if (ip == login_ip && (http_port != 0 || login_port == 0)) {
 		if (nvram_get_int("debug_httpd") & 2)
 			_dprintf("httpd_logout(%u:%i)\n", ip, http_port);
 		for (i=0; i<ARRAY_SIZE(logout_hst); i++) {
