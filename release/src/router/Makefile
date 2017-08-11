@@ -387,6 +387,7 @@ obj-$(RTCONFIG_SSH) += dropbear
 obj-$(RTCONFIG_LZO) += lzo
 obj-$(RTCONFIG_OPENVPN) += openpam
 obj-$(RTCONFIG_OPENVPN) += openvpn
+obj-$(RTCONFIG_OPENVPN) += ministun
 
 obj-$(CONFIG_LINUX26) += hotplug2
 obj-$(CONFIG_LINUX26) += udev
