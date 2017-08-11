@@ -1031,7 +1031,7 @@ int start_tqos(void)
 	wan_ifname = get_wan_ifname(wan_primary_ifunit());
 	if (!wan_ifname || (strlen(wan_ifname) <= 0)) {
 		logmessage("qos-init", "wan_ifname not defined!");
-		nvram_set("qos_addr_err", "4");
+		nvram_set_int("qos_addr_err", 4);
 		return -2;
 	}
 	else

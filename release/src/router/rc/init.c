@@ -1023,7 +1023,7 @@ restore_defaults(void)
 	nvram_set("ntp_sync", "0");
 
 	/* reset qos err status */
-	nvram_set("qos_addr_err", "4");
+	nvram_set_int("qos_addr_err", 4);
 
 	/* reset wan start time */
 	nvram_set("wan_t0", "-1");
