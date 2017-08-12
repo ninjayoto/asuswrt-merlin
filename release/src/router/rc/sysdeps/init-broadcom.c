@@ -1786,6 +1786,23 @@ int wltxpower_rtn12hp(int txpower,
 	return commit_needed;
 }
 
+void
+convert_defaults()
+{
+#ifdef RTCONFIG_RALINK
+	nvram_set_int("wl0_txpower", nvram_get_int("wl0_TxPower"));
+	nvram_set_int("wl1_txpower", nvram_get_int("wl1_TxPower"));
+#else
+	nvram_set_int("wl0_txpower", MIN(100 * nvram_get_int("wl0_TxPower") / 80, 250));
+	nvram_set_int("wl1_txpower", MIN(100 * nvram_get_int("wl1_TxPower") / 80, 250));
+#endif
+//	nvram_unset("wl_TxPower");
+//	nvram_unset("wl0_TxPower");
+//	nvram_unset("wl1_TxPower");
+
+//	nvram_commit();
+}
+
 int set_wltxpower()
 {
 	char ifnames[256];
@@ -1902,6 +1919,11 @@ int set_wltxpower()
 		if (txpower > 0)
 			set_wltxpower_once = 1;
 		dbG("unit: %d, txpower: %d\n", unit, txpower);
+
+#ifdef RTCONFIG_BCMARM
+		convert_defaults(); // update txpower settings
+		commit_needed++;
+#endif
 
 		switch(model) {
 			case MODEL_RTAC66U:
