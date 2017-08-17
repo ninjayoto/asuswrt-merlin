@@ -182,22 +182,24 @@ function applyRule(){
 }
 
 function submitQoS(){
-	if(document.form.qos_enable.value == 1){
-		// Jieming To Do: please add a hint here when error occurred, and qos_ibw & qos_obw should allow number only.
-		if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
-				alert("<#JS_fieldblank#>");
-				document.form.qos_obw.focus();
-				document.form.qos_obw.select();
-				return;
-		}
-		if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
-				alert("<#JS_fieldblank#>");
-				document.form.qos_ibw.focus();
-				document.form.qos_ibw.select();
-				return;
-		}
-		// end
+	// Jieming To Do: please add a hint here when error occurred, and qos_ibw & qos_obw should allow number only.
+	if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
+			document.form.qos_enable.value = document.form.qos_enable_orig.value;
+			$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
+			alert("Upload bandwidth cannot be zero or blank!");
+			document.form.qos_obw.focus();
+			document.form.qos_obw.select();
+			return;
 	}
+	if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
+			document.form.qos_enable.value = document.form.qos_enable_orig.value;
+			$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
+			alert("Download bandwidth cannot be zero or blank!");
+			document.form.qos_ibw.focus();
+			document.form.qos_ibw.select();
+			return;
+	}
+	// end
 
 	if($("qos_obw_scale").value == "Mb/s")
 		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
@@ -208,14 +210,19 @@ function submitQoS(){
 		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
 	}
 	else{
-		if(ctf_disable == 1)
-			document.form.action_script.value = "restart_qos";
+		if(document.form.qos_enable.value == "0"){
+			document.form.action_script.value = "";
+		}
 		else{
-			if(ctf_fa_mode == "2"){
-				FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
-			}
-			else{
+			if(ctf_disable == 1)
 				document.form.action_script.value = "restart_qos";
+			else{
+				if(ctf_fa_mode == "2"){
+					FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+				}
+				else{
+					document.form.action_script.value = "restart_qos";
+				}
 			}
 		}
 	}
