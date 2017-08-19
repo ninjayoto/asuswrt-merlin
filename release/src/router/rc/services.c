@@ -3567,7 +3567,10 @@ int start_lltd(void)
 			eval("lld2d.rtac66r", "br0");
 			break;
 		default:
-			eval("lld2d", "br0");
+			if(is_ac66u_v2_series())
+				eval("lld2d.rtac66r", "br0");
+			else
+				eval("lld2d", "br0");
 			break;
 		}
 	}

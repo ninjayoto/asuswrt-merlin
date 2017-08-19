@@ -146,8 +146,15 @@ int set_pwr_usb(int boolOn){
 
 	switch(get_model()) {
 		case MODEL_RTAC68U:
-			if((nvram_get_int("HW_ver") != 170) &&
-				(atof(nvram_safe_get("HW_ver")) != 1.10))
+			if ((nvram_get_int("HW_ver") != 170) &&
+			    (nvram_get_double("HW_ver") != 1.10) &&
+			    (nvram_get_double("HW_ver") != 1.85) &&
+			    (nvram_get_double("HW_ver") != 1.90) &&
+			    (nvram_get_double("HW_ver") != 1.95) &&
+			    (nvram_get_double("HW_ver") != 2.10) &&
+			    (nvram_get_double("HW_ver") != 2.20) &&
+			    !is_ac66u_v2_series() &&
+			    !nvram_match("cpurev", "c0"))
 				return 0;
 			break;
 	}

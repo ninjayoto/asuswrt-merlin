@@ -156,6 +156,7 @@ char router_name[PATHLEN];
 int sw_mode, isFirstUse;
 #ifdef RTCONFIG_DUALWAN
 char dualwan_mode[8];
+char dualwan_wans[16];
 char wandog_target[PATH_MAX];
 int wandog_delay, delay_detect;
 int WAN_FB_UNIT;

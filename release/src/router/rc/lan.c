@@ -696,27 +696,41 @@ void wlconf_pre()
 void wlconf_post(const char *ifname)
 {
 	int unit = -1;
-	char tmp[128], prefix[] = "wlXXXXXXXXXX_";
+	char prefix[] = "wlXXXXXXXXXX_";
 
 	if (ifname == NULL) return;
 
 	// get the instance number of the wl i/f
-	if (wl_ioctl(ifname, WLC_GET_INSTANCE, &unit, sizeof(unit)))
+	if (wl_ioctl((char *) ifname, WLC_GET_INSTANCE, &unit, sizeof(unit)))
 		return;
 
 	snprintf(prefix, sizeof(prefix), "wl%d_", unit);
-#if 0
-#ifdef RTCONFIG_BCMWL6
-#ifdef RTCONFIG_BCMARM
-#ifdef RTAC68U
-	if (unit == 1)
-	{
-		if (nvram_match(strcat_r(prefix, "country_code", tmp), "EU") &&
-		    nvram_match(strcat_r(prefix, "country_rev", tmp), "13"))
-			eval("wl", "-i", ifname, "dfs_channel_forced", "36");
+
+#ifdef RTAC66U
+	char tmp[100];
+	if (!strcmp(ifname, "eth2")) {
+		if (nvram_match(strcat_r(prefix, "country_code", tmp), "Q2") &&
+			nvram_match(strcat_r(prefix, "country_rev", tmp), "33"))
+		eval("wl", "-i", (char *) ifname, "radioreg", "0x892", "0x5068", "cr0");
 	}
 #endif
+
+#ifdef RTAC68U
+	if (is_ac66u_v2_series()) {
+		if (unit) eval("wl", "-i", (char *) ifname, "radioreg", "0x892", "0x4068");
+		eval("wl", "-i", (char *) ifname, "aspm", "3");
+	}
 #endif
+
+#ifdef RTCONFIG_BCMWL6
+	if (is_ure(unit))
+		eval("wl", "-i", (char *) ifname, "allmulti", "1");
+#endif
+
+#ifdef RTCONFIG_BCM_7114
+#ifdef RTCONFIG_PROXYSTA
+	if (is_psta(unit) || is_psr(unit))
+		eval("wl", "-i", (char *) ifname, "atf", "0");
 #endif
 #endif
 }

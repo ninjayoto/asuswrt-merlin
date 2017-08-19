@@ -487,18 +487,38 @@ void btn_check(void)
 	LED_status_old = LED_status;
 	LED_status = button_pressed(BTN_LED);
 
-	LED_status_changed = 0;
-	if (LED_status != LED_status_old)
-	{
-		if (LED_status_first)
+#if defined(RTAC68U)
+	if (is_ac66u_v2_series())
+		;
+	else if (nvram_match("cpurev", "c0") && nvram_get_int("PA") != 5023) {
+		if (!LED_status &&
+		    (LED_status != LED_status_old))
 		{
-			LED_status_first = 0;
-			LED_status_on = LED_status;
+			LED_status_changed = 1;
+			if (LED_status_first)
+			{
+				LED_status_first = 0;
+				LED_status_on = 0;
+			}
+			else
+				LED_status_on = 1 - LED_status_on;
 		}
 		else
-			LED_status_changed = 1;
+			LED_status_changed = 0;
+	} else {
+		LED_status_changed = 0;
+		if (LED_status != LED_status_old)
+		{
+			if (LED_status_first)
+			{
+				LED_status_first = 0;
+				LED_status_on = LED_status;
+			}
+			else
+				LED_status_changed = 1;
+		}
 	}
-
+#endif
 	if (LED_status_changed)
 	{
 		TRACE_PT("button BTN_LED pressed\n");
@@ -510,15 +530,30 @@ void btn_check(void)
 			if (nvram_get_int("btn_led_mode"))
 				reboot(RB_AUTOBOOT);
 #endif
-			if (LED_status == LED_status_on)
+#if defined(RTAC68U)
+		if (((!nvram_match("cpurev", "c0") || nvram_get_int("PA") == 5023) && LED_status == LED_status_on) ||
+		      (nvram_match("cpurev", "c0") && nvram_get_int("PA") != 5023 && LED_status_on))
+#else
+		if (LED_status_on)
+#endif
 				nvram_set_int("AllLED", 1);
 			else
 				nvram_set_int("AllLED", 0);
 
-			if (LED_status == LED_status_on)
+#if defined(RTAC68U)
+		if (((!nvram_match("cpurev", "c0") || nvram_get_int("PA") == 5023) && LED_status == LED_status_on) ||
+		      (nvram_match("cpurev", "c0") && nvram_get_int("PA") != 5023 && LED_status_on))
+#else
+		if (LED_status_on)
+#endif
 			{
 				led_control(LED_POWER, LED_ON);
 
+#ifdef RTAC68U
+				if (is_ac66u_v2_series())
+					kill_pidfile_s("/var/run/wanduck.pid", SIGUSR2);
+				else
+#endif
 				eval("et", "robowr", "0", "0x18", "0x01ff");
 				eval("et", "robowr", "0", "0x1a", "0x01ff");
 

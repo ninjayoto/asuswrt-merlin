@@ -288,6 +288,31 @@ virtual_radio_restore_defaults(void)
 	}
 }
 
+void
+misc_ioctrl(void)
+{
+#if defined(RTAC68U) || defined(RTAC87U) || defined(RTAC3200) || defined(RTAC5300) || defined(RTAC5300R) || defined(RTAC88U) || defined(RTAC3100)
+	/* default WAN_RED on  */
+	char buf[16];
+
+#ifdef RTAC68U
+	if (!is_ac66u_v2_series())
+		return;
+#endif
+
+	snprintf(buf, 16, "%s", nvram_safe_get("wans_dualwan"));
+	if (strcmp(buf, "wan none") != 0){
+		logmessage("DualWAN", "skip misc_ioctrl()");
+		return;
+	}
+	if (nvram_get_int("sw_mode") == SW_MODE_ROUTER) {
+		led_control(LED_WAN, LED_ON);
+		eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x01fe");
+		eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01fe");
+	}
+#endif
+}
+
 /* assign none-exist value */
 void
 wl_defaults(void)
@@ -2609,22 +2634,36 @@ int init_nvram(void)
 #else
 		nvram_set_int("pwr_usb_gpio", 9);
 #endif
-		nvram_set_int("led_usb_gpio", 0|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_pwr_gpio", 3|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_wps_gpio", 3|GPIO_ACTIVE_LOW);
+		if (!is_ac66u_v2_series())
+			nvram_set_int("led_usb_gpio", 0|GPIO_ACTIVE_LOW);
+		if (!is_ac66u_v2_series())
+			nvram_set_int("led_pwr_gpio", 3|GPIO_ACTIVE_LOW);
+		else
+			nvram_set_int("led_pwr_gpio", 0|GPIO_ACTIVE_LOW);
+		if (!is_ac66u_v2_series())
+			nvram_set_int("led_wps_gpio", 3|GPIO_ACTIVE_LOW);
+		else
+			nvram_set_int("led_wps_gpio", 0|GPIO_ACTIVE_LOW);
 		nvram_set_int("btn_wps_gpio", 7|GPIO_ACTIVE_LOW);
 		nvram_set_int("btn_rst_gpio", 11|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_5g_gpio", 6|GPIO_ACTIVE_LOW);	// 4360's fake led 5g
-		nvram_set_int("led_usb3_gpio", 14|GPIO_ACTIVE_LOW);
+		if (!is_ac66u_v2_series())
+			nvram_set_int("led_5g_gpio", 6|GPIO_ACTIVE_LOW);	// 4360's fake led 5g
+		if (!is_ac66u_v2_series())
+			nvram_set_int("led_usb3_gpio", 14|GPIO_ACTIVE_LOW);
 #ifdef RTCONFIG_WIFI_TOG_BTN
-		nvram_set_int("btn_wltog_gpio", 15|GPIO_ACTIVE_LOW);
+		if (!is_ac66u_v2_series())
+			nvram_set_int("btn_wltog_gpio", 15|GPIO_ACTIVE_LOW);
 #endif
 #ifdef RTCONFIG_TURBO
-		nvram_set_int("led_turbo_gpio", 4|GPIO_ACTIVE_LOW);
+		if (!is_ac66u_v2_series())
+			nvram_set_int("led_turbo_gpio", 4|GPIO_ACTIVE_LOW);
 #endif
 #ifdef RTCONFIG_LED_BTN
-		nvram_set_int("btn_led_gpio", 5);	// active high
+		if (!is_ac66u_v2_series())
+			nvram_set_int("btn_led_gpio", 5);	// active high
 #endif
+		if (is_ac66u_v2_series())
+			nvram_set_int("led_wan_gpio", 5);
 
 #ifdef RTCONFIG_XHCIMODE
 		nvram_set("xhci_ports", "1-1");
@@ -4327,7 +4366,10 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 			start_lan();
 #ifdef RTCONFIG_QTN
 			start_qtn();
+			sleep(5);
 #endif
+			misc_ioctrl();
+
 			start_services();
 			start_wan();
 			start_wl();

@@ -982,8 +982,14 @@ setAllLedOn(void)
 			led_control(LED_USB, LED_ON);
 			led_control(LED_USB3, LED_ON);
 			led_control(LED_TURBO, LED_ON);
-			eval("et", "robowr", "0", "0x18", "0x01ff");	// lan/wan ethernet/giga led
-			eval("et", "robowr", "0", "0x1a", "0x01e0");
+			if (is_ac66u_v2_series()){
+				eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x01e0");	// lan/wan ethernet/giga led
+				eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01e0");
+				led_control(LED_WAN, LED_ON);
+			}else{
+				eval("et", "robowr", "0", "0x18", "0x01ff");	// lan/wan ethernet/giga led
+				eval("et", "robowr", "0", "0x1a", "0x01e0");
+			}
 			eval("wl", "ledbh", "10", "1");			// wl 2.4G
 			eval("wl", "-i", "eth2", "ledbh", "10", "1");	// wl 5G
 			/* 4360's fake 5g led */
@@ -1189,8 +1195,11 @@ setAllLedOff(void)
 			led_control(LED_USB, LED_OFF);
 			led_control(LED_USB3, LED_OFF);
 			led_control(LED_TURBO, LED_OFF);
-			eval("et", "robowr", "0", "0x18", "0x01e0");	// lan/wan ethernet/giga led
-			eval("et", "robowr", "0", "0x1a", "0x01e0");
+			if (is_ac66u_v2_series()){
+				eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x0101");	// lan/wan ethernet/giga led
+				eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01e0");
+				led_control(LED_WAN, LED_OFF);
+			}
 			eval("wl", "ledbh", "10", "0");			// wl 2.4G
 			eval("wl", "-i", "eth2", "ledbh", "10", "0");
 			/* 4360's fake 5g led */

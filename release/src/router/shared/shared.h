@@ -260,6 +260,8 @@ enum {
 	SWITCH_GENERIC
 };
 
+#define is_ac66u_v2_series()	(nvram_match("odmpid", "RT-AC66U_B1"))	//replace closed source function in newer firmware
+
 #define RTCONFIG_NVRAM_VER "1"
 
 /* NOTE: Do not insert new entries in the middle of this enum,
