@@ -160,6 +160,16 @@ extern int get_radio(int unit, int subunit);
 extern void set_radio(int on, int unit, int subunit);
 extern int nvram_get_int(const char *key);
 extern int nvram_set_int(const char *key, int value);
+extern char *nvram_pf_get(char *prefix, const char *name);
+#define nvram_pf_safe_get(prefix, name) (nvram_pf_get(prefix, name) ? : "")
+extern int nvram_pf_set(char *prefix, const char *name, const char *value);
+#define nvram_pf_unset(prefix, name) nvram_pf_set(prefix, name, NULL)
+extern int nvram_pf_get_int(char *prefix, const char *key);
+extern int nvram_pf_set_int(char *prefix, const char *key, int value);
+extern int nvram_pf_match(char *prefix, char *name, char *match);
+extern int nvram_pf_invmatch(char *prefix, char *name, char *invmatch);
+extern double nvram_get_double(const char *key);
+extern int nvram_set_double(const char *key, double value);
 //	extern long nvram_xget_long(const char *name, long min, long max, long def);
 #ifdef RTCONFIG_SSH
 extern int nvram_get_file(const char *key, const char *fname, int max);

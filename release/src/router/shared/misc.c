@@ -846,6 +846,75 @@ int ubi_getinfo(const char *ubiname, int *dev, int *part, int *size)
 
 // -----------------------------------------------------------------------------
 
+/**
+ * Combine prefix and name before nvram_get().
+ * @prefix:
+ * @name:
+ * @return:
+ */
+char *nvram_pf_get(char *prefix, const char *name)
+{
+	size_t size;
+	char tmp[128], *t = tmp, *v = NULL;
+
+	if (!prefix || !name || *name == '\0')
+		return NULL;
+
+	if (!isprint(*prefix) || !isprint(*name)) {
+		dbg("%s: Invalid prefix 0x%x or name 0x%x?\n", __func__, *prefix, *name);
+		return NULL;
+	}
+
+	size = strlen(prefix) + strlen(name) + 1;
+	if (size > sizeof(tmp))
+		t = malloc(size);
+
+	if (!t)
+		return NULL;
+
+	v = nvram_get(strcat_r(prefix, name, tmp));
+
+	if (t != tmp)
+		free(t);
+
+	return v;
+}
+
+/**
+ * Combine prefix and name before nvram_set().
+ * @prefix:
+ * @name:
+ * @value:
+ * @return:
+ */
+int nvram_pf_set(char *prefix, const char *name, const char *value)
+{
+	int r = 0;
+	size_t size;
+	char tmp[128], *t = tmp;
+
+	if (!prefix || !name || *name == '\0')
+		return -1;
+
+	if (!isprint(*prefix) || !isprint(*name)) {
+		dbg("%s: Invalid prefix 0x%x or name 0x%x?\n", __func__, *prefix, *name);
+		return -2;
+	}
+
+	size = strlen(prefix) + strlen(name) + 1;
+	if (size > sizeof(tmp))
+		t = malloc(size);
+
+	if (!t)
+		return -3;
+
+	r = nvram_set(strcat_r(prefix, name, tmp), value);
+
+	if (t != tmp)
+		free(t);
+
+	return r;
+}
 int nvram_get_int(const char *key)
 {
 	return atoi(nvram_safe_get(key));
@@ -856,6 +925,50 @@ int nvram_set_int(const char *key, int value)
 	char nvramstr[16];
 
 	snprintf(nvramstr, sizeof(nvramstr), "%d", value);
+	return nvram_set(key, nvramstr);
+}
+
+int nvram_pf_get_int(char *prefix, const char *key)
+{
+	return atoi(nvram_pf_safe_get(prefix, key));
+}
+
+int nvram_pf_set_int(char *prefix, const char *key, int value)
+{
+	char nvramstr[16];
+
+	snprintf(nvramstr, sizeof(nvramstr), "%d", value);
+	return nvram_pf_set(prefix, key, nvramstr);
+}
+
+/**
+ * Match an prefix NVRAM variable.
+ */
+int nvram_pf_match(char *prefix, char *name, char *match)
+{
+	const char *value = nvram_pf_get(prefix, name);
+	return (value && !strcmp(value, match));
+}
+
+/**
+ * Inversely match an prefix NVRAM variable.
+ */
+int nvram_pf_invmatch(char *prefix, char *name, char *invmatch)
+{
+	const char *value = nvram_pf_get(prefix, name);
+	return (value && strcmp(value, invmatch));
+}
+
+double nvram_get_double(const char *key)
+{
+	return atof(nvram_safe_get(key));
+}
+
+int nvram_set_double(const char *key, double value)
+{
+	char nvramstr[33];
+
+	snprintf(nvramstr, sizeof(nvramstr), "%.9g", value);
 	return nvram_set(key, nvramstr);
 }
 
