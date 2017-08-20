@@ -270,7 +270,10 @@ enum {
 	SWITCH_GENERIC
 };
 
-#define is_ac66u_v2_series()	(nvram_match("odmpid", "RT-AC66U_B1"))	//replace closed source function in newer firmware
+#define is_ac66u_v2_series()	(nvram_match("odmpid", "RT-AC66U_B1"))					//replace closed source function in newer firmware
+#define is_ac68u_v1_series()	(!nvram_match("cpurev", "c0") && !nvram_match("PA", "5003"))		//ac68u rev a1,a2,b1
+#define is_ac68u_v2_series()	(!nvram_match("cpurev", "c0") && nvram_match("PA", "5003"))		//ac68p, ac1900
+#define is_ac68u_v3_series()	(nvram_match("cpurev", "c0") && nvram_match("PA", "5003"))		//ac1900p, rev c1,e1
 
 #define RTCONFIG_NVRAM_VER "1"
 
