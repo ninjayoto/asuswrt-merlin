@@ -668,6 +668,10 @@ config CONFIG_LIBUPNP
 	bool "BCM UPnP library"
 	default n
 
+config RTCONFIG_PROTECTION_SERVER
+	bool "Security Protection Mechanism"
+	default n
+
 config RTCONFIG_WPS
 	bool "WPS Support"
 	default y
