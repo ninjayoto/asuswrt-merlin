@@ -9927,7 +9927,7 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 
 				if (strcmp(iaddr, host))
 					continue;
-				if ((!strcmp(eproto, proto)) && (!strcmp(eport, range)) && (!strcmp(iport, port ? : range))) {
+				if ((!strcmp(eproto, proto)) && (!strcmp(eport, range)) && (!strcmp(strlen(iport) ? iport : range, port ? : range))) {
 					strlcpy(desc, name, sizeof(desc));
 					break;
 				}
