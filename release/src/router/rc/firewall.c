@@ -1772,13 +1772,15 @@ start_default_filter(int lanunit)
 	fprintf(fp, "-A INPUT -m state --state INVALID -j DROP\n");
 	fprintf(fp, "-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT\n");
 #ifdef RTCONFIG_PROTECTION_SERVER
-	if (nvram_get_int("telnetd_enable") != 0
+	if (nvram_get_int("ptcsrv_enable") != 0) {
+		if (nvram_get_int("telnetd_enable") != 0
 #ifdef RTCONFIG_SSH
-	    || nvram_get_int("sshd_enable") != 0
+	    		|| nvram_get_int("sshd_enable") != 0
 #endif
-	) {
-		fprintf(fp, "-A INPUT ! -i br0 -j %sWAN\n", PROTECT_SRV_RULE_CHAIN);
-		fprintf(fp, "-A INPUT -i br0 -j %sLAN\n", PROTECT_SRV_RULE_CHAIN);
+		) {
+			fprintf(fp, "-A INPUT ! -i br0 -j %sWAN\n", PROTECT_SRV_RULE_CHAIN);
+			fprintf(fp, "-A INPUT -i br0 -j %sLAN\n", PROTECT_SRV_RULE_CHAIN);
+		}
 	}
 #endif
 	fprintf(fp, "-A INPUT -i lo -m state --state NEW -j ACCEPT\n");
@@ -2238,7 +2240,8 @@ filter_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 #endif
 	fprintf(fp, ":logaccept - [0:0]\n:logdrop - [0:0]\n");
 #ifdef RTCONFIG_PROTECTION_SERVER
-	fprintf(fp, ":%s - [0:0]\n", PROTECT_SRV_RULE_CHAIN);
+	if (nvram_get_int("ptcsrv_enable") != 0)
+		fprintf(fp, ":%s - [0:0]\n", PROTECT_SRV_RULE_CHAIN);
 #endif
 
 #ifdef RTCONFIG_IPV6
@@ -2377,14 +2380,16 @@ TRACE_PT("writing Parental Control\n");
 #endif
 		{
 #ifdef RTCONFIG_PROTECTION_SERVER
+			if (nvram_get_int("ptcsrv_enable") != 0) {
 #ifdef RTCONFIG_SSH
-			if (nvram_get_int("sshd_enable") != 0) {
-				fprintf(fp, "-A INPUT -p tcp -m multiport --dport %d -j %s\n",
-					    nvram_get_int("sshd_port") ? : 22, PROTECT_SRV_RULE_CHAIN);
-			}
+				if (nvram_get_int("sshd_enable") != 0) {
+					fprintf(fp, "-A INPUT -p tcp -m multiport --dport %d -j %s\n",
+						    nvram_get_int("sshd_port") ? : 22, PROTECT_SRV_RULE_CHAIN);
+				}
 #endif
-			if (nvram_get_int("telnetd_enable") != 0) {
-				fprintf(fp, "-A INPUT -p tcp -m multiport --dport 23 -j %s\n", PROTECT_SRV_RULE_CHAIN);
+				if (nvram_get_int("telnetd_enable") != 0) {
+					fprintf(fp, "-A INPUT -p tcp -m multiport --dport 23 -j %s\n", PROTECT_SRV_RULE_CHAIN);
+				}
 			}
 #endif
 			/* Filter known SPI state */
@@ -3161,7 +3166,10 @@ TRACE_PT("write url filter\n");
 #endif
 
 #ifdef RTCONFIG_PROTECTION_SERVER
-	kill_pidfile_s(PROTECT_SRV_PID_PATH, SIGUSR1);
+	if (nvram_get_int("ptcsrv_enable") != 0)
+		kill_pidfile_s(PROTECT_SRV_PID_PATH, SIGUSR1);
+	else
+		killall_tk("protect_srv");
 #endif
 }
 
@@ -3230,7 +3238,8 @@ filter_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 #endif
 	fprintf(fp, ":logaccept - [0:0]\n:logdrop - [0:0]\n");
 #ifdef RTCONFIG_PROTECTION_SERVER
-	fprintf(fp, ":%s - [0:0]\n", PROTECT_SRV_RULE_CHAIN);
+	if (nvram_get_int("ptcsrv_enable") != 0)
+		fprintf(fp, ":%s - [0:0]\n", PROTECT_SRV_RULE_CHAIN);
 #endif
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled()){
@@ -3368,14 +3377,16 @@ TRACE_PT("writing Parental Control\n");
 #endif
 		{
 #ifdef RTCONFIG_PROTECTION_SERVER
+		if (nvram_get_int("ptcsrv_enable") != 0) {
 #ifdef RTCONFIG_SSH
-		if (nvram_get_int("sshd_enable") != 0) {
-			fprintf(fp, "-A INPUT -p tcp -m multiport --dport %d -j %s\n",
-				    nvram_get_int("sshd_port") ? : 22, PROTECT_SRV_RULE_CHAIN);
-		}
+			if (nvram_get_int("sshd_enable") != 0) {
+				fprintf(fp, "-A INPUT -p tcp -m multiport --dport %d -j %s\n",
+					    nvram_get_int("sshd_port") ? : 22, PROTECT_SRV_RULE_CHAIN);
+			}
 #endif
-		if (nvram_get_int("telnetd_enable") != 0) {
-			fprintf(fp, "-A INPUT -p tcp -m multiport --dport 23 -j %s\n", PROTECT_SRV_RULE_CHAIN);
+			if (nvram_get_int("telnetd_enable") != 0) {
+				fprintf(fp, "-A INPUT -p tcp -m multiport --dport 23 -j %s\n", PROTECT_SRV_RULE_CHAIN);
+			}
 		}
 #endif
 			/* Filter known SPI state */
@@ -4291,7 +4302,10 @@ TRACE_PT("write url filter\n");
 		}
 	}
 #ifdef RTCONFIG_PROTECTION_SERVER
-	kill_pidfile_s(PROTECT_SRV_PID_PATH, SIGUSR1);
+	if (nvram_get_int("ptcsrv_enable") != 0)
+		kill_pidfile_s(PROTECT_SRV_PID_PATH, SIGUSR1);
+	else
+		killall_tk("protect_srv");
 #endif
 
 #ifdef RTCONFIG_IPV6
@@ -4741,6 +4755,10 @@ int start_firewall(int wanunit, int lanunit)
 		stop_upnp();
 		restart_upnp = 1;
 	}
+#ifdef RTCONFIG_PROTECTION_SERVER
+	if (nvram_get_int("ptcsrv_enable") != 0 && pidof("protect_srv") == -1)
+		start_ptcsrv();
+#endif
 
 	snprintf(prefix, sizeof(prefix), "wan%d_", wanunit);
 

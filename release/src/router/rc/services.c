@@ -3895,7 +3895,10 @@ int start_ptcsrv(void)
 	char *ptcsrv_argv[] = {"protect_srv", NULL};
 	pid_t pid;
 
-	return _eval(ptcsrv_argv, NULL, 0, &pid);
+	if (nvram_get_int("ptcsrv_enable") != 0) {
+		stop_ptcsrv();
+		return _eval(ptcsrv_argv, NULL, 0, &pid);
+	}
 }
 
 void stop_ptcsrv(void)

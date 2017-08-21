@@ -217,6 +217,13 @@ function done_validating(action){
 								<input type="radio" value="0" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '0')" <% nvram_match("DSCP_fix_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
+		<tr>
+			<th>Enable Telnet/SSH Protection Server</th>
+			<td>
+								<input type="radio" value="1" name="ptcsrv_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ptcsrv_enable', '1')" <% nvram_match("ptcsrv_enable", "1", "checked"); %>><#checkbox_Yes#>
+								<input type="radio" value="0" name="ptcsrv_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ptcsrv_enable', '0')" <% nvram_match("ptcsrv_enable", "0", "checked"); %>><#checkbox_No#>
+			</td>
+		</tr>
 <!--		<tr>
 			<th>Enable local subnet forwarding</th>
 			<td>

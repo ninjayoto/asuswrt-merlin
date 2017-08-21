@@ -1113,6 +1113,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "misc_lpr_x", "0" },
 	{ "ttl_inc_enable", "0"},       // enable TTL increment
 	{ "DSCP_fix_enable", "0" },
+	{ "ptcsrv_enable", "1" },	// ASUS protection server
 	
 	// UrlList
 	{ "url_enable_x", "0"},
