@@ -1064,7 +1064,7 @@ void send_page(int wan_unit, int sfd, char *file_dest, char *url){
 #ifdef RTCONFIG_USB_MODEM
 	if (dualwan_unit__usbif(wan_unit)) {
 		if(conn_changed_state[wan_unit] == SET_ETH_MODEM)
-			sprintf(buf, "%s%s%s%s%s%d%s%s" ,buf , "Connection: close\r\n", "Location:http://", dut_addr, "/error_page.htm?flag=", CASE_THESAMESUBNET, "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
+			sprintf(buf, "%s%s%s%s%s%s%d%s%d%s%s" ,buf , "Connection: close\r\n", "Location:", (nvram_get_int("login_port")==nvram_get_int("https_lanport") ? "https://" : "http://"), dut_addr, ":", (nvram_get_int("login_port") ? : nvram_get_int("http_lanport")), "/error_page.htm?flag=", CASE_THESAMESUBNET, "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
 		else{
 			close_socket(sfd, T_HTTP);
 			return;
@@ -1073,20 +1073,20 @@ void send_page(int wan_unit, int sfd, char *file_dest, char *url){
 	else
 #endif
 	if((conn_changed_state[wan_unit] == C2D || conn_changed_state[wan_unit] == DISCONN) && disconn_case[wan_unit] == CASE_THESAMESUBNET)
-		sprintf(buf, "%s%s%s%s%s%d%s%s" ,buf , "Connection: close\r\n", "Location:http://", dut_addr, "/error_page.htm?flag=", disconn_case[wan_unit], "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
+		sprintf(buf, "%s%s%s%s%s%s%d%s%d%s%s" ,buf , "Connection: close\r\n", "Location:", (nvram_get_int("login_port")==nvram_get_int("https_lanport") ? "https://" : ((nvram_get_int("http_enable")+1)&1 ? "http://" : "https://")), dut_addr, ":", (nvram_get_int("login_port") ? : nvram_get_int("http_lanport")), "/error_page.htm?flag=", disconn_case[wan_unit], "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
 	else if(isFirstUse){
 #ifdef RTCONFIG_WIRELESSREPEATER
 		if(sw_mode == SW_MODE_REPEATER || sw_mode == SW_MODE_HOTSPOT)
-			sprintf(buf, "%s%s%s%s%s%s%s" ,buf , "Connection: close\r\n", "Location:http://", dut_addr, "/QIS_wizard.htm?flag=sitesurvey", "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
+			sprintf(buf, "%s%s%s%s%s%s%d%s%s%s" ,buf , "Connection: close\r\n", "Location:", (nvram_get_int("login_port")==nvram_get_int("https_lanport") ? "https://" : ((nvram_get_int("http_enable")+1)&1 ? "http://" : "https://")), dut_addr, ":", (nvram_get_int("login_port") ? : nvram_get_int("http_lanport")), "/QIS_wizard.htm?flag=sitesurvey", "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
 		else
 #endif
-			sprintf(buf, "%s%s%s%s%s%s%s" ,buf , "Connection: close\r\n", "Location:http://", dut_addr, "/QIS_wizard.htm?flag=welcome", "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
+			sprintf(buf, "%s%s%s%s%s%s%d%s%s%s" ,buf , "Connection: close\r\n", "Location:", (nvram_get_int("login_port")==nvram_get_int("https_lanport") ? "https://" : ((nvram_get_int("http_enable")+1)&1 ? "http://" : "https://")), dut_addr, ":", (nvram_get_int("login_port") ? : nvram_get_int("http_lanport")), "/QIS_wizard.htm?flag=welcome", "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
 	}
 	else if(conn_changed_state[wan_unit] == C2D || conn_changed_state[wan_unit] == DISCONN)
-		sprintf(buf, "%s%s%s%s%s%d%s%s" ,buf , "Connection: close\r\n", "Location:http://", dut_addr, "/error_page.htm?flag=", disconn_case[wan_unit], "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
+		sprintf(buf, "%s%s%s%s%s%s%d%s%d%s%s" ,buf , "Connection: close\r\n", "Location:", (nvram_get_int("login_port")==nvram_get_int("https_lanport") ? "https://" : ((nvram_get_int("http_enable")+1)&1 ? "http://" : "https://")), dut_addr, ":", (nvram_get_int("login_port") ? : nvram_get_int("http_lanport")), "/error_page.htm?flag=", disconn_case[wan_unit], "\r\nContent-Type: text/plain\r\n", "\r\n<html></html>\r\n");
 #ifdef RTCONFIG_WIRELESSREPEATER
 	else
-		sprintf(buf, "%s%s%s%s%s", buf, "Connection: close\r\n", "Location:http://", dut_addr, "/index.asp\r\nContent-Type: text/plain\r\n\r\n<html></html>\r\n"); 
+		sprintf(buf, "%s%s%s%s%s%s%d%s", buf, "Connection: close\r\n", "Location:", (nvram_get_int("login_port")==nvram_get_int("https_lanport") ? "https://" : ((nvram_get_int("http_enable")+1)&1 ? "http://" : "https://")), dut_addr, ":", (nvram_get_int("login_port") ? : nvram_get_int("http_lanport")), "/index.asp\r\nContent-Type: text/plain\r\n\r\n<html></html>\r\n"); 
 #endif
 
 #ifdef NO_IOS_DETECT_INTERNET
