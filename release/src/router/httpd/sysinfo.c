@@ -125,8 +125,10 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 			tmp = nvram_get("clkfreq");
 
 #ifdef RTCONFIG_TURBO
+			char buf[16];
 			if (nvram_get_int("btn_turbo"))	
-				strcpy(tmp, "1000,0,0");	// RT-AC68U Turbo mode enabled = 1000 MHz
+				strcpy(buf, "1000,0,0");	// RT-AC68U Turbo mode enabled = 1000 MHz
+				tmp = buf;
 #endif
 			if (tmp)
 				sscanf(tmp,"%[^,]s", result);
