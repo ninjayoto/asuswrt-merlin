@@ -196,29 +196,28 @@ function done_validating(action){
 							</td>
 		</tr>
                 <tr>
-                        <th>Filter IPv6 Neighbor Solicitation</th>
+			<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,8);">Filter IPv6 Neighbor Solicitation</a></th>
                         <td>
                                                                 <input type="radio" value="1" name="ipv6_neighsol_drop" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ipv6_neighsol_drop', '1')" <% nvram_match("ipv6_neighsol_drop", "1", "checked"); %>><#checkbox_Yes#>
                                                                 <input type="radio" value="0" name="ipv6_neighsol_drop" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ipv6_neighsol_drop', '0')" <% nvram_match("ipv6_neighsol_drop", "0", "checked"); %>><#checkbox_No#>
                         </td>
                 </tr>
 		<tr>
-			<!-- <th><a class="hintstyle" href="javascript:void(0);" onClick=""><#Extend_TTL_Value#></a></th> -->
-			<th>Extend TTL Value</th>
+			<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,9);">Extend TTL Value</a></th>
 			<td>
 								<input type="radio" value="1" name="ttl_inc_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ttl_inc_enable', '1')" <% nvram_match("ttl_inc_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="ttl_inc_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ttl_inc_enable', '0')" <% nvram_match("ttl_inc_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
 		<tr>
-			<th>Enable DSCP override</th>
+			<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,10);">Enable DSCP override</a></th>
 			<td>
 								<input type="radio" value="1" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '1')" <% nvram_match("DSCP_fix_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="DSCP_fix_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'DSCP_fix_enable', '0')" <% nvram_match("DSCP_fix_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
 		<tr>
-			<th>Enable Telnet/SSH Protection Server</th>
+			<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,11);">Enable Telnet/SSH Protection Server</a></th>
 			<td>
 								<input type="radio" value="1" name="ptcsrv_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ptcsrv_enable', '1')" <% nvram_match("ptcsrv_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="ptcsrv_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ptcsrv_enable', '0')" <% nvram_match("ptcsrv_enable", "0", "checked"); %>><#checkbox_No#>

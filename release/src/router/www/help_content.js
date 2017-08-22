@@ -144,7 +144,11 @@ helpcontent[8] = new Array("",
 						   "<#FirewallConfig_x_WanLPREnable_itemdesc#>",
 						   "<#FirewallConfig_x_WanPingEnable_itemdesc#>",
 						   "<#FirewallConfig_FirewallEnable_itemdesc#>",
-						   "<#FirewallConfig_DoSEnable_itemdesc#>");
+						   "<#FirewallConfig_DoSEnable_itemdesc#>", //7
+						   "Some ISPs flood the router with Neighbour Solicitation traffic when enabling IPv6 support.  This option allows you to filter out this unwanted traffic.",
+						   "Some ISPs force the packet TTL as 1 at the modem side to block IP sharing.  Enabling this option forces a TTL value of 64 to be set.",
+						   "Some ISPs incorrectly filter the DSCP priority, resulting in reduced performance on wireless connectons.  Enabling this option forces a correct DSCP value to be used.",
+						   "Automatically blocks repeated attempts from the same IP address to the Telnet/SSH ports.  If you are using a third-party router addon that provides similar protection, you may want to disable this option.");
 helpcontent[9] = new Array("",
 						   "<#FirewallConfig_URLActiveDate_itemdesc#>",
 						   "<#FirewallConfig_URLActiveTime_itemdesc#>");
