@@ -1039,6 +1039,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "qos_ibwopt",			"1"				},
 	{ "qos_default",		"3"				},
 	{ "qos_bw_rulelist",            ""                              },
+	{ "qos_bw_units",		"1"				},
 
 	// TriggerList
 	{ "autofw_enable_x", "0" },

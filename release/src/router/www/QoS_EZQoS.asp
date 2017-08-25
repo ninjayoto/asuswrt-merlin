@@ -383,9 +383,9 @@ function showqos_bw_rulelist(){
 							else
 								code += '<td width="'+wid[j]+'%" style="height:30px;">'+ apps_client_id +'</td>';
 						}else if(j==2){
-							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+qos_bw_rulelist_col[2]/1024+' Mb/s</td>';
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/1024)*100)/100+' Mb/s</td>';
 						}else if(j==3){
-							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+qos_bw_rulelist_col[3]/1024+' Mb/s</td>';
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/1024)*100)/100+' Mb/s</td>';
 						}
 				}
 				code +='</tr>';

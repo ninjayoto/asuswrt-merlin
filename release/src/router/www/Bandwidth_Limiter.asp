@@ -67,8 +67,10 @@
 var qos_bw_rulelist = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
 var ctf_disable = '<% nvram_get("ctf_disable"); %>';
 var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
+var scaling = ('<% nvram_get("qos_bw_units"); %>' == 0) ? 1 : 1024;
 var over_var = 0;
 var isMenuopen = 0;
+var label = "";
 
 function key_event(evt){
 	if(evt.keyCode != 27 || isMenuopen == 0)
@@ -77,6 +79,12 @@ function key_event(evt){
 }
 
 function initial(){
+	if (scaling == 1)
+		label = "Kb/s";
+	else
+		label = "Mb/s";
+	$("bw_down").innerHTML = label;
+	$("bw_up").innerHTML = label;
 	show_menu();
 	showqos_bw_rulelist();
 
@@ -245,7 +253,7 @@ function addRow_main(obj, length){
 	else
 		qos_bw_rulelist += ">" + PC_mac + ">";
 
-	qos_bw_rulelist += document.getElementById("download_rate").value*1024 + ">" + document.getElementById("upload_rate").value*1024;
+	qos_bw_rulelist += document.getElementById("download_rate").value*scaling + ">" + document.getElementById("upload_rate").value*scaling;
 	qos_bw_rulelist += ">" + max_priority;
 	PC_mac = "";
 	document.form.PC_devicename.value = "";
@@ -299,9 +307,9 @@ function showqos_bw_rulelist(){
 			else
 				code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">' + apps_client_id + '</td>';
 
-			code += '<td width="'+wid[2]+'%" style="text-align:center;">'+qos_bw_rulelist_col[2]/1024+' Mb/s</td>';
+			code += '<td width="'+wid[2]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/scaling)*100)/100+' '+label+'</td>';
 
-			code += '<td width="'+wid[3]+'%" style="text-align:center;">'+qos_bw_rulelist_col[3]/1024+' Mb/s</td>';
+			code += '<td width="'+wid[3]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/scaling)*100)/100+' '+label+'</td>';
 
 			code += '<td><input width="'+wid[4]+'%" class="remove_btn" type="button" onclick="deleteRow_main(this);"></td>';
 			code += '</tr>';
@@ -613,10 +621,10 @@ function enable_check(obj){
 									<div id="ClientList_Block_PC" class="ClientList_Block_PC"></div>
 								</td>
 								<td style="border-bottom:2px solid #000;text-align:right;">
-									<input type="text" id="download_rate" class="input_6_table" maxlength="6" onkeypress="return bandwidth_code(this, event);"><span style="margin: 0 5px;color:#FFF;">Mb/s</span>
+									<input type="text" id="download_rate" class="input_6_table" maxlength="6" onkeypress="return bandwidth_code(this, event);"><span id="bw_down" style="margin: 0 5px;color:#FFF;">Mb/s</span>
 								</td>
 								<td style="border-bottom:2px solid #000;text-align:right;">
-									<input type="text" id="upload_rate" class="input_6_table" maxlength="6" onkeypress="return bandwidth_code(this, event);"><span style="margin: 0 5px;color:#FFF;">Mb/s</span>
+									<input type="text" id="upload_rate" class="input_6_table" maxlength="6" onkeypress="return bandwidth_code(this, event);"><span id="bw_up" style="margin: 0 5px;color:#FFF;">Mb/s</span>
 								</td>
 								<td style="border-bottom:2px solid #000;">
 									<input type="button" class="add_btn" onclick="addRow_main(this, 32)" value="">
