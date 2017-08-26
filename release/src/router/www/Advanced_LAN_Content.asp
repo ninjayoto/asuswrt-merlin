@@ -290,7 +290,11 @@ function changed_DHCP_IP_pool(){
 				if(confirm("<#JS_DHCP1#>")){
 						document.form.dhcp_start.value = update_pool_start;
 						document.form.dhcp_end.value = update_pool_end;
-				}else{
+				}
+				else{
+					if(confirm("Proceed with IP Address or Subnet update?"))
+						return true;
+					else
 						return false;	
 				}
 		}	
