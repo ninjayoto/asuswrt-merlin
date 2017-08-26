@@ -316,9 +316,9 @@ function showqos_bw_rulelist(){
 			else
 				code += '<td width="'+wid[1]+'%" title="' + apps_client_id + '">' + apps_client_id + '</td>';
 
-			code += '<td width="'+wid[2]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/scaling)*100)/100+' '+label+'</td>';
+			code += '<td width="'+wid[2]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/scaling)*1000)/1000+' '+label+'</td>';
 
-			code += '<td width="'+wid[3]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/scaling)*100)/100+' '+label+'</td>';
+			code += '<td width="'+wid[3]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/scaling)*1000)/1000+' '+label+'</td>';
 
 			code += '<td><input width="'+wid[4]+'%" class="remove_btn" type="button" onclick="deleteRow_main(this);"></td>';
 			code += '</tr>';

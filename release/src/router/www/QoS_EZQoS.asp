@@ -131,13 +131,13 @@ function changeRule(obj){
 function init_changeScale(_obj_String){
 	if($(_obj_String).value > 999){
 		$(_obj_String+"_scale").value = "Mb/s";
-		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*100)/100;
+		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*1000)/1000;
 	}
 }
 
 function changeScale(_obj_String){
 	if($(_obj_String+"_scale").value == "Mb/s")
-		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*100)/100;
+		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*1000)/1000;
 	else
 		$(_obj_String).value = Math.round($(_obj_String).value*1024);
 }
@@ -383,9 +383,9 @@ function showqos_bw_rulelist(){
 							else
 								code += '<td width="'+wid[j]+'%" style="height:30px;">'+ apps_client_id +'</td>';
 						}else if(j==2){
-							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/1024)*100)/100+' Mb/s</td>';
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/1024)*1000)/1000+' Mb/s</td>';
 						}else if(j==3){
-							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/1024)*100)/100+' Mb/s</td>';
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/1024)*1000)/1000+' Mb/s</td>';
 						}
 				}
 				code +='</tr>';
