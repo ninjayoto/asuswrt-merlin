@@ -439,6 +439,34 @@ Move certs from NVRAM to JFFS
 				IMPORTANT:  If you wish to revert to a firmware prior to Update-24 and have moved the certs to JFFS,
 					you MUST move them back to NVRAM prior to loading the earlier firmware.
 ---------------------------------------------------------------------------------------------------------------
+Disable ASUS Protection Server
+
+	Can be set in gui:	Yes (Firewall)
+	Enable via NVRAM:	nvram set ptcsrv_enable=0
+				nvram commit && service restart_firewall
+
+
+	Routers Supported:	All
+	Released:		Update-27
+	Reboot Required:	No
+	Notes:			The ASUS protection server monitors attempts to access the telnet and SSH ports.  If excessive attempts
+					are detected, the source IP address of those attempts will automatically be blocked.
+				It is NOT recommended to disable this service unless you are running a third-party router addon which
+					provides the same functionality.
+---------------------------------------------------------------------------------------------------------------
+Assign Bandwidth Limiter rules in Kb/s instead of Mb/s
+
+	Can be set in gui:	No
+	Enable via NVRAM:	nvram set qos_bw_units=0
+				nvram commit
+
+
+	Routers Supported:	All
+	Released:		Update-27
+	Reboot Required:	No
+	Notes:			Set the value to '0' for Kb/s or to '1' for Mb/s
+				followed by a refresh of the webui for Bandwidth Limiter
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 

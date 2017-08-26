@@ -4,6 +4,69 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_27E1j9527  (25-August-2017) ARM SDK
+* CHANGED: Revert "usb: fsck exfat drives on mount with .asusrouter"
+* CHANGED: Revert "exfat: add dotted symlinks for fsck and mkfs"
+* CHANGED: Revert "exfat: add utilities support"
+* CHANGED: Revert "system: basic exfat support for ARM routers
+* CHANGED: Revert "kernel: add exFAT support (Tomato backport)"
+- CHANGED: sdk: update src-rt-6.x.4708 directory to 380.57 release with ac68 c1 support
+* CHANGED: kernel: add changes post sdk update
+- CHANGED: ctf_arm: update for new sdk
+- CHANGED: wl_arm: update for new sdk
+- CHANGED: wlconf_arm: update for new sdk
+- CHANGED: emf_arm: update for new sdk
+- CHANGED: tuxera: add new fs drivers
+- CHANGED: usb: update usb for new tuxera config vars
+- CHANGED: tuxera: add exfat support; symlinks for tools
+- CHANGED: tools: update for new sdk
+- CHANGED: ctools: update for new sdk
+* CHANGED: ctools: fix lzma_9k permissions (required for N16)
+- CHANGED: acsd_arm: update for new sdk
+- CHANGED: eapd_arm: update for new sdk
+- CHANGED: nas_arm: update for new sdk
+- CHANGED: wps_arm: update for new sdk
+- CHANGED: utils_arm: update for new sdk
+* CHANGED: build: update make/config files for new sdk2
+- CHANGED: wl_arm: update to 380.67 build
+- CHANGED: sysdeps: update to 380.67 build
+* CHANGED: wl: convert TxPower setting for new wireless driver
+- CHANGED: httpd: (backport) report CPU revision when available
+* CHANGED: dnsmasq: change TCP connection backlog from 32 to 15
+- CHANGED: openvpn: (backport) changed two logger calls to avoid spaces in program id
+- CHANGED: ez-ipupdate: (backport) make syslog entries RFC-compliant, by removing space from tag
+- CHANGED: common: provide RFC3164 compliant TAG field for custom scripts/config
+- CHANGED: shared: (backport) ensure logmessage() tag does not break RFC3164 by using spaces
+* FIXED: ipset_arm: update rcu functions in compat include
+* FIXED: ipset_arm: update ip_set_comment.h to eliminate unneccessary use of kfree_rcu
+* FIXED: ipset_arm: take rcu lock when expiring entries from settype hash
+* FIXED: ipset_arm: update rcu locking in add for settype hash
+* FIXED: ipset_arm: update rcu locking in delete for settype hash
+* FIXED: wl: only convert TxPower setting for ARM routers
+* CHANGED: wl_arm: revert wireless driver to GPL 7378 (Merlin 380.66)
+- CHANGED: wl_arm: add airtime fairness and bluetooth coexistence for new wl drivers
+* CHANGED: webui: fix save nvram filename for new fw naming convention
+* FIXED: qos: ensure qos error checking datatypes are consistent at boot
+- CHANGED: ministun: (backport) import ministun sources from GPL
+* CHANGED: wl_arm: move txpower conversion from init to init-broadcom
+* CHANGED: shared: add MIN and MAX function defines
+* FIXED: webui: reset qos enable if input alert
+* FIXED: support: misc updates for ac66u_b1, including GPIO changes
+- CHANGED: misc: (backport) add new nvram get/set functions
+- CHANGED: wanduck: (backport) prepare backup wan for hot-standby
+* CHANGED: shared: add detect function for c0 rev arm processors
+* CHANGED: wl_arm: wireless setting by ac68u rev
+* FIXED: webui: fix name lookup for port forward syslog if using source ranges
+* FIXED: config: re-add protection server lost in SDK update
+* CHANGED: wanduck: support https and custom lan ports for web redirect
+* CHANGED: firewall: add switch for protection services
+* CHANGED: make: remove old TURBO config from AC68
+* FIXED: sysinfo: fix TURBO clkfreq override (even though no longer supported)
+* CHANGED: webui: update popup help for firewall options
+* CHANGED: webui: allow changing lan netmask without forced update of dhcp pool
+* CHANGED: webui: add nvram switch for entering bw limiter rules in kb/s
+
+
 374.43_2-26E4j9527  (5-August-2017)
 * CHANGED: httpd: improve forced http authorization
 * CHANGED: httpd: set default disconnect timeout to 60sec, change via nvram
