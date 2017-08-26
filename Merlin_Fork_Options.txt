@@ -456,7 +456,7 @@ Disable ASUS Protection Server
 ---------------------------------------------------------------------------------------------------------------
 Assign Bandwidth Limiter rules in Kb/s instead of Mb/s
 
-	Can be set in gui:	No
+	Can be set in gui:	Yes (User-defined Bandwidth Limiting)
 	Enable via NVRAM:	nvram set qos_bw_units=0
 				nvram commit
 

@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_27E2j9527  (26-August-2017) ARM SDK
+* NEW:  webui: add units selection to bandwidth limiter page
+* CHANGED: webui: display Kb/s entries with 3 decimal places in qos tables formatted in Mb/s
+
+
 374.43_27E1j9527  (25-August-2017) ARM SDK
 * CHANGED: Revert "usb: fsck exfat drives on mount with .asusrouter"
 * CHANGED: Revert "exfat: add dotted symlinks for fsck and mkfs"
