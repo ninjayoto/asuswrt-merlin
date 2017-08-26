@@ -67,9 +67,9 @@
 var qos_bw_rulelist = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
 var ctf_disable = '<% nvram_get("ctf_disable"); %>';
 var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
-var scaling = ('<% nvram_get("qos_bw_units"); %>' == 0) ? 1 : 1024;
 var over_var = 0;
 var isMenuopen = 0;
+var scaling = 1;
 var label = "";
 
 function key_event(evt){
@@ -79,14 +79,9 @@ function key_event(evt){
 }
 
 function initial(){
-	if (scaling == 1)
-		label = "Kb/s";
-	else
-		label = "Mb/s";
-	$("bw_down").innerHTML = label;
-	$("bw_up").innerHTML = label;
 	show_menu();
-	showqos_bw_rulelist();
+	changeScale("qos_bw_units");
+//	showqos_bw_rulelist();
 
 	showLANIPList();
 }
@@ -95,6 +90,20 @@ function applyRule(){
 		save_table();
 		showLoading();
 		document.form.submit();
+}
+
+function changeScale(obj){
+	if($(obj).value == 0){
+		scaling = 1;
+		label = "Kb/s";
+	} else {
+		scaling = 1024;
+		label = "Mb/s";
+	}
+	$("bw_down").innerHTML = label;
+	$("bw_up").innerHTML = label;
+
+	showqos_bw_rulelist();
 }
 
 function save_table(){
@@ -544,58 +553,74 @@ function enable_check(obj){
 		</td>
 		<td valign="top">
 			<div id="tabMenu" class="submenuBlock"></div>
-			<!--===================================Beginning of Main Content===========================================-->
-<table width="98%" border="0" align="left" cellpadding="0" cellspacing="0">
-	<tr>
-		<td valign="top" >
-			<table width="760px" border="0" cellpadding="4" cellspacing="0" class="FormTitle" id="FormTitle">
+		<!--===================================Beginning of Main Content===========================================-->
+		<table width="95%" border="0" align="left" cellpadding="0" cellspacing="0" class="FormTitle" id="FormTitle">
+		<tr>
+			<td bgcolor="#4D595D" valign="top">
+			<table width="760px" border="0" cellpadding="4" cellspacing="0">
+				<tr>
+						<td bgcolor="#4D595D" valign="top">
+							<table width="100%">
+								<tr>
+									<td  class="formfonttitle" align="left">
+										<div style="margin-top:5px;"><#menu5_3_2#> - Bandwidth Limiter</div>
+									</td>
+									<td align="right" >
+										<div>
+											<select onchange="switchPage(this.options[this.selectedIndex].value)" class="input_option">
+												<!--option><#switchpage#></option-->
+												<option value="1"><#qos_automatic_mode#></option>
+												<option value="2"><#qos_user_rules#></option>
+												<option value="3"><#qos_user_prio#></option>
+												<option value="4" selected>User-defined Bandwidth Limiting</option>
+											</select>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</td>
+				</tr>
+				<tr>
+					<td height="5" bgcolor="#4D595D" valign="top"><img src="images/New_ui/export/line_export.png" /></td>
+				</tr>
+				<tr>
+					<td height="30" align="left" valign="top" bgcolor="#4D595D">
+						<div>
+							<table width="650px">
+								<tr>
+									<td width="130px">
+										<img id="guest_image" src="/images/New_ui/Bandwidth_Limiter.png">
+									</td>
+									<td style="font-style: italic;font-size: 14px;">
+										<!--untranslated-->
+										<div>Bandwidth Limiter allows you to control the max connection speed of the client device. You can select the host name from target or fill in IP address / IP Range / MAC address for limited speed profile setting.</div>
+										<div><a style="text-decoration:underline;" href="http://www.asus.com/support/FAQ/1013333/" target="_blank">Bandwidth Limiter FAQ</a></div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
 
 				<tr>
-					<td bgcolor="#4D595D" valign="top">
-						<table>
-						<tr>
-						<td>
-						<table width="100%" >
-						<tr >
-						<td  class="formfonttitle" align="left">
-										<div style="margin-top:5px;"><#menu5_3_2#> - Bandwidth Limiter</div><!--untranslated-->
-									</td>
-						<td align="right" >
-						<div style="margin-top:5px;">
-							<select onchange="switchPage(this.options[this.selectedIndex].value)" class="input_option">
-								<!--option><#switchpage#></option-->
-								<option value="1"><#qos_automatic_mode#></option>
-								<option value="2"><#qos_user_rules#></option>
-								<option value="3"><#qos_user_prio#></option>
-								<option value="4" selected>User-defined Bandwidth Limiting</option>
-							</select>
-						</div>
+					<td valign="top">
+						<table style="margin-left:3px;" width="99%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 
-						</td>
-						</tr>
-						</table>
-						</td>
-						</tr>
-
-					<tr>
-					<td height="5"><img src="images/New_ui/export/line_export.png" /></td>
-				</tr>
-					<div id="PC_desc">
-						<table width="700px" style="margin-left:25px;">
 							<tr>
-								<td>
-									<img id="guest_image" src="/images/New_ui/Bandwidth_Limiter.png">
-								</td>
-								<td>&nbsp;&nbsp;</td>
-								<td style="font-style: italic;font-size: 14px;">
-									<!--untranslated-->
-									<div>Bandwidth Limiter allows you to control the max connection speed of the client device. You can select the host name from target or fill in IP address / IP Range / MAC address for limited speed profile setting.</div>
-									<div><a style="text-decoration:underline;" href="http://www.asus.com/support/FAQ/1013333/" target="_blank">Bandwidth Limiter FAQ</a></div>
-								</td>
+								<th>Bandwidth Limiter units</a></th>
+								<td colspan="2">
+									<select id="qos_bw_units" name="qos_bw_units" class="input_option" onChange="changeScale(this);">
+										<option value="0"<% nvram_match("qos_bw_units", "0","selected"); %>>Kb/s</option>
+										<option value="1"<% nvram_match("qos_bw_units", "1","selected"); %>>Mb/s</option>
+									</select>
 							</tr>
+
 						</table>
-					</div>
-						<!--=====Beginning of Main Content=====-->
+					</td>
+				</tr>
+
+			</table>
+
 						<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table" style="margin-top:8px">
 							<thead>
 							<tr>
@@ -630,12 +655,12 @@ function enable_check(obj){
 									<input type="button" class="add_btn" onclick="addRow_main(this, 32)" value="">
 								</td>
 							</tr>
-							</table>
-							<div id="qos_bwlist_Block"></div>
+						</table>
+						<div id="qos_bwlist_Block"></div>
 
-							<div class="apply_gen">
+						<div class="apply_gen">
 								<input name="button" id="applybutton" style="color:#FFFFFF" type="button" class="button_gen" onClick="applyRule()" value="<#CTL_apply#>"/>
-							</div>
+						</div>
 						</td>
 					</tr>
 					</tbody>
