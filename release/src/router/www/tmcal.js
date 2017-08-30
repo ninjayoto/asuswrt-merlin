@@ -122,6 +122,16 @@ function switchColorTX(rev)
 	showColor();
 	showCTab();
 }
+
+function switchColor(rev)
+{
+	if ((!svgReady) || (updating)) return;
+	
+	drawColorRX = rev;
+	drawColorTX = (rev ? 0 : 1);
+	showColor();
+	showCTab();
+}
 // Viz add 2010.09 ^^^^^^^^^^
 
 function showScale()

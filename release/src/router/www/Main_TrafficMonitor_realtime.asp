@@ -300,7 +300,7 @@ function switchPage(page){
 					</td>
 				</tr>
 
-				<tr style="display:none">
+				<tr>
 					<td bgcolor="#FFFFFF">
 		  				<table width="100%"  border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 							<thead>
@@ -311,7 +311,7 @@ function switchPage(page){
 
 						<div id='bwm-controls'>
 							<tr>
-								<th width='50%'><#Traffic_Avg#></th>
+								<th width='50%'>Average across multiple intervals</th>
 								<td>
 									<a href='javascript:switchAvg(1)' id='avg1'>Off</a>,
 									<a href='javascript:switchAvg(2)' id='avg2'>2x</a>,
@@ -321,23 +321,24 @@ function switchPage(page){
 								</td>
 							</tr>
 							<tr>
-								<th><#Traffic_Max#></th>
+								<th>Graph Maximum scale</th>
 								<td>
 									<a href='javascript:switchScale(0)' id='scale0'>Uniform</a>,
-									<a href='javascript:switchScale(1)' id='scale1'>Per IF</a>
+									<a href='javascript:switchScale(1)' id='scale1'>Per Interface</a>
 								</td>
 							</tr>
 							<tr>
-								<th><#Traffic_SvgDisp#></th>
+								<th>Display Type</th>
 								<td>
 									<a href='javascript:switchDraw(0)' id='draw0'>Solid</a>,
 									<a href='javascript:switchDraw(1)' id='draw1'>Line</a>
 								</td>
 							</tr>
-							<tr>
-								<th><#Traffic_Color#></th>
+							<tr style="display:none">
+								<th>Incoming/Outgoing Colors</th>
 								<td>
-									<a href='javascript:switchColor()' id='drawcolor'>-</a><a href='javascript:switchColor(1)' id='drawrev'><#Traffic_Reverse#></a>
+									<a href='javascript:switchColor(0)' id='drawstd'>Standard</a>,
+									<a href='javascript:switchColor(1)' id='drawrev'>Reverse</a>
 								</td>
 							</tr>
 						</div>
