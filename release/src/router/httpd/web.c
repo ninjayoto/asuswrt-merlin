@@ -1180,11 +1180,13 @@ ej_wl_get_guestnetwork(int eid, webs_t wp, int argc, char_t **argv)
 		ret += websWrite(wp, "\", \"");
 		ret += webWriteNvram(wp, strcat_r(word2, "_lanaccess", tmp));
 		ret += websWrite(wp, "\", \"");
+		ret += webWriteNvram(wp, strcat_r(word2, "_ap_isolate", tmp));
+		ret += websWrite(wp, "\", \"");
 		ret += webWriteNvram(wp, strcat_r(word2, "_expire_tmp", tmp));
 		ret += websWrite(wp, "\", \"");
-		ret += webWriteNvram(wp, strcat_r(word2, "_macmode", tmp));	// gn_array[][14]
+		ret += webWriteNvram(wp, strcat_r(word2, "_macmode", tmp));	// gn_array[][15]
 		ret += websWrite(wp, "\", \"");
-		ret += webWriteNvram(wp, strcat_r(word2, "_mbss", tmp));	// gn_array[][15]
+		ret += webWriteNvram(wp, strcat_r(word2, "_mbss", tmp));	// gn_array[][16]
 		ret += websWrite(wp, "\"]");
 	}
 	ret += websWrite(wp, "]");

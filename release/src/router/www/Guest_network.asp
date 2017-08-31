@@ -125,6 +125,7 @@ function translate_auth(flag){
 function gen_gntable_tr(unit, gn_array, slicesb){	
 	var GN_band = "";
 	var htmlcode = "";
+	var isolate_enable = "";
 	if(unit == 0) 
 		GN_band = 2;
 	else
@@ -140,7 +141,8 @@ function gen_gntable_tr(unit, gn_array, slicesb){
 	htmlcode += '<tr><th align="left" style="height:40px;"><#Network_key#></th></tr>';
 	htmlcode += '<tr><th align="left" style="height:40px;"><#mssid_time_remaining#></th></tr>';
 	if(sw_mode != "3"){
-			htmlcode += '<tr><th align="left" style="width:20%;height:28px;"><#Access_Intranet#></th></tr>';
+			htmlcode += '<tr><th align="left" style="height:40px;"><#Access_Intranet#></th></tr>';
+			htmlcode += '<tr><th align="left" style="width:20%;height:28px;"><#WLANConfig11b_x_IsolateAP_itemname#></th></tr>';
 	}
 	htmlcode += '<tr><th align="left" style="height:40px;"></th></tr>';		
 	htmlcode += '</table></th>';
@@ -180,8 +182,8 @@ function gen_gntable_tr(unit, gn_array, slicesb){
 					if(gn_array[i][11] == 0)
 							htmlcode += '<tr><td align="center" onclick="change_guest_unit('+ unit +','+ subunit +');"><#Limitless#></td></tr>';
 					else{
-							var expire_hr = Math.floor(gn_array[i][13]/3600);
-							var expire_min = Math.floor((gn_array[i][13]%3600)/60);
+							var expire_hr = Math.floor(gn_array[i][14]/3600);
+							var expire_min = Math.floor((gn_array[i][14]%3600)/60);
 							if(expire_hr > 0)
 									htmlcode += '<tr><td align="center" onclick="change_guest_unit('+ unit +','+ subunit +');"><b id="expire_hr_'+i+'">'+ expire_hr + '</b> Hr <b id="expire_min_'+i+'">' + expire_min +'</b> Min</td></tr>';
 							else{
@@ -197,8 +199,11 @@ function gen_gntable_tr(unit, gn_array, slicesb){
 			}														
 			
 			if(sw_mode != "3"){
-					if(gn_array[i][0] == "1")
+					if(gn_array[i][0] == "1") {
 							htmlcode += '<tr><td align="center" onclick="change_guest_unit('+ unit +','+ subunit +');">'+ gn_array[i][12] +'</td></tr>';
+							isolate_enable = (gn_array[i][13] == "1") ? "on" : "off";
+							htmlcode += '<tr><td align="center" onclick="change_guest_unit('+ unit +','+ subunit +');">'+ isolate_enable +'</td></tr>';
+					}
 			}
 										
 			if(gn_array[i][0] == "1"){
@@ -472,7 +477,8 @@ function change_guest_unit(_unit, _subunit){
 	document.form.wl_key4.value = decodeURIComponent(gn_array[idx][10]);
 	document.form.wl_expire.value = decodeURIComponent(gn_array[idx][11]);
 	document.form.wl_lanaccess.value = decodeURIComponent(gn_array[idx][12]);
-	if(decodeURIComponent(gn_array[idx][14]) == "disabled")
+	document.form.wl_ap_isolate.value = decodeURIComponent(gn_array[idx][13]);
+	if(decodeURIComponent(gn_array[idx][15]) == "disabled")
 	{
 		document.form.wl_macmode_option.options[0].selected = 0;
 		document.form.wl_macmode_option.options[1].selected = 1;
@@ -508,7 +514,7 @@ function create_guest_unit(_unit, _subunit){
 	{
 		gn_array = gn_array_2g;
 	}
-	if(gn_array[_subunit-1][15] != "1"){
+	if(gn_array[_subunit-1][16] != "1"){
 		change_guest_unit(_unit, _subunit);
 		document.form.wl_bss_enabled.value = "1";
 	}else{
@@ -845,6 +851,16 @@ function genBWTable(_unit){
 			  		</select>
 					</td>
 			 	</tr>
+
+				<tr>
+					<th>Set AP Isolated</th>
+					<td>
+				 		<select name="wl_ap_isolate" class="input_option">
+							<option value="1" <% nvram_match("wl_ap_isolate", "1","selected"); %>><#WLANConfig11b_WirelessCtrl_button1name#></option>
+							<option value="0" <% nvram_match("wl_ap_isolate", "0","selected"); %>><#btn_disable#></option>
+			  			</select>
+					</td>
+				</tr>
 
 				<tr id="mac_filter_guest">
 					<th id="enable_macfilter"></th>
