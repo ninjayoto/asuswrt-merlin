@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_27E3j9527  (xx-August-2017) ARM SDK
+* NEW: webui: enable traffic monitor display options
+* CHANGED: wl: don't reset guest ap_isolate to primary band value
+* CHANGED: webui: add ap_isolate to guest network setup
+
+
 374.43_27E2j9527  (26-August-2017) ARM SDK
 * NEW:  webui: add units selection to bandwidth limiter page
 * CHANGED: webui: display Kb/s entries with 3 decimal places in qos tables formatted in Mb/s
