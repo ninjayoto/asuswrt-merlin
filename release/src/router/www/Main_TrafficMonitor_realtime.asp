@@ -21,6 +21,12 @@
 <script language="JavaScript" type="text/javascript" src="tmcal.js"></script>
 <script language="JavaScript" type="text/javascript" src="popup.js"></script>
 
+<style type='text/css'>
+#sw_avg a.highlite, #sw_scale a.highlite, #sw_draw a.highlite {
+	color:#FFCC00;
+}
+</style>
+
 <script type='text/javascript'>
 
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
@@ -313,25 +319,30 @@ function switchPage(page){
 							<tr>
 								<th width='50%'>Average across multiple intervals</th>
 								<td>
-									<a href='javascript:switchAvg(1)' id='avg1'>Off</a>,
-									<a href='javascript:switchAvg(2)' id='avg2'>2x</a>,
-									<a href='javascript:switchAvg(4)' id='avg4'>4x</a>,
-									<a href='javascript:switchAvg(6)' id='avg6'>6x</a>,
-									<a href='javascript:switchAvg(8)' id='avg8'>8x</a>
+								<div id='sw_avg'>
+									<a onclick='highlite_avg(this);' href='javascript:switchAvg(1)' id='avg1'>Off</a>,&nbsp;
+									<a onclick='highlite_avg(this);' href='javascript:switchAvg(2)' id='avg2'>4 sec</a>,&nbsp;
+									<a onclick='highlite_avg(this);' href='javascript:switchAvg(4)' id='avg4'>8 sec</a>,&nbsp;
+									<a onclick='highlite_avg(this);' href='javascript:switchAvg(8)' id='avg8'>16 sec</a>
+								</div>
 								</td>
 							</tr>
 							<tr>
 								<th>Graph Maximum scale</th>
 								<td>
-									<a href='javascript:switchScale(0)' id='scale0'>Uniform</a>,
-									<a href='javascript:switchScale(1)' id='scale1'>Per Interface</a>
+								<div id='sw_scale'>
+									<a onclick='highlite_scale(this);' href='javascript:switchScale(0)' id='scale0'>Uniform</a>,&nbsp;
+									<a onclick='highlite_scale(this);' href='javascript:switchScale(1)' id='scale1'>Per Interface</a>
+								</div>
 								</td>
 							</tr>
 							<tr>
 								<th>Display Type</th>
 								<td>
-									<a href='javascript:switchDraw(0)' id='draw0'>Solid</a>,
-									<a href='javascript:switchDraw(1)' id='draw1'>Line</a>
+								<div id='sw_draw'>
+									<a onclick='highlite_draw(this);' href='javascript:switchDraw(0)' id='draw0'>Fill</a>,&nbsp;
+									<a onclick='highlite_draw(this);' href='javascript:switchDraw(1)' id='draw1'>Line</a>
+								</div>
 								</td>
 							</tr>
 							<tr style="display:none">
@@ -357,3 +368,40 @@ function switchPage(page){
 <div id="footer"></div>
 </body>
 </html>
+<script type='text/javascript'>
+var avgMode = fixInt(cookie.get(cprefix + 'avg'), 1, 10, 1);
+var sw_avg_current = document.getElementById('avg'+avgMode);
+sw_avg_current.className = "highlite";
+function highlite_avg(el) {
+if (sw_avg_current != null)
+{
+	sw_avg_current.className = "";
+}
+el.className = "highlite";
+sw_avg_current = el;
+}
+
+var scaleMode = fixInt(cookie.get(cprefix + 'scale'), 0, 1, 0);
+var sw_scale_current = document.getElementById('scale'+scaleMode);
+sw_scale_current.className = "highlite";
+function highlite_scale(el) {
+if (sw_scale_current != null)
+{
+	sw_scale_current.className = "";
+}
+el.className = "highlite";
+sw_scale_current = el;
+}
+
+var drawMode = fixInt(cookie.get(cprefix + 'draw'), 0, 1, 0);
+var sw_draw_current = document.getElementById('draw'+drawMode);
+sw_draw_current.className = "highlite";
+function highlite_draw(el) {
+if (sw_draw_current != null)
+{
+	sw_draw_current.className = "";
+}
+el.className = "highlite";
+sw_draw_current = el;
+}
+</script>
