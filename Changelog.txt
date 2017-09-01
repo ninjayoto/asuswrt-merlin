@@ -4,18 +4,25 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_27E3j9527  (xx-August-2017) ARM SDK
+374.43_27E5j9527  (4-September-2017) ARM SDK
+* CHANGED: webui: add help for openvpn accept dns configuration
+- FIXED: miniupnpd: (backport) specify correct chain for portinuse check
+* FIXED: openvpn: ensure fw remove clears all chains with position dependence
+* FIXED: openvpn: (upstream) management: preserve wait_for_push field when asking for user/pass
+
+
+374.43_2-27E3j9527  (31-August-2017) ARM SDK
 * NEW: webui: enable traffic monitor display options
 * CHANGED: wl: don't reset guest ap_isolate to primary band value
 * CHANGED: webui: add ap_isolate to guest network setup
 
 
-374.43_27E2j9527  (26-August-2017) ARM SDK
+374.43_2-27E2j9527  (26-August-2017) ARM SDK
 * NEW:  webui: add units selection to bandwidth limiter page
 * CHANGED: webui: display Kb/s entries with 3 decimal places in qos tables formatted in Mb/s
 
 
-374.43_27E1j9527  (25-August-2017) ARM SDK
+374.43_2-27E1j9527  (25-August-2017) ARM SDK
 * CHANGED: Revert "usb: fsck exfat drives on mount with .asusrouter"
 * CHANGED: Revert "exfat: add dotted symlinks for fsck and mkfs"
 * CHANGED: Revert "exfat: add utilities support"
