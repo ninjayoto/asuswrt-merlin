@@ -610,7 +610,7 @@ void stop_vpnclient(int clientNum)
 	sprintf(&buffer[0], "/etc/openvpn/fw/client%d-fw.sh", clientNum);
 	argv[0] = "sed";
 	argv[1] = "-i";
-	argv[2] = "s/-A/-D/g;s/-I/-D/g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
+	argv[2] = "s/-A/-D/g;s/-I/-D/g;s/INPUT\\ [0-9]\\ /INPUT\\ /g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
 	argv[3] = &buffer[0];
 	argv[4] = NULL;
 	if (!_eval(argv, NULL, 0, NULL))
@@ -1659,7 +1659,7 @@ void stop_vpnserver(int serverNum)
 	sprintf(&buffer[0], "/etc/openvpn/fw/server%d-fw.sh", serverNum);
 	argv[0] = "sed";
 	argv[1] = "-i";
-	argv[2] = "s/-A/-D/g;s/-I/-D/g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
+	argv[2] = "s/-A/-D/g;s/-I/-D/g;s/INPUT\\ [0-9]\\ /INPUT\\ /g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
 	argv[3] = &buffer[0];
 	argv[4] = NULL;
 	if (!_eval(argv, NULL, 0, NULL))
@@ -1846,7 +1846,7 @@ void run_vpn_firewall_scripts()
 		// Remove existing firewall rules if they exist
 		vpnlog(VPN_LOG_EXTRA,"Removing existing firewall rules: %s", fn);
 		argv[0] = "sed";
-		argv[1] = "s/-A/-D/g;s/-I/-D/g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
+		argv[1] = "s/-A/-D/g;s/-I/-D/g;s/INPUT\\ [0-9]\\ /INPUT\\ /g;s/FORWARD\\ [0-9]\\ /FORWARD\\ /g";
 		argv[2] = fn;
 		argv[3] = ">";
 		argv[4] = "/etc/openvpn/fw/clear-fw-tmp.sh";
