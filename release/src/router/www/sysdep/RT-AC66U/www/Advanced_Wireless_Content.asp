@@ -102,7 +102,7 @@ function initial(){
 		document.form.wl_subunit.value = ('<% nvram_get("wl_unit"); %>' == '<% nvram_get("wlc_band"); %>') ? 1 : -1;
 				
 	change_wl_nmode(document.form.wl_nmode_x);
-	if(country == "EU"){		//display checkbox of DFS channel under 5GHz
+	if(country == "EU" | country == "JP"){		//display checkbox of DFS channel under 5GHz
 		if(based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC69U"  
 		|| based_modelid == "RT-AC87U"
 		|| (based_modelid == "RT-AC56U" && wl_dfs_enable == "1")

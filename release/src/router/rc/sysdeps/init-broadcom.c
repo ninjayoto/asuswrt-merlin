@@ -2863,7 +2863,12 @@ int set_wltxpower()
 					    // Settings for 68U rev A1,A2,B1
 					    if (is_ac68u_v1_series())
 					    {
-
+						if (nvram_match(strcat_r(prefix, "country_code", tmp), "JP")) // update regulation for JP
+						{
+							nvram_set(strcat_r(prefix, "country_rev", tmp), "45");
+							nvram_set(strcat_r(prefix2, "regrev", tmp2), "45");
+							commit_needed++;
+						}
 						if (txpower < 20)
 						{
 							if (!nvram_match(strcat_r(prefix2, "maxp5ga0", tmp2), "58,58,58,58"))

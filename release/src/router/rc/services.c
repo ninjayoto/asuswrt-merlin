@@ -6344,7 +6344,7 @@ void set_acs_ifnames()
 		nvram_set_int("wlready", 0);
 #endif
 
-	if (nvram_match("wl1_country_code", "EU"))
+	if (nvram_match("wl1_country_code", "EU") || nvram_match("wl1_country_code", "JP"))
 	{
 #ifdef RTAC66U
 		if (!nvram_match("wl1_dfs", "1"))
@@ -6361,10 +6361,10 @@ void set_acs_ifnames()
 				  "0xd034,0xd836,0xe03a,0xd038,0xd936,0xe13a,0xd03c,0xd83e,0xe23a,0xd040,0xd93e,0xe33a,0xd064,0xd866,0xe06a,0xd068,0xd966,0xe16a,0xd06c,0xd86e,0xe26a,0xd070,0xd96e,0xe36a,0xd074,0xd084,0xd886,0xd088,0xd986,0xd08c");
 		}
 	}
-	else if (nvram_match("wl1_country_code", "JP"))
-	{
-		nvram_set("wl1_acs_excl_chans", "");
-	}
+//	else if (nvram_match("wl1_country_code", "JP"))
+//	{
+//		nvram_set("wl1_acs_excl_chans", "");
+//	}
 	else
 	{
 		if (nvram_match("acs_band1", "1"))
