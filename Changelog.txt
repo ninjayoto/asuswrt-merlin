@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_27E6j9527  (7-September-2017) ARM SDK
+* CHANGED: wl: update regulation for JP
+
+
 374.43_27E5j9527  (4-September-2017) ARM SDK
 * CHANGED: webui: add help for openvpn accept dns configuration
 - FIXED: miniupnpd: (backport) specify correct chain for portinuse check
