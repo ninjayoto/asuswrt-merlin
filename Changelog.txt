@@ -4,11 +4,33 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_28E1j9527  (19-September-2017) ARM SDK
+* NEW: openvpn: add ipv6 blocking option to client setup
+* NEW: webui: add direction labels to traffic monitor
+* NEW: others: add utility to retrieve external address via stun
+* NEW: qos: add option to suspend qos without reboot
+* CHANGED: Revert "openvpn: revert lzo to pre-packaged library version"
+* CHANGED: webui: improve checking during qos enable
+* CHANGED: Revert "wanduck: (backport) prepare backup wan for hot-standby"
+* CHANGED: webui: update openvpn client block option label to Never/Unblock
+* CHANGED: wl: only initialize txpower (lower case) for ARM routers
+* CHANGED: others: update permission for added user scripts
+* CHANGED: openvpn: no longer auto add persist-key; import from ovpn if present
+* CHANGED: webui: minor format change to ipv6 system log
+* FIXED: build: add missing ip6tables-save
+* FIXED: firewall: correctly remove ipv6 modules if ipv6 disabled
+* FIXED: gpio: fix led all off for AC68 series
+* FIXED: others: add symlink for old https save location
+* FIXED: tools: update netfilter xt_MARK dropped in SDK update
+* FIXED: make: fix subdir warning during openvpn make
+* FIXED: dnsmasq: (upstream) Don't return arcount=1 if EDNS0 RR won't fit in the packet
+
+
 374.43_27E6j9527  (7-September-2017) ARM SDK
 * CHANGED: wl: update regulation for JP
 
 
-374.43_27E5j9527  (4-September-2017) ARM SDK
+374.43_27E5j9527  (4-September-2017) ARM SDK - New naming convention
 * CHANGED: webui: add help for openvpn accept dns configuration
 - FIXED: miniupnpd: (backport) specify correct chain for portinuse check
 * FIXED: openvpn: ensure fw remove clears all chains with position dependence

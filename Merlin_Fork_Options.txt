@@ -467,6 +467,20 @@ Assign Bandwidth Limiter rules in Kb/s instead of Mb/s
 	Notes:			Set the value to '0' for Kb/s or to '1' for Mb/s
 				followed by a refresh of the webui for Bandwidth Limiter
 ---------------------------------------------------------------------------------------------------------------
+Allow blocking IPv6 when OpenVPN client is active
+
+	Can be set in gui:	Yes (OpenVPN Client)
+	Enable via NVRAM:	nvram set vpn_block_ipv6=1
+				nvram commit
+
+
+	Routers Supported:	All
+	Released:		Update-27E7
+	Reboot Required:	No
+	Notes:			When running in a dual stack environment, set the value to '1' to block IPv6, or '0' to allow
+				Setting this option may create delays in opening some IPv6 enabled sites depending on the browser bein used.
+					IPv6 only sites will not be accessible.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
