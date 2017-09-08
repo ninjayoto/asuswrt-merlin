@@ -154,23 +154,25 @@ function switchPage(page){
 }
 
 function applyRule(){
-	if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
-		alert("<#JS_fieldblank#>");
-		document.form.qos_obw.focus();
-		document.form.qos_obw.select();
-		return false;
-	}
-	if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
-		alert("<#JS_fieldblank#>");
-		document.form.qos_ibw.focus();
-		document.form.qos_ibw.select();
-		return false;
-	}
+	if(document.form.qos_type.value == 0){
+		if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
+			alert("<#JS_fieldblank#>");
+			document.form.qos_obw.focus();
+			document.form.qos_obw.select();
+			return false;
+		}
+		if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
+			alert("<#JS_fieldblank#>");
+			document.form.qos_ibw.focus();
+			document.form.qos_ibw.select();
+			return false;
+		}
 
-	if($("qos_obw_scale").value == "Mb/s")
-		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
-	if($("qos_ibw_scale").value == "Mb/s")
-		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+		if($("qos_obw_scale").value == "Mb/s")
+			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
+		if($("qos_ibw_scale").value == "Mb/s")
+			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+	}
 
 	if(document.form.qos_enable.value == "0")
 		document.form.action_script.value = "";
@@ -183,28 +185,38 @@ function applyRule(){
 
 function submitQoS(){
 	// Jieming To Do: please add a hint here when error occurred, and qos_ibw & qos_obw should allow number only.
-	if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
-			document.form.qos_enable.value = document.form.qos_enable_orig.value;
-			$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
-			alert("Upload bandwidth cannot be zero or blank!");
-			document.form.qos_obw.focus();
-			document.form.qos_obw.select();
-			return;
-	}
-	if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
-			document.form.qos_enable.value = document.form.qos_enable_orig.value;
-			$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
-			alert("Download bandwidth cannot be zero or blank!");
-			document.form.qos_ibw.focus();
-			document.form.qos_ibw.select();
-			return;
-	}
+	if(document.form.qos_type.value == 0){
+		if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
+				document.form.qos_enable.value = document.form.qos_enable_orig.value;
+				$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
+				alert("<#JS_fieldblank#>");
+				document.form.qos_obw.focus();
+				document.form.qos_obw.select();
+				return;
+		}
+		if(document.form.qos_ibw.value.length == 0 || document.form.qos_ibw.value == 0){
+				document.form.qos_enable.value = document.form.qos_enable_orig.value;
+				$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
+				alert("<#JS_fieldblank#>");
+				document.form.qos_ibw.focus();
+				document.form.qos_ibw.select();
+				return;
+		}
 	// end
 
-	if($("qos_obw_scale").value == "Mb/s")
-		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
-	if($("qos_ibw_scale").value == "Mb/s")
-		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+		if($("qos_obw_scale").value == "Mb/s")
+			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
+		if($("qos_ibw_scale").value == "Mb/s")
+			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+	}
+	else {
+		if(qos_bw_rulelist_array.length == 0){
+			document.form.qos_enable.value = document.form.qos_enable_orig.value;
+			$j('#radio_qos_enable').iphoneSwitch(document.form.qos_enable.value);
+			alert("Please define Bandwidth Limiter rules before enabling the Bandwidth Limiter!");
+			return;
+		}
+	}
 
 	if(document.form.qos_enable.value != document.form.qos_enable_orig.value){
 		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
