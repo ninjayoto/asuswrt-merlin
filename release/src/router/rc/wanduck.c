@@ -2399,14 +2399,6 @@ int wanduck_main(int argc, char *argv[]){
 			set_disconn_count(other_wan_unit, S_IDLE);
 			switch_wan_line(other_wan_unit);
 		}
-		// hot-standby: Try to prepare the backup line.
-		else if(!strcmp(dualwan_mode, "fo") || !strcmp(dualwan_mode, "fb")){
-			if(nvram_get_int("wans_standby") == 1 && link_wan[other_wan_unit] == 1 && get_wan_state(other_wan_unit) == WAN_STATE_INITIALIZING){
-				_dprintf("\n# wanduck(hot-standby): Try to prepare the backup line.\n");
-				snprintf(cmd, sizeof(cmd), "restart_wan_if %d", other_wan_unit);
-				notify_rc(cmd);
-			}
-		}
 #endif
 
 #if defined(RTAC68U) || defined(RTAC87U)
