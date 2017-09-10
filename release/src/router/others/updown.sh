@@ -10,7 +10,8 @@ lan_if=$(nvram get lan_ifname)
 lan_ip=$(nvram get lan_ipaddr)
 dnscrypt_port=$(nvram get dnscrypt1_port)
 vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
-vpn_allow_ipv6=$(nvram get vpn_allow_ipv6); if [ "$vpn_allow_ipv6" == "" ]; then vpn_allow_ipv6=0; fi
+vpn_block_ipv6=$(nvram get vpn_block_ipv6); if [ "$vpn_block_ipv6" == "" ]; then vpn_block_ipv6=0; fi
+ipv6_if=$(nvram get ipv6_ifname)
 if [ "$(nvram get ipv6_service)" == "disabled" ]; then ipv6_enabled=0; else ipv6_enabled=1; fi
 machine_arm=$(uname -r); if [ "$machine_arm" != "${machine_arm%"arm"*}" ]; then machine_arm=1; else machine_arm=0; fi
 if [ $machine_arm == 1 -a $(nvram get allow_routelocal) == 1 ]; then allow_routelocal=1; else allow_routelocal=0; fi
@@ -146,19 +147,30 @@ then
 		echo iptables -t nat -A PREROUTING -i $lan_if -p tcp -m tcp --dport 53 -j DNSVPN$instance >> $dnsscript
 	fi
 
-	if [ $ipv6_enabled == 1 -a $vpn_allow_ipv6 != 1 ]
+	if [ $ipv6_enabled == 1 -a $(nvram get vpn_client$(echo $instance)_rgw) -gt 0 ]
 	then
-		$(ip6tables-save -t filter | grep -q -i "dport 53 -j REJECT")
+		# user DROP instead of REJECT for 'Happy Eyeballs' RFC6555
+		if [ $vpn_block_ipv6 = 1 ] # hard block all ipv6
+		then
+			$(ip6tables-save -t filter | grep -q -i "\-i $lan_if \-o $ipv6_if \-j REJECT")
+			if [ $? -eq 1 ]
+			then
+				echo ip6tables -I FORWARD -i $lan_if -o $ipv6_if -j REJECT >> $dnsscript
+			fi
+		fi
+
+		# default block some ipv6 dns queries
+		$(ip6tables-save -t filter | grep -q -i "dport 53 \-j REJECT")
 		if [ $? -eq 1 ]
 		then
 			if [ $(nvram get ipv6_dns_router) == 1 ]
 			then #dnsmasq as ipv6 dns server
-				echo ip6tables -I INPUT 2 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
-				echo ip6tables -I INPUT 2 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+				echo ip6tables -I INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
+				echo ip6tables -I INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
 				logger -t "openvpn-updown" "Block IPv6 DNS queries to router (INPUT mode)"
 			else #router not ipv6 dns server
-				echo ip6tables -I FORWARD 4 -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript	
-				echo ip6tables -I FORWARD 4 -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+				echo ip6tables -I FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
+				echo ip6tables -I FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
 				logger -t "openvpn-updown" "Block IPv6 DNS queries to internet (FORWARD mode)"
 			fi
 		fi
@@ -175,14 +187,20 @@ then
 		/usr/sbin/iptables -t nat -F DNSVPN$instance
 		/usr/sbin/iptables -t nat -X DNSVPN$instance
 		logger -t "openvpn-updown" "Removed ISP DNS rules for non-VPN clients"
+	fi
 
-		if [ $ipv6_enabled == 1 ]
+	if [ $ipv6_enabled == 1 ]
+	then
+		/usr/sbin/ip6tables -D INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
+		/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
+		/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
+		/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
+		/usr/sbin/ip6tables -D FORWARD -i $lan_if -o $ipv6_if -j REJECT
+		if [ $vpn_block_ipv6 != 1 ]
 		then
-			/usr/sbin/ip6tables -D INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
-			/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
-			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
-			/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
-			logger -t "openvpn-updown" "Removed VPN IPv6 DNS blocking"
+			logger -t "openvpn-updown" "Removed IPv6 DNS blocking"
+		else
+			logger -t "openvpn-updown" "Removed IPv6 blocking"
 		fi
 	fi
 fi

@@ -1555,6 +1555,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "vpn_debug",			"0"		},
 	{ "vpn_loglevel",		"3"		},
 	{ "vpn_dns_mode",               "0"             },
+	{ "vpn_block_ipv6",		"0"		},
 	{ "vpn_server_unit",		"1"		},
 	{ "vpn_serverx_eas",		""		},
 	{ "vpn_serverx_dns",		""		},

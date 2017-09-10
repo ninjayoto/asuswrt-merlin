@@ -134,6 +134,7 @@ var wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 var wan_proto = '<% nvram_get("wan_proto"); %>';
 var dnscrypt_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
 var dnscrypt_ipv6 = '<% nvram_get("dnscrypt1_ipv6"); %>';
+var ipv6_enabled = ('<% nvram_get("ipv6_service"); %>' == "disabled") ? 0 : 1;
 var machine_name = '<% get_machine_name(); %>';
 var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && (('<% nvram_get("allow_routelocal"); %>' == 1) ? true : false));
 
@@ -218,7 +219,7 @@ var activelist_array = '<% nvram_get("vpn_client_activelist"); %>';
 
 function initial()
 {
-	var ipv6_warning = ('<% nvram_get("ipv6_service"); %>' == "disabled") ? 0 : 1;
+	var ipv6_warning = (ipv6_enabled == "1" && '<% nvram_get("vpn_block_ipv6"); %>' == "0") ? 1 : 0;
 	if (ipv6_warning)
 		document.getElementById('ipv6warning').style.display = "";
 
@@ -327,6 +328,7 @@ function update_visibility(){
 	ncp = document.form.vpn_client_ncp_enable.value;
 	dnsf = document.form.dnsfilter_enable_x.value;
 	rstrict = document.form.vpn_reverse_strict.value;
+	blockipv6 = getRadioValue(document.form.vpn_block_ipv6);
 
 	showhide("client_userauth", (auth == "tls"));
 	showhide("client_hmac", (auth == "tls"));
@@ -366,6 +368,8 @@ function update_visibility(){
 	showhide("enable_dns_span", (adns >= 3 && rgw == 2 && dnsf == 0));
 	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2 && dnsf == 0));
 	showhide("dnsfilter_opt", (adns >= 3 && rgw == 2 && dnsf == 1));
+	showhide("ipv6warning", (ipv6_enabled == 1 && blockipv6 == 0));
+	showhide("client_blockipv6", (ipv6_enabled == 1 && rgw > 0));
 
 	if (rgw == 2) {
 		$('dnscrypt_opt').innerHTML = "";
@@ -1355,6 +1359,13 @@ function defaultSettings() {
 							<input type="radio" name="vpn_client_enforce" class="input" value="1" <% nvram_match_x("", "vpn_client_enforce", "1", "checked"); %>>Always
 							<input type="radio" name="vpn_client_enforce" class="input" value="2" <% nvram_match_x("", "vpn_client_enforce", "2", "checked"); %>>Only when client is enabled
 							<input type="radio" name="vpn_client_enforce" class="input" value="0" <% nvram_match_x("", "vpn_client_enforce", "0", "checked"); %>>Never
+						</td>
+					</tr>
+					<tr id="client_blockipv6">
+						<th>Block IPv6 when tunnel is enabled</th>
+						<td>
+							<input type="radio" name="vpn_block_ipv6" class="input" value="1" onclick="update_visibility();" <% nvram_match_x("", "vpn_block_ipv6", "1", "checked"); %>><#checkbox_Yes#>
+							<input type="radio" name="vpn_block_ipv6" class="input" value="0" onclick="update_visibility();" <% nvram_match_x("", "vpn_block_ipv6", "0", "checked"); %>><#checkbox_No#>
 						</td>
 					</tr>
 				</table>
