@@ -279,32 +279,37 @@ function switchPage(page){
         			</tr>
 
   		     		<tr>
-						<td >
-				    	 	<table width="730px" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable_NWM" style="margin-top:10px;margin-left:-1px;*margin-left:-10px;">
-						  		<tr>
-						  			<th style="text-align:center; width:160px;"><#Current#></th>
-						  			<th style="text-align:center; width:160px;"><#Average#></th>
-						  			<th style="text-align:center; width:160px;"><#Maximum#></th>
-						  			<th style="text-align:center; width:160px;"><#Total#></th>
-						  		</tr>
-						  		<tr>
-						  			<td style="text-align:center;font-weight: bold; background-color:#111;"><div id="rx-current"></div></td>
-						  			<td style="text-align:center; background-color:#111;" id='rx-avg'></td>
-						  			<td style="text-align:center; background-color:#111;" id='rx-max'></td>
-						  			<td style="text-align:center; background-color:#111;" id='rx-total'></td>
-						    	</tr>
-						    	<tr>
-						    		<td style="text-align:center;font-weight: bold; background-color:#111;"><div id="tx-current"></div></td>
-									<td style="text-align:center; background-color:#111;" id='tx-avg'></td>
-									<td style="text-align:center; background-color:#111;" id='tx-max'></td>
-									<td style="text-align:center; background-color:#111;" id='tx-total'></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
+					<td >
+					<table width="730px" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable_NWM" style="margin-top:10px;margin-left:-1px;*margin-left:-10px;">
+
+						<tr>
+							<th style="text-align:center; width:128px;">Direction</th>
+							<th style="text-align:center; width:128px;"><#Current#></th>
+							<th style="text-align:center; width:128px;"><#Average#></th>
+							<th style="text-align:center; width:128px;"><#Maximum#></th>
+							<th style="text-align:center; width:128px;"><#Total#></th>
+						</tr>
+						<tr>
+							<td style="text-align:center;font-weight: bold; background-color:#111;"><div id="rx-dir"></div></td>
+							<td style="text-align:center; background-color:#111;" id='rx-current'></td>
+							<td style="text-align:center; background-color:#111;" id='rx-avg'></td>
+							<td style="text-align:center; background-color:#111;" id='rx-max'></td>
+							<td style="text-align:center; background-color:#111;" id='rx-total'></td>
+						</tr>
+						<tr>
+							<td style="text-align:center;font-weight: bold; background-color:#111;"><div id="tx-dir"></div></td>
+							<td style="text-align:center; background-color:#111;" id='tx-current'></td>
+							<td style="text-align:center; background-color:#111;" id='tx-avg'></td>
+							<td style="text-align:center; background-color:#111;" id='tx-max'></td>
+							<td style="text-align:center; background-color:#111;" id='tx-total'></td>
+						</tr>
+
 					</table>
 					</td>
 				</tr>
+			</table>
+			</td>
+		</tr>
 
 				<tr>
 					<td bgcolor="#FFFFFF">

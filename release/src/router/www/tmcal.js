@@ -204,10 +204,14 @@ function showTab(name)
 			updateSVG(h.rx, h.tx, max, drawMode, colorTX[drawColorTX], colorRX[drawColorRX], updateInt, updateMaxL, updateDiv, avgMode, clock);
 			document.getElementById("rx-current").className = "blue_line";
 			document.getElementById("tx-current").className = "orange_line";
+			document.getElementById("rx-dir").innerHTML = "<#tm_transmission#>";
+			document.getElementById("tx-dir").innerHTML = "<#tm_reception#>";
 		}else{
 			updateSVG(h.tx, h.rx, max, drawMode, colorTX[drawColorTX], colorRX[drawColorRX], updateInt, updateMaxL, updateDiv, avgMode, clock);
 			document.getElementById("rx-current").className = "orange_line";
 			document.getElementById("tx-current").className = "blue_line";
+			document.getElementById("rx-dir").innerHTML = "<#tm_reception#>";
+			document.getElementById("tx-dir").innerHTML = "<#tm_transmission#>";
 		}	
 	}
 }
