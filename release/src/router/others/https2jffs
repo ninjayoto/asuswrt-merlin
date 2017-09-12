@@ -26,6 +26,7 @@ VARNAME=$https_var
     fi
     if [ -d "${https_jffs_old}" ]; then
 	rm -rf ${https_jffs_old}
+	ln -sf ${https_jffs} ${https_jffs_old}
     fi
 
 IFS=OLDIFS;

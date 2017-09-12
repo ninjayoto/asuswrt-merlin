@@ -31,6 +31,7 @@ IFS=OLDIFS;
 if [ $err -eq 0 ]; then
 	nvram commit
 	rm -rf ${https_dir}
+	rm -rf ${https_jffs_old}
 	echo "Please reboot via web gui"
 else
 	echo "Errors found!"
