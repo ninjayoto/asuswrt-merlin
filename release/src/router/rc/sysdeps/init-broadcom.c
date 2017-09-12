@@ -1789,12 +1789,15 @@ int wltxpower_rtn12hp(int txpower,
 void
 convert_defaults()
 {
+	int model = get_model();
 #ifdef RTCONFIG_RALINK
 	nvram_set_int("wl0_txpower", nvram_get_int("wl0_TxPower"));
 	nvram_set_int("wl1_txpower", nvram_get_int("wl1_TxPower"));
 #else
-	nvram_set_int("wl0_txpower", MIN(100 * nvram_get_int("wl0_TxPower") / 80, 250));
-	nvram_set_int("wl1_txpower", MIN(100 * nvram_get_int("wl1_TxPower") / 80, 250));
+	if (model == MODEL_RTAC56U || model == MODEL_RTAC68U) {
+		nvram_set_int("wl0_txpower", MIN(100 * nvram_get_int("wl0_TxPower") / 80, 250));
+		nvram_set_int("wl1_txpower", MIN(100 * nvram_get_int("wl1_TxPower") / 80, 250));
+	}
 #endif
 //	nvram_unset("wl_TxPower");
 //	nvram_unset("wl0_TxPower");

@@ -341,7 +341,9 @@ struct nvram_tuple router_defaults[] = {
 #else
 //	{ "wl_TxPower", 		"0"	},
 	{ "wl_TxPower",			"80"	},
+#ifdef RTCONFIG_BCMARM
 	{ "wl_txpower",			"100"	},
+#endif
 #endif
 
 #if defined (RTCONFIG_RALINK) || defined (RTCONFIG_BCMWL6)
