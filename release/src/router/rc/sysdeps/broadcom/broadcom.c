@@ -1199,6 +1199,9 @@ setAllLedOff(void)
 				eval("et", "-i", "eth0", "robowr", "0", "0x18", "0x0101");	// lan/wan ethernet/giga led
 				eval("et", "-i", "eth0", "robowr", "0", "0x1a", "0x01e0");
 				led_control(LED_WAN, LED_OFF);
+			}else{
+				eval("et", "robowr", "0", "0x18", "0x01e0");	// lan/wan ethernet/giga led
+				eval("et", "robowr", "0", "0x1a", "0x01e0");
 			}
 			eval("wl", "ledbh", "10", "0");			// wl 2.4G
 			eval("wl", "-i", "eth2", "ledbh", "10", "0");
