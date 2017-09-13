@@ -25,7 +25,7 @@
 
 # This option prevents autoreconf from overriding our COPYING and
 # INSTALL targets:
-AUTOMAKE_OPTIONS = foreign 1.9
+AUTOMAKE_OPTIONS = foreign 1.9 subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 
 MAINTAINERCLEANFILES = \
