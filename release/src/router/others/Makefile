@@ -30,22 +30,22 @@ endif
 
 # dnscrypt resolver updater
 ifeq ($(RTCONFIG_DNSCRYPT),y)
-	install -m 0700 dnscrypt-update-resolvers.sh $(INSTALLDIR)/usr/sbin
+	install -m 0755 dnscrypt-update-resolvers.sh $(INSTALLDIR)/usr/sbin
 endif
 
 # ipv6 hosts updater
 ifeq ($(RTCONFIG_DNSMASQ),y)
-	install -m 0700 -D v6hosts.sh $(INSTALLDIR)/usr/sbin
-	install -m 0700 -D updatehosts.sh $(INSTALLDIR)/usr/sbin
+	install -m 0755 v6hosts.sh $(INSTALLDIR)/usr/sbin
+	install -m 0755 updatehosts.sh $(INSTALLDIR)/usr/sbin
 endif
 
 # Utilites to move certs
-	install -m 0700 -D sshd2nvram $(INSTALLDIR)/usr/sbin
-	install -m 0700 -D sshd2jffs $(INSTALLDIR)/usr/sbin
-	install -m 0700 -D ovpn2nvram $(INSTALLDIR)/usr/sbin
-	install -m 0700 -D ovpn2jffs $(INSTALLDIR)/usr/sbin
-	install -m 0700 -D https2nvram $(INSTALLDIR)/usr/sbin
-	install -m 0700 -D https2jffs $(INSTALLDIR)/usr/sbin
+	install -m 0755 sshd2nvram $(INSTALLDIR)/usr/sbin
+	install -m 0755 sshd2jffs $(INSTALLDIR)/usr/sbin
+	install -m 0755 ovpn2nvram $(INSTALLDIR)/usr/sbin
+	install -m 0755 ovpn2jffs $(INSTALLDIR)/usr/sbin
+	install -m 0755 https2nvram $(INSTALLDIR)/usr/sbin
+	install -m 0755 https2jffs $(INSTALLDIR)/usr/sbin
 
 # Easy-rsa scripts (for OpenVPN)
 ifeq ($(RTCONFIG_OPENVPN),y)
