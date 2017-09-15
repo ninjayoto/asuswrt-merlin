@@ -54,6 +54,9 @@ ifeq ($(RTCONFIG_OPENVPN),y)
 	install -m 0700 -D vpnrouting.sh $(INSTALLDIR)/usr/sbin
 endif
 
+# Get external ip via stun
+	install -m 0755 getextip.sh $(INSTALLDIR)/usr/sbin
+
 # Entware setup script
 	install -m 0700 entware-setup.sh $(INSTALLDIR)/usr/sbin
 
