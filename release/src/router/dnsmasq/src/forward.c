@@ -1415,6 +1415,8 @@ void receive_query(struct listener *listen, time_t now)
 	 defaults to 512 */
       if (udp_size > daemon->edns_pktsz)
 	udp_size = daemon->edns_pktsz;
+      else if (udp_size < PACKETSZ)
+	udp_size = PACKETSZ; /* Sanity check - can't reduce below default. RFC 6891 6.2.3 */
     }
 
 #ifdef HAVE_AUTH
