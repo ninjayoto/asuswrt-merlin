@@ -3811,7 +3811,7 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 	ret += websWrite(wp, "%30s: %s\n", "DNS Address", ipv6_dns_str);
 
 	ret += websWrite(wp, "\n\nIPv6 LAN Devices List\n");
-	ret += websWrite(wp, "-------------------------------------------------------------------\n");
+	ret += websWrite(wp, "--------------------------------------------------------------------------------------------\n");
 	ret += websWrite(wp, "%-32s %-18s %s\n",
 			 "Hostname", "MAC Address", "IPv6 Address");
 
