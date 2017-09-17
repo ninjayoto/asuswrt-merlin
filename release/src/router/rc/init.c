@@ -1028,6 +1028,9 @@ restore_defaults(void)
 	/* reset qos err status */
 	nvram_set_int("qos_addr_err", 4);
 
+	/* reset qos suspend mode */
+	nvram_set("qos_suspend", "0");
+
 	/* reset wan start time */
 	nvram_set("wan_t0", "-1");
 	nvram_set("wan_uptime", "0");

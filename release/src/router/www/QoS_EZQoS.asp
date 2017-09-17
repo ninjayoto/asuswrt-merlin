@@ -47,7 +47,9 @@ var qos_type = '<% nvram_get("qos_type"); %>';
 var qos_rulelist_array = "<% nvram_char_to_ascii("","qos_rulelist"); %>";
 var qos_bw_rulelist_array = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
 var ctf_disable = '<% nvram_get("ctf_disable"); %>';
+var ctf_disable_force = '<% nvram_get("ctf_disable_force"); %>';
 var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
+
 if ((based_modelid == "RT-AC56U") || (based_modelid == "RT-AC68U")) {
 	var codel_support = true;
 	var overhead_support = true;
@@ -81,6 +83,11 @@ function initial(){
 			document.getElementById('qos_sched_tr').style.display = "";
 		document.getElementById('qos_overhead_tr').style.display = "none";
 	}
+
+	if(document.form.qos_enable.value == "1")
+		document.getElementById('qos_suspend').style.display = "";
+	else
+		document.getElementById('qos_suspend').style.display = "none";
 
 	init_changeScale("qos_obw");
 	init_changeScale("qos_ibw");
@@ -176,8 +183,30 @@ function applyRule(){
 
 	if(document.form.qos_enable.value == "0")
 		document.form.action_script.value = "";
-	else
-		document.form.action_script.value = "restart_qos";
+	else {
+		if(ctf_disable == 1){
+			if(document.form.qos_suspend.value != document.form.qos_suspend_orig.value){
+				if(document.form.qos_suspend.value == "1")
+					document.form.action_script.value = "stop_qos";
+				else
+					document.form.action_script.value = "start_qos";
+			}
+			else{
+				if(document.form.qos_suspend.value == "0")
+					document.form.action_script.value = "restart_qos";
+				else
+					document.form.action_script.value = "";
+			}
+		}
+		else{
+			if(ctf_fa_mode == "2"){
+				FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+			}
+			else{
+				document.form.action_script.value = "restart_qos";
+			}
+		}
+	}
 
 	parent.showLoading();
 	document.form.submit();
@@ -219,23 +248,14 @@ function submitQoS(){
 	}
 
 	if(document.form.qos_enable.value != document.form.qos_enable_orig.value){
-		FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
-	}
-	else{
-		if(document.form.qos_enable.value == "0"){
-			document.form.action_script.value = "";
-		}
-		else{
-			if(ctf_disable == 1)
-				document.form.action_script.value = "restart_qos";
-			else{
-				if(ctf_fa_mode == "2"){
-					FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
-				}
-				else{
-					document.form.action_script.value = "restart_qos";
-				}
-			}
+		document.form.qos_suspend.value = "0";
+		if(ctf_disable_force == "0")
+			FormActions("start_apply.htm", "apply", "reboot", "<% get_default_reboot_time(); %>");
+		else {
+			if(document.form.qos_enable.value == "0")
+				document.form.action_script.value = "stop_qos";
+			else
+				document.form.action_script.value = "start_qos";
 		}
 	}
 
@@ -430,6 +450,7 @@ function showqos_bw_rulelist(){
 <input type="hidden" name="flag" value="">
 <input type="hidden" name="qos_enable" value="<% nvram_get("qos_enable"); %>">
 <input type="hidden" name="qos_enable_orig" value="<% nvram_get("qos_enable"); %>">
+<input type="hidden" name="qos_suspend_orig" value="<% nvram_get("qos_suspend"); %>">
 <input type="hidden" name="qos_type_orig" value="<% nvram_get("qos_type"); %>">
 <table class="content" align="center" cellpadding="0" cellspacing="0">
   <tr>
@@ -517,7 +538,11 @@ function showqos_bw_rulelist(){
 															switch_on_container_path: '/switcherplugin/iphone_switch_container_off.png'
 														 }
 													);
-												</script>			
+												</script>
+												<select id="qos_suspend" name="qos_suspend" class="input_option" style="display:none; margin-top:4px;">
+													<option value="0"<% nvram_match("qos_suspend", "0","selected"); %>>Active</option>
+													<option value="1"<% nvram_match("qos_suspend", "1","selected"); %>>Suspended</option>
+												</select>
 												</div>	
 											</td>
 										</tr>
