@@ -163,7 +163,7 @@ static int new_add_to_ipset(const char *setname, const struct all_addr *ipaddr, 
 	
   while (retry_send(sendto(ipset_sock, buffer, nlh->nlmsg_len, 0,
 			   (struct sockaddr *)&snl, sizeof(snl))));
-
+								    
   return errno == 0 ? 0 : -1;
 }
 
