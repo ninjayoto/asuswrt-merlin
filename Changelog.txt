@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_28E2j9527  (3-October-2017) ARM SDK
+* CHANGED: dnsmasq: update to 2.78 final (with CVE fixes)
+
+
 374.43_28E1j9527  (19-September-2017) ARM SDK
 * NEW: openvpn: add ipv6 blocking option to client setup
 * NEW: webui: add direction labels to traffic monitor
