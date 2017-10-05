@@ -25,7 +25,7 @@
 
 # This option prevents autoreconf from overriding our COPYING and
 # INSTALL targets:
-AUTOMAKE_OPTIONS = foreign 1.9 subdir-objects
+AUTOMAKE_OPTIONS = foreign 1.9
 ACLOCAL_AMFLAGS = -I m4
 
 MAINTAINERCLEANFILES = \
@@ -58,7 +58,7 @@ SUBDIRS = build distro include src sample doc vendor tests
 dist_doc_DATA = \
 	README \
 	README.IPv6 \
-	README.polarssl \
+	README.mbedtls \
 	Changes.rst \
 	COPYRIGHT.GPL \
 	COPYING
@@ -68,7 +68,7 @@ dist_noinst_DATA = \
 	.gitattributes \
 	PORTS \
 	README.IPv6 TODO.IPv6 \
-	README.polarssl \
+	README.mbedtls \
 	openvpn.sln \
 	msvc-env.bat \
 	msvc-dev.bat \
