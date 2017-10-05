@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_28E3j9527  (8-October-2017) ARM SDK
+* CHANGED: openvpn: update to 2.4.4
+* FIXED: openvpn: update ASUS route conflict error msg when ENABLE_IPROUTE is set
+* FIXED: Revert "make: remove old TURBO config from AC68" - fix rear led control
+* FIXED: webui: tools set led on also re-enables rear led
+
+
 374.43_28E2j9527  (3-October-2017) ARM SDK
 * CHANGED: dnsmasq: update to 2.78 final (with CVE fixes)
 
