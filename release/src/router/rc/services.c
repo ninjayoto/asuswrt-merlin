@@ -6588,6 +6588,10 @@ void setup_leds()
 			led_control(LED_2G, LED_ON);
 		}
 
+#ifdef RTCONFIG_TURBO
+		if (!is_ac66u_v2_series())
+			led_control(LED_TURBO, LED_ON);
+#endif
 		led_control(LED_SWITCH, LED_ON);
 		led_control(LED_POWER, LED_ON);
 	}
