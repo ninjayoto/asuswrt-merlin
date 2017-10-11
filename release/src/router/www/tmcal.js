@@ -15,6 +15,8 @@ var ifname;
 var htmReady = 0;
 var svgReady = 0;
 var updating = 0;
+var unitMode = 0;
+var unitLast = -1;
 var scaleMode = 0;
 var scaleLast = -1;
 var drawMode = 0;
@@ -38,7 +40,7 @@ var colorTX = ['#FF9000', '#3CF', '#000000',  '#dd0000', '#999999',  '#118811'];
 function xps(n)
 {
         var e;
-        if (nvram.rstats_units == '1') {
+        if (unitMode == 1) {
                 e = (n / 1024) * (8 / 1024);
                 if (e < 10) return e.toFixed(3) + ' Mb/s';
                 else return e.toFixed(2) + ' Mb/s';
@@ -57,7 +59,7 @@ function xpsb(byt)
 	((B * 8) / 1000)
 REMOVE-END */
 	var e;
-	if (nvram.rstats_units == '1') {
+	if (unitMode == 1) {
 		e = (byt / 1024) * (8 / 1024);
 		if (e < 10) return e.toFixed(3) + ' <small>Mb/s</small>';
 		else return e.toFixed(2) + '<small>Mb/s</small>';
@@ -131,6 +133,22 @@ function switchColor(rev)
 	drawColorTX = (rev ? 0 : 1);
 	showColor();
 	showCTab();
+}
+
+function showUnit()
+{
+	if (unitLast == unitMode) return;
+	showSelectedOption('unit', unitLast, unitMode);
+	unitLast = unitMode;
+}
+
+function switchUnit(n)
+{
+	if ((!svgReady) || (updating)) return;
+	unitMode = n;
+	showUnit();
+	showCTab();
+	cookie.set(cprefix + 'unit', unitMode);
 }
 // Viz add 2010.09 ^^^^^^^^^^
 
@@ -347,6 +365,9 @@ function initCommon(defAvg, defDrawMode, defDrawColorRX, defDrawColorTX) //Viz m
 	drawColorRX = defDrawColorRX;
 	drawColorTX = defDrawColorTX;		
 	showColor();
+
+	unitMode = fixInt(cookie.get(cprefix + 'unit'), 0, 1, 0);
+	showUnit();
 
 	scaleMode = fixInt(cookie.get(cprefix + 'scale'), 0, 1, 0);  //cprefix = 'bw_r';
 	showScale();

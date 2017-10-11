@@ -33,7 +33,7 @@ wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
 
-<% backup_nvram("rstats_units,wan_ifname,lan_ifname,wl_ifname,wan_proto,web_svg,rstats_colors,cstats_enable"); %>
+<% backup_nvram("wan_ifname,lan_ifname,wl_ifname,wan_proto,web_svg,rstats_colors,cstats_enable"); %>
 
 var cprefix = 'bw_r';
 var updateInt = 2;
@@ -333,6 +333,15 @@ function switchPage(page){
 								</td>
 							</tr>
 							<tr>
+								<th>Graph Units</th>
+								<td>
+								<div id='sw_scale'>
+									<a onclick='highlite_unit(this);' href='javascript:switchUnit(0)' id='unit0'>KB/s</a>,&nbsp;
+									<a onclick='highlite_unit(this);' href='javascript:switchUnit(1)' id='unit1'>Mb/s</a>
+								</div>
+								</td>
+							</tr>
+							<tr>
 								<th>Graph Maximum scale</th>
 								<td>
 								<div id='sw_scale'>
@@ -408,5 +417,17 @@ if (sw_draw_current != null)
 }
 el.className = "highlite";
 sw_draw_current = el;
+}
+
+var unitMode = fixInt(cookie.get(cprefix + 'unit'), 0, 1, 0);
+var sw_unit_current = document.getElementById('unit'+unitMode);
+sw_unit_current.className = "highlite";
+function highlite_unit(el) {
+if (sw_unit_current != null)
+{
+	sw_unit_current.className = "";
+}
+el.className = "highlite";
+sw_unit_current = el;
 }
 </script>
