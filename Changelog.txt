@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_28E4j9527  (28 October-2017) ARM SDK
+* CHANGED: webui: move traffic monitor units option from Tools page to monitor page
+* CHANGED: qos: use 1000 bits/Kbit instead of 1024 per telecom standard
+* FIXED: webui: fix broken guest network page with French locale
+* FIXED: webui: fix broken QoS page under IE
+
+
 374.43_28E3j9527  (8-October-2017) ARM SDK
 * CHANGED: openvpn: update to 2.4.4
 * FIXED: openvpn: update ASUS route conflict error msg when ENABLE_IPROUTE is set
