@@ -142,7 +142,7 @@ function gen_gntable_tr(unit, gn_array, slicesb){
 	htmlcode += '<tr><th align="left" style="height:40px;"><#mssid_time_remaining#></th></tr>';
 	if(sw_mode != "3"){
 			htmlcode += '<tr><th align="left" style="height:40px;"><#Access_Intranet#></th></tr>';
-			htmlcode += '<tr><th align="left" style="width:20%;height:28px;"><#WLANConfig11b_x_IsolateAP_itemname#></th></tr>';
+			htmlcode += "<tr><th align=\"left\" style=\"width:20%;height:28px;\"><#WLANConfig11b_x_IsolateAP_itemname#></th></tr>";
 	}
 	htmlcode += '<tr><th align="left" style="height:40px;"></th></tr>';		
 	htmlcode += '</table></th>';
