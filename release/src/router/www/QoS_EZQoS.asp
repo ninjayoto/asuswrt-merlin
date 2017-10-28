@@ -49,6 +49,7 @@ var qos_bw_rulelist_array = "<% nvram_get("qos_bw_rulelist"); %>".replace(/&#62/
 var ctf_disable = '<% nvram_get("ctf_disable"); %>';
 var ctf_disable_force = '<% nvram_get("ctf_disable_force"); %>';
 var ctf_fa_mode = '<% nvram_get("ctf_fa_mode"); %>';
+var value1K = 1000;
 
 if ((based_modelid == "RT-AC56U") || (based_modelid == "RT-AC68U")) {
 	var codel_support = true;
@@ -138,15 +139,15 @@ function changeRule(obj){
 function init_changeScale(_obj_String){
 	if($(_obj_String).value > 999){
 		$(_obj_String+"_scale").value = "Mb/s";
-		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*1000)/1000;
+		$(_obj_String).value = Math.round(($(_obj_String).value/value1K)*1000)/1000;
 	}
 }
 
 function changeScale(_obj_String){
 	if($(_obj_String+"_scale").value == "Mb/s")
-		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*1000)/1000;
+		$(_obj_String).value = Math.round(($(_obj_String).value/value1K)*1000)/1000;
 	else
-		$(_obj_String).value = Math.round($(_obj_String).value*1024);
+		$(_obj_String).value = Math.round($(_obj_String).value*value1K);
 }
 
 function switchPage(page){
@@ -181,9 +182,9 @@ function applyRule(){
 		}
 
 		if($("qos_obw_scale").value == "Mb/s")
-			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
+			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*value1K);
 		if($("qos_ibw_scale").value == "Mb/s")
-			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*value1K);
 	}
 
 	if(document.form.qos_enable.value == "0")
@@ -244,9 +245,9 @@ function submitQoS(){
 	// end
 
 		if($("qos_obw_scale").value == "Mb/s")
-			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
+			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*value1K);
 		if($("qos_ibw_scale").value == "Mb/s")
-			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*value1K);
 	}
 	else {
 		if(qos_bw_rulelist_array.length == 0){
@@ -425,9 +426,9 @@ function showqos_bw_rulelist(){
 							else
 								code += '<td width="'+wid[j]+'%" style="height:30px;">'+ apps_client_id +'</td>';
 						}else if(j==2){
-							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/1024)*1000)/1000+' Mb/s</td>';
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[2]/value1K)*1000)/1000+' Mb/s</td>';
 						}else if(j==3){
-							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/1024)*1000)/1000+' Mb/s</td>';
+							code += '<td width="'+wid[j]+'%" style="text-align:center;">'+Math.round((qos_bw_rulelist_col[3]/value1K)*1000)/1000+' Mb/s</td>';
 						}
 				}
 				code +='</tr>';

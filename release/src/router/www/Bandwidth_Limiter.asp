@@ -71,6 +71,7 @@ var over_var = 0;
 var isMenuopen = 0;
 var scaling = 1;
 var label = "";
+var value1K = 1000;
 
 function key_event(evt){
 	if(evt.keyCode != 27 || isMenuopen == 0)
@@ -97,7 +98,7 @@ function changeScale(obj){
 		scaling = 1;
 		label = "Kb/s";
 	} else {
-		scaling = 1024;
+		scaling = value1K;
 		label = "Mb/s";
 	}
 	$("bw_down").innerHTML = label;

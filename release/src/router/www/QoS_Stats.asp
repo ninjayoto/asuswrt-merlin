@@ -21,6 +21,7 @@
 <script>
 
 var qos_type ="<% nvram_get("qos_type"); %>";
+var value1K = 1000;
 
 if ("<% nvram_get("qos_enable"); %>" == 0) {	// QoS disabled
 	var qos_mode = 0;
@@ -55,16 +56,16 @@ var pieOptions = {
 				var orivalue = value;
 				var total = eval(data.datasets[tooltipItem.datasetIndex].data.join("+"));
 				var unit = " bytes";
-				if (value > 1024) {
-					value = (value / 1024 );
+				if (value > value1K) {
+					value = (value / value1K );
 					unit = " KB";
 				}
-				if (value > 1024) {
-					value = (value / 1024 );
+				if (value > value1K) {
+					value = (value / value1K );
 					unit = " MB";
 				}
-				if (value > 1024) {
-					value = (value / 1024 );
+				if (value > value1K) {
+					value = (value / value1K );
 					unit = " GB";
 				}
 				return value.toFixed(2) + unit + ' ( ' + parseFloat(orivalue * 100 / total).toFixed(2) + '% )';
@@ -140,16 +141,16 @@ function setup_data(data_array, ctx) {
 		values_array.push(value);
 
 		var unit = " Bytes";
-		if (value > 1024) {
-			value = (value / 1024 );
+		if (value > value1K) {
+			value = (value / value1K );
 			unit = " KB";
 		}
-		if (value > 1024) {
-			value = (value / 1024 );
+		if (value > value1K) {
+			value = (value / value1K );
 			unit = " MB";
 		}
-		if (value > 1024) {
-			value = (value / 1024 );
+		if (value > value1K) {
+			value = (value / value1K );
 			unit = " GB";
 		}
 

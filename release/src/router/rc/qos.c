@@ -469,14 +469,14 @@ int add_qos_rules(char *pcWANIF)
 			min = atol(tmp);
 
 			if(strcmp(q_max,"") == 0) // q_max == NULL
-				sprintf(conn, "-m connbytes --connbytes %ld:%s --connbytes-dir both --connbytes-mode bytes", min*1024, q_max);
+				sprintf(conn, "-m connbytes --connbytes %ld:%s --connbytes-dir both --connbytes-mode bytes", min*1000, q_max);
 			else{// q_max != NULL
 				sprintf(tmp, "%s", q_max);
 				max = atol(tmp);
-				sprintf(conn, "-m connbytes --connbytes %ld:%ld --connbytes-dir both --connbytes-mode bytes", min*1024, max*1024-1);
+				sprintf(conn, "-m connbytes --connbytes %ld:%ld --connbytes-dir both --connbytes-mode bytes", min*1000, max*1000-1);
 			}
 		}
-		//fprintf(stderr, "[qos] tmp=%s, transferred=%s, min=%ld, max=%ld, q_max=%s, conn=%s\n", tmp, transferred, min*1024, max*1024-1, q_max, conn); // tmp test
+		//fprintf(stderr, "[qos] tmp=%s, transferred=%s, min=%ld, max=%ld, q_max=%s, conn=%s\n", tmp, transferred, min*1000, max*1000-1, q_max, conn); // tmp test
 
 		/*************************************************/
 		/*                      proto                    */
@@ -1040,7 +1040,7 @@ int start_tqos(void)
 	ibw = strtoul(nvram_safe_get("qos_ibw"), NULL, 10);
 	obw = strtoul(nvram_safe_get("qos_obw"), NULL, 10);
 	if(ibw==0||obw==0) return -1;
-	ibw_max = obw_max = 10240000; //10Gb
+	ibw_max = obw_max = 10000000; //10Gb
 	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10) + 14; //add 14 bytes for hardware header
 
 	stop_iQos();  // remove existing tc classes
@@ -1070,7 +1070,7 @@ int start_tqos(void)
 		sprintf(sfq_limit, "limit %d", i);
 	/*
 	else if (i == 1) {
-		x = (obw/1024) + 10;
+		x = (obw/1000) + 10;
 		x = (x > 127) ? 127 : x;
 		sprintf(sfq_limit, "limit %d", x);
 	}
@@ -1183,7 +1183,7 @@ int start_tqos(void)
 		"# download 2:1\n"
 		"\t$TCADL parent 2: classid 2:1 htb rate %ukbit ceil %ukbit %s %s\n",
 		"# 2:60 ALL Download for BCM\n"
-		"\t$TCADL parent 2:1 classid 2:60 htb rate %ukbit ceil %ukbit burst 102400 cburst 102400 prio 6 quantum %u\n"
+		"\t$TCADL parent 2:1 classid 2:60 htb rate %ukbit ceil %ukbit burst 100000 cburst 100000 prio 6 quantum %u\n"
 		"\t$TQADL parent 2:60 handle 60: pfifo\n"
 		"\t$TFADL parent 2: prio 60 protocol all handle %d fw flowid 2:60\n",
 		ibw_max, ibw_max, burst_root, overheadstr,
@@ -1716,10 +1716,10 @@ static int start_bandwidth_limiter(void)
 		"TFA=\"tc filter add dev br0\"\n"
 		"\n"
 		"$TQA root handle 1: htb\n"
-		"$TCA parent 1: classid 1:1 htb rate 10240000kbit\n"
+		"$TCA parent 1: classid 1:1 htb rate 10000000kbit\n"
 		"\n"
 		"$TQAU root handle 2: htb\n"
-		"$TCAU parent 2: classid 2:1 htb rate 10240000kbit\n" ,
+		"$TCAU parent 2: classid 2:1 htb rate 10000000kbit\n" ,
 		qsched
 		);
 
@@ -1727,11 +1727,11 @@ static int start_bandwidth_limiter(void)
 		// default : 10Gbps
 		fprintf(f,
 		"\n"
-		"$TCA parent 1:1 classid 1:9 htb rate 10240000kbit ceil 10240000kbit prio 1\n"
+		"$TCA parent 1:1 classid 1:9 htb rate 10000000kbit ceil 10000000kbit prio 1\n"
 		"$TQA parent 1:9 handle 9: $SFQ\n"
 		"$TFA parent 1: prio 1 protocol ip handle 9 fw flowid 1:9\n"
 		"\n"
-		"$TCAU parent 2:1 classid 2:9 htb rate 10240000kbit ceil 10240000kbit prio 1\n"
+		"$TCAU parent 2:1 classid 2:9 htb rate 10000000kbit ceil 10000000kbit prio 1\n"
 		"$TQAU parent 2:9 handle 9: $SFQ\n"
 		"$TFAU parent 2: prio 1 protocol ip handle 9 fw flowid 2:9\n"
 		);

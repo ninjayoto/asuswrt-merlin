@@ -24,6 +24,7 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var qos_orates = '<% nvram_get("qos_orates"); %>';
 var qos_irates = '<% nvram_get("qos_irates"); %>';
+var value1K = 1000;
 
 function initial(){
 	show_menu();
@@ -38,7 +39,7 @@ function initial(){
 function init_changeScale(_obj_String){
 	if($(_obj_String).value > 999){
 		$(_obj_String+"_scale").value = "Mb/s";
-		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*100)/100;
+		$(_obj_String).value = Math.round(($(_obj_String).value/value1K)*100)/100;
 	}
 
 	gen_options();
@@ -46,9 +47,9 @@ function init_changeScale(_obj_String){
 
 function changeScale(_obj_String){
 	if($(_obj_String+"_scale").value == "Mb/s")
-		$(_obj_String).value = Math.round(($(_obj_String).value/1024)*100)/100;
+		$(_obj_String).value = Math.round(($(_obj_String).value/value1K)*100)/100;
 	else
-		$(_obj_String).value = Math.round($(_obj_String).value*1024);
+		$(_obj_String).value = Math.round($(_obj_String).value*value1K);
 		
 	gen_options();
 }
@@ -56,12 +57,12 @@ function changeScale(_obj_String){
 function applyRule(){
 	if(save_options() != false){
 		if($("qos_obw_scale").value == "Mb/s"){
-			//document.form.qos_obw.value = Math.round(document.form.qos_obw.value*1024);
+			//document.form.qos_obw.value = Math.round(document.form.qos_obw.value*value1K);
 			document.form.qos_obw.value = document.form.qos_obw_orig.value;
 		}	
 
 		if($("qos_ibw_scale").value == "Mb/s"){
-			//document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*1024);
+			//document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*value1K);
 			document.form.qos_ibw.value = document.form.qos_ibw_orig.value;
 		}
 		
