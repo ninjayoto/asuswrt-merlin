@@ -161,6 +161,11 @@ function switchPage(page){
 }
 
 function applyRule(){
+	if(document.form.qos_type[1].checked)
+		document.form.qos_type.value = "2";
+	else
+		document.form.qos_type.value = "0";
+
 	if(document.form.qos_type.value == 0){
 		if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
 			alert("<#JS_fieldblank#>");
@@ -213,6 +218,11 @@ function applyRule(){
 }
 
 function submitQoS(){
+	if(document.form.qos_type[1].checked)
+		document.form.qos_type.value = "2";
+	else
+		document.form.qos_type.value = "0";
+
 	// Jieming To Do: please add a hint here when error occurred, and qos_ibw & qos_obw should allow number only.
 	if(document.form.qos_type.value == 0){
 		if(document.form.qos_obw.value.length == 0 || document.form.qos_obw.value == 0){
@@ -540,14 +550,14 @@ function showqos_bw_rulelist(){
 													);
 												</script>
 												<select id="qos_suspend" name="qos_suspend" class="input_option" style="display:none; margin-top:4px;">
-													<option value="0"<% nvram_match("qos_suspend", "0","selected"); %>>Active</option>
-													<option value="1"<% nvram_match("qos_suspend", "1","selected"); %>>Suspended</option>
+													<option value="0" <% nvram_match("qos_suspend", "0","selected"); %>>Active</option>
+													<option value="1" <% nvram_match("qos_suspend", "1","selected"); %>>Suspended</option>
 												</select>
 												</div>	
 											</td>
 										</tr>
 										<tr id="qos_type_tr">
-											<th>QoS Type</a></th>
+											<th>QoS Type</th>
 											<td colspan="2">
 												<input id="trad_type" name="qos_type" value="0" type="radio" <% nvram_match("qos_type", "0","checked"); %> onClick="changeRule(this);">Traditional QoS
 												<input id="bw_limit_type" name="qos_type" value="2" type="radio" <% nvram_match("qos_type", "2","checked"); %> onClick="changeRule(this);">Bandwidth Limiter
@@ -558,9 +568,9 @@ function showqos_bw_rulelist(){
 											<th>Queueing Discipline</th>
 											<td>
 												<select name="qos_sched" class="input_option">
-													<option value="0"<% nvram_match("qos_sched", "0","selected"); %>>SFQ</option>
-													<option value="1"<% nvram_match("qos_sched", "1","selected"); %>>CODEL</option>
-													<option value="2"<% nvram_match("qos_sched", "2","selected"); %>>FQ_CODEL (Default)</option>
+													<option value="0" <% nvram_match("qos_sched", "0","selected"); %>>SFQ</option>
+													<option value="1" <% nvram_match("qos_sched", "1","selected"); %>>CODEL</option>
+													<option value="2" <% nvram_match("qos_sched", "2","selected"); %>>FQ_CODEL (Default)</option>
 												</select>
 											</td>
 										</tr>
@@ -581,7 +591,7 @@ function showqos_bw_rulelist(){
 										</tr>
 
 										<tr>
-											<th><#upload_bandwidth#></a></th>
+											<th><#upload_bandwidth#></th>
 											<td>
 													<input type="text" maxlength="10" id="qos_obw" name="qos_obw" onKeyPress="return is_decimal(this,event);" class="input_15_table" value="<% nvram_get("qos_obw"); %>">
 														<select id="qos_obw_scale" class="input_option" style="width:87px;" onChange="changeScale('qos_obw');">
@@ -592,7 +602,7 @@ function showqos_bw_rulelist(){
 										</tr>
 										
 										<tr>
-											<th><#download_bandwidth#></a></th>
+											<th><#download_bandwidth#></th>
 											<td>
 													<input type="text" maxlength="10" id="qos_ibw" name="qos_ibw" onKeyPress="return is_decimal(this,event);" class="input_15_table" value="<% nvram_get("qos_ibw"); %>">
 														<select id="qos_ibw_scale" class="input_option" style="width:87px;" onChange="changeScale('qos_ibw');">
@@ -606,11 +616,11 @@ function showqos_bw_rulelist(){
 											<th>Default Priority Level</th>
 											<td>
 												<select name="qos_default" class="input_option">
-													<option value="0"<% nvram_match("qos_default", "0","selected"); %> onclick="changeButton();">Highest</option>
-													<option value="1"<% nvram_match("qos_default", "1","selected"); %> onclick="changeButton();">High</option>
-													<option value="2"<% nvram_match("qos_default", "2","selected"); %> onclick="changeButton();">Medium</option>
-													<option value="3"<% nvram_match("qos_default", "3","selected"); %> onclick="changeButton();">Low (Default)</option>
-													<option value="4"<% nvram_match("qos_default", "4","selected"); %> onclick="changeButton();">Lowest</option>
+													<option value="0" <% nvram_match("qos_default", "0","selected"); %> onclick="changeButton();">Highest</option>
+													<option value="1" <% nvram_match("qos_default", "1","selected"); %> onclick="changeButton();">High</option>
+													<option value="2" <% nvram_match("qos_default", "2","selected"); %> onclick="changeButton();">Medium</option>
+													<option value="3" <% nvram_match("qos_default", "3","selected"); %> onclick="changeButton();">Low (Default)</option>
+													<option value="4" <% nvram_match("qos_default", "4","selected"); %> onclick="changeButton();">Lowest</option>
 												</select>
 												<span>&nbsp;&nbsp;(Default level is also used by any VPN connections)</span>
 											</td>
