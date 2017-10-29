@@ -588,8 +588,11 @@ bound_lan(void)
 		nvram_set("lan_lease", trim_r(value));
 		expires_lan(lan_ifname, atoi(value));
 	}
-	if (nvram_get_int("lan_dnsenable_x") && (value = getenv("dns")))
+	if (nvram_get_int("lan_dnsenable_x") && (value = getenv("dns"))){
 		nvram_set("lan_dns", trim_r(value));
+		nvram_set("lan_dns1_x", trim_r(value));
+		nvram_set("lan_dns2_x", "");
+	}
 
 _dprintf("%s: IFUP.\n", __FUNCTION__);
 #ifdef RTCONFIG_WIRELESSREPEATER
