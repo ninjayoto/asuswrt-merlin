@@ -61,7 +61,7 @@ var avgiptraffic = [];
 var lastiptraffic = iptraffic;
 
 var ref = new TomatoRefresh('update.cgi', 'output=iptraffic', 2);
-
+var value1K = 1000;
 
 ref.refresh = function(text) {
 
@@ -200,8 +200,8 @@ function redraw() {
 
 		grid += addrow("",
 			h,
-			rescale((b[1]/1024).toFixed(2)).toString(),
-			rescale((b[2]/1024).toFixed(2)).toString(),
+			rescale((b[1]/value1K).toFixed(2)).toString(),
+			rescale((b[2]/value1K).toFixed(2)).toString(),
 			b[3].toFixed(0).toString(),
 			b[4].toFixed(0).toString(),
 			b[5].toFixed(0).toString(),
@@ -221,8 +221,8 @@ function redraw() {
 	if(rows > 1)
 		grid += addrow("traffictable_footer",
 			'Total: ' + ('<small><i>(' + ((hostslisted.length > 0) ? (hostslisted.length + ' hosts') : 'no data') + ')</i></small>'),
-			rescale((rx/1024).toFixed(2)).toString(),
-			rescale((tx/1024).toFixed(2)).toString(),
+			rescale((rx/value1K).toFixed(2)).toString(),
+			rescale((tx/value1K).toFixed(2)).toString(),
 			tcpi.toFixed(0).toString(),
 			tcpo.toFixed(0).toString(),
 			udpi.toFixed(0).toString(),

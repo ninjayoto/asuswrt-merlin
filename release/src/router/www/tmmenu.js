@@ -1879,7 +1879,7 @@ function scaleSize(n)
 	if (n <= 9999) return '' + n;
 	var s = -1;
 	do {
-		n /= 1024;
+		n /= 1000;
 		++s;
 	} while ((n > 9999) && (s < 2));
 	return comma(n.toFixed(2)) + '<small> ' + (['KB', 'MB', 'GB'])[s] + '</small>';

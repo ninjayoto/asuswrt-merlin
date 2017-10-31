@@ -1792,11 +1792,12 @@ function reboot(){
 	}
 }
 
+var value1K = 1000;
 function kb_to_gb(kilobytes){
 	if(typeof(kilobytes) == "string" && kilobytes.length == 0)
 		return 0;
 	
-	return (kilobytes*1024)/(1024*1024*1024);
+	return (kilobytes*1024)/(value1K*value1K*value1K);
 }
 
 function simpleNum(num){
@@ -1817,7 +1818,7 @@ function simpleNum3(num){
 	if(typeof(num) == "string" && num.length == 0)
 		return 0;
 	
-	return parseInt(num)/1024;
+	return parseInt(num)/value1K;
 }
 
 function $(){

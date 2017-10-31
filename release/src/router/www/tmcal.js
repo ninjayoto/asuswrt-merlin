@@ -35,18 +35,19 @@ var colors = [
 // 0Orange 1Blue 2Black 3Red 4Gray  5Green
 var colorRX = [ '#FF9000', '#3CF', '#000000',  '#dd0000', '#999999',  '#118811'];
 var colorTX = ['#FF9000', '#3CF', '#000000',  '#dd0000', '#999999',  '#118811'];
+var value1K = 1000;
 
 // Function moved from tm.svg
 function xps(n)
 {
         var e;
         if (unitMode == 1) {
-                e = (n / 1024) * (8 / 1024);
+                e = (n / value1K) * (8 / value1K);
                 if (e < 10) return e.toFixed(3) + ' Mb/s';
                 else return e.toFixed(2) + ' Mb/s';
         }
         else {
-                e = (n / 1024);
+                e = (n / value1K);
                 return e.toFixed(2) + ' KB/s';
         }
 }
@@ -60,12 +61,12 @@ function xpsb(byt)
 REMOVE-END */
 	var e;
 	if (unitMode == 1) {
-		e = (byt / 1024) * (8 / 1024);
+		e = (byt / value1K) * (8 / value1K);
 		if (e < 10) return e.toFixed(3) + ' <small>Mb/s</small>';
 		else return e.toFixed(2) + '<small>Mb/s</small>';
 	}
 	else {
-		e = (byt / 1024);
+		e = (byt / value1K);
                 return e.toFixed(2) + ' <small>KB/s</small>';
         }
 }
@@ -262,11 +263,11 @@ function loadData()
 				h.rx_total = h.rx_max = 0;
 				h.tx_total = h.tx_max = 0;
 				for (j = (h.rx.length - updateMaxL); j < h.rx.length; ++j) {
-					if (((h.rx[j] / 1024) > (4 * 131072 * updateDiv)) || (h.rx[j] < 0)) h.rx[j] = (j<1 ? 0 : h.rx[j-1]); // Filter bad data
+					if (((h.rx[j] / value1K) > (4 * 125000 * updateDiv)) || (h.rx[j] < 0)) h.rx[j] = (j<1 ? 0 : h.rx[j-1]); // Filter bad data
 					t = h.rx[j];
 					if (t > h.rx_max) h.rx_max = t;
 					h.rx_total += t;
-					if (((h.tx[j] / 1024) > (4 * 131072 * updateDiv)) || (h.tx[j] < 0)) h.tx[j] = (j<1 ? 0 : h.tx[j-1]); // Filter bad data
+					if (((h.tx[j] / value1K) > (4 * 125000 * updateDiv)) || (h.tx[j] < 0)) h.tx[j] = (j<1 ? 0 : h.tx[j-1]); // Filter bad data
 					t = h.tx[j];
 					if (t > h.tx_max) h.tx_max = t;
 					h.tx_total += t;
