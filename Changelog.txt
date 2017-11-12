@@ -4,7 +4,20 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_28E4j9527  (28 October-2017) ARM SDK
+374.43_28E6j9527  (14-November-2017) ARM SDK
+* CHANGED: ctf: update MIPS ctf to 380.68 release
+* CHANGED: sys: selected system updates for MIPS
+* CHANGED: webui: (backport) update OUI db
+* CHANGED: others: update getextip for gettunnelip syntax compatibility
+
+
+374.43_28E5j9527  (31-October-2017) ARM SDK
+* CHANGED: udhcpc: update user lan dns value when automatic lan dns
+* CHANGED: others: add gettunnelip.sh symlink for Merlin consistency
+* CHANGED: traffic: use 1000 bits/Kbit instead of 1024 per telecom standard
+
+
+374.43_28E4j9527  (28-October-2017) ARM SDK
 * CHANGED: webui: move traffic monitor units option from Tools page to monitor page
 * CHANGED: qos: use 1000 bits/Kbit instead of 1024 per telecom standard
 * FIXED: webui: fix broken guest network page with French locale
