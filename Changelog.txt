@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_28E7j9527  (16-November-2017) ARM SDK
+* CHANGED:  make: include usb hid support required for apcupsd (ARM only)
+
+
 374.43_28E6j9527  (14-November-2017) ARM SDK
 * CHANGED: ctf: update MIPS ctf to 380.68 release
 * CHANGED: sys: selected system updates for MIPS
