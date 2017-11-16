@@ -902,6 +902,10 @@ define RouterOptions
 			sed -i "/RTCONFIG_USB_PRINTER/d" $(1); \
 			echo "RTCONFIG_USB_PRINTER=y" >>$(1); \
 		fi; \
+		if [ "$(USBHID)" = "y" ]; then \
+			sed -i "/RTCONFIG_USB_HID/d" $(1); \
+			echo "RTCONFIG_USB_HID=y" >>$(1); \
+		fi; \
 		if [ "$(WEBDAV)" = "y" ]; then \
 			sed -i "/RTCONFIG_WEBDAV/d" $(1); \
 			echo "RTCONFIG_WEBDAV=y" >>$(1); \

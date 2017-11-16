@@ -484,13 +484,13 @@ config RTCONFIG_DISK_MONITOR
 	depends on RTCONFIG_USB
 	default n
 
-config RTCONFIG_DISK_MONITOR
-	bool "Disk monitor Support"
+config RTCONFIG_USB_PRINTER
+	bool "USB Printer Support"
 	depends on RTCONFIG_USB
 	default n
 
-config RTCONFIG_USB_PRINTER
-	bool "USB Printer Support"
+config RTCONFIG_USB_HID
+	bool "USB HID Support"
 	depends on RTCONFIG_USB
 	default n
 

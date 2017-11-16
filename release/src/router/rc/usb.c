@@ -363,6 +363,11 @@ void start_usb(void)
 		modprobe("qmi_wwan");
 		modprobe("cdc_mbim");
 #endif
+#ifdef RTCONFIG_USB_HID
+		modprobe("input-core");
+		modprobe("hid");
+		modprobe("usbhid");
+#endif
 	}
 }
 
@@ -380,6 +385,15 @@ void remove_usb_modem_modules(void)
 	modprobe_r("cdc_ether");
 	modprobe_r("asix");
 	modprobe_r("usbnet");
+#endif
+}
+
+void remove_usb_hid_modules(void)
+{
+#ifdef RTCONFIG_USB_HID
+	modprobe_r("usbhid");
+	modprobe_r("hid");
+	modprobe_r("input-core");
 #endif
 }
 
@@ -549,6 +563,7 @@ void stop_usb(void)
 
 	remove_usb_modem_modules();
 	remove_usb_prn_module();
+	remove_usb_hid_modules();
 
 #if defined(RTCONFIG_SAMBASRV) || defined(RTCONFIG_FTP)
 	// only stop storage services if disabled

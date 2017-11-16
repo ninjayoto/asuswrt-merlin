@@ -203,6 +203,10 @@ define RouterOptions
 			sed -i "/RTCONFIG_USB_PRINTER/d" $(1); \
 			echo "RTCONFIG_USB_PRINTER=y" >>$(1); \
 		fi; \
+		if [ "$(USBHID)" = "y" ]; then \
+			sed -i "/RTCONFIG_USB_HID/d" $(1); \
+			echo "RTCONFIG_USB_HID=y" >>$(1); \
+		fi; \
 		if [ "$(USBAP)" = "y" ]; then \
 			sed -i "/RTCONFIG_BRCM_USBAP/d" $(1); \
 			echo "RTCONFIG_BRCM_USBAP=y" >>$(1); \
