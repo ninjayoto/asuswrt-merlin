@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_28E8j9527  (19-November-2017) ARM SDK
+* CHANGED: openssl: update to 1.0.2m
+* CHANGED: modprobe: (backport) add aliases so xt_set and ipt_set are automatically modprobed
+* CHANGED: kernel: (backport) add module alias to modprobe.conf for cifs
+
+
 374.43_28E7j9527  (16-November-2017) ARM SDK
 * CHANGED:  make: include usb hid support required for apcupsd (ARM only)
 
