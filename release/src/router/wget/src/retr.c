@@ -41,6 +41,10 @@ as that of the covered work.  */
 # include <unixio.h>            /* For delete(). */
 #endif
 
+#ifdef HAVE_LIBZ
+# include <zlib.h>
+#endif
+
 #include "exits.h"
 #include "utils.h"
 #include "retr.h"
@@ -83,6 +87,22 @@ limit_bandwidth_reset (void)
 {
   xzero (limit_data);
 }
+
+#ifdef HAVE_LIBZ
+static voidpf
+zalloc (voidpf opaque, unsigned int items, unsigned int size)
+{
+  (void) opaque;
+  return (voidpf) xcalloc (items, size);
+}
+
+static void
+zfree (voidpf opaque, voidpf address)
+{
+  (void) opaque;
+  xfree (address);
+}
+#endif
 
 /* Limit the bandwidth by pausing the download for an amount of time.
    BYTES is the number of bytes received from the network, and TIMER
@@ -257,6 +277,44 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
   wgint sum_written = 0;
   wgint remaining_chunk_size = 0;
 
+#ifdef HAVE_LIBZ
+  /* try to minimize the number of calls to inflate() and write_data() per
+     call to fd_read() */
+  unsigned int gzbufsize = dlbufsize * 4;
+  char *gzbuf = NULL;
+  z_stream gzstream;
+
+  if (flags & rb_compressed_gzip)
+    {
+      gzbuf = xmalloc (gzbufsize);
+      if (gzbuf != NULL)
+        {
+          gzstream.zalloc = zalloc;
+          gzstream.zfree = zfree;
+          gzstream.opaque = Z_NULL;
+          gzstream.next_in = Z_NULL;
+          gzstream.avail_in = 0;
+
+          #define GZIP_DETECT 32 /* gzip format detection */
+          #define GZIP_WINDOW 15 /* logarithmic window size (default: 15) */
+          ret = inflateInit2 (&gzstream, GZIP_DETECT | GZIP_WINDOW);
+          if (ret != Z_OK)
+            {
+              xfree (gzbuf);
+              errno = (ret == Z_MEM_ERROR) ? ENOMEM : EINVAL;
+              ret = -1;
+              goto out;
+            }
+        }
+      else
+        {
+          errno = ENOMEM;
+          ret = -1;
+          goto out;
+        }
+    }
+#endif
+
   if (flags & rb_skip_startpos)
     skip = startpos;
 
@@ -319,6 +377,12 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
 
               remaining_chunk_size = strtol (line, &endl, 16);
               xfree (line);
+
+              if (remaining_chunk_size < 0)
+                {
+                  ret = -1;
+                  break;
+                }
 
               if (remaining_chunk_size == 0)
                 {
@@ -383,12 +447,64 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
           int write_res;
 
           sum_read += ret;
-          write_res = write_data (out, out2, dlbuf, ret, &skip, &sum_written);
-          if (write_res < 0)
+
+#ifdef HAVE_LIBZ
+          if (gzbuf != NULL)
             {
-              ret = (write_res == -3) ? -3 : -2;
-              goto out;
+              int err;
+              int towrite;
+              gzstream.avail_in = ret;
+              gzstream.next_in = (unsigned char *) dlbuf;
+
+              do
+                {
+                  gzstream.avail_out = gzbufsize;
+                  gzstream.next_out = (unsigned char *) gzbuf;
+
+                  err = inflate (&gzstream, Z_NO_FLUSH);
+
+                  switch (err)
+                    {
+                    case Z_MEM_ERROR:
+                      errno = ENOMEM;
+                      ret = -1;
+                      goto out;
+                    case Z_NEED_DICT:
+                    case Z_DATA_ERROR:
+                      errno = EINVAL;
+                      ret = -1;
+                      goto out;
+                    case Z_STREAM_END:
+                      if (exact && sum_read != toread)
+                        {
+                          DEBUGP(("zlib stream ended unexpectedly after "
+                                  "%ld/%ld bytes\n", sum_read, toread));
+                        }
+                    }
+
+                  towrite = gzbufsize - gzstream.avail_out;
+                  write_res = write_data (out, out2, gzbuf, towrite, &skip,
+                                          &sum_written);
+                  if (write_res < 0)
+                    {
+                      ret = (write_res == -3) ? -3 : -2;
+                      goto out;
+                    }
+                }
+              while (gzstream.avail_out == 0);
             }
+          else
+#endif
+            {
+              write_res = write_data (out, out2, dlbuf, ret, &skip,
+                                      &sum_written);
+              if (write_res < 0)
+                {
+                  ret = (write_res == -3) ? -3 : -2;
+                  goto out;
+                }
+            }
+
           if (chunked)
             {
               remaining_chunk_size -= ret;
@@ -432,6 +548,31 @@ fd_read_body (const char *downloaded_filename, int fd, FILE *out, wgint toread, 
     *elapsed = ptimer_read (timer);
   if (timer)
     ptimer_destroy (timer);
+
+#ifdef HAVE_LIBZ
+  if (gzbuf != NULL)
+    {
+      int err = inflateEnd (&gzstream);
+      if (ret >= 0)
+        {
+          /* with compression enabled, ret must be 0 if successful */
+          if (err == Z_OK)
+            ret = 0;
+          else
+            {
+              errno = EINVAL;
+              ret = -1;
+            }
+        }
+      xfree (gzbuf);
+
+      if (gzstream.total_in != sum_read)
+        {
+          DEBUGP(("zlib read size differs from raw read size (%lu/%lu)\n",
+                  gzstream.total_in, sum_read));
+        }
+    }
+#endif
 
   if (qtyread)
     *qtyread += sum_read;
@@ -634,7 +775,7 @@ retr_rate (wgint bytes, double secs)
   double dlrate = calc_rate (bytes, secs, &units);
   /* Use more digits for smaller numbers (regardless of unit used),
      e.g. "1022", "247", "12.5", "2.38".  */
-  sprintf (res, "%.*f %s",
+  snprintf (res, sizeof(res), "%.*f %s",
            dlrate >= 99.95 ? 0 : dlrate >= 9.995 ? 1 : 2,
            dlrate, !opt.report_bps ? rate_names[units]: rate_names_bits[units]);
 
@@ -869,7 +1010,7 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
          redirects, but a ton of boneheaded webservers and CGIs out
          there break the rules and use relative URLs, and popular
          browsers are lenient about this, so wget should be too. */
-      construced_newloc = uri_merge (url, mynewloc);
+      construced_newloc = uri_merge (url, mynewloc ? mynewloc : "");
       xfree (mynewloc);
       mynewloc = construced_newloc;
 
@@ -963,11 +1104,16 @@ retrieve_url (struct url * orig_parsed, const char *origurl, char **file,
       u = url_parse (origurl, NULL, iri, true);
       if (u)
         {
-          DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
-          xfree (url);
-          url = xstrdup (u->url);
-          iri_fallbacked = 1;
-          goto redirected;
+          if (strcmp(u->url, orig_parsed->url))
+            {
+              DEBUGP (("[IRI fallbacking to non-utf8 for %s\n", quote (url)));
+              xfree (url);
+              url = xstrdup (u->url);
+              iri_fallbacked = 1;
+              goto redirected;
+            }
+          else
+              DEBUGP (("[Needn't fallback to non-utf8 for %s\n", quote (url)));
         }
       else
           DEBUGP (("[Couldn't fallback to non-utf8 for %s\n", quote (url)));
@@ -1141,13 +1287,13 @@ retrieve_from_file (const char *file, bool html, int *count)
       if (parsed_url)
           url_free (parsed_url);
 
-      if (filename && opt.delete_after && file_exists_p (filename))
+      if (filename && opt.delete_after && file_exists_p (filename, NULL))
         {
           DEBUGP (("\
 Removing file due to --delete-after in retrieve_from_file():\n"));
           logprintf (LOG_VERBOSE, _("Removing %s.\n"), filename);
           if (unlink (filename))
-            logprintf (LOG_NOTQUIET, "unlink: %s\n", strerror (errno));
+            logprintf (LOG_NOTQUIET, "Failed to unlink %s: (%d) %s\n", filename, errno, strerror (errno));
           dt &= ~RETROKF;
         }
 
@@ -1248,9 +1394,9 @@ rotate_backups(const char *fname)
 #endif
 
   int maxlen = strlen (fname) + sizeof (SEP) + numdigit (opt.backups) + AVSL;
-  char *from = (char *)alloca (maxlen);
-  char *to = (char *)alloca (maxlen);
-  struct_stat sb;
+  char *from = alloca (maxlen);
+  char *to = alloca (maxlen);
+  struct stat sb;
   int i;
 
   if (stat (fname, &sb) == 0)
@@ -1267,17 +1413,21 @@ rotate_backups(const char *fname)
        */
       if (i == opt.backups)
         {
-          sprintf (to, "%s%s%d%s", fname, SEP, i, AVS);
+          snprintf (to, sizeof(to), "%s%s%d%s", fname, SEP, i, AVS);
           delete (to);
         }
 #endif
-      sprintf (to, "%s%s%d", fname, SEP, i);
-      sprintf (from, "%s%s%d", fname, SEP, i - 1);
-      rename (from, to);
+      snprintf (to, maxlen, "%s%s%d", fname, SEP, i);
+      snprintf (from, maxlen, "%s%s%d", fname, SEP, i - 1);
+      if (rename (from, to))
+        logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
+                   from, to, errno, strerror (errno));
     }
 
-  sprintf (to, "%s%s%d", fname, SEP, 1);
-  rename(fname, to);
+  snprintf (to, maxlen, "%s%s%d", fname, SEP, 1);
+  if (rename(fname, to))
+    logprintf (LOG_NOTQUIET, "Failed to rename %s to %s: (%d) %s\n",
+               fname, to, errno, strerror (errno));
 }
 
 static bool no_proxy_match (const char *, const char **);

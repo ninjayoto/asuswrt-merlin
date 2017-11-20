@@ -53,9 +53,6 @@ as that of the covered work.  */
 #endif
 
 
-/* Defined in log.c.  */
-void log_request_redirect_output (const char *);
-
 /* Windows version of xsleep in utils.c.  */
 
 void
@@ -98,7 +95,7 @@ static void
 ws_hangup (const char *reason)
 {
   fprintf (stderr, _("Continuing in background.\n"));
-  log_request_redirect_output (reason);
+  redirect_output (true, reason);
 
   /* Detach process from the current console.  Under Windows 9x, if we
      were launched from a 16-bit process (which is usually the case;
@@ -583,7 +580,7 @@ run_with_timeout (double seconds, void (*fun) (void *), void *arg)
 const char *
 inet_ntop (int af, const void *src, char *dst, socklen_t cnt)
 {
-  /* struct sockaddr can't accomodate struct sockaddr_in6. */
+  /* struct sockaddr can't accommodate struct sockaddr_in6. */
   union {
     struct sockaddr_in6 sin6;
     struct sockaddr_in sin;

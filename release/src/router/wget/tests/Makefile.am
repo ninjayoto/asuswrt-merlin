@@ -128,15 +128,28 @@ PX_TESTS = \
              Test--start-pos--continue.px \
              Test--httpsonly-r.px \
              Test-204.px \
-             Test-ftp-pasv-not-supported.px
+             Test-ftp-pasv-not-supported.px \
+             Test-https-pfs.px \
+             Test-https-tlsv1.px \
+             Test-https-tlsv1x.px \
+             Test-https-selfsigned.px \
+             Test-https-weboftrust.px \
+             Test-https-clientcert.px \
+             Test-https-crl.px \
+             Test-https-badcerts.px
 
 EXTRA_DIST = FTPServer.pm FTPTest.pm HTTPServer.pm HTTPTest.pm \
-             WgetTests.pm WgetFeature.pm WgetFeature.cfg $(PX_TESTS) \
+             SSLTest.pm SSLServer.pm \
+             WgetTests.pm WgetFeature.pm $(PX_TESTS) \
              certs valgrind-suppressions valgrind-suppressions-ssl
 
 check_PROGRAMS = unit-tests
 unit_tests_SOURCES =
-LDADD = ../src/libunittest.a ../lib/libgnu.a @LIBICONV@ @LIBINTL@ $(LIBS) $(LIB_CLOCK_GETTIME)
+LDADD = ../src/libunittest.a ../lib/libgnu.a $(GETADDRINFO_LIB) $(HOSTENT_LIB)\
+ $(INET_NTOP_LIB) $(LIBSOCKET) $(LIB_CLOCK_GETTIME) $(LIB_CRYPTO)\
+ $(LIB_NANOSLEEP) $(LIB_POSIX_SPAWN) $(LIB_SELECT) $(LIBICONV) $(LIBINTL)\
+ $(LIBTHREAD) $(LIBUNISTRING) $(SERVENT_LIB)
+
 
 CLEANFILES = *~ *.bak core core.[0-9]*
 
@@ -144,5 +157,5 @@ TESTS = ./unit-tests$(EXEEXT) $(PX_TESTS)
 TEST_EXTENSIONS = .px
 PX_LOG_COMPILER = $(PERL)
 AM_PX_LOG_FLAGS = -I$(srcdir)
-AM_TESTS_ENVIRONMENT = export WGETRC=/dev/null; export SYSTEM_WGETRC=/dev/null;\
+AM_TESTS_ENVIRONMENT = export WGETRC=; export SYSTEM_WGETRC=;\
  export VALGRIND_TESTS="@VALGRIND_TESTS@";

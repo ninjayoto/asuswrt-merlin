@@ -43,10 +43,10 @@ as that of the covered work.  */
 #include "host.h"  /* for is_valid_ipv6_address */
 #include "c-strcase.h"
 
-#if HAVE_ICONV
-#include <iconv.h>
-#include <langinfo.h>
+#ifdef HAVE_ICONV
+# include <iconv.h>
 #endif
+#include <langinfo.h>
 
 #ifdef __VMS
 #include "vms.h"
@@ -459,7 +459,7 @@ url_scheme (const char *url)
   int i;
 
   for (i = 0; supported_schemes[i].leading_string; i++)
-    if (0 == strncasecmp (url, supported_schemes[i].leading_string,
+    if (0 == c_strncasecmp (url, supported_schemes[i].leading_string,
                           strlen (supported_schemes[i].leading_string)))
       {
         if (!(supported_schemes[i].flags & scm_disabled))
@@ -510,6 +510,12 @@ void
 scheme_disable (enum url_scheme scheme)
 {
   supported_schemes[scheme].flags |= scm_disabled;
+}
+
+const char *
+scheme_leading_string (enum url_scheme scheme)
+{
+  return supported_schemes[scheme].leading_string;
 }
 
 /* Skip the username and password, if present in the URL.  The
@@ -919,6 +925,17 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
       url_unescape (u->host);
       host_modified = true;
 
+      /* check for invalid control characters in host name */
+      for (p = u->host; *p; p++)
+        {
+          if (c_iscntrl(*p))
+            {
+              url_free(u);
+              error_code = PE_INVALID_HOST_NAME;
+              goto error;
+            }
+        }
+
       /* Apply IDNA regardless of iri->utf8_encode status */
       if (opt.enable_iri && iri)
         {
@@ -927,7 +944,6 @@ url_parse (const char *url, int *error, struct iri *iri, bool percent_encode)
             {
               xfree (u->host);
               u->host = new;
-              u->idn_allocated = true;
               host_modified = true;
             }
         }
@@ -1206,12 +1222,7 @@ url_free (struct url *url)
 {
   if (url)
     {
-      if (url->idn_allocated) {
-        idn_free (url->host);      /* A dummy if !defined(ENABLE_IRI) */
-        url->host = NULL;
-      }
-      else
-        xfree (url->host);
+      xfree (url->host);
 
       xfree (url->path);
       xfree (url->url);
@@ -1236,7 +1247,7 @@ mkalldirs (const char *path)
 {
   const char *p;
   char *t;
-  struct_stat st;
+  struct stat st;
   int res;
 
   p = path + strlen (path);
@@ -1271,12 +1282,14 @@ mkalldirs (const char *path)
              name exists, we just remove it and create the directory
              anyway.  */
           DEBUGP (("Removing %s because of directory danger!\n", t));
-          unlink (t);
+          if (unlink (t))
+            logprintf (LOG_NOTQUIET, "Failed to unlink %s (%d): %s\n",
+                       t, errno, strerror(errno));
         }
     }
   res = make_directory (t);
   if (res != 0)
-    logprintf (LOG_NOTQUIET, "%s: %s", t, strerror (errno));
+    logprintf (LOG_NOTQUIET, "%s: %s\n", t, strerror (errno));
   xfree (t);
   return res;
 }
@@ -1536,11 +1549,11 @@ append_uri_pathel (const char *b, const char *e, bool escaped,
   append_null (dest);
 }
 
+#ifdef HAVE_ICONV
 static char *
 convert_fname (char *fname)
 {
   char *converted_fname = fname;
-#if HAVE_ICONV
   const char *from_encoding = opt.encoding_remote;
   const char *to_encoding = opt.locale;
   iconv_t cd;
@@ -1555,9 +1568,9 @@ convert_fname (char *fname)
     to_encoding = nl_langinfo (CODESET);
 
   cd = iconv_open (to_encoding, from_encoding);
-  if (cd == (iconv_t)(-1))
-    logprintf (LOG_VERBOSE, _("Conversion from %s to %s isn't supported\n"),
-	       quote (from_encoding), quote (to_encoding));
+  if (cd == (iconv_t) (-1))
+    logprintf (LOG_VERBOSE, _ ("Conversion from %s to %s isn't supported\n"),
+               quote (from_encoding), quote (to_encoding));
   else
     {
       inlen = strlen (fname);
@@ -1566,51 +1579,62 @@ convert_fname (char *fname)
       done = 0;
 
       for (;;)
-	{
-	  if (iconv (cd, &fname, &inlen, &s, &outlen) != (size_t)(-1)
-	      && iconv (cd, NULL, NULL, &s, &outlen) != (size_t)(-1))
-	    {
-	      *(converted_fname + len - outlen - done) = '\0';
-	      iconv_close(cd);
-	      DEBUGP (("Converted file name '%s' (%s) -> '%s' (%s)\n",
-		       orig_fname, from_encoding, converted_fname, to_encoding));
-	      xfree (orig_fname);
-	      return converted_fname;
-	    }
+        {
+          errno = 0;
+          if (iconv (cd, (ICONV_CONST char **) &fname, &inlen, &s, &outlen) == 0
+              && iconv (cd, NULL, NULL, &s, &outlen) == 0)
+            {
+              *(converted_fname + len - outlen - done) = '\0';
+              iconv_close (cd);
+              DEBUGP (("Converted file name '%s' (%s) -> '%s' (%s)\n",
+                       orig_fname, from_encoding, converted_fname, to_encoding));
+              xfree (orig_fname);
+              return converted_fname;
+            }
 
-	  /* Incomplete or invalid multibyte sequence */
-	  if (errno == EINVAL || errno == EILSEQ)
-	    {
-	      logprintf (LOG_VERBOSE,
-			 _("Incomplete or invalid multibyte sequence encountered\n"));
-	      xfree (converted_fname);
-	      converted_fname = (char *)orig_fname;
-	      break;
-	    }
-	  else if (errno == E2BIG) /* Output buffer full */
-	    {
-	      done = len;
-	      len = outlen = done + inlen * 2;
-	      converted_fname = xrealloc (converted_fname, outlen + 1);
-	      s = converted_fname + done;
-	    }
-	  else /* Weird, we got an unspecified error */
-	    {
-	      logprintf (LOG_VERBOSE, _("Unhandled errno %d\n"), errno);
-	      xfree (converted_fname);
-	      converted_fname = (char *)orig_fname;
-	      break;
-	    }
-	}
+          /* Incomplete or invalid multibyte sequence */
+          if (errno == EINVAL || errno == EILSEQ || errno == 0)
+            {
+              if (errno)
+                logprintf (LOG_VERBOSE,
+                           _ ("Incomplete or invalid multibyte sequence encountered\n"));
+              else
+                logprintf (LOG_VERBOSE,
+                           _ ("Unconvertable multibyte sequence encountered\n"));
+              xfree (converted_fname);
+              converted_fname = (char *) orig_fname;
+              break;
+            }
+          else if (errno == E2BIG) /* Output buffer full */
+            {
+              done = len;
+              len = outlen = done + inlen * 2;
+              converted_fname = xrealloc (converted_fname, outlen + 1);
+              s = converted_fname + done;
+            }
+          else /* Weird, we got an unspecified error */
+            {
+              logprintf (LOG_VERBOSE, _ ("Unhandled errno %d\n"), errno);
+              xfree (converted_fname);
+              converted_fname = (char *) orig_fname;
+              break;
+            }
+        }
       DEBUGP (("Failed to convert file name '%s' (%s) -> '?' (%s)\n",
-	       orig_fname, from_encoding, to_encoding));
+               orig_fname, from_encoding, to_encoding));
     }
 
     iconv_close(cd);
-#endif
 
   return converted_fname;
 }
+#else
+static char *
+convert_fname (char *fname)
+{
+  return fname;
+}
+#endif
 
 /* Append to DEST the directory structure that corresponds the
    directory part of URL's path.  For example, if the URL is
@@ -1726,6 +1750,9 @@ url_file_name (const struct url *u, char *replaced_filename)
         fname_len_check = concat_strings (u_file, FN_QUERY_SEP_STR, u->query, NULL);
       else
         fname_len_check = strdupdelim (u_file, u_file + strlen (u_file));
+
+      /* convert before concat with local path */
+      fname_len_check = convert_fname (fname_len_check);
     }
   else
     {
@@ -1787,8 +1814,6 @@ url_file_name (const struct url *u, char *replaced_filename)
 
   xfree (temp_fnres.base);
 
-  fname = convert_fname (fname);
-
   /* Check the cases in which the unique extensions are not used:
      1) Clobbering is turned off (-nc).
      2) Retrieval with regetting.
@@ -1800,7 +1825,7 @@ url_file_name (const struct url *u, char *replaced_filename)
      directory (see `mkalldirs' for explanation).  */
 
   if (ALLOW_CLOBBER
-      && !(file_exists_p (fname) && !file_non_directory_p (fname)))
+      && !(file_exists_p (fname, NULL) && !file_non_directory_p (fname)))
     {
       unique = fname;
     }

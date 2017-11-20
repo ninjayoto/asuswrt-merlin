@@ -193,7 +193,9 @@ options, or via the initialization file @file{.wgetrc} (@pxref{Startup
 File}).  Wget allows you to define @dfn{global} startup files
 (@file{/usr/local/etc/wgetrc} by default) for site settings. You can also
 specify the location of a startup file with the --config option.
-
+To disable the reading of config files, use --no-config.
+If both --config and --no-config are given, --no-config is ignored.
+ 
 
 @ignore
 @c man begin FILES
@@ -238,18 +240,18 @@ command to @file{.wgetrc} (@pxref{Startup File}), or specifying it on
 the command line.
 
 @menu
-* URL Format::
-* Option Syntax::
-* Basic Startup Options::
-* Logging and Input File Options::
-* Download Options::
-* Directory Options::
-* HTTP Options::
-* HTTPS (SSL/TLS) Options::
-* FTP Options::
-* Recursive Retrieval Options::
-* Recursive Accept/Reject Options::
-* Exit Status::
+* URL Format::                  
+* Option Syntax::               
+* Basic Startup Options::       
+* Logging and Input File Options::  
+* Download Options::            
+* Directory Options::           
+* HTTP Options::                
+* HTTPS (SSL/TLS) Options::     
+* FTP Options::                 
+* Recursive Retrieval Options::  
+* Recursive Accept/Reject Options::  
+* Exit Status::                 
 @end menu
 
 @node URL Format, Option Syntax, Invoking, Invoking
@@ -487,7 +489,7 @@ Output bandwidth as @var{type}.  The only accepted value is @samp{bits}.
 @item -i @var{file}
 @itemx --input-file=@var{file}
 Read @sc{url}s from a local or external @var{file}.  If @samp{-} is
-specified as @var{file}, @sc{url}s are read from the standard input.
+specified as @var{file}, @sc{url}s are read from the standard input.  
 (Use @samp{./-} to read from a file literally named @samp{-}.)
 
 If this function is used, no @sc{url}s need be present on the command
@@ -512,11 +514,27 @@ href if none was specified.
 Downloads files covered in local Metalink @var{file}. Metalink version 3
 and 4 are supported.
 
+@cindex keep-badhash
+@item --keep-badhash
+Keeps downloaded Metalink's files with a bad hash. It appends .badhash
+to the name of Metalink's files which have a checksum mismatch, except
+without overwriting existing files.
+
 @cindex metalink-over-http
 @item --metalink-over-http
 Issues HTTP HEAD request instead of GET and extracts Metalink metadata
 from response headers. Then it switches to Metalink download.
 If no valid Metalink metadata is found, it falls back to ordinary HTTP download.
+Enables @samp{Content-Type: application/metalink4+xml} files download/processing.
+
+@cindex metalink-index
+@item --metalink-index=@var{number}
+Set the Metalink @samp{application/metalink4+xml} metaurl ordinal
+NUMBER. From 1 to the total number of ``application/metalink4+xml''
+available.  Specify 0 or @samp{inf} to choose the first good one.
+Metaurls, such as those from a @samp{--metalink-over-http}, may have
+been sorted by priority key's value; keep this in mind to choose the
+right NUMBER.
 
 @cindex preferred-location
 @item --preferred-location
@@ -548,9 +566,12 @@ For instance, if you specify @samp{http://foo/bar/a.html} for
 @var{URL}, and Wget reads @samp{../baz/b.html} from the input file, it
 would be resolved to @samp{http://foo/baz/b.html}.
 
-@cindex specify config
+@cindex specify config 
 @item --config=@var{FILE}
-Specify the location of a startup file you wish to use.
+Specify the location of a startup file you wish to use instead of the
+default one(s). Use --no-config to disable reading of config files.
+If both --config and --no-config are given, --no-config is ignored.
+
 
 @item --rejected-log=@var{logfile}
 Logs all URL rejections to @var{logfile} as comma separated values.  The values
@@ -687,6 +708,12 @@ Before (over)writing a file, back up an existing file by adding a
 files are rotated to @samp{.2}, @samp{.3}, and so on, up to
 @var{backups} (and lost beyond that).
 
+@cindex authentication credentials
+@item --no-netrc
+Do not try to obtain credentials from @file{.netrc} file. By default
+@file{.netrc} file is searched for credentials in case none have been
+passed on command line and authentication is required.
+
 @cindex continue retrieval
 @cindex incomplete downloads
 @cindex resume download
@@ -802,7 +829,7 @@ With @samp{--progress=bar}, there are currently two possible parameters,
 @var{force} and @var{noscroll}.
 
 When the output is not a TTY, the progress bar always falls back to ``dot'',
-even if @samp{--progress=bar} was passed to Wget during invokation. This
+even if @samp{--progress=bar} was passed to Wget during invocation. This
 behaviour can be overridden and the ``bar'' output forced by using the ``force''
 parameter as @samp{--progress=bar:force}.
 
@@ -1146,13 +1173,22 @@ short periods of time.
 @itemx --password=@var{password}
 Specify the username @var{user} and password @var{password} for both
 @sc{ftp} and @sc{http} file retrieval.  These parameters can be overridden
-using the @samp{--ftp-user} and @samp{--ftp-password} options for
-@sc{ftp} connections and the @samp{--http-user} and @samp{--http-password}
+using the @samp{--ftp-user} and @samp{--ftp-password} options for 
+@sc{ftp} connections and the @samp{--http-user} and @samp{--http-password} 
 options for @sc{http} connections.
 
 @item --ask-password
 Prompt for a password for each connection established. Cannot be specified
 when @samp{--password} is being used, because they are mutually exclusive.
+
+@item --use-askpass=@var{command}
+Prompt for a user and password using the specified command.  If no command is
+specified then the command in the environment variable WGET_ASKPASS is used.
+If WGET_ASKPASS is not set then the command in the environment variable
+SSH_ASKPASS is used.
+
+You can set the default command for use-askpass in the @file{.wgetrc}.  That
+setting may be overridden from the command line.
 
 @cindex iri support
 @cindex idn support
@@ -1205,7 +1241,7 @@ option is useful for downloading to the directory with hardlinks.
 @node Directory Options, HTTP Options, Download Options, Invoking
 @section Directory Options
 
-@table @samp
+@table @samp       
 @item -nd
 @itemx --no-directories
 Do not create a hierarchy of directories when retrieving recursively.
@@ -1288,13 +1324,13 @@ URLs that end in a slash), instead of @file{index.html}.
 @cindex .css extension
 @item -E
 @itemx --adjust-extension
-If a file of type @samp{application/xhtml+xml} or @samp{text/html} is
-downloaded and the URL does not end with the regexp
-@samp{\.[Hh][Tt][Mm][Ll]?}, this option will cause the suffix @samp{.html}
-to be appended to the local filename.  This is useful, for instance, when
-you're mirroring a remote site that uses @samp{.asp} pages, but you want
-the mirrored pages to be viewable on your stock Apache server.  Another
-good use for this is when you're downloading CGI-generated materials.  A URL
+If a file of type @samp{application/xhtml+xml} or @samp{text/html} is 
+downloaded and the URL does not end with the regexp 
+@samp{\.[Hh][Tt][Mm][Ll]?}, this option will cause the suffix @samp{.html} 
+to be appended to the local filename.  This is useful, for instance, when 
+you're mirroring a remote site that uses @samp{.asp} pages, but you want 
+the mirrored pages to be viewable on your stock Apache server.  Another 
+good use for this is when you're downloading CGI-generated materials.  A URL 
 like @samp{http://site.com/article.cgi?25} will be saved as
 @file{article.cgi?25.html}.
 
@@ -1309,6 +1345,11 @@ type @samp{text/css} end in the suffix @samp{.css}, and the option was
 renamed from @samp{--html-extension}, to better reflect its new
 behavior. The old option name is still acceptable, but should now be
 considered deprecated.
+
+As of version 1.19.2, Wget will also ensure that any downloaded files with
+a @code{Content-Encoding} of @samp{br}, @samp{compress}, @samp{deflate}
+or @samp{gzip} end in the suffix @samp{.br}, @samp{.Z}, @samp{.zlib}
+and @samp{.gz} respectively.
 
 At some point in the future, this option may well be expanded to
 include suffixes for other types of content, including content types
@@ -1327,10 +1368,10 @@ the @code{digest}, or the Windows @code{NTLM} authentication scheme.
 Another way to specify username and password is in the @sc{url} itself
 (@pxref{URL Format}).  Either method reveals your password to anyone who
 bothers to run @code{ps}.  To prevent the passwords from being seen,
-store them in @file{.wgetrc} or @file{.netrc}, and make sure to protect
-those files from other users with @code{chmod}.  If the passwords are
-really important, do not leave them lying in those files either---edit
-the files and delete them after Wget has started the download.
+use the @samp{--use-askpass} or store them in @file{.wgetrc} or @file{.netrc},
+and make sure to protect those files from other users with @code{chmod}.  If
+the passwords are really important, do not leave them lying in those files
+either---edit the files and delete them after Wget has started the download.
 
 @iftex
 @xref{Security Considerations}, for more information about security
@@ -1493,6 +1534,20 @@ wget --header="Host: foo.bar" http://localhost/
 
 In versions of Wget prior to 1.10 such use of @samp{--header} caused
 sending of duplicate headers.
+
+@cindex Content-Encoding, choose
+@item --compression=@var{type}
+Choose the type of compression to be used.  Legal values are
+@samp{auto}, @samp{gzip} and @samp{none}.
+
+If @samp{auto} or @samp{gzip} are specified, Wget asks the server to
+compress the file using the gzip compression format. If the server
+compresses the file and responds with the @code{Content-Encoding}
+header field set appropriately, the file will be decompressed
+automatically. This is the default.
+
+If @samp{none} is specified, wget will not ask the server to compress
+the file and will not decompress any server responses.
 
 @cindex redirect
 @item --max-redirect=@var{number}
@@ -1662,6 +1717,10 @@ This option is useful for some file-downloading CGI programs that use
 @code{Content-Disposition} headers to describe what the name of a
 downloaded file should be.
 
+When combined with @samp{--metalink-over-http} and @samp{--trust-server-names},
+a @samp{Content-Type: application/metalink4+xml} file is named using the
+@code{Content-Disposition} filename field, if available.
+
 @cindex Content On Error
 @item --content-on-error
 
@@ -1671,9 +1730,11 @@ with a http status code that indicates error.
 @cindex Trust server names
 @item --trust-server-names
 
-If this is set to on, on a redirect the last component of the
-redirection URL will be used as the local file name.  By default it is
-used the last component in the original URL.
+If this is set, on a redirect, the local file name will be based
+on the redirection URL.  By default the local file name is based on
+the original URL.  When doing recursive retrieving this can be helpful
+because in many web sites redirected URLs correspond to an underlying
+file structure, while link URLs do not.
 
 @cindex authentication
 @item --auth-no-challenge
@@ -1686,6 +1747,21 @@ Use of this option is not recommended, and is intended only to support
 some few obscure servers, which never send HTTP authentication
 challenges, but accept unsolicited auth info, say, in addition to
 form-based authentication.
+
+@item --retry-on-http-error=@var{code[,code,...]}
+Consider given HTTP response codes as non-fatal, transient errors.
+Supply a comma-separated list of 3-digit HTTP response codes as
+argument. Useful to work around special circumstances where retries
+are required, but the server responds with an error code normally not
+retried by Wget. Such errors might be 503 (Service Unavailable) and
+429 (Too Many Requests). Retries enabled by this option are performed
+subject to the normal retry timing and retry count limitations of
+Wget.
+
+Using this option is intended to support special use cases only and is
+generally not recommended, as it can force retries even in cases where
+the server is actually trying to decrease its load. Please use wisely
+and only if you know what you are doing.
 
 @end table
 
@@ -1822,7 +1898,7 @@ to initialize.  Randomness may be provided by EGD (see
 the user.  If this option is not specified, Wget looks for random data
 in @code{$RANDFILE} or, if that is unset, in @file{$HOME/.rnd}.
 
-If you're getting the ``Could not seed OpenSSL PRNG; disabling SSL.''
+If you're getting the ``Could not seed OpenSSL PRNG; disabling SSL.'' 
 error, you should provide random data using some of the methods
 described above.
 
@@ -1951,8 +2027,8 @@ Specify the location for temporary files created by the WARC writer.
 @item --ftp-user=@var{user}
 @itemx --ftp-password=@var{password}
 Specify the username @var{user} and password @var{password} on an
-@sc{ftp} server.  Without this, or the corresponding startup option,
-the password defaults to @samp{-wget@@}, normally used for anonymous
+@sc{ftp} server.  Without this, or the corresponding startup option, 
+the password defaults to @samp{-wget@@}, normally used for anonymous 
 FTP.
 
 Another way to specify username and password is in the @sc{url} itself
@@ -2115,7 +2191,7 @@ wget -r -nd --delete-after http://whatever.com/~popular/page/
 @end example
 
 The @samp{-r} option is to retrieve recursively, and @samp{-nd} to not
-create directories.
+create directories.  
 
 Note that @samp{--delete-after} deletes files on the local machine.  It
 does not issue the @samp{DELE} command to remote FTP sites, for
@@ -2358,7 +2434,7 @@ comma-separated @var{list} with this option.
 @item --ignore-tags=@var{list}
 This is the opposite of the @samp{--follow-tags} option.  To skip
 certain @sc{html} tags when recursively looking for documents to download,
-specify them in a comma-separated @var{list}.
+specify them in a comma-separated @var{list}.  
 
 In the past, this option was the best bet for downloading a single page
 and its requisites, using a command-line like:
@@ -2420,7 +2496,7 @@ This is a useful option, since it guarantees that only the files
 
 @node Exit Status,  , Recursive Accept/Reject Options, Invoking
 @section Exit Status
-
+                                   
 @c man begin EXITSTATUS
 
 Wget may return one of several error codes if it encounters problems.
@@ -2911,9 +2987,9 @@ match, Wget will download the remote file no matter what the time-stamps
 say.
 
 @menu
-* Time-Stamping Usage::
-* HTTP Time-Stamping Internals::
-* FTP Time-Stamping Internals::
+* Time-Stamping Usage::         
+* HTTP Time-Stamping Internals::  
+* FTP Time-Stamping Internals::  
 @end menu
 
 @node Time-Stamping Usage, HTTP Time-Stamping Internals, Time-Stamping, Time-Stamping
@@ -3199,8 +3275,8 @@ Turn on recognition of the (non-standard) @samp{Content-Disposition}
 HTTP header---if set to @samp{on}, the same as @samp{--content-disposition}.
 
 @item trust_server_names = on/off
-If set to on, use the last component of a redirection URL for the local
-file name.
+If set to on, construct the local file name from redirection URLs
+rather than original URLs.
 
 @item continue = on/off
 If set to on, force continuation of preexistent partially retrieved
@@ -3306,10 +3382,16 @@ Turn globbing on/off---the same as @samp{--glob} and @samp{--no-glob}.
 Define a header for HTTP downloads, like using
 @samp{--header=@var{string}}.
 
+@item compression = @var{string}
+Choose the compression type to be used.  Legal values are @samp{auto}
+(the default), @samp{gzip}, and @samp{none}.  The same as
+@samp{--compression=@var{string}}.
+
 @item adjust_extension = on/off
 Add a @samp{.html} extension to @samp{text/html} or
-@samp{application/xhtml+xml} files that lack one, or a @samp{.css}
-extension to @samp{text/css} files that lack one, like
+@samp{application/xhtml+xml} files that lack one, a @samp{.css}
+extension to @samp{text/css} files that lack one, and a @samp{.br},
+@samp{.Z}, @samp{.zlib} or @samp{.gz} to compressed files like
 @samp{-E}. Previously named @samp{html_extension} (still acceptable,
 but deprecated).
 
@@ -3421,8 +3503,8 @@ Change setting of passive @sc{ftp}, equivalent to the
 @samp{--passive-ftp} option.
 
 @item password = @var{string}
-Specify password @var{string} for both @sc{ftp} and @sc{http} file retrieval.
-This command can be overridden using the @samp{ftp_password} and
+Specify password @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
+This command can be overridden using the @samp{ftp_password} and 
 @samp{http_password} command for @sc{ftp} and @sc{http} respectively.
 
 @item post_data = @var{string}
@@ -3482,7 +3564,7 @@ Use @var{file} as a source of randomness on systems lacking
 @file{/dev/random}.
 
 @item random_wait = on/off
-Turn random between-request wait times on or off. The same as
+Turn random between-request wait times on or off. The same as 
 @samp{--random-wait}.
 
 @item read_timeout = @var{n}
@@ -3580,8 +3662,8 @@ variables are set.  In that case it is the same as using
 @samp{--no-proxy}.
 
 @item user = @var{string}
-Specify username @var{string} for both @sc{ftp} and @sc{http} file retrieval.
-This command can be overridden using the @samp{ftp_user} and
+Specify username @var{string} for both @sc{ftp} and @sc{http} file retrieval. 
+This command can be overridden using the @samp{ftp_user} and 
 @samp{http_user} command for @sc{ftp} and @sc{http} respectively.
 
 @item user_agent = @var{string}
@@ -4220,7 +4302,7 @@ server.
 
 Until version 1.8, Wget supported the first version of the standard,
 written by Martijn Koster in 1994 and available at
-@url{http://www.robotstxt.org/robotstxt.html}.  As of version 1.8,
+@url{http://www.robotstxt.org/orig.html}.  As of version 1.8,
 Wget has supported the additional directives specified in the internet
 draft @samp{<draft-koster-robots-00.txt>} titled ``A Method for Web
 Robots Control''.  The draft, which has as far as I know never made to
@@ -4239,7 +4321,7 @@ this:
 @end example
 
 This is explained in some detail at
-@url{http://www.robotstxt.org/wc/meta-user.html}.  Wget supports this
+@url{http://www.robotstxt.org/meta.html}.  Wget supports this
 method of robot exclusion in addition to the usual @file{/robots.txt}
 exclusion.
 
@@ -4534,7 +4616,7 @@ subscribers of the Wget mailing list.
 
 @node Copying this manual, Concept Index, Appendices, Top
 @appendix Copying this manual
-
+  
 @menu
 * GNU Free Documentation License::  License for copying this manual.
 @end menu

@@ -57,10 +57,6 @@ as that of the covered work.  */
 
 #include <errno.h>
 
-#ifdef ENABLE_IRI
-#include <idn-free.h>
-#endif
-
 #include "utils.h"
 #include "host.h"
 #include "url.h"
@@ -428,14 +424,12 @@ getaddrinfo_with_timeout (const char *node, const char *service,
 const char *
 print_address (const ip_address *addr)
 {
-#ifdef ENABLE_IPV6
   static char buf[64];
+
   if (!inet_ntop (addr->family, IP_INADDR_DATA (addr), buf, sizeof buf))
     snprintf (buf, sizeof buf, "<error: %s>", strerror (errno));
+
   return buf;
-#else
-  return inet_ntoa (addr->data.d4);
-#endif
 }
 
 /* The following two functions were adapted from glibc's
@@ -848,11 +842,8 @@ lookup_host (const char *host, int flags)
 
       if (opt.enable_iri && (name = idn_decode ((char *) host)) != NULL)
         {
-          int len = strlen (host) + strlen (name) + 4;
-          str = xmalloc (len);
-          snprintf (str, len, "%s (%s)", name, host);
-          str[len-1] = '\0';
-          idn_free (name);
+          str = aprintf ("%s (%s)", name, host);
+          xfree (name);
         }
 
       logprintf (LOG_VERBOSE, _("Resolving %s... "),
