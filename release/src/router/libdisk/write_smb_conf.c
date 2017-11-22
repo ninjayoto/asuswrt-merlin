@@ -381,6 +381,7 @@ int main(int argc, char *argv[])
 	fprintf(fp, "level2 oplocks = yes\n");
 	fprintf(fp, "kernel oplocks = no\n");
 	fprintf(fp, "wide links = no\n");
+	fprintf(fp, "getwd cache = yes\n");
 
 	// If we only want name services then skip share definition
 	if (nvram_match("enable_samba", "0"))
