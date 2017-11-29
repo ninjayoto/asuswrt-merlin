@@ -4,19 +4,34 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29A6j9527  (29-November-2017) ARM SDK, MIPS KRACK
+- CHANGED: ARM: update netfilter conntrack
+- CHANGED: ARM: update nas and acsd to 380.4180
+- CHANGED: MIPS: update CTF to 380.8120
+- CHANGED: MIPS: update netfilter conntrack
+- CHANGED: MIPS: update wl executable to 380.8120
+- CHANGED: MIPS: update eapd to 380.8120
+- CHANGED: MIPS: update nas and acsd to 380.8120
+- CHANGED: MIPS: update wireless drivers to 380.8120
+- CHANGED: shared: redefine router domain name in AP mode
+- CHANGED: shared: update wireless functions required for new broadcom nas
+* FIXED: shared: conditional define for MIN/MAX functions
+
+
+
 374.43_28E9j9527  (22-November-2017) ARM SDK
-* CHANGED: wget: (backport) update to 1.19.2
+- CHANGED: wget: (backport) update to 1.19.2
 * CHANGED: samba: specify getwd cache since wide links is disabled
 * CHANGED: samba36: update socket options
 * CHANGED: samba36: increase buffer size for ARM when using new samba
 - FIXED: sysinfo: fix clock freq tools display for ARM routers
-* FIXED: httpd: (backport) fix crash if /proc/cpuinfo is missing the Processor line
+- FIXED: httpd: (backport) fix crash if /proc/cpuinfo is missing the Processor line
 
 
 374.43_28E8j9527  (19-November-2017) ARM SDK
-* CHANGED: openssl: update to 1.0.2m
-* CHANGED: modprobe: (backport) add aliases so xt_set and ipt_set are automatically modprobed
-* CHANGED: kernel: (backport) add module alias to modprobe.conf for cifs
+- CHANGED: openssl: update to 1.0.2m
+- CHANGED: modprobe: (backport) add aliases so xt_set and ipt_set are automatically modprobed
+- CHANGED: kernel: (backport) add module alias to modprobe.conf for cifs
 
 
 374.43_28E7j9527  (16-November-2017) ARM SDK
