@@ -41,8 +41,12 @@
 #define OLD_DUT_DOMAIN_NAME1 "www.asusnetwork.net"
 #define OLD_DUT_DOMAIN_NAME2 "www.asusrouter.com"
 
+#ifndef MIN
 #define MIN(x,y) ((x)<(y)?(x):(y))
+#endif
+#ifndef MAX
 #define MAX(x,y) ((x)>(y)?(x):(y))
+#endif
 
 //version.c
 extern const char *rt_version;
