@@ -40,7 +40,7 @@
 #include "shared.h"
 
 #ifndef MAX_NVPARSE
-#define MAX_NVPARSE 255
+#define MAX_NVPARSE 16
 #endif
 
 /* wireless interface name descriptors */
@@ -270,7 +270,8 @@ wl_wlif_is_psta(char *ifname)
 	if (wl_probe(ifname) < 0)
 		return FALSE;
 
-	wl_iovar_getint(ifname, "psta_if", &psta);
+	if (wl_iovar_getint(ifname, "psta_if", &psta) < 0)
+		return FALSE;
 
 	return psta ? TRUE : FALSE;
 }
@@ -284,9 +285,7 @@ wl_wlif_is_dwds(char *ifname)
 	if (wl_probe(ifname) < 0)
 		return FALSE;
 
-	wl_iovar_getint(ifname, "wds_type", &wds_type);
-
-	return (wds_type == WL_WDSIFTYPE_DWDS);
+	return (!wl_iovar_getint(ifname, "wds_type", &wds_type) && wds_type == WL_WDSIFTYPE_DWDS);
 #else
 	return FALSE;
 #endif
@@ -598,7 +597,8 @@ get_wsec(wsec_info_t *info, unsigned char *mac, char *osifname)
 	value = nvram_safe_get(strcat_r(wl_prefix, "nas_dbg", comb));
 	info->debug = (int)strtoul(value, NULL, 0);
 
-
+	/* get mfp setting */
+	info->mfp = atoi(nvram_safe_get(strcat_r(wl_prefix, "mfp", comb)));
 
 	return WLIFU_WSEC_SUCCESS;
 }
