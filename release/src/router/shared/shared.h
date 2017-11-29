@@ -33,7 +33,11 @@
 #define	DEV_GPIO(arg)	"/dev/gpio/"#arg
 #endif
 
+#if defined(RTCONFIG_DEFAULT_AP_MODE)
+#define DUT_DOMAIN_NAME "ap.asus.com"
+#else
 #define DUT_DOMAIN_NAME "router.asus.com"
+#endif
 #define OLD_DUT_DOMAIN_NAME1 "www.asusnetwork.net"
 #define OLD_DUT_DOMAIN_NAME2 "www.asusrouter.com"
 
