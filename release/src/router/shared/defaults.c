@@ -380,6 +380,9 @@ struct nvram_tuple router_defaults[] = {
 
 #ifdef RTCONFIG_PROXYSTA
 	{ "wlc_psta",			"0"	},	/* 0: disabled, 1: Proxy STA, 2: Proxy STA Repeater */
+#ifdef RTCONFIG_DPSTA
+	{ "wlc_dpsta", "0"},
+#endif
 #endif
 
 	// WPA parameters
@@ -465,6 +468,13 @@ struct nvram_tuple router_defaults[] = {
 	{ "wl_atf_mode", "0"},			/* ATF mode: 0/1/2(by client/SSID/client+SSID) */
 	{ "wl_atf_sta", ""},			/* ATF by client: <MAC>%<MAC>% */
 	{ "wl_atf_ssid", ""},			/* ATF by SSID: <%<%<%<% */
+#endif
+
+#ifdef RTCONFIG_DPSTA
+	{ "dpsta_ifnames", ""},
+	{ "dpsta_policy", "0"},
+	{ "dpsta_lan_uif", "3"},
+	{ "dpsta_band", "-1"},
 #endif
 
 #ifdef RTCONFIG_BCMWL6
