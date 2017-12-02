@@ -94,6 +94,16 @@ define platformKernelConfig
 				cp -f $(SRCBASE)/router/ctf_arm/bcm6/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
 			fi; \
 		fi; \
+		if [ "$(DPSTA)" = "y" ]; then \
+			mkdir -p $(SRCBASE)/router/dpsta/linux; \
+			if [ "$(ARMCPUSMP)" = "up" ]; then \
+				cp -f $(SRCBASE)/router/dpsta/bcm6_up/dpsta.o $(SRCBASE)/router/dpsta/linux; \
+			else \
+				cp -f $(SRCBASE)/router/dpsta/bcm6/dpsta.o $(SRCBASE)/router/dpsta/linux; \
+			fi; \
+			cp -f $(SRCBASE)/router/dpsta/bcm6/dpsta.h $(SRCBASE)/router/dpsta; \
+			cp -f $(SRCBASE)/router/dpsta/bcm6/dpsta_linux.h $(SRCBASE)/router/dpsta; \
+		fi; \
 	fi; \
 	if [ "$(SFPRAM16M)" = "y" ]; then \
 		sed -i "/CONFIG_WL_USE_AP/d" $(1); \

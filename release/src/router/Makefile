@@ -212,6 +212,8 @@ obj-$(RTCONFIG_WPS) += wps$(BCMEX)
 obj-$(RTCONFIG_EMF) += emf
 obj-$(RTCONFIG_EMF) += igs
 endif
+obj-$(RTCONFIG_BCMARM) += ctf_arm
+obj-$(RTCONFIG_DPSTA) += dpsta
 
 #obj-y += libbcmcrypto
 #obj-y += cyassl
@@ -594,6 +596,7 @@ else	# RTCONFIG_BCMARM
 	$(call STRIP_DEBUG_SYMBOLS,$(LINUXDIR)/drivers/net/bcm57xx/bcm57xx.ko)
 	$(call STRIP_DEBUG_SYMBOLS,$(LINUXDIR)/drivers/net/emf/emf.ko)
 	$(call STRIP_DEBUG_SYMBOLS,$(LINUXDIR)/drivers/net/igs/igs.ko)
+	$(call STRIP_DEBUG_SYMBOLS,$(LINUXDIR)/drivers/net/dpsta/dpsta.ko)
 endif   # RTCONFIG_BCMARM
 
 ifneq ($(RTCONFIG_BCMARM),y)
