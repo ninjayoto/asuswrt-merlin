@@ -4,7 +4,20 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_29A6j9527  (29-November-2017) ARM SDK, MIPS KRACK
+374.43_29A8j9527  (2-December-2017) ARM SDK, MIPS,ARM KRACK
+* CHANGED: ARM: update wireless prebuilts for AC68U KRACK fix
+* CHANGED: ARM: initialize defaults for dpsta
+* CHANGED: samba36: update directory name for Merlin compatibility
+* CHANGED: MIPS: update ctf header file for N16
+- FIXED: samba35: Chain code can return uninitialized memory when talloc buffer is grown. (fixes CVE-2017-15275)
+- FIXED: samba35: Prevent client short SMB1 write from writing server memory to file. (CVE-2017-12163)
+- FIXED: samba35: only fallback to anonymous if authentication was not requested (CVE-2017-12150)
+- FIXED: samba36: only fallback to anonymous if authentication was not requested (CVE-2017-12150)
+- FIXED: samba36: Prevent client short SMB1 write from writing server memory to file. (CVE-2017-12163)
+- FIXED: samba36: Chain code can return uninitialized memory when talloc buffer is grown. (fixes CVE-2017-15275)
+
+
+374.43_29A7j9527  (29-November-2017) ARM SDK, MIPS KRACK
 - CHANGED: ARM: update netfilter conntrack
 - CHANGED: ARM: update nas and acsd to 380.4180
 - CHANGED: MIPS: update CTF to 380.8120
@@ -16,7 +29,6 @@ Changelog
 - CHANGED: shared: redefine router domain name in AP mode
 - CHANGED: shared: update wireless functions required for new broadcom nas
 * FIXED: shared: conditional define for MIN/MAX functions
-
 
 
 374.43_28E9j9527  (22-November-2017) ARM SDK
