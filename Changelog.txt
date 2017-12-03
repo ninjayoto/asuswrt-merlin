@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29A9j9527  (3-December-2017) ARM SDK, MIPS,ARM KRACK
+- CHANGED: ARM: update ctf header file for AC56, AC68
+* CHANGED: Revert "MIPS: update netfilter conntrack"
+* CHANGED: Revert "ARM: update netfilter conntrack"
+
+
 374.43_29A8j9527  (2-December-2017) ARM SDK, MIPS,ARM KRACK
 * CHANGED: ARM: update wireless prebuilts for AC68U KRACK fix
 * CHANGED: ARM: initialize defaults for dpsta
