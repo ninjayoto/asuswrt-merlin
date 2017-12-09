@@ -29,11 +29,11 @@ introspectiondir=$(datadir)/dbus-1/interfaces
 dbussystemservicesdir=$(datadir)/dbus-1/system-services
 
 AM_CFLAGS+= \
-	-DAVAHI_DAEMON_RUNTIME_DIR=\"$(avahi_runtime_dir)/avahi-daemon/\" \
-	-DAVAHI_SOCKET=\"$(avahi_socket)\" \
-	-DAVAHI_SERVICE_DIR=\"$(servicedir)\" \
-	-DAVAHI_CONFIG_FILE=\"$(pkgsysconfdir)/avahi-daemon.conf\" \
-	-DAVAHI_HOSTS_FILE=\"$(pkgsysconfdir)/hosts\" \
+	-DAVAHI_DAEMON_RUNTIME_DIR=\"/var/run/avahi-daemon/\" \
+	-DAVAHI_SOCKET=\"/var/run/avahi-daemon/socket\" \
+	-DAVAHI_SERVICE_DIR=\"/tmp/avahi/services\" \
+	-DAVAHI_CONFIG_FILE=\"/tmp/avahi/avahi-daemon.conf\" \
+	-DAVAHI_HOSTS_FILE=\"/tmp/avahi/hosts\" \
 	-DAVAHI_DBUS_INTROSPECTION_DIR=\"$(introspectiondir)\" \
 	-DAVAHI_CONFIG_DIR=\"$(pkgsysconfdir)\"
 

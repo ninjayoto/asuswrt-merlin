@@ -107,11 +107,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@am__append_1 = \
-@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_DAEMON_RUNTIME_DIR=\"$(avahi_runtime_dir)/avahi-daemon/\" \
-@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_SOCKET=\"$(avahi_socket)\" \
-@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_SERVICE_DIR=\"$(servicedir)\" \
-@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_CONFIG_FILE=\"$(pkgsysconfdir)/avahi-daemon.conf\" \
-@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_HOSTS_FILE=\"$(pkgsysconfdir)/hosts\" \
+@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_DAEMON_RUNTIME_DIR=\"/var/run/avahi-daemon/\" \
+@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_SOCKET=\"/var/run/avahi-daemon/socket\" \
+@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_SERVICE_DIR=\"/tmp/avahi/services\" \
+@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_CONFIG_FILE=\"/tmp/avahi/avahi-daemon.conf\" \
+@HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_HOSTS_FILE=\"/tmp/avahi/hosts\" \
 @HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_DBUS_INTROSPECTION_DIR=\"$(introspectiondir)\" \
 @HAVE_LIBDAEMON_TRUE@@HAVE_XML_TRUE@	-DAVAHI_CONFIG_DIR=\"$(pkgsysconfdir)\"
 
