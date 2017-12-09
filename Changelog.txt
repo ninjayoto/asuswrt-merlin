@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29E2j9527  (9-December-2017) ARM SDK, MIPS,ARM KRACK
+* FIXED: mdns: fix avahi-daemon config directory location
+
+
 374.43_29E1j9527  (9-December-2017) ARM SDK, MIPS,ARM KRACK
 * CHANGED: openssl: update to 1.0.2n
 
