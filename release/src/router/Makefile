@@ -299,7 +299,7 @@ obj-$(NEED_SAMBA2) += samba
 
 ifeq ($(or $(RTCONFIG_SAMBA_MODERN),$(RTCONFIG_SAMBA36X)),y)
 obj-$(NEED_SAMBA3) += libiconv-1.14
-obj-$(NEED_SAMBA3) += samba36
+obj-$(NEED_SAMBA3) += samba-3.6.x
 else
 ifeq ($(RTCONFIG_BCMARM),y)
 obj-$(NEED_SAMBA3) += samba-3.0.25b
@@ -1899,8 +1899,8 @@ samba3:
 	@$(MAKE) -C samba3
 samba-3.0.25b:
 	@$(MAKE) -C samba-3.0.25b $(PARALLEL_BUILD)
-samba36: libiconv-1.14
-	@$(MAKE) -C samba36 $(PARALLEL_BUILD)
+samba-3.6.x: libiconv-1.14
+	@$(MAKE) -C samba-3.6.x $(PARALLEL_BUILD)
 samba-3.5.8:
 	@$(MAKE) -C samba-3.5.8 $(PARALLEL_BUILD)
 
