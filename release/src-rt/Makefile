@@ -1944,14 +1944,6 @@ define KernelConfig
 			fi; \
 		fi; \
 	fi; \
-	if [ "$(SHP)" = "y" ] || [ "$(LFP)" = "y" ]; then \
-		sed -i "/CONFIG_IP_NF_LFP/d" $(1); \
-		echo "CONFIG_IP_NF_LFP=y" >>$(1); \
- 	fi; \
-	if [ "$(DNSMQ)" = "y" ]; then \
-		sed -i "/CONFIG_IP_NF_DNSMQ/d" $(1); \
-		echo "CONFIG_IP_NF_DNSMQ=y" >>$(1); \
-	fi; \
 	if [ "$(IPV6SUPP)" = "y" ]; then \
 		sed -i "/CONFIG_IPV6 is not set/d" $(1); \
 		echo "CONFIG_IPV6=y" >>$(1); \
@@ -2088,6 +2080,14 @@ define KernelConfig
 		sed -i "/CONFIG_EXT4_FS/d" $(1); \
 		echo "# CONFIG_EXT4_FS is not set" >>$(1); \
 	fi; \
+	fi; \
+	if [ "$(SHP)" = "y" ] || [ "$(LFP)" = "y" ]; then \
+		sed -i "/CONFIG_IP_NF_LFP/d" $(1); \
+		echo "CONFIG_IP_NF_LFP=y" >>$(1); \
+ 	fi; \
+	if [ "$(DNSMQ)" = "y" ]; then \
+		sed -i "/CONFIG_IP_NF_DNSMQ/d" $(1); \
+		echo "CONFIG_IP_NF_DNSMQ=y" >>$(1); \
 	fi; \
 	if [ "$(USB)" = "" ]; then \
 		sed -i "/CONFIG_MSDOS_PARTITION/d" $(1); \

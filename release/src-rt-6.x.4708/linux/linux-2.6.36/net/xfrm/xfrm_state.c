@@ -1268,7 +1268,7 @@ struct xfrm_state * xfrm_state_migrate(struct xfrm_state *x,
 
 	return xc;
 error:
-	xfrm_state_put(xc);
+	kfree(xc);
 	return NULL;
 }
 EXPORT_SYMBOL(xfrm_state_migrate);
@@ -1334,8 +1334,6 @@ out:
 			xfrm_state_check_expire(x1);
 
 		err = 0;
-		x->km.state = XFRM_STATE_DEAD;
-		__xfrm_state_put(x);
 	}
 	spin_unlock_bh(&x1->lock);
 
