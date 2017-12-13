@@ -81,18 +81,10 @@ define platformKernelConfig
 	if [ "$(ARM)" = "y" ]; then \
 		mkdir -p $(SRCBASE)/router/ctf_arm/linux; \
 		if [ "$(ARMCPUSMP)" = "up" ]; then \
-			if [ "$(CTF_PPTP_L2TP)" = "y" ]; then \
-				cp -f $(SRCBASE)/router/ctf_arm/bcm6_up_pptp_l2tp/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
-			else \
-				cp -f $(SRCBASE)/router/ctf_arm/bcm6_up/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
-			fi; \
+			cp -f $(SRCBASE)/router/ctf_arm/bcm6_up/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
 			cp -f $(SRCBASE)/router/ufsd/broadcom_arm_up/ufsd.ko.46_up $(SRCBASE)/router/ufsd/broadcom_arm/ufsd.ko; \
 		else \
-			if [ "$(CTF_PPTP_L2TP)" = "y" ]; then \
-				cp -f $(SRCBASE)/router/ctf_arm/bcm6_pptp_l2tp/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
-			else \
-				cp -f $(SRCBASE)/router/ctf_arm/bcm6/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
-			fi; \
+			cp -f $(SRCBASE)/router/ctf_arm/bcm6/ctf.* $(SRCBASE)/router/ctf_arm/linux/; \
 		fi; \
 		if [ "$(DPSTA)" = "y" ]; then \
 			mkdir -p $(SRCBASE)/router/dpsta/linux; \
