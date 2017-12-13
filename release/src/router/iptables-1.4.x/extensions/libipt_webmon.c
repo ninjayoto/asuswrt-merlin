@@ -1,10 +1,10 @@
-/*  webmon --	An iptables extension to match URLs in HTTP requests
+/*  webmon --	An iptables extension to match URLs in HTTP requests 
  *  		This module can match using string match or regular expressions
  *  		Originally designed for use with Gargoyle router firmware (gargoyle-router.com)
  *
  *
  *  Copyright © 2008-2011 by Eric Bishop <eric@gargoyle-router.com>
- *
+ * 
  *  This file is free software: you may copy, redistribute and/or modify it
  *  under the terms of the GNU General Public License as published by the
  *  Free Software Foundation, either version 2 of the License, or (at your
@@ -44,13 +44,13 @@
 	#define ipt_tryload		xt_tryload
 #endif
 
-/*
+/* 
  * XTABLES_VERSION_CODE is only defined in versions 1.4.1 and later, which
  * also require the use of xtables_register_match
- *
+ * 
  * Version 1.4.0 uses register_match like previous versions
  */
-#ifdef XTABLES_VERSION_CODE
+#ifdef XTABLES_VERSION_CODE 
 	#define register_match          xtables_register_match
 #endif
 
@@ -92,7 +92,7 @@ static void help(void)
 	printf(	"webmon options:\n");
 }
 
-static struct option opts[] =
+static struct option opts[] = 
 {
 	{ .name = "exclude_ips",        .has_arg = 1, .flag = 0, .val = WEBMON_EXCLUDE },
 	{ .name = "include_ips",        .has_arg = 1, .flag = 0, .val = WEBMON_INCLUDE },
@@ -125,7 +125,7 @@ static void webmon_init(
 
 
 /* Function which parses command options; returns true if it ate an option */
-static int parse(	int c,
+static int parse(	int c, 
 			char **argv,
 			int invert,
 			unsigned int *flags,
@@ -196,7 +196,7 @@ static int parse(	int c,
 }
 
 
-
+	
 static void print_webmon_args(	struct ipt_webmon_info* info )
 {
 	printf("--max_domains %ld ", (unsigned long int)info->max_domains);
@@ -242,7 +242,7 @@ static void do_load(char* file, uint32_t max, unsigned char type)
 		{
 			file_data=strdup("");
 		}
-
+		
 		if(file_data != NULL)
 		{
 			data_length = strlen(file_data) + sizeof(uint32_t)+2;
@@ -254,7 +254,7 @@ static void do_load(char* file, uint32_t max, unsigned char type)
 				data[0] = type;
 				*maxp = max;
 				sprintf( (data+1+sizeof(uint32_t)),  "%s", file_data);
-
+			
 				sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 				if(sockfd >= 0)
 				{
@@ -279,7 +279,7 @@ static void final_check(unsigned int flags)
 /* Prints out the matchinfo. */
 #ifdef _XTABLES_H
 static void print(const void *ip, const struct xt_entry_match *match, int numeric)
-#else
+#else	
 static void print(const struct ipt_ip *ip, const struct ipt_entry_match *match, int numeric)
 #endif
 {
@@ -304,7 +304,7 @@ static void save(const struct ipt_ip *ip, const struct ipt_entry_match *match)
 
 
 #ifdef XTABLES_VERSION
-static struct xtables_match webmon =
+static struct xtables_match webmon = 
 {
   .name = "webmon",
   .version = XTABLES_VERSION,
@@ -320,10 +320,10 @@ static struct xtables_match webmon =
   .extra_opts = opts
 };
 #else
-static struct iptables_match webmon =
-{
+static struct iptables_match webmon = 
+{ 
 	.next		= NULL,
-	.name		= "webmon",
+ 	.name		= "webmon",
 	.version = IPTABLES_VERSION,
 	.size		= IPT_ALIGN(sizeof(struct ipt_webmon_info)),
 	.userspacesize	= IPT_ALIGN(sizeof(struct ipt_webmon_info)),
@@ -390,7 +390,7 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 			int end_ip[4];
 			int start_valid = sscanf(start, "%d.%d.%d.%d", start_ip, start_ip+1, start_ip+2, start_ip+3);
 			int end_valid = sscanf(end, "%d.%d.%d.%d", end_ip, end_ip+1, end_ip+2, end_ip+3);
-
+			
 			if(start_valid == 4 && end_valid == 4)
 			{
 				struct ipt_webmon_ip_range r;
@@ -408,7 +408,7 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 			}
 
 			free(start);
-			free(end);
+			free(end);	
 			free(range_parts);
 		}
 		else if(strchr(next_str, '/') != NULL)
@@ -448,14 +448,14 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 								unsigned char byte_bits = mask_bits > 8 ? 8 : mask_bits;
 								uint32_t byte_mask = 0;
 								mask_bits = mask_bits - byte_bits;
-
+								
 								while(byte_bits > 0)
 								{
 									byte_mask = byte_mask | (256 >> byte_bits);
 									byte_bits--;
 								}
 								mask = mask | ((uint32_t)byte_mask << (byte*8));
-								printf("mask = "STRIP"\n", NIPQUAD(mask));
+								printf("mask = "STRIP"\n", NIPQUAD(mask));	
 							}
 							mask_valid = 1;
 						}
@@ -476,7 +476,7 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 				}
 			}
 			free(start);
-			free(end);
+			free(end);	
 			free(range_parts);
 		}
 		else
@@ -488,7 +488,7 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 				struct in_addr ip;
 				trim_flanking_whitespace(next_str);
 				inet_pton(AF_INET, next_str, &ip);
-
+				
 				if(info->num_exclude_ranges <  WEBMON_MAX_IPS)
 				{
 					(info->exclude_ips)[ info->num_exclude_ips ] = (uint32_t)ip.s_addr;
@@ -499,7 +499,7 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 		free(next_str);
 	}
 	free(addr_parts);
-
+	
 }
 
 
@@ -507,13 +507,13 @@ void parse_ips_and_ranges(char* addr_str, struct ipt_webmon_info *info)
 /*
  * line_str is the line to be parsed -- it is not modified in any way
  * max_pieces indicates number of pieces to return, if negative this is determined dynamically
- * include_remainder_at_max indicates whether the last piece, when max pieces are reached,
+ * include_remainder_at_max indicates whether the last piece, when max pieces are reached, 
  * 	should be what it would normally be (0) or the entire remainder of the line (1)
  * 	if max_pieces < 0 this parameter is ignored
  *
  *
  * returns all non-separator pieces in a line
- * result is dynamically allocated, MUST be freed after call-- even if
+ * result is dynamically allocated, MUST be freed after call-- even if 
  * line is empty (you still get a valid char** pointer to to a NULL char*)
  */
 char** split_on_separators(char* line_str, char* separators, int num_separators, int max_pieces, int include_remainder_at_max)
@@ -584,7 +584,7 @@ char** split_on_separators(char* line_str, char* separators, int num_separators,
 					first_separator_index++;
 				}
 			}
-
+			
 			/* copy next piece to split array */
 			if(first_separator_index > 0)
 			{
@@ -642,8 +642,8 @@ char* trim_flanking_whitespace(char* str)
 
 	char whitespace[5] = { ' ', '\t', '\n', '\r', '\0' };
 	int num_whitespace_chars = 4;
-
-
+	
+	
 	int str_index = 0;
 	int is_whitespace = 1;
 	int test;
@@ -673,7 +673,7 @@ char* trim_flanking_whitespace(char* str)
 		str_index = is_whitespace == 1 ? str_index-1 : str_index;
 	}
 	new_length = str[new_start] == '\0' ? 0 : str_index + 1 - new_start;
-
+	
 
 	if(new_start > 0)
 	{
@@ -711,7 +711,7 @@ unsigned char* read_entire_file(FILE* in, unsigned long read_block_size, unsigne
 		{
 			unsigned char *new_str;
 			max_read_size = max_read_size + read_block_size;
-			new_str = (unsigned char*)malloc(max_read_size+1);
+		       	new_str = (unsigned char*)malloc(max_read_size+1);
 			memcpy(new_str, read_string, bytes_read);
 			free(read_string);
 			read_string = new_str;
@@ -720,3 +720,4 @@ unsigned char* read_entire_file(FILE* in, unsigned long read_block_size, unsigne
 	*length = bytes_read;
 	return read_string;
 }
+
