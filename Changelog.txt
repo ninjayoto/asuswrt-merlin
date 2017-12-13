@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29E3j9527  (13-December-2017) ARM SDK, MIPS,ARM KRACK
+- CHANGED: ARM: update emf to 380.68
+- CHANGED: MIPS: update emf to 380.68
+- CHANGED: ARM: update Beceem to 380.68
+- CHANGED: MIPS: update Beceem to 380.68
+
+
 374.43_29E2j9527  (9-December-2017) ARM SDK, MIPS,ARM KRACK
 * FIXED: mdns: fix avahi-daemon config directory location
 
