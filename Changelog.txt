@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29D4j9527  (13-December-2017) ARM SDK, MIPS,ARM KRACK
+- CHANGED: ARM: update iptables-1.4.x to 380.68
+- CHANGED: ARM: update ctf to 380.68, enable pptp and l2tp ctf
+* CHANGED: ARM: revert bad netfilter commits
+- CHANGED: ARM: update kernel with 380.68 (excludes nf_nat_core.c update)
+- CHANGED: MIPS: update iptables to 380.68
+- CHANGED: MIPS: enable pptp and l2tp ctf
+- CHANGED: MIPS: update kernel with 380.68 (excludes nf_nat_core.c update)
+
+
 374.43_29E3j9527  (13-December-2017) ARM SDK, MIPS,ARM KRACK
 - CHANGED: ARM: update emf to 380.68
 - CHANGED: MIPS: update emf to 380.68
