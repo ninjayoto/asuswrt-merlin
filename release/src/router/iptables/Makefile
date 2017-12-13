@@ -132,7 +132,6 @@ LDLIBS       += -lselinux
 endif
 endif
 
-STATIC6_LIBS += libiptc/libip6tc.a
 LDLIBS       += -L. -liptc
 
 .PHONY: default
