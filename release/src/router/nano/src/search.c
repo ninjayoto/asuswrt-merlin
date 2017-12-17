@@ -234,8 +234,10 @@ int findnextstr(const char *needle, bool whole_word_only, bool have_region,
     size_t found_x;
 	/* The x coordinate of a found occurrence. */
     time_t lastkbcheck = time(NULL);
+	/* The time we last looked at the keyboard. */
 
-    enable_nodelay();
+    /* Set non-blocking input so that we can just peek for a Cancel. */
+    disable_waiting();
 
     if (begin == NULL)
 	came_full_circle = FALSE;
@@ -252,7 +254,7 @@ int findnextstr(const char *needle, bool whole_word_only, bool have_region,
 	    while (input) {
 		if (func_from_key(&input) == do_cancel) {
 		    statusbar(_("Cancelled"));
-		    disable_nodelay();
+		    enable_waiting();
 		    return -2;
 		}
 		input = parse_kbinput(NULL);
@@ -303,7 +305,7 @@ int findnextstr(const char *needle, bool whole_word_only, bool have_region,
 	/* If we're back at the beginning, then there is no needle. */
 	if (came_full_circle) {
 	    not_found_msg(needle);
-	    disable_nodelay();
+	    enable_waiting();
 	    return 0;
 	}
 
@@ -317,7 +319,7 @@ int findnextstr(const char *needle, bool whole_word_only, bool have_region,
 	 * but stop when spell-checking or replacing in a region. */
 	if (line == NULL) {
 	    if (whole_word_only || have_region) {
-		disable_nodelay();
+		enable_waiting();
 		return 0;
 	    }
 
@@ -343,15 +345,14 @@ int findnextstr(const char *needle, bool whole_word_only, bool have_region,
 
     found_x = found - line->data;
 
+    enable_waiting();
+
     /* Ensure that the found occurrence is not beyond the starting x. */
     if (came_full_circle && ((!ISSET(BACKWARDS_SEARCH) && found_x > begin_x) ||
 			(ISSET(BACKWARDS_SEARCH) && found_x < begin_x))) {
 	not_found_msg(needle);
-	disable_nodelay();
 	return 0;
     }
-
-    disable_nodelay();
 
     /* Set the current position to point at what we found. */
     openfile->current = line;
@@ -361,8 +362,11 @@ int findnextstr(const char *needle, bool whole_word_only, bool have_region,
     if (match_len != NULL)
 	*match_len = found_len;
 
-    if (feedback > 0)
+    /* Wipe the "Searching..." message and unset the suppression flag. */
+    if (feedback > 0) {
 	blank_statusbar();
+	suppress_cursorpos = FALSE;
+    }
 
     return 1;
 }
@@ -610,10 +614,9 @@ ssize_t do_replace_loop(const char *needle, bool whole_word_only,
 	    numreplaced = 0;
 
 	if (!replaceall) {
-	    size_t xpt = xplustabs();
-	    char *exp_word = display_string(openfile->current->data,
-			xpt, strnlenpt(openfile->current->data,
-			openfile->current_x + match_len) - xpt, FALSE);
+	    size_t from_col = xplustabs();
+	    size_t to_col = strnlenpt(openfile->current->data,
+					openfile->current_x + match_len);
 
 	    /* Refresh the edit window, scrolling it if necessary. */
 	    edit_refresh();
@@ -621,14 +624,12 @@ ssize_t do_replace_loop(const char *needle, bool whole_word_only,
 	    /* Don't show cursor, to not distract from highlighted match. */
 	    curs_set(0);
 
-	    spotlight(TRUE, exp_word);
+	    spotlight(TRUE, from_col, to_col);
 
 	    /* TRANSLATORS: This is a prompt. */
 	    i = do_yesno_prompt(TRUE, _("Replace this instance?"));
 
-	    spotlight(FALSE, exp_word);
-
-	    free(exp_word);
+	    spotlight(FALSE, from_col, to_col);
 
 	    if (i == -1)  /* The replacing was cancelled. */
 		break;
@@ -855,10 +856,10 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer,
 	    return;
 	}
     } else {
-	if (line < 1)
+	if (line == 0)
 	    line = openfile->current->lineno;
 
-	if (column < 1)
+	if (column == 0)
 	    column = openfile->placewewant + 1;
     }
 
@@ -899,7 +900,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer,
 #ifndef NANO_TINY
 	if (ISSET(SOFTWRAP)) {
 	    filestruct *line = openfile->current;
-	    size_t leftedge = (xplustabs() / editwincols) * editwincols;
+	    size_t leftedge = leftedge_for(xplustabs(), openfile->current);
 
 	    rows_from_tail = (editwinrows / 2) -
 			go_forward_chunks(editwinrows / 2, &line, &leftedge);
@@ -911,7 +912,7 @@ void do_gotolinecolumn(ssize_t line, ssize_t column, bool use_answer,
 	/* If the target line is close to the tail of the file, put the last
 	 * line or chunk on the bottom line of the screen; otherwise, just
 	 * center the target line. */
-	if (rows_from_tail < editwinrows / 2) {
+	if (rows_from_tail < editwinrows / 2 && ISSET(SMOOTH_SCROLL)) {
 	    openfile->current_y = editwinrows - 1 - rows_from_tail;
 	    adjust_viewport(STATIONARY);
 	} else
