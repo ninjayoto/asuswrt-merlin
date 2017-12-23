@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29E5j9527  (22-December-2017) ARM SDK, MIPS,ARM KRACK
+- CHANGED: nano: update to 2.8.6
+- CHANGED: curl: update to 7.54.1
+- CHANGED: update wireless driver for ac56u (KRACK fix)
+- CHANGED: ARM: update nas to GPL 18991
+- CHANGED: kernel: updates for latest ARM router build
+
+
 374.43_29D4j9527  (13-December-2017) ARM SDK, MIPS,ARM KRACK
 - CHANGED: ARM: update iptables-1.4.x to 380.68
 - CHANGED: ARM: update ctf to 380.68, enable pptp and l2tp ctf
