@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29E6j9527  (24-December-2017) ARM SDK, MIPS,ARM KRACK
+* CHANGED: system: add option to adjust tcp/udp buffers and thresholds
+* CHANGED: samba36: remove IPTOS_LOWDELAY from ARM socket options (revert 2d73cb8)
+
+
 374.43_29E5j9527  (22-December-2017) ARM SDK, MIPS,ARM KRACK
 - CHANGED: nano: update to 2.8.6
 - CHANGED: curl: update to 7.54.1
