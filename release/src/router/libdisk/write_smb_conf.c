@@ -309,18 +309,16 @@ int main(int argc, char *argv[])
 
         /* remove socket options due to NIC compatible issue */
 	if(!nvram_get_int("stop_samba_speedup")){
-#if defined(RTCONFIG_SAMBA36X) || defined(RTCONFIG_SAMBA_MODERN)
 #if defined(RTCONFIG_BCMARM)
-		fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=131072 SO_SNDBUF=131072\n");
-#else
-		fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=65536 SO_SNDBUF=65536\n");
-#endif
-#elif defined(RTCONFIG_BCMARM)
 #ifdef RTCONFIG_BCM_7114
 		fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=131072 SO_SNDBUF=131072\n");
+#else
+		fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=131072 SO_SNDBUF=131072\n");
 #endif
 #else
+#if defined(RTCONFIG_SAMBA36X) || defined(RTCONFIG_SAMBA_MODERN)
 		fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=65536 SO_SNDBUF=65536\n");
+#endif
 #endif
 	}
 	fprintf(fp, "obey pam restrictions = no\n");
