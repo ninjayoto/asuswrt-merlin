@@ -5907,7 +5907,7 @@ check_ddr_done:
 	{
 		setup_conntrack();
 		setup_udp_timeout(TRUE);
-//            start_firewall(wan_primary_ifunit(), 0);
+		start_firewall(wan_primary_ifunit(), 0);
 	}
 #ifdef RTCONFIG_USB
 #ifdef LINUX26

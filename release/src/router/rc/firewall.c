@@ -4880,76 +4880,152 @@ int start_firewall(int wanunit, int lanunit)
 	enable_ip_forward();
 
 	/* Tweak NAT performance... */
-/*
-	if ((fp=fopen("/proc/sys/net/core/netdev_max_backlog", "w+")))
-	{
-		fputs("2048", fp);
-		fclose(fp);
-	}
-	if ((fp=fopen("/proc/sys/net/core/somaxconn", "w+")))
-	{
-		fputs("1024", fp);
-		fclose(fp);
+	if (nvram_get_int("fw_nat_tuning") > 0){
+		if ((fp=fopen("/proc/sys/net/core/netdev_max_backlog", "w+")))
+			{
+				fputs("2048", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/somaxconn", "w+")))
+			{
+				fputs("1024", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_syncookies", "w+")))
+			{
+				fputs("1", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_synack_retries", "w+")))
+			{
+				fputs("3", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/neigh/default/gc_thresh1", "w+")))
+			{
+				fputs("1024", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/neigh/default/gc_thresh2", "w+")))
+			{
+				fputs("2048", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/neigh/default/gc_thresh3", "w+")))
+			{
+				fputs("4096", fp);
+				fclose(fp);
+			}
 	}
 
-	if ((fp=fopen("/proc/sys/net/ipv4/tcp_max_syn_backlog", "w+")))
-	{
-		fputs("1024", fp);
-		fclose(fp);
-	}
-	if ((fp=fopen("/proc/sys/net/core/rmem_default", "w+")))
-	{
-		fputs("262144", fp);
-		fclose(fp);
+	/* Moderate buffers */
+	if (nvram_get_int("nat_tuning") == 1){
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_max_syn_backlog", "w+")))
+			{
+				fputs("1024", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/rmem_default", "w+")))
+			{
+				fputs("262144", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/rmem_max", "w+")))
+			{
+				fputs("262144", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/wmem_default", "w+")))
+			{
+				fputs("262144", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/wmem_max", "w+")))
+			{
+				fputs("262144", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_rmem", "w+")))
+			{
+				fputs("4096 131072 262144", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_wmem", "w+")))
+			{
+				fputs("4096 131072 262144", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/udp_mem", "w+")))
+			{
+				fputs("32768 131072 262144", fp);
+				fclose(fp);
+			}
 	}
 
-	if ((fp=fopen("/proc/sys/net/core/rmem_max", "w+")))
-	{
-		fputs("262144", fp);
-		fclose(fp);
+	/* Maximum buffers */
+	if(nvram_get_int("fw_nat_tuning") == 2){
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_max_syn_backlog", "w+")))
+			{
+				fputs("2048", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/rmem_default", "w+")))
+			{
+				fputs("1040384", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/rmem_max", "w+")))
+			{
+				fputs("1040384", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/wmem_default", "w+")))
+			{
+				fputs("1040384", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/core/wmem_max", "w+")))
+			{
+				fputs("1040384", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_rmem", "w+")))
+			{
+				fputs("8192 131072 992000", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/tcp_wmem", "w+")))
+			{
+				fputs("8192 131072 992000", fp);
+				fclose(fp);
+			}
+
+		if ((fp=fopen("/proc/sys/net/ipv4/udp_mem", "w+")))
+			{
+				fputs("122880 520192 992000", fp);
+				fclose(fp);
+			}
 	}
 
-	if ((fp=fopen("/proc/sys/net/core/wmem_default", "w+")))
-	{
-		fputs("262144", fp);
-		fclose(fp);
-	}
-
-	if ((fp=fopen("/proc/sys/net/core/wmem_max", "w+")))
-	{
-		fputs("262144", fp);
-		fclose(fp);
-	}
-	if ((fp=fopen("/proc/sys/net/ipv4/tcp_rmem", "w+")))
-	{
-		fputs("8192 131072 262144", fp);
-		fclose(fp);
-	}
-
-	if ((fp=fopen("/proc/sys/net/ipv4/tcp_wmem", "w+")))
-	{
-		fputs("8192 131072 262144", fp);
-		fclose(fp);
-	}
-
-	if ((fp=fopen("/proc/sys/net/ipv4/neigh/default/gc_thresh1", "w+")))
-	{
-		fputs("1024", fp);
-		fclose(fp);
-	}
-
-	if ((fp=fopen("/proc/sys/net/ipv4/neigh/default/gc_thresh2", "w+")))
-	{
-		fputs("2048", fp);
-		fclose(fp);
-	}
-
-	if ((fp=fopen("/proc/sys/net/ipv4/neigh/default/gc_thresh3", "w+")))
-	{
-		fputs("4096", fp);
-		fclose(fp);
-	}
-*/
 	if ((fp=fopen("/proc/sys/net/ipv4/tcp_fin_timeout", "w+")))
 	{
 		fputs("40", fp);

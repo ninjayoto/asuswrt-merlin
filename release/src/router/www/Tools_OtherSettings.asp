@@ -923,6 +923,17 @@ function done_validating(action){
 								<span>Default: 30</span>
 							</td>
 						</tr>
+						<tr>
+							<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,12);">TCP/UDP Buffers</a></th>
+							<td>
+								<select name="fw_nat_tuning" class="input_option">
+										<option value="0" <% nvram_match("fw_nat_tuning", "0","selected"); %>>Small</option>
+										<option value="1" <% nvram_match("fw_nat_tuning", "1","selected"); %>>Medium</option>
+										<option value="2" <% nvram_match("fw_nat_tuning", "2","selected"); %>>Large</option>
+								</select>
+								<span>Default: Small</span>
+							</td>
+						</tr>
 					</table>
 					<div class="apply_gen">
 						<input name="button" type="button" class="button_gen" onclick="validate();" value="<#CTL_apply#>"/>
