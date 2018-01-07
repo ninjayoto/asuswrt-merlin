@@ -11,7 +11,7 @@ else
 	RESOLVERS_FILE="${RESOLVERS_PATH}/dnscrypt-resolvers.csv"
 	RESOLVERS_FILE_TMP="${RESOLVERS_FILE}.tmp"
 
-	RESOLVERS_URL="https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv"
+	RESOLVERS_URL="https://raw.githubusercontent.com/dyne/dnscrypt-proxy/master/dnscrypt-resolvers.csv"
 	RESOLVERS_SIG_URL="${RESOLVERS_URL}.minisig"
 	RESOLVERS_SIG_PUBKEY="RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3"
 
@@ -24,7 +24,7 @@ else
 	  /usr/sbin/minisign -V -P "$RESOLVERS_SIG_PUBKEY" -m "$RESOLVERS_FILE_TMP" || (echo "Signature verification failed" && exit 1)
 	  mv -f "${RESOLVERS_FILE_TMP}.minisig" "${RESOLVERS_FILE}.minisig"
 	fi
-	mv -f "$RESOLVERS_FILE_TMP" "$RESOLVERS_FILE"
+	mv -f "$RESOLVERS_FILE_TMP" "$RESOLVERS_FILE" > /dev/null 2>&1
 fi
 
 nvram set dnscrypt_csv="$RESOLVERS_FILE"
