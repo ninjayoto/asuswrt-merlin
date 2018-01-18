@@ -4,6 +4,19 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29E8j9527  (18-January-2018) ARM SDK, MIPS,ARM KRACK
+* FIXED: iptables: fix save formatting for libipt_webstr
+* FIXED: iptables: fix save formatting for libipt_account
+* FIXED: iptables: fix match for ipt_account; add additional compile debug
+
+
+374.43_29E7j9527  (7-January-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: libvorbis: update to 1.3.5
+- CHANGED: libogg: update to 1.3.3
+- CHANGED: dnscrypt: update default resolvers to 20180107
+- CHANGED: dnscrypt: update resolvers update script
+
+
 374.43_29E6j9527  (24-December-2017) ARM SDK, MIPS,ARM KRACK
 * CHANGED: system: add option to adjust tcp/udp buffers and thresholds
 * CHANGED: samba36: remove IPTOS_LOWDELAY from ARM socket options (revert 2d73cb8)
