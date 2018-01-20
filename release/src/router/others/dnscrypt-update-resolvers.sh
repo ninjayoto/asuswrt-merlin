@@ -11,7 +11,7 @@ else
 	RESOLVERS_FILE="${RESOLVERS_PATH}/dnscrypt-resolvers.csv"
 	RESOLVERS_FILE_TMP="${RESOLVERS_FILE}.tmp"
 
-	RESOLVERS_URL="https://raw.githubusercontent.com/dyne/dnscrypt-proxy/master/dnscrypt-resolvers.csv"
+	RESOLVERS_URL="https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v1/dnscrypt-resolvers.csv"
 	RESOLVERS_SIG_URL="${RESOLVERS_URL}.minisig"
 	RESOLVERS_SIG_PUBKEY="RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3"
 
