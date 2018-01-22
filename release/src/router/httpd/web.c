@@ -2268,11 +2268,11 @@ static int ej_update_variables(int eid, webs_t wp, int argc, char_t **argv) {
 			}
 #endif
 			if (strlen(action_script) > 0) {
-				memset(notify_cmd, 0, 32);
+				memset(notify_cmd, 0, sizeof(notify_cmd));
 				if(strstr(action_script, "_wan_if"))
-					sprintf(notify_cmd, "%s %s", action_script, wan_unit);
+					snprintf(notify_cmd, sizeof(notify_cmd), "%s %s", action_script, wan_unit);
 				else
-					strlcpy(notify_cmd, action_script, 128);
+					strlcpy(notify_cmd, action_script, sizeof(notify_cmd));
 
 				if(strcmp(action_script, "saveNvram"))
 					notify_rc(notify_cmd);
