@@ -1159,11 +1159,8 @@ handle_request(void)
 						if (nvram_get_int("debug_httpd") & 1)
 							_dprintf("referer_result(check): %i, referer: %s fromapp: %i\n", referer_result, referer, fromapp);
 						if(referer_result != 0){
-							if(strcasecmp(method, "post") == 0){
-								if (handler->input) {
-									handler->input(file, conn_fp, cl, boundary);
-								}
-							}
+							if(strcasecmp(method, "post") == 0 && handler->input)   //response post request
+								while (cl--) (void)fgetc(conn_fp);
 							if(!fromapp) {
 								http_logout(login_ip_tmp);
 							}
@@ -1175,11 +1172,8 @@ handle_request(void)
 					{
 						if (nvram_get_int("debug_httpd") & 1)
 							_dprintf("referer_result(auth): realm: %s url: %s\n", auth_realm, url);
-						if(strcasecmp(method, "post") == 0){
-							if (handler->input) {
-								handler->input(file, conn_fp, cl, boundary);
-							}
-						}
+						if(strcasecmp(method, "post") == 0 && handler->input)   //response post request
+								while (cl--) (void)fgetc(conn_fp);
 						if(!fromapp) {
 							http_logout(login_ip_tmp);
 						}
@@ -1201,11 +1195,8 @@ handle_request(void)
 					if (nvram_get_int("debug_httpd") & 1)
 						_dprintf("referer_result(noauth): %i, referer: %s fromapp: %i\n", referer_result, referer, fromapp);
 					if(referer_result != 0){
-						if(strcasecmp(method, "post") == 0){
-							if (handler->input) {
-								handler->input(file, conn_fp, cl, boundary);
-							}
-						}
+						if(strcasecmp(method, "post") == 0 && handler->input)   //response post request
+								while (cl--) (void)fgetc(conn_fp);
 						if(!fromapp) {
 							http_logout(login_ip_tmp);
 						}
