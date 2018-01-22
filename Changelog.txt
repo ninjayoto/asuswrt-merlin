@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_29D9j9527  (20-January-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: ARM: update ctf to 384_10007
+- CHANGED: ARM: conntrack changes from 384_10007
+* CHANGED: dnscrypt: update url for resolver update
+* FIXED: dnsmasq: (upstream) Fix infinite retries in strict-order mode
+
+
 374.43_29E8j9527  (18-January-2018) ARM SDK, MIPS,ARM KRACK
 * FIXED: iptables: fix save formatting for libipt_webstr
 * FIXED: iptables: fix save formatting for libipt_account
