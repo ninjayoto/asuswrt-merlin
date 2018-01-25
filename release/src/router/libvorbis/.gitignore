@@ -33,4 +33,3 @@ vorbisfile-uninstalled.pc
 vorbisfile.pc
 vq/Makefile
 autom4te.cache
-aclocal.m4

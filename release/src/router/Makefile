@@ -2500,12 +2500,12 @@ libvorbis/stamp-h1: libogg
 	cd libvorbis && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -fPIC -ffunction-sections -fdata-sections" \
 	CPPFLAGS="-I$(TOP)/libogg/include" \
-	LDFLAGS="-L$(TOP)/libogg/src/.libs -fPIC -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	LDFLAGS="-L$(TOP)/libogg/src/.libs -fPIC -ffunction-sections -fdata-sections -Wl,--gc-sections -ldl" \
 	$(CONFIGURE) --enable-shared --enable-static --prefix='' --disable-oggtest \
 		--with-ogg-includes="$(TOP)/libogg/include" \
 		--with-ogg-libraries="$(TOP)/libogg/src/.libs"
 	touch $@
-	#touch libvorbis/aclocal.m4
+	touch libvorbis/aclocal.m4
 
 libvorbis: libvorbis/stamp-h1
 	@$(MAKE) -C libvorbis/lib all $(PARALLEL_BUILD)
@@ -2514,7 +2514,7 @@ libvorbis-clean:
 	-@$(MAKE) -C libvorbis clean
 	@rm -f libvorbis/stamp-h1
 
-libvorbis-install: libvorbis
+libvorbis-install:
 	@$(SEP)
 ifneq ($(MEDIA_SERVER_STATIC),y)
 	install -D libvorbis/lib/.libs/libvorbis.so.0 $(INSTALLDIR)/libvorbis/usr/lib/libvorbis.so.0
