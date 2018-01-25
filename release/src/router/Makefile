@@ -2362,7 +2362,7 @@ ifneq ($(MEDIA_SERVER_STATIC),y)
 endif
 
 libogg/stamp-h1:
-	cd libogg && \
+	cd libogg && autoreconf -fi && \
 	CFLAGS="-Os $(EXTRACFLAGS) -fPIC -ffunction-sections -fdata-sections" \
 	LDFLAGS="-fPIC -ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	$(CONFIGURE) --enable-shared --enable-static --prefix=''
@@ -2375,7 +2375,7 @@ libogg-clean:
 	-@$(MAKE) -C libogg clean
 	@rm -f libogg/stamp-h1
 
-libogg-install: libogg
+libogg-install:
 	@$(SEP)
 ifneq ($(MEDIA_SERVER_STATIC),y)
 	install -D libogg/src/.libs/libogg.so.0 $(INSTALLDIR)/libogg/usr/lib/libogg.so.0
