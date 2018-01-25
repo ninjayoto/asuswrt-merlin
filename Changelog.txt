@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_30E1j9527  (25-January-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: openvpn: openvpn: (backport) disable rp_filter in the vpn firewall script instead of the vpnrouting script
+- FIXED: httpd: backport handle_request() security fixes from 384_10007
+* FIXED: httpd: fix CVE-2018-5721 potential buffer overflow in ej_update_variables
+* FIXED: helper: don't escape regular parentheses in user strings
+
+
 374.43_29D9j9527  (20-January-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: ARM: update ctf to 384_10007
 - CHANGED: ARM: conntrack changes from 384_10007
