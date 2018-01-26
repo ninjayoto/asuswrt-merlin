@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_30E2j9527  (26-January-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: admin: only allow https access from WAN
+* FIXED: iptables: fix match for ipt_account MIPS
+
+
 374.43_30E1j9527  (25-January-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: openvpn: openvpn: (backport) disable rp_filter in the vpn firewall script instead of the vpnrouting script
 - FIXED: httpd: backport handle_request() security fixes from 384_10007
