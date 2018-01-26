@@ -147,7 +147,7 @@ function initial(){
 			document.getElementById('btn_ez_radiotoggle_tr').style.display = "";
 	}	
 	
-	if(sw_mode != 1){
+	if(sw_mode != 1 || http_option == 0){
 		$('misc_http_x_tr').style.display ="none";
 		hideport(0);
 		document.form.misc_http_x.disabled = true;
@@ -243,6 +243,7 @@ function applyRule(){
 		}		
 		if(document.form.misc_http_x[0].checked == true 
 				&& document.form.http_enable[0].selected == true){
+				document.form.misc_httpport_x.disabled = true;
 				document.form.misc_httpsport_x.disabled = true;
 		}	
 		if(document.form.misc_http_x[0].checked == true 
@@ -824,7 +825,9 @@ function hide_https_lanport(_value){
 }
 
 function hide_https_wanport(_value){
-	$("http_port").style.display = (_value == "1") ? "none" : "";
+	
+	$("misc_http_x_tr").style.display = (_value == "0") ? "none" : "";
+	$("http_port").style.display = "none";
 	$("https_port").style.display = (_value == "0") ? "none" : "";
 	$("https_cert").style.display = (_value == "0") ? "none" : "";
 }

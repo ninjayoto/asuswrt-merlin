@@ -1198,6 +1198,7 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 	// need multiple instance for tis?
 	if (nvram_match("misc_http_x", "1"))
 	{
+/*
 		if (nvram_match("http_enable", "0") || nvram_match("http_enable", "2"))
 		{
 			if ((wan_port = nvram_get_int("misc_httpport_x")) == 0)
@@ -1205,6 +1206,7 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 			fprintf(fp, "-A VSERVER -p tcp -m tcp --dport %d -j DNAT --to-destination %s:%s\n",
 				wan_port, lan_ip, nvram_safe_get("lan_port"));
 		}
+*/
 #ifdef RTCONFIG_HTTPS
 		if (nvram_match("http_enable", "1") || nvram_match("http_enable", "2"))
 		{
@@ -1470,6 +1472,7 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 	// need multiple instance for tis?
 	if (nvram_match("misc_http_x", "1"))
 	{
+/*
 		if (nvram_match("http_enable", "0") || nvram_match("http_enable", "2"))
 		{
 			if ((wan_port = nvram_get_int("misc_httpport_x")) == 0)
@@ -1477,6 +1480,7 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 			fprintf(fp, "-A VSERVER -p tcp -m tcp --dport %d -j DNAT --to-destination %s:%s\n",
 				wan_port, lan_ip, nvram_safe_get("lan_port"));
 		}
+*/
 #ifdef RTCONFIG_HTTPS
 		if (nvram_match("http_enable", "1") || nvram_match("http_enable", "2"))
 		{
@@ -2427,7 +2431,7 @@ TRACE_PT("writing Parental Control\n");
 		// Firewall between WAN and Local
 		if (nvram_match("misc_http_x", "1"))
 		{
-			fprintf(fp, "-A INPUT -p tcp -m tcp -d %s --dport %s -j %s\n", lan_ip, nvram_safe_get("lan_port"), logaccept);
+			//fprintf(fp, "-A INPUT -p tcp -m tcp -d %s --dport %s -j %s\n", lan_ip, nvram_safe_get("lan_port"), logaccept);
 #ifdef RTCONFIG_HTTPS
 			fprintf(fp, "-A INPUT -p tcp -m tcp -d %s --dport %s -j %s\n", lan_ip, nvram_safe_get("https_lanport"), logaccept);
 #endif		
@@ -3434,7 +3438,7 @@ TRACE_PT("writing Parental Control\n");
 		// Firewall between WAN and Local
 		if (nvram_match("misc_http_x", "1"))
 		{
-			fprintf(fp, "-A INPUT -p tcp -m tcp -d %s --dport %s -j %s\n", lan_ip, nvram_safe_get("lan_port"), logaccept);
+			//fprintf(fp, "-A INPUT -p tcp -m tcp -d %s --dport %s -j %s\n", lan_ip, nvram_safe_get("lan_port"), logaccept);
 #ifdef RTCONFIG_HTTPS
 			fprintf(fp, "-A INPUT -p tcp -m tcp -d %s --dport %s -j %s\n", lan_ip, nvram_safe_get("https_lanport"), logaccept);
 #endif
