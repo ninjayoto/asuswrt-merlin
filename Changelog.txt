@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_30E3j9527  (7-February-2018) ARM SDK, MIPS,ARM KRACK
+* FIXED: others: always force symlink for alternate https cert directory
+
+
 374.43_30E2j9527  (26-January-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: admin: only allow https access from WAN
 * FIXED: iptables: fix match for ipt_account MIPS
