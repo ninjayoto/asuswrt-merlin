@@ -828,8 +828,7 @@ function del_Row(r){
 
 	clientlist_array = clientlist_value;
 	activelist_array = activelist_value;
-	if(clientlist_array == "")
-		showclientlist();
+	showclientlist();
 }
 
 function showLANIPList(){
