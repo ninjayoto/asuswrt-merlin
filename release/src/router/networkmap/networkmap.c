@@ -316,43 +316,43 @@ int main(int argc, char *argv[])
                             arp_ptr->source_hwaddr[0],arp_ptr->source_hwaddr[1],
                             arp_ptr->source_hwaddr[2],arp_ptr->source_hwaddr[3],
                             arp_ptr->source_hwaddr[4],arp_ptr->source_hwaddr[5],
-			    scan_count, msg_type);
+                            scan_count, msg_type);
 
                             for(i=0; i<p_client_detail_info_tab->ip_mac_num; i++) {
-				ip_dup = memcmp(p_client_detail_info_tab->ip_addr[i], arp_ptr->source_ipaddr, 4);
-                                mac_dup = memcmp(p_client_detail_info_tab->mac_addr[i], arp_ptr->source_hwaddr, 6);
+								ip_dup = memcmp(p_client_detail_info_tab->ip_addr[i], arp_ptr->source_ipaddr, 4);
+								mac_dup = memcmp(p_client_detail_info_tab->mac_addr[i], arp_ptr->source_hwaddr, 6);
 
-				if((ip_dup == 0) && (mac_dup == 0))
-					break;
-				else if((ip_dup != 0) && (mac_dup != 0))
-					continue;
+								if((ip_dup == 0) && (mac_dup == 0))
+									break;
+								else if((ip_dup != 0) && (mac_dup != 0))
+									continue;
 
-				else if( (scan_count>=255) && ((ip_dup != 0) && (mac_dup == 0)) ) { 
-					NMP_DEBUG("IP changed, update immediately\n");
-					NMP_DEBUG("*CMP %d.%d.%d.%d-%02X:%02X:%02X:%02X:%02X:%02X\n",
+								else if( (scan_count>=255) && ((ip_dup != 0) && (mac_dup == 0)) ) { 
+									NMP_DEBUG("IP changed, update immediately\n");
+									NMP_DEBUG("*CMP %d.%d.%d.%d-%02X:%02X:%02X:%02X:%02X:%02X\n",
                                     	p_client_detail_info_tab->ip_addr[i][0],p_client_detail_info_tab->ip_addr[i][1],
                                     	p_client_detail_info_tab->ip_addr[i][2],p_client_detail_info_tab->ip_addr[i][3],
                                     	p_client_detail_info_tab->mac_addr[i][0],p_client_detail_info_tab->mac_addr[i][1],
                                     	p_client_detail_info_tab->mac_addr[i][2],p_client_detail_info_tab->mac_addr[i][3],
                                     	p_client_detail_info_tab->mac_addr[i][4],p_client_detail_info_tab->mac_addr[i][5]);
 
-					lock = file_lock("networkmap");
+									lock = file_lock("networkmap");
 	                                memcpy(p_client_detail_info_tab->ip_addr[i],
         	                                arp_ptr->source_ipaddr, 4);
                 	                memcpy(p_client_detail_info_tab->mac_addr[i],
                         	                arp_ptr->source_hwaddr, 6);
-					file_unlock(lock);
-					/*
-					real_num = p_client_detail_info_tab->detail_info_num;
-					p_client_detail_info_tab->detail_info_num = i;
-					FindAllApp(my_ipaddr, p_client_detail_info_tab);
-					FindHostname(p_client_detail_info_tab);
-					p_client_detail_info_tab->detail_info_num = real_num;
-					*/
-					break;
-				}
+									file_unlock(lock);
+									/*
+									real_num = p_client_detail_info_tab->detail_info_num;
+									p_client_detail_info_tab->detail_info_num = i;
+									FindAllApp(my_ipaddr, p_client_detail_info_tab);
+									FindHostname(p_client_detail_info_tab);
+									p_client_detail_info_tab->detail_info_num = real_num;
+									*/
+									break;
+								}
 
-                            }
+							}
 			    //NMP_DEBUG("Out check!\n");
 			    //i=0, table is empty.
 			    //i=num, no the same ip at table.

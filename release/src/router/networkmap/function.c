@@ -1914,7 +1914,7 @@ int FindHostname(P_CLIENT_DETAIL_INFO_TABLE p_client_detail_info_tab)
 // Get names from static lease list, overruling anything else
 	nv = nvp = strdup(nvram_safe_get("dhcp_staticlist"));
 
-	 if (nv) {
+	if (nv) {
 		while ((b = strsep(&nvp, "<")) != NULL) {
 			if ((vstrsep(b, ">", &mac, &ip, &name) == 3) && (strlen(ip) > 0) && (strlen(name) > 0)) {
 				if (!strcmp(ipaddr, ip))
