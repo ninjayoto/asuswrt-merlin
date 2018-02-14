@@ -1259,13 +1259,17 @@ function addOnlineHelp(obj, keywordArray){
 	
 
 	if(obj){
-		obj.href = "http://support.asus.com/search.aspx?SLanguage=";
-		obj.href += faqLang.<% nvram_get("preferred_lang"); %>;
-		obj.href += "&keyword=";
+		obj.href = "https://www.asus.com/search/results.aspx?SearchKey=";
+		//obj.href += faqLang.<% nvram_get("preferred_lang"); %>;
+		//obj.href += "&keyword=";
 		for(var i=0; i<keywordArray.length; i++){
 			obj.href += keywordArray[i];
-			obj.href += "%20";
+			if(i != keywordArray.length-1)
+				obj.href += "%20";
 		}
+		obj.href += "&SLanguage=";
+		obj.href += faqLang.<% nvram_get("preferred_lang"); %>;
+		obj.href += "&SearchType=FAQ&IsSupport=True&TopicFilter=&CateFilter=&Sort=2";
 	}
 }
 
@@ -1371,7 +1375,7 @@ function show_footer(){
 	footer_code = '<div align="center" class="bottom-image"></div>\n';
 	footer_code +='<div align="center" class="copyright"><#footer_copyright_desc#></div><br>';
 
-	// FAQ searching bar{
+	// A searching bar{
 	footer_code += '<div style="margin-top:-75px;margin-left:205px;"><table width="765px" border="0" align="center" cellpadding="0" cellspacing="0"><tr>';
 	footer_code += '<td width="20" align="right"><div id="bottom_help_icon" style="margin-right:3px;"></div></td><td width="100" id="bottom_help_title" align="left">Help & Support</td>';
 
@@ -1388,9 +1392,9 @@ function show_footer(){
 				footer_code += '<td width="200" id="bottom_help_link" align="left">&nbsp&nbsp<a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="<#bottom_Link#>" target="_blank">Manual</a> | <a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="<#bottom_Link#>" target="_blank">Utility</a>';
 		}
 	}
-	else	if(productid == "RT-N66U"){	//MODELDEP : RT-N66U
-		footer_code += '<td width="200" id="bottom_help_link" align="left">&nbsp&nbsp<a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="http://support.asus.com/download.aspx?SLanguage=en&m=RT-N66U%20(VER.B1)" target="_blank">Manual</a> | <a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="http://support.asus.com/download.aspx?SLanguage=en&m=RT-N66U%20(VER.B1)" target="_blank">Utility</a>';
-	}
+//	else	if(productid == "RT-N66U"){	//MODELDEP : RT-N66U
+//		footer_code += '<td width="200" id="bottom_help_link" align="left">&nbsp&nbsp<a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="http://support.asus.com/download.aspx?SLanguage=en&m=RT-N66U%20(VER.B1)" target="_blank">Manual</a> | <a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="http://support.asus.com/download.aspx?SLanguage=en&m=RT-N66U%20(VER.B1)" target="_blank">Utility</a>';
+//	}
 	else if(productid == "DSL-N55U-B"){	//MODELDEP : DSL-N55U-B
 		footer_code += '<td width="200" id="bottom_help_link" align="left">&nbsp&nbsp<a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="http://support.asus.com/download.aspx?SLanguage=en&m=DSL-N55U%20(VER.B1)" target="_blank">Manual</a> | <a style="font-weight: bolder;text-decoration:underline;cursor:pointer;" href="http://support.asus.com/download.aspx?SLanguage=en&m=DSL-N55U%20(VER.B1)" target="_blank">Utility</a>';
 	}
@@ -1437,13 +1441,15 @@ function search_supportsite(obj){
 	
 		var keywordArray = $("FAQ_input").value.split(" ");
 		var faq_href;
-		faq_href = "http://support.asus.com/search.aspx?SLanguage=";
-		faq_href += faqLang.<% nvram_get("preferred_lang"); %>;
-		faq_href += "&keyword=";
+		faq_href = "https://www.asus.com/search/results.aspx?SearchKey=";
 		for(var i=0; i<keywordArray.length; i++){
 			faq_href += keywordArray[i];
-			faq_href += "%20";
+			if(i != keywordArray.length-1)
+				faq_href += "%20";
 		}
+		faq_href += "&SLanguage=";
+		faq_href += faqLang.<% nvram_get("preferred_lang"); %>;
+		faq_href += "&SearchType=FAQ&IsSupport=True&TopicFilter=&CateFilter=&Sort=2";
 		window.open(faq_href);
 }
 
