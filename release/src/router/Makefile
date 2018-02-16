@@ -2367,6 +2367,7 @@ libogg/stamp-h1:
 	LDFLAGS="-fPIC -ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	$(CONFIGURE) --enable-shared --enable-static --prefix=''
 	touch $@
+	touch libogg/aclocal.m4
 
 libogg: libogg/stamp-h1
 	@$(MAKE) -C libogg all
