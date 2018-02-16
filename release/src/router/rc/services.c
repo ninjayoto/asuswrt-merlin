@@ -626,7 +626,12 @@ void start_dnsmasq(int force)
 #ifdef RTCONFIG_IPV6
 		if (ipv6_enabled()) {
 			/* localhost ipv6 */
-			fprintf(fp, "::1 localhost6.localdomain6 localhost6\n");
+			fprintf(fp, "::1 ip6-localhost ip6-loopback\n");
+			/* multicast ipv6 */
+			fprintf(fp, "fe00::0 ip6-localnet\n"
+				    "ff00::0 ip6-mcastprefix\n"
+				    "ff02::1 ip6-allnodes\n"
+				    "ff02::2 ip6-allrouters\n");
 			/* lan6 hostname.domain hostname */
 //			nv = (char*) ipv6_router_address(NULL);
 //			if (*nv && nvram_invmatch("lan_hostname", "")) {
