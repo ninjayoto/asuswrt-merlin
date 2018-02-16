@@ -1,3 +1,437 @@
+Changes between v2.9.2 and v2.9.3:
+----------------------------------
+
+Benno Schulenberg (65):
+      build: fix compilation when configured with --enable(tiny,color,nanorc}
+      build: fix compilation with --enable-tiny --enable-justify
+      build: let ./configure fail (not just warn) when curses.h is missing
+      bump version numbers and add a news item for the 2.9.3 release
+      copyright: update the years for the FSF
+      display: wipe the status bar when doing a total refresh
+      docs: remove the note about needing a recent ncurses for macros to work
+      docs: update the FAQ for the changed default location of history files
+      docs: update the TODO file to the current state of affairs
+      gnulib: update to its current upstream state
+      help: don't get stuck when there is an unwrappable piece of text
+      input: consume only the actual length of an escape sequence
+      input: fully reset state when a three-digit character code is cut short
+      input: make <Shift+Tab> do an unindent also on a Manjaro console
+      input: recognize escape sequences for <Shift+PageUp> and <Shift+PageDown>
+      input: recognize more escape sequences for <Shift+Home> and <Shift+End>
+      input: recognize the deviant keycode for <Ctrl+End> in urxvt
+      options: recognize -M and --trimblanks on the command line
+      painting: look for an end match only after a start match, if any
+      prompt: show whitespace only in the filename, not in the whole line
+      replacing: don't skip the first character of a backwards-marked region
+      search: suppress the occurrence at the cursor only when replacing
+      startup: allow a named pipe as file argument when --noread is used
+      startup: make an error message succinct and to the point
+      startup: move the initialization of colors, so any error gets printed
+      syntax: go: colorize only valid octal numbers
+      syntax: lua: do not color debug.setinfo as it doesn't exist
+      syntax: nanohelp: color also the Sh-Tab key combo
+      tweaks: change a 'do' to a 'while', and return early to elide an 'if'
+      tweaks: check for the type of terminal far earlier
+      tweaks: condense a condition and a comment, and reshuffle a line
+      tweaks: condense and rewrap some comments, and reindent two lines
+      tweaks: condense the conditional compilation of shortcut reassignments
+      tweaks: don't bother freeing the key buffer, just reallocate it
+      tweaks: don't bother to reallocate when the keybuffer size decreases
+      tweaks: drop a superfluous parameter, as it is always 1
+      tweaks: drop a useless assert, and don't abort over an unhandled option
+      tweaks: drop two unneeded initializations, and trim a comment
+      tweaks: elide a tiny intermediate buffer, and rename two variables
+      tweaks: exclude --trimblanks when no wrapping or justifying is configured
+      tweaks: fully include Savefile and Wherewas in the tiny version
+      tweaks: indenting text files with tabs is not a good idea
+      tweaks: mark the two blocks that have a deviant indentation
+      tweaks: move a bunch of comments to the lines that they refer to
+      tweaks: move two functions to their proper place, orderingwise
+      tweaks: remove a fragment of dead code
+      tweaks: remove a handful of redundant (because always true) asserts
+      tweaks: remove a superfluous case -- there can never be four digits
+      tweaks: remove a superfluous check, as we insert always one code
+      tweaks: rename a function, for aptness, and drop a superfluous check
+      tweaks: rename a function, to be more distinct
+      tweaks: rename a variable, and further condense some comments
+      tweaks: rename a variable, for more contrast
+      tweaks: rename a variable, to better fit its usage
+      tweaks: rename two variables, and swap their declaration order
+      tweaks: rename two variables, for preciseness and shortness
+      tweaks: reshuffle a couple of lines
+      tweaks: reshuffle a couple of lines, to make a bit more sense
+      tweaks: reshuffle some stuff, and avoid a memory leak
+      tweaks: reshuffle two condition series, to look better
+      tweaks: rewrap a bunch of lines in the NEWS file
+      tweaks: set a modifier in a single place, for conciseness
+      tweaks: swap the row and col parameters to a more consistent order
+      tweaks: transform a parameter, from a pointer to the value itself
+      wrapping: don't trim a blank character that the user just typed
+
+Brand Huntsman (1):
+      startup: parse interface colors when they are read, not when initialized
+
+
+Changes between v2.9.1 and v2.9.2:
+----------------------------------
+
+Benjamin Mintz (1):
+      syntax: python: add 'async', 'await', and 'nonlocal' as keywords
+
+Benno Schulenberg (62):
+      bump version numbers and add a news item for the 2.9.2 release
+      display: ensure that cursor is visible when compiled with --with-slang
+      docs: mention that the source code is best viewed with a tab size of 4
+      docs: say thanks to some fairly recent translators, and rename one
+      gnulib: pull in the fix for the missing stat include
+      gnulib: update to its current upstream state
+      help: show that "Tab" will indent, just like "Sh-Tab" will unindent
+      help: swap the order of the Complete and Comment functions
+      indenting: don't exclude last line of region when region is empty
+      indenting: keep affecting last line of marked region if it was at first
+      input: allow using <Tab> and <Shift+Tab> to (un)indent selected region
+      input: make <Ctrl+Shift+Arrow> work also when using --rebindkeypad
+      input: optimize a bit for non-shortcut keys, as they are most frequent
+      options: rename 'justifytrim' to 'trimblanks', because it has morphed
+      prompt: blank the bar when a "continue?" is answered with No or ^C
+      syntaxes: remove redundant word-boundary markers
+      syntax: javascript: add some comments, and color explicit numbers too
+      syntax: javascript: add some keywords, and sort them more logically
+      syntax: javascript: color strings differently from major keywords
+      syntax: javascript: require that a comment is preceded by whitespace
+      syntax: lua: condense some regexes, tweak comments, reorder things
+      syntax: nanorc: don't color parts of valid strings as if invalid
+      syntax: python: color also the special values 'False', 'None', 'True'
+      text: allow unindenting when not all lines are indented
+      text: keep cursor at left edge when it IS there when indenting/commenting
+      text: let a Shift-selection persist when indenting and commenting
+      text: let indenting/commenting skip the last line if its x is zero
+      text: set and reset the Modified state correctly when undoing/redoing
+      tweaks: add a separate function that actually wipes the status bar
+      tweaks: avoid incrementing a variable that won't be used again later
+      tweaks: condense or rewrap a bunch of repetitious comments
+      tweaks: condense, reword, and rewrap a bunch of comments
+      tweaks: condense some debugging code, and rewrap a line
+      tweaks: convert the indentation of the NEWS file too
+      tweaks: convert the indentation to use only tabs
+      tweaks: drop some old debugging code plus a superfluous comment
+      tweaks: elide two parameters from the get_region() function
+      tweaks: elide two variables that are used just once
+      tweaks: factor out a piece of common code
+      tweaks: fix some whitespace errors, and convert alignment tabs to spaces
+      tweaks: fold some regexes into one another, for conciseness
+      tweaks: frob four comments, and rewrap two lines
+      tweaks: invert the logic of a variable, and rename it
+      tweaks: limit the resetting of "Modified" to writing a full buffer
+      tweaks: move some frequently-used keystrokes to the top of the list
+      tweaks: remove a redundant call of renumber()
+      tweaks: remove a superfluous condition
+      tweaks: remove a superfluous placing of a terminating nul byte
+      tweaks: remove some unneeded parentheses, and shorten two function calls
+      tweaks: remove two irrelevant conditions
+      tweaks: rename three variables, for more contrast and variety
+      tweaks: reshuffle a bit of common code, moving it to an existing function
+      tweaks: reshuffle another bit of code, for conciseness
+      tweaks: rewrap some lines and some comments, and trim two others
+      tweaks: slightly rename four functions, for aptness and variety
+      tweaks: strip some debugging stuff, and condense a bit of code
+      tweaks: trim another placing of a terminating nul byte
+      tweaks: use for git the more faithful "less -x1,5" suggested by Brand
+      tweaks: use spaces for alignment also in the THANKS file
+      wrapping: delete trailing blanks upon hardwrapping, when requested
+      wrapping: keep prepending to the same next line as long as possible
+      wrapping: we're still on the same line if the next line has not changed
+
+David Lawrence Ramsey (3):
+      input: support backtab when Slang and/or --rebindkeypad is used
+      tweaks: use printf's z modifier for (s)size_t, instead of casting
+      undo: when adding text adds a magicline, an undo should remove both
+
+Liu Hao (1):
+      syntax: c: increase the color contrast of reminders like FIXME
+
+Michael Francis (1):
+      syntax: php: function and variable names can contain uppercase and digits
+
+Mike Frysinger (1):
+      syntax: javascript: add newer keywords and string syntax
+
+Tom Levy (6):
+      syntax: go: fix word boundary before dot in number literal
+      syntax: go: sign of exponent in number literal is optional
+      syntax: lua: add new and missing standard library functions
+      syntax: lua: correct the word boundaries on standard library functions
+      syntax: lua: require at least one digit for hexadecimal numbers
+      syntax: lua: support fractional part and exponent for decimal and hex
+
+
+Changes between v2.9.0 and v2.9.1:
+----------------------------------
+
+Benno Schulenberg (20):
+      build: fix compilation with --disable-browser --disable-tabcomp
+      bump version numbers and add a news item for the 2.9.1 release
+      files: always update the stat info when the entire file is written
+      files: save the marked region only when we've prompted for a file name
+      gnulib: update to its current upstream state
+      history: create the path '~/.local/share/' when it is needed
+      history: make nano's state directory accessible for the user only
+      history: save the positions file also when a record was deleted
+      input: make the macro key discoverable by giving feedback when undefined
+      linting: switch the mark off when the linter starts
+      selecting: do not cancel the softmark when the cursor is not moved
+      selecting: let a justification cancel a softmark
+      syntax: adjust the magic strings for the changes since file-5.10
+      tweaks: adjust indentation after previous change
+      tweaks: elide the 'mark_set' boolean -- the 'mark' pointer is enough
+      tweaks: rename, rewrap, and reshuffle some stuff, and frob some comments
+      tweaks: reshuffle a couple of lines, and frob a comment or two
+      tweaks: reshuffle a couple of lines, to put similar things together
+      undo: clear the Modified state when the very first edit is undone
+      undo: discarding the stack does not always lose information
+
+
+Changes between v2.8.7 and v2.9.0:
+----------------------------------
+
+Benno Schulenberg (103):
+      bindings: don't allow calling help when searching in the help viewer
+      bindings: make ^Q and ^S do something useful by default
+      bindings: make the search function rebindable again in help and browser
+      bindings: make ^W start always a forward search (as there is ^Q now)
+      browser: place the cursor properly on the selected file when -g is used
+      build: let git ignore also the generated PDF file
+      bump version numbers and add a news item for the 2.9.0 release
+      copyright: update some years, and standardize on the dashed format
+      display: keep the cursor switched on when resizing the screen
+      display: rework the switching on and off of the cursor
+      display: stop the help viewer from turning on the multibuffer indicator
+      display: switch off the cursor early on during startup
+      docs: make it clearer that a Signed-off-by is wanted on patches
+      docs: mention that macros work correctly only on terminal emulators
+      docs: remove another remark about indenting lacking undo capability
+      docs: update references to the nanorc files for the XDG changes
+      files: avoid an abortion when excuting a command in a new buffer
+      gnulib: update to its current upstream state
+      help: don't fall back to other syntaxes if there is no nanohelp one
+      history: after loading the lists, mark them as unchanged
+      history: remove the migration service for the old searches file
+      input: recognize Option+Arrow keys on iTerm2 in "xterm mode"
+      moving: don't slither and slide over tabs when they are overlong
+      moving: prevent the cursor sticking on or skipping over overwide tabs
+      new feature: a bindable function that starts always a backward search
+      options: remove '--quiet' and 'set quiet', because they hide problems
+      options: retire 'set backwards' -- it's still recognized but a no-op
+      organization: move all history-related stuff to its own file
+      ouch: set the positions-file name also when using the legacy state dir
+      painting: evade an ncurses bug by adding the A_PROTECT attribute
+      search: suppress the "not found" message when replacements were made
+      search: suppress the "Search Wrapped" message when doing replacements
+      search: wipe reassuring feedback as soon as searching has finished
+      startup: don't ask the user to press Enter upon an rcfile error
+      startup: don't produce more than three consecutive beeps
+      startup: when an rcfile contains errors, report this on the status bar
+      syntax: default: use colors that are readable also on dark backgrounds
+      titlebar: don't reshow version when dropping back to a single buffer
+      titlebar: don't show nano's name and version when in the file browser
+      titlebar: drop the prefix "File: " from before the filename
+      tweaks: add a translator hint, and adjust two others
+      tweaks: adjust a comment, and condense a fragment of code
+      tweaks: adjust indentation and comments after the previous change
+      tweaks: adjust two comments, and correct and a few cosmetic mistakes
+      tweaks: avoid an unused-variable warning with --disable-nanorc
+      tweaks: change some mayday messages, to urge the user to report a bug
+      tweaks: change the arrows to triangles also for searching in file browser
+      tweaks: change the help-text arrows to triangles, to be more visible
+      tweaks: chuck a bunch of asserts -- they have lost their usefulness
+      tweaks: chuck an assert, and then condense the code and a comment
+      tweaks: constify the result strings of getenv(), as a reminder
+      tweaks: correct two minor things in the documentation
+      tweaks: discard another set of useless asserts
+      tweaks: discard some obsolete debugging stuff
+      tweaks: don't construct the positions-history filename time and again
+      tweaks: drop a bunch of outdated asserts
+      tweaks: drop the ineffective cgitrc -- sorting by "age" does not work
+      tweaks: elide a comment, and improve a couple of others
+      tweaks: elide an unneeded check
+      tweaks: elide an unneeded function now that stuff is grouped together
+      tweaks: elide a superfluous allocation
+      tweaks: elide two variables by using a pointer instead of an index
+      tweaks: fix compilation when configured with --disable-histories
+      tweaks: fix compilation when configured with --enable-tiny
+      tweaks: fix compilation with --enable-tiny --enable-histories
+      tweaks: frob a couple of comments
+      tweaks: frob some comments and rename a few variables and a function
+      tweaks: get rid of some cluttering conditional compilation
+      tweaks: improve some comments, and rename a variable for symmetry
+      tweaks: make the switching on and off of the cursor a bit more compact
+      tweaks: move a general function to the utils.c file
+      tweaks: reduce a bit of code duplication
+      tweaks: remove a comment from the docs that is no longer accurate
+      tweaks: remove another bit of conditional compilation
+      tweaks: remove a superfluous no-op function call
+      tweaks: remove a useless prefix from a hundred constants
+      tweaks: rename a function and swap its two parameters
+      tweaks: rename a function plus two parameters, to be more fitting
+      tweaks: rename a macro, to make a little more sense
+      tweaks: rename a variable, to avoid a possible confusion
+      tweaks: rename a variable, to make more sense
+      tweaks: rename one variable once more
+      tweaks: rename some constants, to follow the same underscoreless scheme
+      tweaks: rename three functions, to be shorter or clearer
+      tweaks: rename three variables, for more contrast
+      tweaks: rename two variables, for contrast, and frob some comments
+      tweaks: rename two variables, to be more indicative of what they do
+      tweaks: rename two variables, to make a little more sense
+      tweaks: reshuffle a bit of code and elide an unneeded variable
+      tweaks: reshuffle a couple of lines, and trim some comments
+      tweaks: reshuffle some code, and rename a variable
+      tweaks: reshuffle some code in order to elide a variable
+      tweaks: reshuffle some regexes, for order and compactness
+      tweaks: strip four unneeded checks
+      tweaks: transform the token DISABLE_COLOR to ENABLE_COLOR
+      tweaks: transform the token DISABLE_EXTRA to ENABLE_EXTRA
+      tweaks: transform the token DISABLE_HISTORIES to ENABLE_HISTORIES
+      tweaks: transform the token DISABLE_JUSTIFY to ENABLE_JUSTIFY
+      tweaks: transform the token DISABLE_OPERATINGDIR to ENABLE_OPERATINGDIR
+      tweaks: transform the token DISABLE_SPELLER to ENABLE_SPELLER
+      tweaks: transform the token DISABLE_WRAPJUSTIFY to ENABLED_WRAPORJUSTIFY
+      tweaks: transform the token DISABLE_WRAPPING to ENABLE_WRAPPING
+      tweaks: use mnemonic constants instead of TRUE and FALSE
+
+Brand Huntsman (3):
+      bindings: allow exiting from the help viewer with F1, like with ^G
+      history: prevent overwriting of positions between multiple instances
+      syntax: nanohelp: colorize Up, Down, Left and Right (when not in UTF-8)
+
+David Lawrence Ramsey (18):
+      build: add history.c to the list of files with translatable strings
+      display: don't cut off zero-width characters at the end of a chunk
+      docs: decribe the bindable functions 'recordmacro' and 'runmacro'
+      docs: document the more everyday names of three bindable functions
+      docs: remove man page reference to indent/unindent lacking undo/redo
+      files: don't change file format when inserting into an existing buffer
+      help: allow firstline and lastline to work at the search prompt
+      history: fix the check for an existing $HOME/.nano/ directory
+      moving: set the preferred column properly when doing a smart home
+      search: don't bother saving and restoring the search direction
+      search: trim a failed search string for width instead of length
+      softwrap: break before multi-column Unicode blanks when they overshoot
+      syntax: nanorc: properly color valid arguments of 'selectedcolor'
+      text: hook up indenting and unindenting to the undo/redo code
+      text: move the indenting of a single line into its own function
+      text: move the unindenting of a single line into its own function
+      tweaks: use printf's z modifier for most of the size_t/ssize_t types
+      undo: generalize update_comment_undo() into update_multiline_undo()
+
+Lion Yang (1):
+      input: ensure that standard input uses blocking mode
+
+Marco Diego Aurélio Mesquita (5):
+      general: do not free strings gotten from getenv(), to avoid a crash
+      history: remember the commands that were executed during this session
+      history: remember the list of executed commands across sessions
+      new feature: show current and total number of open buffers in title bar
+      new feature: the ability to record and play back a series of keystrokes
+
+Simon Ochsenreither (1):
+      startup: look for nanorc and history files also in the XDG directories
+
+Viorel Bota (1):
+      files: check for a changed disk file also for 'savefile' and --tempfile
+
+
+Changes between v2.8.6 and v2.8.7:
+----------------------------------
+
+Benno Schulenberg (54):
+      bindings: hard-bind Alt+Up and Alt+Down to findprevious and findnext
+      browser: correct the inverted search behavior for Alt+Up/Alt+Down
+      bump version numbers and add a news item for the 2.8.7 release
+      display: catch all cases where the cursor can be pushed offscreen
+      display: don't doubly show tabs that cross a chunk boundary
+      files: do not silently ignore an invalid backup directory, but die
+      files: don't close a file descriptor when opening failed  [coverity scan]
+      files: don't try to open a negative file descriptor  [coverity scan]
+      gnulib: update to its current upstream state
+      linting: don't try to put the cursor at a negative x position
+      linting: skip the introductory message produced by 'gcc -fshow-column'
+      mouse: one click of the wheel should move three lines, not three pages
+      moving: don't push x forward when backward movement lands on a split tab
+      moving: get <Up> unstuck when trying to pass over a sprawling tab
+      moving: improve retention of the target column somewhat
+      moving: the current chunk is always 0 when not in softwrap mode
+      moving: use the correct formula for pushing the index forward
+      rcfile: don't leak a shortcut when something goes wrong  [coverity scan]
+      softwrap: properly move up and down over tabs that are split over rows
+      syntax: c: give labels some color too
+      syntax: html: don't bother coloring tags that cross line boundaries
+      syntax: python: don't require a character after an opening triple quote
+      text: properly unindent lines that consist of only whitespace
+      tweaks: a comma does not end a sentence, and is not part of a variable
+      tweaks: adjust the indentation after the previous change
+      tweaks: adjust the indentation after the previous change
+      tweaks: adjust the indentation after the previous change
+      tweaks: allow enough space for the Y/N/A characters  [coverity scan]
+      tweaks: avoid trying to stat a file that might be NULL  [coverity scan]
+      tweaks: close a file also in the error path  [coverity scan]
+      tweaks: condense or improve some comments
+      tweaks: condense some logic, to elide a variable and a comment
+      tweaks: do not leak the indentation when all lines are empty
+      tweaks: don't close a descriptor when its stream has already been closed
+      tweaks: drop some debugging stuff
+      tweaks: drop some debugging stuff, and frob two comments
+      tweaks: elide an unneeded pointer
+      tweaks: elide the global variable 'full_operating_dir'
+      tweaks: fix compilation with --enable-{tiny,help,multibuffer}
+      tweaks: group all movement routines in corresponding pairs
+      tweaks: keep the const qualifier of the syntax name  [coverity scan]
+      tweaks: remove includes that appear to be superfluous
+      tweaks: rename a function, to let it make more sense
+      tweaks: rename a label, to better match its task
+      tweaks: renumber the special key codes, to be in sequence and grouped
+      tweaks: reshuffle code and frob comments, to reduce the number of lines
+      tweaks: reshuffle some code to harmonize two related functions
+      tweaks: reshuffle some declarations and trim a few comments
+      tweaks: restore an include that is necessary on some platforms
+      tweaks: show "where is next" in the help lines of the file browser
+      tweaks: simply set the proper scrolling mode, instead of imitating it
+      tweaks: snip a superfluous clearing of the bottom bars after help
+      tweaks: sort the includes, so it's a little easier to see what is there
+      tweaks: specify more directly in what manner to move the viewport
+
+David Lawrence Ramsey (23):
+      browser: allow backward/forward re-searches with Alt+Up/Alt+Down
+      display: constrain line numbers on softwrapped lines with sprawling tabs
+      display: do show the visible character for a tab when it starts a row
+      display: revamp how screen updates are done in the movement code
+      moving: redraw not just the new current line but also the prior one
+      small addition: allow customizing the color of selected text
+      softwrap: correctly move vertically through overwide tabs
+      softwrap: don't push a straddling tab to the next chunk
+      softwrap: improve left/right navigation across line boundaries
+      softwrap: make sure char_len is set when a tab is wider than a chunk
+      softwrap: properly update the viewport when adding text at firstcolumn
+      text: make indenting add to the beginning of the line
+      text: make unindenting remove from the beginning of the line
+      tweaks: adjust spacing and wording in sample.nanorc
+      tweaks: correct a comment typo and an indentation error
+      tweaks: harmonize some prototypes with their functions
+      tweaks: remove unneeded parentheses and blank line and braces
+      tweaks: replace a misplaced tab with a space
+      tweaks: set the target row for smooth scrolling more directly
+      tweaks: use charalloc() instead of (char *)nmalloc() * sizeof(char)
+      weeding: drop the forreal parameter from place_the_cursor()
+      weeding: remove redundant casts of nmalloc()
+      weeding: remove the unused be_clever parameter from do_home()/do_end()
+
+Rishabh Dave (1):
+      new feature: allow pasting at all input prompts
+
+Urja Rannikko (1):
+      bindings: hard-bind Alt+Left and Alt+Right to buffer switching
+
+
 Changes between v2.8.5 and v2.8.6:
 ----------------------------------
 
