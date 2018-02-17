@@ -26,8 +26,8 @@ function initial(){
 
 function onSubmitCtrl(o, s) {
 	updateOptions();
-	document.form.submit();
 	document.form.action_mode.value = s;
+	document.form.submit();
 	updateData();
 }
 
