@@ -4,6 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E1j9527  (21-February-2018) ARM SDK, MIPS,ARM KRACK
+- NEW: Added legal disclaimer regarding proprietary components
+- CHANGED: nano: update to 2.9.3
+- CHANGED: nano: (backport) locate nanorc file to /jffs/configs allowing users to provide their own config file
+- CHANGED: ipv6: (backport) rc: update default /etc/hosts entries
+- CHANGED: busybox: modprobe: implement /lib/modules filesystem root option
+- CHANGED: dnsmasq: ignore reserved hostnames from broken dhcp clients (Samsung TV)
+* CHANGED: networkmap: fix code formatting, no functional change
+* CHANGED: busybox: include hd, od and base64 applets
+* FIXED: make: prevent libtools error during libogg build
+* FIXED: webui: fix up url generation for faq links
+* FIXED: webui: fix unable to delete policy rules in openvpn client
+* FIXED: webui: correctly set action_mode before submit on connection status page
+
+
 374.43_30E3j9527  (7-February-2018) ARM SDK, MIPS,ARM KRACK
 * FIXED: others: always force symlink for alternate https cert directory
 
