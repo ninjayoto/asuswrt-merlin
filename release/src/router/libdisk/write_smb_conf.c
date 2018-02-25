@@ -203,6 +203,7 @@ int main(int argc, char *argv[])
 	char **account_list;
 	int dup, same_m_pt = 0;
 	char unique_share_name[PATH_MAX];
+	char *smbd_bufsize[] = { "0", "65536", "131072", "262144", "524288", "1048576", NULL };
 
 	unlink("/var/log.samba");
 
@@ -312,15 +313,25 @@ int main(int argc, char *argv[])
 
         /* remove socket options due to NIC compatible issue */
 	if(!nvram_get_int("stop_samba_speedup")){
+		n = nvram_get_int("smbd_buffers");
 #if defined(RTCONFIG_BCMARM)
 #ifdef RTCONFIG_BCM_7114
-		fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=131072 SO_SNDBUF=131072\n");
+		if (n == 0)
+			fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY\n");
+		else
+			fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_RCVBUF=%s SO_SNDBUF=%s\n", smbd_bufsize[n], smbd_bufsize[n]);
 #else
-		fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=131072 SO_SNDBUF=131072\n");
+		if (n == 0)
+			fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE\n");
+		else
+			fprintf(fp, "socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=%s SO_SNDBUF=%s\n", smbd_bufsize[n], smbd_bufsize[n]);
 #endif
 #else
 #if defined(RTCONFIG_SAMBA36X) || defined(RTCONFIG_SAMBA_MODERN)
-		fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=65536 SO_SNDBUF=65536\n");
+		if (n == 0)
+			fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE\n");
+		else
+			fprintf(fp, "socket options = TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=%s SO_SNDBUF=%s\n", smbd_bufsize[n], smbd_bufsize[n]);
 #endif
 #endif
 	}

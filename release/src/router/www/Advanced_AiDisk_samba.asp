@@ -811,6 +811,19 @@ function validForm(){
 					</td>
 				</tr>
 				<tr>
+					<th>Send / Receive buffers</th>
+					<td>
+						<select name="smbd_buffers" class="input_option">
+							<option class="content_input_fd" value="0" <% nvram_match("smbd_buffers", "0","selected"); %>>Auto</option>
+							<option class="content_input_fd" value="1" <% nvram_match("smbd_buffers", "1","selected"); %>>64 KB</option>
+							<option class="content_input_fd" value="2" <% nvram_match("smbd_buffers", "2","selected"); %>>128 KB</option>
+							<option class="content_input_fd" value="3" <% nvram_match("smbd_buffers", "3","selected"); %>>256 KB</option>
+							<option class="content_input_fd" value="4" <% nvram_match("smbd_buffers", "4","selected"); %>>512 KB</option>
+							<option class="content_input_fd" value="5" <% nvram_match("smbd_buffers", "5","selected"); %>>1024 KB</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
 					<th>Simpler share naming<br><i>(without the disk name)</i></th>
 					<td>
 						<input type="radio" name="smbd_simpler_naming" class="input" value="1" <% nvram_match_x("", "smbd_simpler_naming", "1", "checked"); %>><#checkbox_Yes#>
