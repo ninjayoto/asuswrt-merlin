@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E3j9527  (2-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openvpn: update to 2.4.5
+* CHANGED: dnscrypt: change update-resolvers script to process v2 resolvers format
+* FIXED: webui: fix dnscrypt resolver array dump last line formatting
+
+
 374.43_31E2j9527  (25-February-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: samba: (backport) make SMBv2 + SMBv1 the default, and add a SMBv2-only option
 * CHANGED: samba: add send/receive buffer size option
