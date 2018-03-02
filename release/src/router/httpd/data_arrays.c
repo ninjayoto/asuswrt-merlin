@@ -202,6 +202,7 @@ int ej_resolver_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
 int resolver_dump(FILE *pFile, webs_t wp) {
 	char sInputBuf[BUFFER_SIZE];
 	long lineno = 0L;
+	int firstrow = 1;
 	int ret = 0;
 
 	if(pFile == NULL)
@@ -222,10 +223,15 @@ int resolver_dump(FILE *pFile, webs_t wp) {
 			continue;
 
 		// set pFields array pointers to null-terminated string fields in sInputBuf
-		if (parse_csv_line(sInputBuf,lineno) == 0)
+		if (parse_csv_line(sInputBuf,lineno) == 0){
+			if(firstrow==1)
+				firstrow = 0;
+			else
+				ret += websWrite(wp, ",\n");
 			// On return pFields array pointers point to loaded fields ready for load into DB or whatever
 			// Fields can be accessed via pFields
-			ret += websWrite(wp, "[\"%s\", \"%s\", \"%s\", \"%s\"],\n", pFields[NAME], pFields[FULLNAME], pFields[DNSSEC], pFields[LOGS]);
+			ret += websWrite(wp, "[\"%s\", \"%s\", \"%s\", \"%s\"]", pFields[NAME], pFields[FULLNAME], pFields[DNSSEC], pFields[LOGS]);
+		}
 	}
 	return ret;
 }
