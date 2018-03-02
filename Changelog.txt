@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E2j9527  (25-February-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: samba: (backport) make SMBv2 + SMBv1 the default, and add a SMBv2-only option
+* CHANGED: samba: add send/receive buffer size option
+
+
 374.43_31E1j9527  (21-February-2018) ARM SDK, MIPS,ARM KRACK
 - NEW: Added legal disclaimer regarding proprietary components
 - CHANGED: nano: update to 2.9.3
