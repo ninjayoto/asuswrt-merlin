@@ -865,6 +865,9 @@ void start_vpnserver(int serverNum)
 			fprintf(fp_client, "%s\n", nvram_safe_get(&buffer[0]));
 		}
 	}
+	//local binding
+	fprintf(fp, "local %s\n", nvram_safe_get("wan0_ipaddr"));
+
 	//protocol
 	sprintf(&buffer[0], "vpn_server%d_proto", serverNum);
 	fprintf(fp, "proto %s\n", nvram_safe_get(&buffer[0]));
