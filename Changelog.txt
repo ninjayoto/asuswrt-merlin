@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E4j9527  (7-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openvpn: only bind server to wan address
+* CHANGED: samba36: enable dns proxy for netbios name resolution when master browser
+- CHANGED: make: add cloudcheck library
+- CHANGED: webstor: update MIPS to 380 prebuild
+- CHANGED: webstor: update ARM to 384 prebuild
+
+
 374.43_31E3j9527  (2-March-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: openvpn: update to 2.4.5
 * CHANGED: dnscrypt: change update-resolvers script to process v2 resolvers format
