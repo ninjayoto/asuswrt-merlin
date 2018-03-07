@@ -28,7 +28,7 @@ else
         fi
 
 	# Parse the v2 resolvers file into v1 csv
-	echo "Parsing the list of public DNSCrypt resolvers..."	
+	echo "Parsing the list of public DNSCrypt resolvers...please wait"
 	SDNS_DECODE="/tmp/sdns_decode.dat"
 	IFS=$'\n'
 	echo "Name,\"Full name\",\"Description\",\"Location\",\"Coordinates\",URL,Version,DNSSEC validation,No logs,Namecoin,Resolver address,Provider name,Provider public key,Provider public key TXT record" > $RESOLVERS_FILE_TMP
@@ -76,6 +76,16 @@ fi
 
 nvram set dnscrypt_csv="$RESOLVERS_FILE"
 nvram commit
+
+echo "Checking selected DNSCrypt resolvers..."
+DNSCRYPT1_RESOLVER=$(nvram get dnscrypt1_resolver)
+DNSCRYPT2_RESOLVER=$(nvram get dnscrypt2_resolver)
+if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT1_RESOLVER") == "x" -a "$DNSCRYPT1_RESOLVER" != "none" -a "$DNSCRYPT1_RESOLVER" != "random" ]; then
+        echo "Your first  selected DNSCrypt resolver is no longer available!  Please update your selected servers."
+fi
+if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT2_RESOLVER") == "x" -a "$DNSCRYPT2_RESOLVER" != "none" -a "$DNSCRYPT2_RESOLVER" != "random" ]; then
+        echo "Your second selected DNSCrypt resolver is no longer available!  Please update your selected servers."
+fi
 
 echo "Done"
 exit 0
