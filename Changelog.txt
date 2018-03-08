@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E5j9527  (7-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dropbear: update to 2018.76
+* CHANGED: dropbear: include dropbearconvert
+* CHANGED: dropbear: apply localoptions changes
+
+
 374.43_31E4j9527  (7-March-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: openvpn: only bind server to wan address
 * CHANGED: samba36: enable dns proxy for netbios name resolution when master browser
