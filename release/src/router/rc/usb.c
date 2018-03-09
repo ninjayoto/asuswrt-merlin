@@ -2673,8 +2673,22 @@ void write_webdav_server_pem()
 	unsigned long long sn;
 	char t[32];
 #ifdef RTCONFIG_HTTPS
-	if(f_exists("/etc/server.pem"))
-		system("cp -f /etc/server.pem /tmp/lighttpd/");
+	if (nvram_match("https_crt_save", "1")) {
+		if (check_if_file_exist("/jffs/https/cert.tgz")) {
+			if (eval("tar", "-xzf", "/jffs/https/cert.tgz", "-C", "/", "etc/cert.pem", "etc/key.pem") == 0){
+				system("cat /etc/key.pem /etc/cert.pem > /etc/server.pem");
+				system("cp -f /etc/server.pem /tmp/lighttpd/");
+			}
+		} else {
+			if (nvram_get_file("https_crt_file", "/tmp/cert.tgz", 8192)) {
+				if (eval("tar", "-xzf", "/tmp/cert.tgz", "-C", "/", "etc/cert.pem", "etc/key.pem") == 0){
+					system("cat /etc/key.pem /etc/cert.pem > /etc/server.pem");
+					system("cp -f /etc/server.pem /tmp/lighttpd/");
+					unlink("/tmp/cert.tgz");
+				}
+			}
+		}
+	}
 #endif
 	if(!f_exists("/tmp/lighttpd/server.pem")){
 		f_read("/dev/urandom", &sn, sizeof(sn));
@@ -2726,6 +2740,12 @@ void start_webdav(void)	// added by Vanic
 
 	/* WebDav SSL support */
 	write_webdav_server_pem();
+	if(f_size("/etc/server.pem") != f_size("/etc/key.pem") + f_size("/etc/cert.pem"))
+	{
+		char buf[256];
+		snprintf(buf, sizeof(buf), "cat %s %s > %s", "/etc/key.pem", "/etc/cert.pem", "/etc/server.pem");
+		system(buf);
+	}
 
 	/* write WebDav configure file*/
 	system("/sbin/write_webdav_conf");

@@ -2184,10 +2184,11 @@ QTN_RESET:
 #ifdef RTCONFIG_HTTPS
 void save_cert(void)
 {
-	if (eval("tar", "-C", "/", "-czf", "/tmp/cert.tgz", "etc/cert.pem", "etc/key.pem") == 0) {
+	if (eval("tar", "-C", "/", "-czf", "/tmp/cert.tgz", "/etc/cert.pem", "/etc/key.pem") == 0) {
 		if (nvram_match("jffs2_on", "1") && check_if_dir_exist("/jffs/https")) {
 			system("cp /tmp/cert.tgz /jffs/https/cert.tgz");
-			nvram_set("https_crt_file", "");
+			system("cat /etc/key.pem /etc/cert.pem > /jffs/https/server.pem");
+			nvram_set("https_crt_file", "/jffs/https/cert.tgz");
 		} else {
 			if (nvram_set_file("https_crt_file", "/tmp/cert.tgz", 8192)) {
 				nvram_commit_x();
@@ -2201,6 +2202,7 @@ void erase_cert(void)
 {
 	unlink("/etc/cert.pem");
 	unlink("/etc/key.pem");
+	unlink("/etc/server.pem");
 	nvram_unset("https_crt_file");
 	if (check_if_file_exist("/jffs/https/cert.tgz"))
 		system("rm /jffs/https/cert.tgz");
@@ -2227,10 +2229,10 @@ void start_ssl(void)
 	while (1) {
 		save = nvram_match("https_crt_save", "1");
 
-		if ((!f_exists("/etc/cert.pem")) || (!f_exists("/etc/key.pem"))) {
+		if ((!f_exists("/etc/cert.pem")) || (!f_exists("/etc/key.pem")) || (!f_exists("/etc/server.pem")) || nvram_match("enable_webdav", "1")) {
 			ok = 0;
 			if (save) {
-				fprintf(stderr, "Save SSL certificate...\n"); // tmp test
+				fprintf(stderr, "Restore SSL certificate...\n"); // tmp test
 				if (check_if_file_exist("/jffs/https/cert.tgz")) {
 					if (eval("tar", "-xzf", "/jffs/https/cert.tgz", "-C", "/", "etc/cert.pem", "etc/key.pem") == 0){
 						system("cat /etc/key.pem /etc/cert.pem > /etc/server.pem");

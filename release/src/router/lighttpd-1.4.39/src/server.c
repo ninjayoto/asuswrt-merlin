@@ -610,12 +610,8 @@ int main (int argc, char **argv) {
 	srv->srvconf.dont_daemonize = 0;
 
 #ifdef APP_IPKG
-    if(!access("/etc/server.pem",F_OK)){
-
-    }
-    else{
-    	start_ssl();
-    }
+	if(-1==access("/etc/server.pem",F_OK))
+		start_ssl();
 #endif
 
 	while(-1 != (o = getopt(argc, argv, "f:m:hvVDpt"))) {

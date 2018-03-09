@@ -537,6 +537,7 @@ extern char *get_syslog_fname(unsigned int idx);
 #if defined(RTCONFIG_SSH) || defined(RTCONFIG_HTTPS)
 extern int nvram_get_file(const char *key, const char *fname, int max);
 extern int nvram_set_file(const char *key, const char *fname, int max);
+extern void start_ssl(void);
 #endif
 extern int free_caches(const char *clean_mode, const int clean_time, const unsigned int threshold);
 extern unsigned int netdev_calc(char *ifname, char *ifname_desc, unsigned long *rx, unsigned long *tx, char *ifname_desc2, unsigned long *rx2, unsigned long *tx2);

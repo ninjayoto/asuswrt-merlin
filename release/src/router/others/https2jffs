@@ -5,6 +5,7 @@ https_file="cert.tgz"
 https_jffs="/jffs/ssl"
 https_jffs_old="/jffs/https"
 https_certs="/etc/cert.pem /etc/key.pem"
+lighttpd_certkey="/etc/server.pem"
 OLDIF=IFS; IFS=" ";
 
 mkdir -p "$https_jffs"
@@ -17,6 +18,7 @@ VARNAME=$https_var
     do
 		cp -af $fn ${https_jffs}
     done
+	cp -af ${lighttpd_certkey} ${https_jffs}
     printf "%-25s" "Processing $VARNAME"
     if [ -f $FILEPATH ]; then
 		echo -e "\tDone"
