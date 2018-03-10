@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E6j9527  (12-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: entware: add 64-bit support for HND platform
+* CHANGED: entware: point setup script to the new Entware installers (following the NG/3X repos merge)
+* CHANGED: webdav: improve cert management
+* CHANGED: lighttpd: remove obsolete release 1.4.29
+* CHANGED: others: check selected dnscrypt resolvers after resolver csv update
+* CHANGED: others: add syslog output for dnscrypt-update-resolvers.sh
+
+
 374.43_31E5j9527  (7-March-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dropbear: update to 2018.76
 * CHANGED: dropbear: include dropbearconvert
