@@ -1,5 +1,7 @@
 #!/bin/sh
 
+scr_name="$(basename $0)"
+
 OLDIFS=$IFS
 if [ "$1" == "default" ]; then
         echo "Setting default list of public DNSCrypt resolvers..."
@@ -19,17 +21,18 @@ else
 
         mkdir -p "${RESOLVERS_PATH}"
 
-        echo "Retrieving the list of public DNSCrypt resolvers..."
-        /usr/sbin/curl -L -R "$RESOLVERS_URL" -o "$RESOLVERS_MD" || (echo "Download failed" && exit 1)
+        echo "Retrieving the list of public DNSCrypt resolvers..." | logger -s -t "$scr_name"
+        /usr/sbin/curl -L -R "$RESOLVERS_URL" -o "$RESOLVERS_MD" || (echo "Download failed" | logger -s -t "$scr_name" && exit 1)
         if $(which minisign > /dev/null 2>&1); then
-          /usr/sbin/curl -L -o "$RESOLVERS_MD.minisig" "$RESOLVERS_SIG_URL" || (echo "Failed to retrieve minisig" && exit 1)
-          /usr/sbin/minisign -V -P "$RESOLVERS_SIG_PUBKEY" -m "$RESOLVERS_MD" || (echo "Signature verification failed" && exit 1)
+          /usr/sbin/curl -L -o "$RESOLVERS_MD.minisig" "$RESOLVERS_SIG_URL" || (echo "Failed to retrieve minisig" | logger -s -t "$scr_name" && exit 1)
+          /usr/sbin/minisign -V -P "$RESOLVERS_SIG_PUBKEY" -m "$RESOLVERS_MD" || (echo "Signature verification failed" | logger -s -t "$scr_name" && exit 1)
           mv -f "${RESOLVERS_FILE_TMP}.minisig" "${RESOLVERS_FILE}.minisig"
         fi
 
 	# Parse the v2 resolvers file into v1 csv
 	echo "Parsing the list of public DNSCrypt resolvers...please wait"
 	SDNS_DECODE="/tmp/sdns_decode.dat"
+	resolvcnt=0
 	IFS=$'\n'
 	echo "Name,\"Full name\",\"Description\",\"Location\",\"Coordinates\",URL,Version,DNSSEC validation,No logs,Namecoin,Resolver address,Provider name,Provider public key,Provider public key TXT record" > $RESOLVERS_FILE_TMP
 	for sdns in $(cat $RESOLVERS_MD | grep -E '^sdns|^##');
@@ -68,6 +71,7 @@ else
 		if [ $? -eq 0 ]; then namecoin="yes"; else namecoin="no"; fi
 
 		echo "${desc},${desc},,,,,1,$dnssec,$logs,$namecoin,${address},${name},${pk}," >> $RESOLVERS_FILE_TMP
+		let resolvcnt=resolvcnt+1
 	done
 	IFS=$OLDIFS
 	mv -f "$RESOLVERS_FILE_TMP" "$RESOLVERS_FILE" > /dev/null 2>&1
@@ -77,15 +81,19 @@ fi
 nvram set dnscrypt_csv="$RESOLVERS_FILE"
 nvram commit
 
+echo "Public DNSCrypt resolvers update complete ($resolvcnt entries)" | logger -s -t "$scr_name"
+
 echo "Checking selected DNSCrypt resolvers..."
 DNSCRYPT1_RESOLVER=$(nvram get dnscrypt1_resolver)
 DNSCRYPT2_RESOLVER=$(nvram get dnscrypt2_resolver)
 if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT1_RESOLVER") == "x" -a "$DNSCRYPT1_RESOLVER" != "none" -a "$DNSCRYPT1_RESOLVER" != "random" ]; then
-        echo "Your first  selected DNSCrypt resolver is no longer available!  Please update your selected servers."
+        echo "Your first  selected DNSCrypt resolver is no longer available!  Please update your selected servers." | logger -s -t "$scr_name"
+		resolverr=1
 fi
 if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT2_RESOLVER") == "x" -a "$DNSCRYPT2_RESOLVER" != "none" -a "$DNSCRYPT2_RESOLVER" != "random" ]; then
-        echo "Your second selected DNSCrypt resolver is no longer available!  Please update your selected servers."
+        echo "Your second selected DNSCrypt resolver is no longer available!  Please update your selected servers." | logger -s -t "$scr_name"
+		resolverr=1
 fi
-
 echo "Done"
+
 exit 0
