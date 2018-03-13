@@ -378,6 +378,7 @@ int main(int argc, char *argv[])
 #endif
 	if (!strcmp(nvram_safe_get("smbd_wins"), "1")) {
 		fprintf(fp, "wins support = yes\n");
+		fprintf(fp, "dns proxy = yes\n");
 	}
 
 	if (!strcmp(nvram_safe_get("smbd_master"), "1")) {
@@ -385,7 +386,6 @@ int main(int argc, char *argv[])
 		fprintf(fp, "domain master = yes\n");
 		fprintf(fp, "local master = yes\n");
 		fprintf(fp, "preferred master = yes\n");
-		fprintf(fp, "dns proxy = yes\n");
 	}
 
 	fprintf(fp, "map archive = no\n");
