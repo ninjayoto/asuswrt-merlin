@@ -649,6 +649,7 @@ void start_dnsmasq(int force)
 		fclose(fp);
 		use_custom_config("hosts", "/etc/hosts");
 		run_postconf("hosts.postconf","/etc/hosts");
+		chmod("/etc/hosts", 0644);
 	} else
 		perror("/etc/hosts");
 
@@ -906,9 +907,10 @@ void start_dnsmasq(int force)
 
 	use_custom_config("dnsmasq.conf","/etc/dnsmasq.conf");
 	run_postconf("dnsmasq.postconf","/etc/dnsmasq.conf");
+	chmod("/etc/dnsmasq.conf", 0644);
 
 	/* Create resolv.conf with empty nameserver list */
-	f_write(dmresolv, NULL, 0, FW_APPEND, 0666);
+	f_write(dmresolv, NULL, 0, FW_APPEND, 0644);
 
 	eval("dnsmasq", "--log-async");
 

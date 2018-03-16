@@ -754,23 +754,24 @@ confpage:
 	if(fp != NULL) {
 
 	    if (nvram_match("jffs2_scripts", "1")) {
-		if (check_if_file_exist("/jffs/configs/smb.conf.add")) {
-			char *addendum = read_whole_file("/jffs/configs/smb.conf.add");
-			if (addendum) {
-				fwrite(addendum, 1, strlen(addendum), fp);
-				free(addendum);
+			if (check_if_file_exist("/jffs/configs/smb.conf.add")) {
+				char *addendum = read_whole_file("/jffs/configs/smb.conf.add");
+				if (addendum) {
+					fwrite(addendum, 1, strlen(addendum), fp);
+					free(addendum);
+				}
+
+			}
+			fclose(fp);
+
+			if (check_if_file_exist("/jffs/configs/smb.conf")) {
+				eval("cp","/jffs/configs/smb.conf",SAMBA_CONF,NULL);
 			}
 
-		}
-		fclose(fp);
-
-		if (check_if_file_exist("/jffs/configs/smb.conf")) {
-			eval("cp","/jffs/configs/smb.conf",SAMBA_CONF,NULL);
-		}
-
-		if (check_if_file_exist("/jffs/scripts/smb.postconf")) {
-			eval("/jffs/scripts/smb.postconf", SAMBA_CONF);
-		}
+			if (check_if_file_exist("/jffs/scripts/smb.postconf")) {
+				eval("/jffs/scripts/smb.postconf", SAMBA_CONF);
+			}
+			chmod(SAMBA_CONF, 0644);
 	    }
 	}
 
