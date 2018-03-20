@@ -780,6 +780,9 @@ int process_device_response(char *msg)
         NMP_DEBUG_M("UPnP location=%s\n", location);
 
         // get the destination ip
+		if (location == NULL)  //abort if not location response
+			goto error;
+
         location += 7;
 		i = 0;
 		while( (*location != ':') && (*location != '/') && (i < sizeof(host)) ) {
@@ -812,7 +815,7 @@ int process_device_response(char *msg)
         data = (char *)malloc(1500 * sizeof(char));
         memset(data, 0, 1500);
         *data = '\0';
-	snprintf(data, sizeof(data), "GET %s HTTP/1.1\r\nHOST: %s:%s\r\nACCEPT-LANGUAGE: zh-cn\r\n\r\n",\
+		snprintf(data, sizeof(data), "GET %s HTTP/1.1\r\nHOST: %s:%s\r\nACCEPT-LANGUAGE: zh-cn\r\n\r\n",\
                         location, host, port);
         //printf("%s\n",data);
 
@@ -829,8 +832,8 @@ int process_device_response(char *msg)
 
         //receive data of http socket
         len = 0;
-	setsockopt(http_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
-	while((nbytes = recv(http_fd, data,1500, 0)) > 0)
+		setsockopt(http_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
+		while((nbytes = recv(http_fd, data,1500, 0)) > 0)
         {
                 len += nbytes;
                 if(len > 6000)
