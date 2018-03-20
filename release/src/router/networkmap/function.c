@@ -569,27 +569,29 @@ int ctrlpt(unsigned char *dest_ip)
         {
                 addrlen = sizeof(destaddr);
                 memset(&destaddr, 0, addrlen);
-
+                                                                                                                                             
                 FD_ZERO(&rfds);
                 FD_SET(ssdp_fd, &rfds);
-
+                                                                                                                                             
                 n = select(ssdp_fd+1, &rfds, NULL, NULL, NULL);
                 if(n > 0)
                 {
                         if(FD_ISSET(ssdp_fd, &rfds))
                         {
                                 nbytes = recvfrom(ssdp_fd, buf, sizeof(buf), 0, (struct sockaddr*)&destaddr, &addrlen);
-                                buf[nbytes] = '\0';
-
-                                NMP_DEBUG_M("recv: %d from: %s\n", nbytes, inet_ntoa(destaddr.sin_addr));
-                                if( !memcmp(&destaddr.sin_addr, dest_ip, 4) )
-                                {
-                                        if(MATCH_PREFIX(buf, "HTTP/1.1 200 OK"))
-                                        {
-                                                global_exit = TRUE;
-                                                process_device_response(buf);
-                                                return_value = TRUE;
-                                        }
+								if (nbytes > 0)
+								{
+									buf[nbytes] = '\0';
+                                                                                                                         
+									NMP_DEBUG_M("recv: %d bytes from: %s\n", nbytes, inet_ntoa(destaddr.sin_addr));
+									if( !memcmp(&destaddr.sin_addr, dest_ip, 4) )
+									{
+										if(MATCH_PREFIX(buf, "HTTP/1.1 200 OK")) {
+											global_exit = TRUE;
+											process_device_response(buf);
+											return_value = TRUE;
+										}
+									}
                                 }
                         }
                 }
@@ -779,28 +781,28 @@ int process_device_response(char *msg)
 
         // get the destination ip
         location += 7;
-	i = 0;
-	while( (*location != ':') && (*location != '/') && (i < sizeof(host)) ) {
+		i = 0;
+		while( (*location != ':') && (*location != '/') && (i < sizeof(host)) ) {
                 host[i] = *location++;
-		i++;
-	}
-	if(i >= sizeof(host))
-		goto error;
-	else
-		host[i] = '\0';
-        //get the destination port
-        if(*location == ':') {
-		for(location++, i =0; *location != '/'; i++) {
-			if(i < (sizeof(port)-1))
-				port[i] = *location++;
-			else
-				goto error;
+				i++;
 		}
-            	port[i] = '\0';
-            	destport = (ushort)atoi(port);
-	}
-	else
-		destport = 80;
+		if(i >= sizeof(host))
+			goto error;
+		else
+			host[i] = '\0';
+    	    //get the destination port
+    	    if(*location == ':') {
+				for(location++, i =0; *location != '/'; i++) {
+					if(i <= (sizeof(port)-1))
+						port[i] = *location++;
+					else
+						goto error;
+				}
+    	       	port[i] = '\0';
+    	       	destport = (ushort)atoi(port);
+			}
+			else
+				destport = 80;
 
         //create a socket of http
         if ( (http_fd = create_http_socket_ctrlpt(host, destport)) == -1)
