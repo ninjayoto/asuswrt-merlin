@@ -4,6 +4,20 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_31E7j9527  (24-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: bb125: (backport) enable ls color by default (to match Asus)
+* CHANGED: openvpn: (backport) fix potential resource leak if an error occured when creating ovpn passwd/group/shadow files
+* CHANGED: rc: libdisk: (backport) tighten security around some of the system config files found in /etc
+* CHANGED: networkmap: (backport) update ctrlpt and upnp discovery
+* CHANGED: bb125: (backport) provide tty, depmod and blockdev, and enable fdisk support for large disks
+* CHANGED: Revert "MIPS: enable pptp and l2tp ctf" - compile flags not used on MIPS
+* CHANGED: Revert "ARM: update ctf to 384_10007"
+* CHANGED: Revert "ARM: conntrack changes from 384_10007"
+* FIXED: samba36: set dns proxy with wins server instead of master browser
+* FIXED: networkmap: abort if no location in http response
+* FIXED: httpd: (backport) fix CVE-2018-8879 potential buffer overrun in check_xss_blacklist
+
+
 374.43_31E6j9527  (12-March-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: entware: add 64-bit support for HND platform
 * CHANGED: entware: point setup script to the new Entware installers (following the NG/3X repos merge)
