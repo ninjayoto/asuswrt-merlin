@@ -1006,7 +1006,7 @@ void reload_dnsmasq(void)
 		}
 #endif
 		/* notify dnsmasq */
-		kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
+		kill_pidfile_s("/var/run/dnsmasq.pid", SIGINT);
 	}
 #endif
 }
