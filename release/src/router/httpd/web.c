@@ -1002,7 +1002,7 @@ ej_dump(int eid, webs_t wp, int argc, char_t **argv)
 	//csprintf("Script : %s, File: %s\n", script, file);
 
 	// run scrip first to update some status
-	if (strcmp(script,"")!=0) sys_script(script);
+	if (strcmp(script,"syscmd.sh")==0) sys_script(script);
 
 	if (strcmp(file, "wlan11b.log")==0)
 		return (ej_wl_status(eid, wp, 0, NULL, 0));	/* FIXME */
@@ -2268,9 +2268,14 @@ static int ej_update_variables(int eid, webs_t wp, int argc, char_t **argv) {
 			}
 #endif
 			if (strlen(action_script) > 0) {
-				memset(notify_cmd, 0, sizeof(notify_cmd));
-				if(strstr(action_script, "_wan_if"))
-					snprintf(notify_cmd, sizeof(notify_cmd), "%s %s", action_script, wan_unit);
+				char *p1, p2[sizeof(notify_cmd)];
+
+				if((p1 = strstr(action_script, "_wan_if")))
+				{
+					p1 += sizeof("_wan_if") - 1;
+					strlcpy(p2, action_script, MIN(p1 - action_script + 1, sizeof(p2)));
+					snprintf(notify_cmd, sizeof(notify_cmd), "%s %s%s", p2, wan_unit, p1);
+				}
 				else
 					strlcpy(notify_cmd, action_script, sizeof(notify_cmd));
 
