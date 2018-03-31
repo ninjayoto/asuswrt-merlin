@@ -4,6 +4,23 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_32E2j9527  (30-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: MIPS: update asuswebstorage to 380.8228
+* CHANGED: MIPS: update acsd to 380.8228
+* CHANGED: ARM: update acsd to 384.20379
+* CHANGED: dnsmasq: (upstream) Use SIGINT (instead of overloading SIGHUP) to turn on DNSSEC time validation
+* CHANGED: services: change dnssec timestamp notification from sighup to sigint
+* FIXED: webdav: (ASUS) AiCloud XSS vulnerability
+* FIXED: httpd: (ASUS) fixed CVE-2018-8826 remote code code execution vulnerability
+
+
+374.43_32E1j9527  (27-March-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openssl: update to 1.0.2o
+* CHANGED: dnsmasq: (upstream) Fix search_servers() segfault with DNSSEC
+* CHANGED: dnsmasq: (upstream) Fix DNSSEC validation errors introduced in 4fe6744
+* CHANGED: dnsmasq: (upstream) DNSSEC fix for wildcard NSEC records. CVE-2017-15107 applies.
+
+
 374.43_31E7j9527  (24-March-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: bb125: (backport) enable ls color by default (to match Asus)
 * CHANGED: openvpn: (backport) fix potential resource leak if an error occured when creating ovpn passwd/group/shadow files
