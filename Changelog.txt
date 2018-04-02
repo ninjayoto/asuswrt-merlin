@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_32E4j9527  (2-April-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: rc: restart dnsmasq when stopping dnscrypt
+* FIXED: rc: properly handle dnsmasq sighup vs sigint notifications
+
+
 374.43_32E3j9527  (1-April-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: ARM: update asuswebstorage to 384.20624
 * FIXED: firewall: allow special use ipv6 addresses as destination address
