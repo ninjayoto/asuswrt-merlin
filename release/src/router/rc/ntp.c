@@ -77,8 +77,16 @@ static void ntp_service()
 		notify_rc("restart_diskmon");
 #endif
 
-#if defined(RTCONFIG_DNSSEC) || defined(RTCONFIG_DNSCRYPT)
-		reload_dnsmasq();
+#if defined(RTCONFIG_DNSSEC)
+		/* notify dnsmasq */
+		kill_pidfile_s("/var/run/dnsmasq.pid", SIGINT);
+#endif
+
+#ifdef RTCONFIG_DNSCRYPT
+		if (nvram_match("dnscrypt_proxy", "1")) {
+			/* restart dnscrypt to update timestamp check */
+			restart_dnscrypt(0);
+		}
 #endif
 	}
 }

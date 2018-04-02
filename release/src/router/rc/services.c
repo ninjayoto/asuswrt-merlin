@@ -989,25 +989,20 @@ void restart_dnsmasq(int force)
 void reload_dnsmasq(void)
 {
 #ifdef RTCONFIG_DNSSEC
-	int unit;
-	char tmp1[32], prefix[] = "wanXXXXXXXXXX_";
-
 	if (nvram_match("dnssec_enable", "1") && (!nvram_match("ntp_sync","1"))) {
 		/* Don't reload, as it would prematurely enable timestamp validation */
 		stop_dnsmasq(0);
 		sleep(1);
 		start_dnsmasq(0);
 	}
-	else {
-#ifdef RTCONFIG_DNSCRYPT
-		if (nvram_match("dnscrypt_proxy", "1")) {
-			/* restart dnscrypt to update timestamp check */
-			restart_dnscrypt(0);
-		}
+	else
 #endif
-		/* notify dnsmasq */
-		kill_pidfile_s("/var/run/dnsmasq.pid", SIGINT);
-	}
+		/* notify dnsmasq of resolv change */
+		kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
+
+#ifdef RTCONFIG_DNSCRYPT
+		if (nvram_match("dnscrypt_proxy", "1"))
+			restart_dnscrypt(0);
 #endif
 }
 
