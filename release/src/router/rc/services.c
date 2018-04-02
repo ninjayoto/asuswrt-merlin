@@ -1127,6 +1127,12 @@ void stop_dnscrypt(int force)
 	time_valid = -1;
 	unlink("/var/run/dnscrypt-proxy1.pid");
 	unlink("/var/run/dnscrypt-proxy2.pid");
+
+#ifdef RTCONFIG_DNSMASQ
+	restart_dnsmasq(0);
+#else
+	restart_dns();
+#endif
 }
 
 void restart_dnscrypt(int force)
