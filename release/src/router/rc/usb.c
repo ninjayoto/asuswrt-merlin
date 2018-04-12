@@ -2023,15 +2023,13 @@ start_samba(void)
 	else
 		clear_invoke_later(INVOKELATER_SMB);
 
-	if ((nvram_match("enable_samba", "0")) &&
-	    (nvram_match("smbd_master", "0")) &&
-	    (nvram_match("smbd_wins", "0"))) {
+	if (nvram_match("enable_samba", "0")) {
 		return;
 	}
 
 	if ((!sd_partition_num() && !nvram_match("usb_debug", "1")) &&
-            (nvram_match("smbd_master", "0")) &&
-            (nvram_match("smbd_wins", "0"))) {
+		(nvram_match("smbd_master", "0")) &&
+		(nvram_match("smbd_wins", "0"))) {
 		return;
 	}
 
