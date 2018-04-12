@@ -465,11 +465,6 @@ void start_vpnclient(int clientNum)
 	}
 	vpnlog(VPN_LOG_EXTRA,"Done writing certs/keys");
 
-        // Run postconf custom script on it if it exists
-        sprintf(&buffer[0], "openvpnclient%d.postconf", clientNum);
-        sprintf(&buffer2[0], "/etc/openvpn/client%d/config.ovpn", clientNum);
-        run_postconf(&buffer[0], &buffer2[0]);
-
 	// Handle firewall rules if appropriate
 	sprintf(&buffer[0], "vpn_client%d_firewall", clientNum);
 	if ( !nvram_contains_word(&buffer[0], "custom") )
@@ -507,6 +502,11 @@ void start_vpnclient(int clientNum)
 
 		fclose(fp);
 		vpnlog(VPN_LOG_EXTRA,"Done creating firewall rules");
+
+        // Run postconf custom script on it if it exists
+        sprintf(&buffer[0], "openvpnclient%d.postconf", clientNum);
+        sprintf(&buffer2[0], "/etc/openvpn/client%d/config.ovpn", clientNum);
+        run_postconf(&buffer[0], &buffer2[0]);
 
 		// Run the firewall rules
 		vpnlog(VPN_LOG_EXTRA,"Running firewall rules");
@@ -1515,11 +1515,6 @@ void start_vpnserver(int serverNum)
 	fclose(fp_client);
 	vpnlog(VPN_LOG_EXTRA,"Done writing client config file");
 
-	// Run postconf custom script on it if it exists
-        sprintf(&buffer[0], "openvpnserver%d.postconf", serverNum);
-        sprintf(&buffer2[0], "/etc/openvpn/server%d/config.ovpn", serverNum);
-        run_postconf(&buffer[0], &buffer2[0]);
-
 	// Handle firewall rules if appropriate
 	sprintf(&buffer[0], "vpn_server%d_firewall", serverNum);
 	if ( !nvram_contains_word(&buffer[0], "custom") )
@@ -1555,6 +1550,11 @@ void start_vpnserver(int serverNum)
 		}
 		fclose(fp);
 		vpnlog(VPN_LOG_EXTRA,"Done creating firewall rules");
+
+		// Run postconf custom script on it if it exists
+        sprintf(&buffer[0], "openvpnserver%d.postconf", serverNum);
+        sprintf(&buffer2[0], "/etc/openvpn/server%d/config.ovpn", serverNum);
+        run_postconf(&buffer[0], &buffer2[0]);
 
 		// Run the firewall rules
 		vpnlog(VPN_LOG_EXTRA,"Running firewall rules");
