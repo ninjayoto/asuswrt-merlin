@@ -1579,6 +1579,8 @@ void start_vpnserver(int serverNum)
 	{
 		vpnlog(VPN_LOG_ERROR,"Starting VPN instance failed...");
 		stop_vpnserver(serverNum);
+		sprintf(&buffer[0], "vpn_server%d_state", serverNum);
+		nvram_set(&buffer[0], "-1");	//error
 		return;
 	}
 	vpnlog(VPN_LOG_EXTRA,"Done starting openvpn");
