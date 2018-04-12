@@ -1046,11 +1046,13 @@ function handle_11ac_80MHz(){
 function change_ddns_setting(v){
 		var hostname_x = '<% nvram_get("ddns_hostname_x"); %>';
 		if (v == "WWW.ASUS.COM"){
+				document.getElementById("ddns_hostname_info_tr").style.display = "none";
+				document.getElementById("ddns_hostname_tr").style.display="";
 				document.form.ddns_hostname_x.parentNode.style.display = "none";
 				document.form.DDNSName.parentNode.style.display = "";
 				var ddns_hostname_title = hostname_x.substring(0, hostname_x.indexOf('.asuscomm.com'));
 				if(hostname_x != '' && ddns_hostname_title)
-						document.getElementById("DDNSName").value = ddns_hostname_title;						
+						document.getElementById("DDNSName").value = ddns_hostname_title;
 				else
 						document.getElementById("DDNSName").value = "<#asusddns_inputhint#>";
 	
@@ -1059,12 +1061,13 @@ function change_ddns_setting(v){
 				document.form.ddns_wildcard_x[0].disabled= 1;
 				document.form.ddns_wildcard_x[1].disabled= 1;
 				showhide("link", 0);
-				showhide("linkToHome", 0);	
+				showhide("linkToHome", 0);
 				showhide("wildcard_field",0);
 				document.form.ddns_regular_check.value = 0;
 				showhide("check_ddns_field", 0);
 				inputCtrl(document.form.ddns_regular_period, 0);
 				showhide("customnote", 0);
+				showhide("need_custom_scripts", 0);
 		}else if (v == "CUSTOM"){
 				document.form.ddns_hostname_x.parentNode.style.display = "";
 				document.form.DDNSName.parentNode.style.display = "none";
@@ -1077,37 +1080,61 @@ function change_ddns_setting(v){
 				showhide("linkToHome", 0);
 				showhide("wildcard_field",0);
 				showhide("check_ddns_field", 0);
-		}else{
+				if (('<% nvram_get("jffs2_enable"); %>' != '1') || ('<% nvram_get("jffs2_scripts"); %>' != '1'))
+					showhide("need_custom_scripts", 1);
+				else
+					showhide("need_custom_scripts", 0);
+		}
+		else if( v == "WWW.ORAY.COM"){
+			document.getElementById("ddns_hostname_tr").style.display="none";
+			inputCtrl(document.form.ddns_username_x, 1);
+			inputCtrl(document.form.ddns_passwd_x, 1);
+			document.form.ddns_wildcard_x[0].disabled= 1;
+			document.form.ddns_wildcard_x[1].disabled= 1;
+			showhide("link", 1);
+			showhide("linkToHome", 0);
+			showhide("wildcard_field",0);
+			document.form.ddns_regular_check.value = 0;
+			showhide("check_ddns_field", 0);
+			inputCtrl(document.form.ddns_regular_period, 0);
+		}
+		else{
+				document.getElementById("ddns_hostname_info_tr").style.display = "none";
+				document.getElementById("ddns_hostname_tr").style.display="";
 				document.form.ddns_hostname_x.parentNode.style.display = "";
 				document.form.DDNSName.parentNode.style.display = "none";
 				inputCtrl(document.form.ddns_username_x, 1);
 				inputCtrl(document.form.ddns_passwd_x, 1);
 				var disable_wild = 0;
-				if(v == "WWW.TUNNELBROKER.NET" || v == "WWW.NAMECHEAP.COM")
-					disable_wild = 1;
+				if(v == "WWW.TUNNELBROKER.NET" || v == "WWW.SELFHOST.DE" || v == "DOMAINS.GOOGLE.COM")
+					var disable_wild = 1;
+				else
+					var disable_wild = 0;
 				document.form.ddns_wildcard_x[0].disabled= disable_wild;
 				document.form.ddns_wildcard_x[1].disabled= disable_wild;
-				if(v == "WWW.ZONEEDIT.COM" || v == "WWW.NAMECHEAP.COM"){	 // Jieming added at 2013/03/06, remove free trail of zoneedit and add a link to direct to zoneedit 
+				if(v == "WWW.ZONEEDIT.COM" || v == "DOMAINS.GOOGLE.COM" || v == "WWW.NAMECHEAP.COM"){
 					showhide("link", 0);
 					showhide("linkToHome", 1);
 				}
 				else{
 					showhide("link", 1);
-					showhide("linkToHome", 0);				
+					showhide("linkToHome", 0);
 				}
 				
 				showhide("wildcard_field",!disable_wild);
 				showhide("check_ddns_field", 1);
+				showhide("customnote", 0);
+				showhide("need_custom_scripts", 0);
 				if(document.form.ddns_regular_check.value == 0)
 					inputCtrl(document.form.ddns_regular_period, 0);
 				else
 					inputCtrl(document.form.ddns_regular_period, 1);
-				showhide("customnote", 0);
 		}
+
 		if(v == "WWW.NAMECHEAP.COM")
-			$("ddns_username_th").innerHTML = Untranslated.namecheap_username_title;
+			document.getElementById("ddns_username_th").innerHTML = "Domain Name";
 		else
-			$("ddns_username_th").innerHTML = "<#LANHostConfig_x_DDNSUserName_itemname#>";
+			document.getElementById("ddns_username_th").innerHTML = "<#LANHostConfig_x_DDNSUserName_itemname#>";
 }
 
 function change_common_radio(o, s, v, r){

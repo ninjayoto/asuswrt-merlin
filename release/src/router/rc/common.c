@@ -1676,3 +1676,15 @@ int is_valid_domainname(const char *name)
 	}
 	return len;
 }
+
+// port from Merlin format.c
+void adjust_ddns_config(void)
+{
+	char *server;
+
+	server = nvram_safe_get("ddns_server_x");
+	if(!strcmp(server, "WWW.GOOGLE-DDNS.COM") || 
+	   !strcmp(server, "WWW.GOOGLE-DOMAINS.COM")) {
+		nvram_set("ddns_server_x", "DOMAINS.GOOGLE.COM");
+	}	
+}

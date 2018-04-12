@@ -4215,6 +4215,7 @@ int init_main(int argc, char *argv[])
 	} else
 #endif
 	{
+		adjust_ddns_config();
 		sysinit();
 
 		sigemptyset(&sigset);

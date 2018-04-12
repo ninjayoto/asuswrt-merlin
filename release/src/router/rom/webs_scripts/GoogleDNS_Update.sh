@@ -37,7 +37,7 @@ badauth()
 
 unvalid_request()
 {
-	#Code:401, LANHostConfig_x_DDNS_alarm_10=Unauthorized registration request!
+	#Code:401, LANHostConfig_x_DDNS_alarm_10=Unauthorized registration request! 
 	nvram set ddns_return_code=401
 	nvram set ddns_return_code_chk=401
 }
@@ -54,11 +54,11 @@ main()
 	[ -e "$RESULT_PATH" ] && rm -f $RESULT_PATH
 
 	wget -S --no-check-certificate "https://$USER:$PASSWD@domains.google.com/nic/update?hostname=$HOST&myip=$CurrWANIP" -O $RESULT_PATH
-
+	
 	sleep 1;
-
+	
 	result=`cat $RESULT_PATH`
-	if [ "$result" == "${RESPONSE_SUCCESS_GOOD} ${CurrWANIP}" ]; then
+	if [ "$result" == "${RESPONSE_SUCCESS_GOOD} ${CurrWANIP}" ]; then 
 		Successful
 	elif [ "$result" == "${RESPONSE_SUCCESS_NOCHG} ${CurrWANIP}" ]; then
 		Success_NoChange
@@ -67,7 +67,7 @@ main()
 	elif [ "$result" == "${RESPONSE_ERROR_NOTFQDN}" ] -o
 	     [ "$result" == "${RESPONSE_ERROR_BADAGENT}" ]; then
 		unvalid_request
-	else
+	else 
 		otherfail
 	fi
 }
@@ -81,10 +81,11 @@ usage()
 if [ $# != 4 ]; then
 	usage
 	exit;
-else
+else 
 	USER=$1
 	PASSWD=$2
 	HOST=$3
 	CurrWANIP=$4
 	main
 fi
+

@@ -2692,6 +2692,7 @@ start_ddns(void)
 	int unit, asus_ddns = 0;
 	char tmp[32], prefix[] = "wanXXXXXXXXXX_";
 	time_t now;
+	pid_t pid;
 
 	if (!is_routing_enabled()) {
 		_dprintf("return -1\n");
@@ -2768,19 +2769,27 @@ start_ddns(void)
 		service = "easydns";
 	else if (strcmp(server, "WWW.DNSOMATIC.COM")==0)
 		service = "dnsomatic";
-	else if (strcmp(server, "WWW.TUNNELBROKER.NET")==0)
+	else if (strcmp(server, "WWW.TUNNELBROKER.NET")==0) {
 		service = "heipv6tb";
+		eval("iptables", "-t", "filter", "-D", "INPUT", "-p", "icmp", "-s", "66.220.2.74", "-j", "ACCEPT");
+		eval("iptables", "-t", "filter", "-I", "INPUT", "1", "-p", "icmp", "-s", "66.220.2.74", "-j", "ACCEPT");
+		nvram_set("ddns_tunbkrnet", "1");
+	}
 	else if (strcmp(server, "WWW.NO-IP.COM")==0)
 		service = "noip";
 	else if (strcmp(server, "WWW.NAMECHEAP.COM")==0)
 		service = "namecheap";
         else if (strcmp(server, "CUSTOM")==0)
                 service = "";
+	else if (strcmp(server, "WWW.SELFHOST.DE") == 0)
+		service = "selfhost";
 	else if (strcmp(server, "WWW.ASUS.COM")==0) {
 		service = "dyndns", asus_ddns = 1;
 	}
-	else if (strcmp(server, "DOMAINS.GOOGLE.COM")==0) {
+	else if (strcmp(server, "DOMAINS.GOOGLE.COM") == 0)
 		service = "dyndns", asus_ddns=3;
+	else if (strcmp(server, "WWW.ORAY.COM")==0) {
+		service = "peanuthull", asus_ddns = 2;
 	} else {
 		logmessage("start_ddns", "Error ddns server name: %s\n", server);
 		return 0;
@@ -2810,30 +2819,36 @@ start_ddns(void)
 		}
 		eval("GoogleDNS_Update.sh", user, passwd, host, wan_ip);
 	}
+	else if (asus_ddns == 2) { //Peanuthull DDNS
+		if( (fp = fopen("/etc/phddns.conf", "w")) != NULL ) {
+			fprintf(fp, "[settings]\n");
+			fprintf(fp, "szHost = phddns60.oray.net\n");
+			fprintf(fp, "szUserID = %s\n", user);
+			fprintf(fp, "szUserPWD = %s\n", passwd);
+			fprintf(fp, "nicName = %s\n", wan_ifname);
+			fprintf(fp, "szLog = /var/log/phddns.log\n");
+			fclose(fp);
+
+			eval("phddns", "-c", "/etc/phddns.conf", "-d");
+		}
+	}
 	else if (asus_ddns == 1) {
 		char *nserver = nvram_invmatch("ddns_serverhost_x", "") ?
 			nvram_safe_get("ddns_serverhost_x") :
-			"ns1.asuscomm.com";
-		eval("ez-ipupdate",
-		     "-S", service, "-i", wan_ifname, "-h", host,
-		     "-A", "2", "-s", nserver,
-		     "-e", "/sbin/ddns_updated", "-b", "/tmp/ddns.cache");
+			"nwsrv-ns1.asus.com";
+		char *argv[] = { "ez-ipupdate", "-S", service, "-i", wan_ifname,
+				"-h", host, "-A", "2", "-s", nserver,
+				"-e", "/sbin/ddns_updated", "-b", "/tmp/ddns.cache", NULL };
+		_eval(argv, NULL, 0, &pid);
 	} else if (*service) {
-		eval("ez-ipupdate",
-		     "-S", service, "-i", wan_ifname, "-h", host,
-		     "-u", usrstr, wild ? "-w" : "",
-		     "-e", "/sbin/ddns_updated", "-b", "/tmp/ddns.cache");
+		char *argv[] = { "ez-ipupdate", "-S", service, "-i", wan_ifname, "-h", host,
+		     "-u", usrstr, wild ? "-w" : "", "-e", "/sbin/ddns_updated",
+		     "-b", "/tmp/ddns.cache", NULL };
+		_eval(argv, NULL, 0, &pid);
 	} else {	// Custom DDNS
 		// Block until it completes and updates the DDNS update results in nvram
 		run_custom_script_blocking("ddns-start", wan_ip);
 		return 0;
-	}
-
-	// force update for no change if ez-ipupdate does not
-	if (nvram_match("ddns_return_code", "ddns_query")) {
-		nvram_set("ddns_return_code", "no_change");
-		nvram_set("ddns_return_code_chk", "200");
-		eval("/sbin/ddns_updated");
 	}
 
 	run_custom_script("ddns-start", wan_ip);
@@ -2845,6 +2860,12 @@ stop_ddns(void)
 {
 	if (pids("ez-ipupdate"))
 		killall("ez-ipupdate", SIGINT);
+	if (pids("phddns"))
+		killall("phddns", SIGINT);
+	if (nvram_match("ddns_tunbkrnet", "1")) {
+		eval("iptables-restore", "/tmp/filter_rules");
+		nvram_unset("ddns_tunbkrnet");
+	}
 }
 
 int
