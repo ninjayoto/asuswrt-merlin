@@ -23,12 +23,16 @@ wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
 server1pid = '<% sysinfo("pid.vpnserver1"); %>';
 server1stt = '<% nvram_get("vpn_server1_state"); %>';
+server1err = '<% nvram_get("vpn_server1_errno"); %>';
 server2pid = '<% sysinfo("pid.vpnserver2"); %>';
 server2stt = '<% nvram_get("vpn_server2_state"); %>';
+server2err = '<% nvram_get("vpn_server2_errno"); %>';
 client1pid = '<% sysinfo("pid.vpnclient1"); %>';
 client1stt = '<% nvram_get("vpn_client1_state"); %>';
+client1err = '<% nvram_get("vpn_client1_errno"); %>';
 client2pid = '<% sysinfo("pid.vpnclient2"); %>';
 client2stt = '<% nvram_get("vpn_client2_state"); %>';
+client2err = '<% nvram_get("vpn_client2_errno"); %>';
 pptpdpid = '<% sysinfo("pid.pptpd"); %>';
 client1blk = '<% nvram_get("vpn_client1_block"); %>';
 client2blk = '<% nvram_get("vpn_client2_block"); %>';
@@ -41,6 +45,7 @@ vpnc_clientlist_array = decodeURIComponent('<% nvram_char_to_ascii("","vpnc_clie
 function initial(){
 	var state_r = " - Running";
 	var state_i = " - Connecting...";
+	var state_e = " - Error Connecting";
 	var state_s = "<span style=\"background-color: transparent; color: white;\"> - Stopped</span>";
 	var state_b = "<span style=\"background-color: transparent; color: red;\"> - VPN Clients Blocked</span>";
 
@@ -50,10 +55,22 @@ function initial(){
 		if (server1pid > 0) {
 			if (server1stt == 2)
 				$("server1_Block_Running").innerHTML = state_r;
+			else if (server1stt == -1)
+				$("server1_Block_Running").innerHTML = state_e;		
 			else
 				$("server1_Block_Running").innerHTML = state_i;
 		} else
 			$("server1_Block_Running").innerHTML = state_s;
+
+		if (server2pid > 0) {
+			if (server2stt == 2)
+				$("server2_Block_Running").innerHTML = state_r;
+			else if (server2stt == -1)
+				$("server2_Block_Running").innerHTML = state_e;
+			else
+				$("server2_Block_Running").innerHTML = state_i;
+		} else
+			$("server2_Block_Running").innerHTML = state_s;
 
 		if (client1pid > 0) {
 			if (client1stt == 2)
@@ -62,16 +79,17 @@ function initial(){
 				$("client1_Block_Running").innerHTML = state_i;
 		} else
 			$("client1_Block_Running").innerHTML = state_s;
+		if (client1stt == -1) {
+			$("client1_Block_Running").innerHTML = state_e;
+			if (client1err == 1)
+				$("client1_Block_Running").innerHTML += " - Address conflict";
+			else if (client1err == 2 || client1err == 3)
+				$("client1_Block_Running").innerHTML += " - Routing conflict";
+			else if(client1err == 4 || client1err == 5 || client1err == 6)
+				$("client1_Block_Running").innerHTML += " - Authorization failure";
+		}
 		if (client1blk == 1)
 			$("client1_Block_Running").innerHTML += state_b;
-		
-		if (server2pid > 0) {
-			if (server2stt == 2)
-				$("server2_Block_Running").innerHTML = state_r;
-			else
-				$("server2_Block_Running").innerHTML = state_i;
-		} else
-			$("server2_Block_Running").innerHTML = state_s;
 
 		if (client2pid > 0) {
 			if (client2stt == 2)
@@ -80,8 +98,17 @@ function initial(){
 				$("client2_Block_Running").innerHTML = state_i;
 		} else
 			$("client2_Block_Running").innerHTML = state_s;
+		if (client2stt == -1) {
+			$("client2_Block_Running").innerHTML = state_e;
+			if (client2err == 1)
+				$("client2_Block_Running").innerHTML += " - Address conflict";
+			else if (client2err == 2 || client2err == 3)
+				$("client2_Block_Running").innerHTML += " - Routing conflict";
+			else if(client2err == 4 || client2err == 5 || client2err == 6)
+				$("client2_Block_Running").innerHTML += " - Authorization failure";
+		}
 		if (client2blk == 1)
-			$("client2_Block_Running").innerHTML += state_b;
+			$("client2_Block_Running").innerHTML += state_b;		
 		
 		parseStatus(document.form.status_server1.value, "server1_Block");
 		parseStatus(document.form.status_client1.value, "client1_Block");
