@@ -990,15 +990,6 @@ void restart_dnsmasq(int force)
 
 void reload_dnsmasq(void)
 {
-#ifdef RTCONFIG_DNSSEC
-	if (nvram_match("dnssec_enable", "1") && (!nvram_match("ntp_sync","1"))) {
-		/* Don't reload, as it would prematurely enable timestamp validation */
-		stop_dnsmasq(0);
-		sleep(1);
-		start_dnsmasq(0);
-	}
-	else
-#endif
 		/* notify dnsmasq of resolv change */
 		kill_pidfile_s("/var/run/dnsmasq.pid", SIGHUP);
 
