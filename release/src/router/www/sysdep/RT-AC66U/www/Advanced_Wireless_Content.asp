@@ -122,6 +122,10 @@ function initial(){
 			if(document.form.wl_channel.value  == '0' && '<% nvram_get("wl_unit"); %>' == '1')
 				$('acs_band1_checkbox').style.display = "";					
 		}
+	}
+	else if(odmpid == "RT-AC66U_B1" && country == "AU"){
+		if(document.form.wl_channel.value  == '0' && wl_unit == '1')
+			document.getElementById('dfs_checkbox').style.display = "";
 	}	
 }
 

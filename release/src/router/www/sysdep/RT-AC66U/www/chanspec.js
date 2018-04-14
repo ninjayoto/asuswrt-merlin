@@ -72,7 +72,7 @@ function wl_chanspec_list_change(){
 						else if(bw_cap == "2"){		// 40MHz
 							$('wl_nctrlsb_field').style.display = "";
 								for(var i=0;i<wl_channel_list_5g.length;i++){			
-									if((based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "RT-AC69U" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC87U") && (country == "EU" && (parseInt(wl_channel_list_5g[i]) == 116 || parseInt(wl_channel_list_5g[i]) == 140)))
+									if((based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "RT-AC69U" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC87U" || (based_modelid == "RT-AC66U" && wl1_dfs == "1" && wl_dfs_enable == "1")) && (country == "EU" && (parseInt(wl_channel_list_5g[i]) == 116 || parseInt(wl_channel_list_5g[i]) == 140)))
 										wl_channel_list_5g[i] = wl_channel_list_5g[i];
 									else
 										wl_channel_list_5g[i] = wlextchannel_fourty(wl_channel_list_5g[i]);	
