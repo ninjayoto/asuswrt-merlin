@@ -4,6 +4,25 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_32D6j9527  (14-April-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: samba: (backport) don't start samba if sharing is disabled and master browser or WINS are enabled
+- CHANGED: rc: openvpn: (backport) set server state to -1 if failing to start
+- CHANGED: rc: (backport) no longer send empty DHCP option 252 (WPAD) by default, controllable through nvram
+- CHANGED: common: (backport) add optional second argument to run_custom_script_blocking()
+- CHANGED: rc: (backport) implement service-event custom script
+- CHANGED: rc: openvpn: (backport) move postconf execution after generating the firewall script (but before executing it)
+- CHANGED: ddns: (backport) update ddns options to 384.5
+* CHANGED: shared: update ac68 model detection
+* CHANGED: webui: add error reporting to vpn status page
+* CHANGED: services: no longer necessary to have separate dnssec handling in reload_dnsmasq
+* CHANGED: wl: update dfs channel selection for ac66u/ac66u_b1
+* FIXED: webui: layout fix ellipsis for 5g SSID
+
+
+374.43_32D5j9527  (5-April-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openssl: implement debian patch for OPENSSL_NO_BUF_FREELISTS
+
+
 374.43_32E4j9527  (2-April-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: rc: restart dnsmasq when stopping dnscrypt
 * FIXED: rc: properly handle dnsmasq sighup vs sigint notifications

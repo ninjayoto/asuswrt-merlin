@@ -3,492 +3,507 @@ Merlin Fork Custom Options
 ----------------------------------------------------------------------------------------------------------------
 Stop copy of syslog files to JFFS
 
-	Can be set in gui:	Yes (as of Update-11, Administration/System/Save syslog to JFFS)
-	Enable via NVRAM:	nvram set jffs2_log=1
-				nvram commit && reboot
+        Can be set in gui:      Yes (as of Update-11, Administration/System/Save syslog to JFFS)
+        Enable via NVRAM:       nvram set jffs2_log=1
+                                nvram commit && reboot
 
-	Routers Supported:	AC66,AC56,AC68
-	Released:		Update-02
-	Reboot Required:	Yes
-	Notes:			Existing logs must be manually deleted from /jffs (syslog.log and syslog.log-1)
+        Routers Supported:      AC66,AC56,AC68
+        Released:               Update-02
+        Reboot Required:        Yes
+        Notes:                  Existing logs must be manually deleted from /jffs (syslog.log and syslog.log-1)
 ----------------------------------------------------------------------------------------------------------------
 Enable Comcast DSCP fix
 
-	Can be set in gui:	Yes (Firewall/General/Enable DSCP override)
-	Enable via NVRAM:	nvram set DSCP_fix_enable=1
-				nvram commit && reboot
+        Can be set in gui:      Yes (Firewall/General/Enable DSCP override)
+        Enable via NVRAM:       nvram set DSCP_fix_enable=1
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-07
-	Reboot Required:	Yes
-	Notes:			For SOME Comcast service areas it has been seen that the
-				Differentiated Services Code Point (DSCP) value is incorrectly set to a low
-				priority, resulting in decreased internet throughput for wireless IPv4 transfers.
-				This fix overrides that incorrect value.
+        Routers Supported:      All
+        Released:               Update-07
+        Reboot Required:        Yes
+        Notes:                  For SOME Comcast service areas it has been seen that the
+                                Differentiated Services Code Point (DSCP) value is incorrectly set to a low
+                                priority, resulting in decreased internet throughput for wireless IPv4 transfers.
+                                This fix overrides that incorrect value.
 ----------------------------------------------------------------------------------------------------------------
 Display Traffic Monitor graphs in
 Mb/s (default is KB/s)
 
-	Can be set in gui:	Yes (Tools/Other Settings/Traffic Monitor graph units)	
-	Enable via NVRAM:	nvram set rstats_units=1
-				nvram commit
+        Can be set in gui:      Yes (Tools/Other Settings/Traffic Monitor graph units)  
+        Enable via NVRAM:       nvram set rstats_units=1
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-07
-	Reboot Required:	No
-	Notes:			Refresh or open the TM page in the browser
+        Routers Supported:      All
+        Released:               Update-07
+        Reboot Required:        No
+        Notes:                  Refresh or open the TM page in the browser
 ----------------------------------------------------------------------------------------------------------------
 Multiple listening addresses and
 ports for SSH access
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set sshd_addr=[address:]port,[address:]port,[address:]port,[address:]port
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set sshd_addr=[address:]port,[address:]port,[address:]port,[address:]port
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-07
-	Reboot Required:	Yes
-	Notes:			Up to 4 address:port or port values may be specified separated by commas
-				This will override the port setting specified in the gui
-				This modifies a previous commit in Update-05 (was a single address only and now
-					need to specify a port when specifying an address)
+        Routers Supported:      All
+        Released:               Update-07
+        Reboot Required:        Yes
+        Notes:                  Up to 4 address:port or port values may be specified separated by commas
+                                This will override the port setting specified in the gui
+                                This modifies a previous commit in Update-05 (was a single address only and now
+                                        need to specify a port when specifying an address)
 ----------------------------------------------------------------------------------------------------------------
 Enable full syslog records for
 remote monitoring
 
-	Can be set in gui:	Yes (Update-15)
-	Enable via NVRAM:	nvram set log_small=0
-				nvram commit && reboot
+        Can be set in gui:      Yes (Update-15)
+        Enable via NVRAM:       nvram set log_small=0
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-08 (NVRAM) Update-15 (GUI)
-	Reboot Required:	Yes
-	Notes:			This will include the full header (including hostname and priority level) in the 
-					syslogd output to enable remote monitoring
+        Routers Supported:      All
+        Released:               Update-08 (NVRAM) Update-15 (GUI)
+        Reboot Required:        Yes
+        Notes:                  This will include the full header (including hostname and priority level) in the 
+                                        syslogd output to enable remote monitoring
 ----------------------------------------------------------------------------------------------------------------
 Save HTTPS certificate
 
-	Can be set in gui:	Yes (Administration/System/Save HTTPS certificate)
-	Enable via NVRAM:	nvram set https_crt_save=1
-				nvram commit && reboot
+        Can be set in gui:      Yes (Administration/System/Save HTTPS certificate)
+        Enable via NVRAM:       nvram set https_crt_save=1
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-11
-	Reboot Required:	Yes
-	Notes:			If you are using HTTPS validation, the security certificate is regenerated at every
-					boot, requiring you to install a new certificate in your browser.  This 
-					option saves the certificate across reboots negating the need to reinstall 
-					in your browser. 
+        Routers Supported:      All
+        Released:               Update-11
+        Reboot Required:        Yes
+        Notes:                  If you are using HTTPS validation, the security certificate is regenerated at every
+                                  boot, requiring you to install a new certificate in your browser.  This 
+                                  option saves the certificate across reboots negating the need to reinstall 
+                                  in your browser. 
 ----------------------------------------------------------------------------------------------------------------
 Filter IPv6 Neighbor Solicitation
-	
-	Can be set in gui:	Yes (Firewall/General/Filter IPv6 Neighbor Solicitation)
-	Enable via NVRAM:	ipv6_neighsol_drop=1 (1=Yes, 0=No)
-				nvram commit
-				service restart_firewall
+        
+        Can be set in gui:      Yes (Firewall/General/Filter IPv6 Neighbor Solicitation)
+        Enable via NVRAM:       ipv6_neighsol_drop=1 (1=Yes, 0=No)
+                                nvram commit
+                                service restart_firewall
 
-	Routers Supported:	All
-	Released:		Update-11
-	Reboot Required:	No
-	Notes:			Control iptables rule dropping IPv6 neighbor solicitation requests 
+        Routers Supported:      All
+        Released:               Update-11
+        Reboot Required:        No
+        Notes:                  Control iptables rule dropping IPv6 neighbor solicitation requests 
 ----------------------------------------------------------------------------------------------------------------
 CROND logging options
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set cron_loglevel=N (default is 8)
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set cron_loglevel=N (default is 8)
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-11
-	Reboot Required:	Yes
-	Notes:			Setting cron_loglevel=N sets the logging level to N
+        Routers Supported:      All
+        Released:               Update-11
+        Reboot Required:        Yes
+        Notes:                  Setting cron_loglevel=N sets the logging level to N
 ----------------------------------------------------------------------------------------------------------------
 Scan media files at every boot
-	
-	Can be set in gui:	Yes (USB Applications/Servers Center/Media Server/Scan media files at every boot)
-	Enable via NVRAM:	nvram set dms_scan=1
-				nvram commit
+        
+        Can be set in gui:      Yes (USB Applications/Servers Center/Media Server/Scan media files at every boot)
+        Enable via NVRAM:       nvram set dms_scan=1
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-12
-	Reboot Required:	No
-	Notes:			Setting to No will only scan media files when a change is detected
+        Routers Supported:      All
+        Released:               Update-12
+        Reboot Required:        No
+        Notes:                  Setting to No will only scan media files when a change is detected
 ----------------------------------------------------------------------------------------------------------------
 Enable IPv6 MTU Advertisement
-	
-	Can be set in gui:	Yes (IPv6/Enable IPv6 MTU Advertisement)
-	Enable via NVRAM:	nvram set ipv6_radvd_mtu=1 (0 to disable)
-				nvram commit
+        
+        Can be set in gui:      Yes (IPv6/Enable IPv6 MTU Advertisement)
+        Enable via NVRAM:       nvram set ipv6_radvd_mtu=1 (0 to disable)
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-13
-	Reboot Required:	No
-	Notes:			Default is to enable advertisement for IPv6 on all connection types
+        Routers Supported:      All
+        Released:               Update-13
+        Reboot Required:        No
+        Notes:                  Default is to enable advertisement for IPv6 on all connection types
 ----------------------------------------------------------------------------------------------------------------
 Advertise Router as IPv6 DNS Server
-	
-	Can be set in gui:	Yes (IPv6/Advertise router as DNS server)
-	Enable via NVRAM:	nvram set ipv6_dns_router=1
-				nvram commit
+        
+        Can be set in gui:      Yes (IPv6/Advertise router as DNS server)
+        Enable via NVRAM:       nvram set ipv6_dns_router=1
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-14
-	Reboot Required:	Yes
-	Notes:			Enable IPv6 DNS lookups to be cached by dnsmasq
+        Routers Supported:      All
+        Released:               Update-14
+        Reboot Required:        Yes
+        Notes:                  Enable IPv6 DNS lookups to be cached by dnsmasq
 ----------------------------------------------------------------------------------------------------------------
 Stealth Mode - Show power status only
-	
-	Can be set in gui:	Yes (Tools/Other Settings/Stealth Mode/Show power status only)
-	Enable via NVRAM:	nvram set led_disable=2
-				nvram commit
-				service restart_leds
+        
+        Can be set in gui:      Yes (Tools/Other Settings/Stealth Mode/Show power status only)
+        Enable via NVRAM:       nvram set led_disable=2
+                                nvram commit
+                                service restart_leds
 
-	Routers Supported:	All
-	Released:		Update-14
-	Reboot Required:	No
-	Notes:			Show only the power status led
+        Routers Supported:      All
+        Released:               Update-14
+        Reboot Required:        No
+        Notes:                  Show only the power status led
 ----------------------------------------------------------------------------------------------------------------
 HTTP Lan Port
-	
-	Can be set in gui:	Yes (Administration/System/HTTP Lan Port)
-	Enable via NVRAM:	No, nvram variable http_lanport must be set thru gui
+        
+        Can be set in gui:      Yes (Administration/System/HTTP Lan Port)
+        Enable via NVRAM:       No, nvram variable http_lanport must be set thru gui
 
-	Routers Supported:	All
-	Released:		Update-14
-	Reboot Required:	Yes
-	Notes:			Changes HTTP port for gui access from default port 80
-				Reset to default of 80 before loading firmware which does not support 
-					changing of the port
+        Routers Supported:      All
+        Released:               Update-14
+        Reboot Required:        Yes
+        Notes:                  Changes HTTP port for gui access from default port 80
+                                Reset to default of 80 before loading firmware which does not support 
+                                  changing of the port
 ----------------------------------------------------------------------------------------------------------------
 QOS SFQ limit
-	
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set qos_sfql=[0,off-default  1,auto  2-127,value]
-				nvram commit
+        
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set qos_sfql=[0,off-default  1,auto  2-127,value]
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-14
-	Reboot Required:	Yes
-	Notes:			Changes SFQ qdisc packet limit
-				A value of 1 automatically selects a value based on upload speed (recommended)
-				A value of 2-127 sets this value as the packet limit
+        Routers Supported:      All
+        Released:               Update-14
+        Reboot Required:        Yes
+        Notes:                  Changes SFQ qdisc packet limit
+                                A value of 1 automatically selects a value based on upload speed (recommended)
+                                A value of 2-127 sets this value as the packet limit
 ----------------------------------------------------------------------------------------------------------------
 SNTP Server
-	
-	Can be set in gui:	Yes (Administration/System/Enable router as local SNTP server)
-	Enable via NVRAM:	nvram set ntpd_server=1
-				nvram commit
-				service restart_time
+        
+        Can be set in gui:      Yes (Administration/System/Enable router as local SNTP server)
+        Enable via NVRAM:       nvram set ntpd_server=1
+                                nvram commit
+                                service restart_time
 
-	Routers Supported:	All
-	Released:		Update-15
-	Reboot Required:	No
-	Notes:			Enables the router to act as an SNTP time server
-				User 'router.asus.com' as your SNTP server
+        Routers Supported:      All
+        Released:               Update-15
+        Reboot Required:        No
+        Notes:                  Enables the router to act as an SNTP time server
+                                User 'router.asus.com' as your SNTP server
 ----------------------------------------------------------------------------------------------------------------
 Networkmap UNIX/Linux Clients as PC
-	
-	Can be set in gui:	No setting required
-	Enable via NVRAM:	No setting required
+        
+        Can be set in gui:      No setting required
+        Enable via NVRAM:       No setting required
 
-	Routers Supported:	All
-	Released:		Update-15
-	Reboot Required:	No
-	Notes:			You must install SAMBA and winbind on the client for the client to be 
-					recognized as a PC
+        Routers Supported:      All
+        Released:               Update-15
+        Reboot Required:        No
+        Notes:                  You must install SAMBA and winbind on the client for the client to be 
+                                  recognized as a PC
 ----------------------------------------------------------------------------------------------------------------
 Disable Avahi (mDNS) Reflector
-	
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set mdns_reflector=0
-				nvram commit
-				service restart_mdns
+        
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set mdns_reflector=0
+                                nvram commit
+                                service restart_mdns
 
-	Routers Supported:	All
-	Released:		Update-15
-	Reboot Required:	No
-	Notes:			Changes the default state of the Avahi reflector to disabled
+        Routers Supported:      All
+        Released:               Update-15
+        Reboot Required:        No
+        Notes:                  Changes the default state of the Avahi reflector to disabled
 ----------------------------------------------------------------------------------------------------------------
 Enable logging of successful NTP updates
-	
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set ntp_log=0
-				nvram commit
+        
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set ntp_log=0
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-15
-	Reboot Required:	No
-	Notes:			Successful NTP updates are not logged by default, fails are always logged
-				This option enables logging of successful updates
+        Routers Supported:      All
+        Released:               Update-15
+        Reboot Required:        No
+        Notes:                  Successful NTP updates are not logged by default, fails are always logged
+                                This option enables logging of successful updates
 ----------------------------------------------------------------------------------------------------------------
 Set NTP update interval
-	
-	Can be set in gui:	Yes (Administration/System/Router NTP update interval (hours))
-	Enable via NVRAM:	nvram set ntp_update=[interval in hours]
-				nvram commit
+        
+        Can be set in gui:      Yes (Administration/System/Router NTP update interval (hours))
+        Enable via NVRAM:       nvram set ntp_update=[interval in hours]
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-15 w/o gui support, Update-16 w/ gui support
-	Reboot Required:	No
-	Notes:			Default is that the router will update with its NTP server every hour
-				This option changes the number of hours between updates.  The value is not currently error
-					checked and should be an integer between 1 and 24 (hours)
-				A value of '0' disables NTP updates and the time must be set manually (Update-16)
+        Routers Supported:      All
+        Released:               Update-15 w/o gui support, Update-16 w/ gui support
+        Reboot Required:        No
+        Notes:                  Default is that the router will update with its NTP server every hour
+                                This option changes the number of hours between updates.  The value is not currently error
+                                  checked and should be an integer between 1 and 24 (hours)
+                                A value of '0' disables NTP updates and the time must be set manually (Update-16)
 ----------------------------------------------------------------------------------------------------------------
 Set NTP alternate time server
 
-	Can be set in gui:	Yes (Administration/System/NTP Server (Alternate))
-	Enable via NVRAM:	nvram set ntp_update=[interval in hours]
-				nvram commit
+        Can be set in gui:      Yes (Administration/System/NTP Server (Alternate))
+        Enable via NVRAM:       nvram set ntp_update=[interval in hours]
+                                nvram commit
 
-	Routers Supported:	All
-	Released:		Update-15 w/o gui support, Update-16 w/ gui support
-	Reboot Required:	No
-	Notes:			Default is that the router will update with its NTP server every hour
-				This option changes the number of hours between updates.  The value is not currently error
-					checked and should be an integer between 1 and 24 (hours)
-				A value of '0' disables NTP updates and the time must be set manually (Update-16)
+        Routers Supported:      All
+        Released:               Update-15 w/o gui support, Update-16 w/ gui support
+        Reboot Required:        No
+        Notes:                  Default is that the router will update with its NTP server every hour
+                                This option changes the number of hours between updates.  The value is not currently error
+                                  checked and should be an integer between 1 and 24 (hours)
+                                A value of '0' disables NTP updates and the time must be set manually (Update-16)
 
 ----------------------------------------------------------------------------------------------------------------
 Special support for Private Internet Access (PIA) OpenVPN Client
 
-	Can be set in gui:	Yes (Administration/System/NTP Server (Alternate))
-	Enable via NVRAM:	N/A (see pia_openvpn_options.zip in the download directory)
+        Can be set in gui:      Yes (Administration/System/NTP Server (Alternate))
+        Enable via NVRAM:       N/A (see pia_openvpn_options.zip in the download directory)
 
-	Routers Supported:	All
-	Released:		Update-16
-	Reboot Required:	No
-	Notes:			You can now set cipher, authentication and encryption options via the router as you would
-					using the PIA app.
-				You need to add a line to the custom config section and replace the ca with a new cert
-					(included in the zip) in addition to setting the appropriate OpenVPN options.
+        Routers Supported:      All
+        Released:               Update-16
+        Reboot Required:        No
+        Notes:                  You can now set cipher, authentication and encryption options via the router as you would
+                                  using the PIA app.
+                                You need to add a line to the custom config section and replace the ca with a new cert
+                                  (included in the zip) in addition to setting the appropriate OpenVPN options.
 ----------------------------------------------------------------------------------------------------------------
 Set number of threads for NVS server
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set nfsd_threads=x (where x is the number of threads)
-				nvram commit & service restart_nfs
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set nfsd_threads=x (where x is the number of threads)
+                                nvram commit & service restart_nfs
 
-	Routers Supported:	All
-	Released:		Update-17
-	Reboot Required:	No
-	Notes:			The default number of threads has now been raised to two (instead of a single thread)
+        Routers Supported:      All
+        Released:               Update-17
+        Reboot Required:        No
+        Notes:                  The default number of threads has now been raised to two (instead of a single thread)
 ---------------------------------------------------------------------------------------------------------------
 Set preferred interface for bandwidth limiter
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set qos_iface=[iface]
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set qos_iface=[iface]
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-17
-	Reboot Required:	No
-	Notes:			The default interface is eth0 (standard WAN interface).   This may be useful if running
-					an OpenVPN client and wish to limit that bandwidth (set to tun11 for example for
-					vpnclient1.
+        Routers Supported:      All
+        Released:               Update-17
+        Reboot Required:        No
+        Notes:                  The default interface is eth0 (standard WAN interface).   This may be useful if running
+                                  an OpenVPN client and wish to limit that bandwidth (set to tun11 for example for
+                                  vpnclient1.
 ---------------------------------------------------------------------------------------------------------------
 Use alternate NAT Loopback implementation (ASUS)
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set fw_nat_loopback=1
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set fw_nat_loopback=1
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-17
-	Reboot Required:	No
-	Notes:			The default NAT Loopback is that developed by Merlin and has been used in all fork
-					firmware levels which have been released.   Merlin's implementation employs
-					iptables marks in it's implementation.   This alternate method does not use
-					marks and may be helpful if the user is employing custom marks.   Note also
-					that in V17 the standard Merlin implementation has been changed to only use
-					a single bit, to aid users who what to perform custom packet marking.
+        Routers Supported:      All
+        Released:               Update-17
+        Reboot Required:        No
+        Notes:                  The default NAT Loopback is that developed by Merlin and has been used in all fork
+                                  firmware levels which have been released.   Merlin's implementation employs
+                                  iptables marks in it's implementation.   This alternate method does not use
+                                  marks and may be helpful if the user is employing custom marks.   Note also
+                                  that in V17 the standard Merlin implementation has been changed to only use
+                                  a single bit, to aid users who what to perform custom packet marking.
 ---------------------------------------------------------------------------------------------------------------
 Ability to disable DNSSEC permissive mode
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set dnssec_check_unsigned=1
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set dnssec_check_unsigned=1
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-17
-	Reboot Required:	No
-	Notes:			By default, DNSSEC will also accept unsigned responses.  This option forces DNSSEC
-					to only accept signed responses.  USE WITH CAUTION:  This can disable dns lookups
-					if no DNSSEC enabled servers are available.
+        Routers Supported:      All
+        Released:               Update-17
+        Reboot Required:        No
+        Notes:                  By default, DNSSEC will also accept unsigned responses.  This option forces DNSSEC
+                                  to only accept signed responses.  USE WITH CAUTION:  This can disable dns lookups
+                                  if no DNSSEC enabled servers are available.
 ---------------------------------------------------------------------------------------------------------------
-Ability to enable DFS channels for N66U EU routers
+Ability to enable DFS channels for N66U/AC66U-MIPS EU routers
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set wl_dfs_enable=1
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set wl_dfs_enable=1
+                                nvram commit && reboot
 
-	Routers Supported:	N66U/R/W
-	Released:		Update-18
-	Reboot Required:	Yes
-	Notes:			The base 374.43 firmware only supports the lower channels on the 5GHz band in
-					EU configured routers.
-				This setting enables support for the DFS and upper 5GHz channels with full regulatory
-					support.
+        Routers Supported:      N66U/R/W, AC66U_B0
+        Released:               Update-18
+        Reboot Required:        Yes
+        Notes:                  The base 374.43 firmware only supports the lower channels on the 5GHz band in
+                                  EU configured routers.
+                                This setting enables support for the DFS and upper 5GHz channels with full regulatory
+                                  support.
+								Note: There are two versions of the MIPS based AC66U, rev A2 and rev B0.  The DFS
+                                  DFS channels are only available on the later rev B0 hardware.
 ---------------------------------------------------------------------------------------------------------------
 Ability to set the Site Level Aggregation identifier (sla-id)
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set ipv6_slaid=[number]
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set ipv6_slaid=[number]
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-19
-	Reboot Required:	Yes
-	Notes:			Sets which prefix out of the delegation to use. This is 2^sla-id. If you have a /48, 
-					valid values would be 2^16 or 0-65535. 
-					If you had a /56, it would be 2^8 or 0-255. A /60 is 0-15.
+        Routers Supported:      All
+        Released:               Update-19
+        Reboot Required:        Yes
+        Notes:                  Sets which prefix out of the delegation to use. This is 2^sla-id. If you have a /48, 
+                                  valid values would be 2^16 or 0-65535. 
+                                  If you had a /56, it would be 2^8 or 0-255. A /60 is 0-15.
 ---------------------------------------------------------------------------------------------------------------
 Control release of IPv6 Addresses on exit
 
-	Can be set in gui:	Yes
-	Enable via NVRAM:	nvram set ipv6_dhcp6c_release=[1 release,  0 no release]
-				nvram commit && reboot
+        Can be set in gui:      Yes
+        Enable via NVRAM:       nvram set ipv6_dhcp6c_release=[1 release,  0 no release]
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-19
-	Reboot Required:	Yes
-	Notes:			Release addresses on exit.  Not releases addresses allows some ISPs to continue to assign the 
-					same IPv6 addresses.
+        Routers Supported:      All
+        Released:               Update-19
+        Reboot Required:        Yes
+        Notes:                  Release addresses on exit.  Not releases addresses allows some ISPs to continue to assign the 
+                                  same IPv6 addresses.
 ---------------------------------------------------------------------------------------------------------------
 Ability force a DHCPv6 request during IPv6 prefix delegation
 
-	Can be set in gui:	Yes
-	Enable via NVRAM:	nvram set ipv6_dhcp6c_force=1
-				nvram commit && reboot
+        Can be set in gui:      Yes
+        Enable via NVRAM:       nvram set ipv6_dhcp6c_force=1
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-19
-	Reboot Required:	Yes
-	Notes:			Some ISPs will not send an IPv6 prefix without an address REQUEST.  
-					Sky UK is known to require this option.
+        Routers Supported:      All
+        Released:               Update-19
+        Reboot Required:        Yes
+        Notes:                  Some ISPs will not send an IPv6 prefix without an address REQUEST.  
+                                  Sky UK is known to require this option.
 ---------------------------------------------------------------------------------------------------------------
 Special IPv6 options
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set ipv6_isp_opt=xx
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set ipv6_isp_opt=xx
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-20
-	Reboot Required:	Yes
-	Notes:			ipv6_isp_opt is a mask with the following options
-					ipv6_isp_opt=16 : Disable rapid-commit for dhcp6 server
-					ipv6_isp_opt=8  : Disable rapid-commit for dhcp6c client
-					ipv6_isp_opt=4  : Send generic ia-na=0 (default is calculated value based on MAC)
-					ipv6_isp_opt=2  : Don't send prefix length, preferred lifetime hint (this may be invalid)
-					ipv6_isp_opt=1  : Force default ipv6 route if not set by ISP
+        Routers Supported:      All
+        Released:               Update-20
+        Reboot Required:        Yes
+        Notes:                  ipv6_isp_opt is a mask with the following options
+                                  ipv6_isp_opt=16 : Disable rapid-commit for dhcp6 server
+                                  ipv6_isp_opt=8  : Disable rapid-commit for dhcp6c client
+                                  ipv6_isp_opt=4  : Send generic ia-na=0 (default is calculated value based on MAC)
+                                  ipv6_isp_opt=2  : Don't send prefix length, preferred lifetime hint (this may be invalid)
+                                  ipv6_isp_opt=1  : Force default ipv6 route if not set by ISP
 
-					The default value is ipv6_isp_opt=0. Add the values to select multiple options.
+                                The default value is ipv6_isp_opt=0. Add the values to select multiple options.
 ---------------------------------------------------------------------------------------------------------------
 OpenVPN Client Reverse Strict DNS
 
-	Can be set in gui:	No
-	Enable via NVRAM:	nvram set vpn_reverse_strict=1
-				nvram commit && reboot
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set vpn_reverse_strict=1
+                                nvram commit && reboot
 
-	Routers Supported:	All
-	Released:		Update-23
-	Reboot Required:	No - alternatively can restart the VPN Client
-	Notes:			The OpenVPN DNS strict option causes dnsmasq to access the DNS servers in order, first to last,
-					with the DNS servers provided by the VPN added BEFORE the defined WAN servers.
-				Setting this option causes the VPN DNS servers to be appended to the list of servers AFTER the WAN
-					defined servers, so they will be accessed only if the WAN defined servers are unavailable.
-					This may be useful if you are running a DNS server on your local LAN.
+        Routers Supported:      All
+        Released:               Update-23
+        Reboot Required:        No - alternatively can restart the VPN Client
+        Notes:                  The OpenVPN DNS strict option causes dnsmasq to access the DNS servers in order, first to last,
+                                  with the DNS servers provided by the VPN added BEFORE the defined WAN servers.
+                                Setting this option causes the VPN DNS servers to be appended to the list of servers AFTER the WAN
+                                  defined servers, so they will be accessed only if the WAN defined servers are unavailable.
+                                  This may be useful if you are running a DNS server on your local LAN.
 ---------------------------------------------------------------------------------------------------------------
 IPv6 Local Name Resolution
 
-	Can be set in gui:	Yes
-	Enable via NVRAM:	No
-				Enable by adding the following lines to /jffs/configs/dnsmasq.conf.add
+        Can be set in gui:      Yes
+        Enable via NVRAM:       No
+                                Enable by adding the following lines to /jffs/configs/dnsmasq.conf.add
 
-				dhcp-script=/usr/sbin/v6hosts.sh
-				addn-hosts=/_etc/hosts.autov6
+                                dhcp-script=/usr/sbin/v6hosts.sh
+                                addn-hosts=/_etc/hosts.autov6
 
-	Routers Supported:	All
-	Released:		Update-23
-	Reboot Required:	No - if manually configuring restart dnsmasq
-	Notes:			Add script for IPv6 hosts auto update for native/stateless IPv6
-					(adds local ipv6 name resolution to public address)
+        Routers Supported:      All
+        Released:               Update-23
+        Reboot Required:        No - if manually configuring restart dnsmasq
+        Notes:                  Add script for IPv6 hosts auto update for native/stateless IPv6
+                                  (adds local ipv6 name resolution to public address)
 ---------------------------------------------------------------------------------------------------------------
 Move certs from NVRAM to JFFS
 
-	Can be set in gui:	No
-	Enable via NVRAM:	No
-				This function is provided via command line using telnet/ssh
+        Can be set in gui:      No
+        Enable via NVRAM:       No
+                                This function is provided via command line using telnet/ssh
 
-				To move the SSH (dropbear certs), enter
-				sshd2jffs or
-				sshd2nvram
+                                To move the SSH (dropbear certs), enter
+                                sshd2jffs or
+                                sshd2nvram
 
-				To move the OpenVPN certs, enter
-				ovpn2jffs  [server1|server2|client1|client2] or
-				ovpn2nvram [server1|server2|client1|client2]
+                                To move the OpenVPN certs, enter
+                                ovpn2jffs  [server1|server2|client1|client2] or
+                                ovpn2nvram [server1|server2|client1|client2]
 
-				At the end of the command execution, you will be prompted to reboot the router
+                                At the end of the command execution, you will be prompted to reboot the router
 
-	Routers Supported:	All
-	Released:		Update-24
-	Reboot Required:	Yes
-	Notes:			These commands can free NVRAM space by moving certificates/keys from NVRAM to JFFS (and back if required).
-				They may be used if you are receiving a low NVRAM warning from the router gui.
-				IMPORTANT:  If you wish to revert to a firmware prior to Update-24 and have moved the certs to JFFS,
-					you MUST move them back to NVRAM prior to loading the earlier firmware.
+        Routers Supported:      All
+        Released:               Update-24
+        Reboot Required:        Yes
+        Notes:                  These commands can free NVRAM space by moving certificates/keys from NVRAM to JFFS (and back if required).
+                                They may be used if you are receiving a low NVRAM warning from the router gui.
+                                IMPORTANT:  If you wish to revert to a firmware prior to Update-24 and have moved the certs to JFFS,
+                                  you MUST move them back to NVRAM prior to loading the earlier firmware.
 ---------------------------------------------------------------------------------------------------------------
 Disable ASUS Protection Server
 
-	Can be set in gui:	Yes (Firewall)
-	Enable via NVRAM:	nvram set ptcsrv_enable=0
-				nvram commit && service restart_firewall
+        Can be set in gui:      Yes (Firewall)
+        Enable via NVRAM:       nvram set ptcsrv_enable=0
+                                nvram commit && service restart_firewall
 
 
-	Routers Supported:	All
-	Released:		Update-27
-	Reboot Required:	No
-	Notes:			The ASUS protection server monitors attempts to access the telnet and SSH ports.  If excessive attempts
-					are detected, the source IP address of those attempts will automatically be blocked.
-				It is NOT recommended to disable this service unless you are running a third-party router addon which
-					provides the same functionality.
+        Routers Supported:      All
+        Released:               Update-27
+        Reboot Required:        No
+        Notes:                  The ASUS protection server monitors attempts to access the telnet and SSH ports.  If excessive attempts
+                                  are detected, the source IP address of those attempts will automatically be blocked.
+                                It is NOT recommended to disable this service unless you are running a third-party router addon which
+                                  provides the same functionality.
 ---------------------------------------------------------------------------------------------------------------
 Assign Bandwidth Limiter rules in Kb/s instead of Mb/s
 
-	Can be set in gui:	Yes (User-defined Bandwidth Limiting)
-	Enable via NVRAM:	nvram set qos_bw_units=0
-				nvram commit
+        Can be set in gui:      Yes (User-defined Bandwidth Limiting)
+        Enable via NVRAM:       nvram set qos_bw_units=0
+                                nvram commit
 
 
-	Routers Supported:	All
-	Released:		Update-27
-	Reboot Required:	No
-	Notes:			Set the value to '0' for Kb/s or to '1' for Mb/s
-				followed by a refresh of the webui for Bandwidth Limiter
+        Routers Supported:      All
+        Released:               Update-27
+        Reboot Required:        No
+        Notes:                  Set the value to '0' for Kb/s or to '1' for Mb/s
+                                followed by a refresh of the webui for Bandwidth Limiter
 ---------------------------------------------------------------------------------------------------------------
 Allow blocking IPv6 when OpenVPN client is active
 
-	Can be set in gui:	Yes (OpenVPN Client)
-	Enable via NVRAM:	nvram set vpn_block_ipv6=1
-				nvram commit
+        Can be set in gui:      Yes (OpenVPN Client)
+        Enable via NVRAM:       nvram set vpn_block_ipv6=1
+                                nvram commit
 
 
-	Routers Supported:	All
-	Released:		Update-27E7
-	Reboot Required:	No
-	Notes:			When running in a dual stack environment, set the value to '1' to block IPv6, or '0' to allow
-				Setting this option may create delays in opening some IPv6 enabled sites depending on the browser bein used.
-					IPv6 only sites will not be accessible.
+        Routers Supported:      All
+        Released:               Update-27E7
+        Reboot Required:        No
+        Notes:                  When running in a dual stack environment, set the value to '1' to block IPv6, or '0' to allow
+                                Setting this option may create delays in opening some IPv6 enabled sites depending on the browser bein used.
+                                  IPv6 only sites will not be accessible.
+---------------------------------------------------------------------------------------------------------------
+Send empty WPAD response
+
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set dhcpd_wpad_filter=1
+                                nvram commit
+
+
+        Routers Supported:      All
+        Released:               Update-32E6
+        Reboot Required:        Yes (to refresh wireless leases, ethernet leases must be manually renewed)
+        Notes:                  DNSMASQ now does not send a single linefeed as a WPAD url.  This can create Event Log spam on some Windows
+                                  versions.   Setting this option enables the previous behavior of sending the empty linfeed WPAD response.
 ---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 
 For options set with 'nvram set variable=1', setting 'nvram set variable=0' will disable
-	(nvram commit and reboot if required)
+        (nvram commit and reboot if required)
 
 For options set with 'nvram set variable=some_string', setting the with no data 'nvram set variable=', 
-	will disable (nvram commit and reboot if required)
+        will disable (nvram commit and reboot if required)
 
 Alternatively you can erase the variable with 'nvram unset variable' (nvram commit and reboot if required)
 
