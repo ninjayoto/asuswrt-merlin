@@ -368,17 +368,17 @@ int main(int argc, char *argv[])
 			    #ifdef DEBUG  //Write client info to file
                 		fp_ip=fopen("/var/client_ip_mac.txt", "a");
                 		if (fp_ip==NULL) {
-                    		printf("File Open Error!\n");
+                			printf("File Open Error!\n");
                 		}
                 		else {
                         	printf("Fill: %d-> %d.%d", i,p_client_detail_info_tab->ip_addr[i][2],p_client_detail_info_tab->ip_addr[i][3]);
 
                         	fprintf(fp_ip, "%d.%d.%d.%d,%02X:%02X:%02X:%02X:%02X:%02X\n",
-                      	 	    p_client_detail_info_tab->ip_addr[i][0],p_client_detail_info_tab->ip_addr[i][1],
-                       	 	    p_client_detail_info_tab->ip_addr[i][2],p_client_detail_info_tab->ip_addr[i][3],
-                        	    p_client_detail_info_tab->mac_addr[i][0],p_client_detail_info_tab->mac_addr[i][1],
-                            	    p_client_detail_info_tab->mac_addr[i][2],p_client_detail_info_tab->mac_addr[i][3],
-                       		    p_client_detail_info_tab->mac_addr[i][4],p_client_detail_info_tab->mac_addr[i][5]);
+                            	p_client_detail_info_tab->ip_addr[i][0],p_client_detail_info_tab->ip_addr[i][1],
+                            	p_client_detail_info_tab->ip_addr[i][2],p_client_detail_info_tab->ip_addr[i][3],
+                            	p_client_detail_info_tab->mac_addr[i][0],p_client_detail_info_tab->mac_addr[i][1],
+                            	p_client_detail_info_tab->mac_addr[i][2],p_client_detail_info_tab->mac_addr[i][3],
+                            	p_client_detail_info_tab->mac_addr[i][4],p_client_detail_info_tab->mac_addr[i][5]);
                     		}
                     		fclose(fp_ip);
 			    #endif
@@ -386,25 +386,25 @@ int main(int argc, char *argv[])
 			}
 			else { //Nomo ARP Packet or ARP response to other IP
         	                //Compare IP and IP buffer if not exist
-                        	for(i=0; i<p_client_detail_info_tab->ip_mac_num; i++) {
-                                        if( !memcmp(p_client_detail_info_tab->ip_addr[i], arp_ptr->source_ipaddr, 4) &&
-					    !memcmp(p_client_detail_info_tab->mac_addr[i], arp_ptr->source_hwaddr, 6)) {
-                                              	NMP_DEBUG_M("Find the same IP/MAC at the table!\n");
+				for(i=0; i<p_client_detail_info_tab->ip_mac_num; i++) {
+					if( !memcmp(p_client_detail_info_tab->ip_addr[i], arp_ptr->source_ipaddr, 4) &&
+						!memcmp(p_client_detail_info_tab->mac_addr[i], arp_ptr->source_hwaddr, 6)) {
+						NMP_DEBUG_M("Find the same IP/MAC at the table!\n");
 						NMP_DEBUG_M("*DUP %d.%d.%d.%d-%02X:%02X:%02X:%02X:%02X:%02X,%d,%02X\n",
-						(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
-						(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
-						arp_ptr->source_hwaddr[0],arp_ptr->source_hwaddr[1],
-						arp_ptr->source_hwaddr[2],arp_ptr->source_hwaddr[3],
-						arp_ptr->source_hwaddr[4],arp_ptr->source_hwaddr[5],
-						scan_count, msg_type);
-                	                        break;
-                        	        }
-                        	}
-                        	if( i==p_client_detail_info_tab->ip_mac_num ) //Find a new IP or table is empty! Send an ARP request.
+							(int *)arp_ptr->source_ipaddr[0],(int *)arp_ptr->source_ipaddr[1],
+							(int *)arp_ptr->source_ipaddr[2],(int *)arp_ptr->source_ipaddr[3],
+							arp_ptr->source_hwaddr[0],arp_ptr->source_hwaddr[1],
+							arp_ptr->source_hwaddr[2],arp_ptr->source_hwaddr[3],
+							arp_ptr->source_hwaddr[4],arp_ptr->source_hwaddr[5],
+							scan_count, msg_type);
+						break;
+					}
+				}
+				if( i==p_client_detail_info_tab->ip_mac_num ) //Find a new IP or table is empty! Send an ARP request.
 				{
 					NMP_DEBUG("New device or IP/MAC changed!!\n");
 					if(memcmp(my_ipaddr, arp_ptr->source_ipaddr, 4))
-                                		sent_arppacket(arp_sockfd, arp_ptr->source_ipaddr);
+						sent_arppacket(arp_sockfd, arp_ptr->source_ipaddr);
 					else
 						NMP_DEBUG("New IP is the same as Router IP! Ignore it!\n");
 				}
