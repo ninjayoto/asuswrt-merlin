@@ -5130,7 +5130,7 @@ int start_firewall(int wanunit, int lanunit)
 #endif
 
 #ifdef RTCONFIG_IPV6
-	if (get_ipv6_service() == IPV6_DISABLED)
+	if (get_ipv6_service() != IPV6_DISABLED)
 	{
 		modprobe_r("xt_length");
 		modprobe_r("ip6t_LOG");
