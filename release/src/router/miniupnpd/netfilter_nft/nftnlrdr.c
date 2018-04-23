@@ -2,7 +2,7 @@
  * MiniUPnP project
  * http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
  * (c) 2015 Tomofumi Hayashi
- *
+ * 
  * This software is subject to the conditions detailed
  * in the LICENCE file provided within the distribution.
  */
@@ -69,15 +69,15 @@ add_redirect_rule2(const char * ifname,
         d_printf(("add redirect rule2(%s, %s, %u, %s, %u, %d, %s)!\n",
 	          ifname, rhost, eport, iaddr, iport, proto, desc));
 	r = rule_set_dnat(NFPROTO_IPV4, ifname, proto,
-			  0, eport,
+			  0, eport, 
 			  inet_addr(iaddr), iport,  desc, NULL);
 	return nft_send_request(r, NFT_MSG_NEWRULE);
 }
 
 /*
- * This function submit the rule as following:
- * nft add rule nat miniupnpd-pcp-peer ip
- *    saddr <iaddr> ip daddr <rhost> tcp sport <iport>
+ * This function submit the rule as following: 
+ * nft add rule nat miniupnpd-pcp-peer ip 
+ *    saddr <iaddr> ip daddr <rhost> tcp sport <iport> 
  *    tcp dport <rport> snat <eaddr>:<eport>
  */
 int
@@ -91,19 +91,19 @@ add_peer_redirect_rule2(const char * ifname,
 	UNUSED(ifname); UNUSED(timestamp);
 
         d_printf(("add peer redirect rule2()!\n"));
-	r = rule_set_snat(NFPROTO_IPV4, proto,
-			  inet_addr(rhost), rport,
-			  inet_addr(eaddr), eport,
+	r = rule_set_snat(NFPROTO_IPV4, proto, 
+			  inet_addr(rhost), rport, 
+			  inet_addr(eaddr), eport, 
 			  inet_addr(iaddr), iport, desc, NULL);
 
 	return nft_send_request(r, NFT_MSG_NEWRULE);
 }
 
 /*
- * This function submit the rule as following:
- * nft add rule filter miniupnpd
+ * This function submit the rule as following: 
+ * nft add rule filter miniupnpd 
  *    ip daddr <iaddr> tcp dport <iport> accept
- *
+ * 
  */
 int
 add_filter_rule2(const char * ifname,
@@ -136,7 +136,7 @@ add_peer_dscp_rule2(const char * ifname,
 		    const char * iaddr, unsigned short iport, int proto,
 		    const char * desc, unsigned int timestamp)
 {
-	UNUSED(ifname); UNUSED(rhost); UNUSED(rport);
+	UNUSED(ifname); UNUSED(rhost); UNUSED(rport); 
 	UNUSED(dscp); UNUSED(iaddr); UNUSED(iport); UNUSED(proto);
 	UNUSED(desc); UNUSED(timestamp);
 	syslog(LOG_ERR, "add_peer_dscp_rule2: not supported");
@@ -158,7 +158,7 @@ delete_redirect_and_filter_rules(unsigned short eport, int proto)
 	d_printf(("delete_redirect_and_filter_rules(%d %d)\n", eport, proto));
 	reflesh_nft_cache(NFPROTO_IPV4);
 	LIST_FOREACH(p, &head, entry) {
-		if (p->eport == eport && p->proto == proto &&
+		if (p->eport == eport && p->proto == proto && 
 		    (p->type == RULE_NAT || p->type == RULE_SNAT)) {
 			iaddr = p->iaddr;
 			iport = p->iport;
@@ -175,7 +175,7 @@ delete_redirect_and_filter_rules(unsigned short eport, int proto)
 	}
 	reflesh_nft_cache(NFPROTO_IPV4);
 	LIST_FOREACH(p, &head, entry) {
-		if (p->eport == iport &&
+		if (p->eport == iport && 
 		    p->iaddr == iaddr && p->type == RULE_FILTER) {
 			r = rule_del_handle(p);
 			/* Todo: send bulk request */
@@ -187,8 +187,8 @@ delete_redirect_and_filter_rules(unsigned short eport, int proto)
 	return 0;
 }
 
-/*
- * get peer by index as array.
+/* 
+ * get peer by index as array. 
  * return -1 when not found.
  */
 int
@@ -244,8 +244,8 @@ get_peer_rule_by_index(int index,
 				strncpy(desc, r->desc, desclen);
 			}
 
-			/*
-			 * TODO: Implement counter in case of add {nat,filter}
+			/* 
+			 * TODO: Implement counter in case of add {nat,filter} 
 			 */
 			return 0;
 		}
@@ -253,9 +253,9 @@ get_peer_rule_by_index(int index,
 	return -1;
 }
 
-/*
+/* 
  * get_redirect_rule()
- * returns -1 if the rule is not found
+ * returns -1 if the rule is not found 
  */
 int
 get_redirect_rule(const char * ifname, unsigned short eport, int proto,
@@ -275,7 +275,7 @@ get_redirect_rule(const char * ifname, unsigned short eport, int proto,
 
 /*
  * get_redirect_rule_by_index()
- * return -1 when the rule was not found
+ * return -1 when the rule was not found 
  */
 int
 get_redirect_rule_by_index(int index,
@@ -327,7 +327,7 @@ get_redirect_rule_by_index(int index,
 				strncpy(desc, r->desc, desclen);
 			}
 
-			/*
+			/* 
 			 * TODO: Implement counter in case of add {nat,filter}
 			 */
 			return 0;
@@ -382,9 +382,9 @@ get_nat_redirect_rule(const char * nat_chain_name, const char * ifname,
 	return -1;
 }
 
-/*
+/* 
  * return an (malloc'ed) array of "external" port for which there is
- * a port mapping. number is the size of the array
+ * a port mapping. number is the size of the array 
  */
 unsigned short *
 get_portmappings_in_range(unsigned short startport, unsigned short endport,
@@ -407,11 +407,11 @@ get_portmappings_in_range(unsigned short startport, unsigned short endport,
 
 	LIST_FOREACH(p, &head, entry) {
 		if (p->proto == proto &&
-		    startport <= p->eport &&
+		    startport <= p->eport && 
 		    p->eport <= endport) {
 
 			if (*number >= capacity) {
-				tmp = realloc(array,
+				tmp = realloc(array, 
 					      sizeof(unsigned short)*capacity);
 				if (tmp == NULL) {
 					syslog(LOG_ERR,
@@ -420,7 +420,7 @@ get_portmappings_in_range(unsigned short startport, unsigned short endport,
 					       (unsigned)sizeof(unsigned short)*capacity);
 					*number = 0;
 					free(array);
-					return NULL;
+					return NULL;   
 				}
 				array = tmp;
 			}

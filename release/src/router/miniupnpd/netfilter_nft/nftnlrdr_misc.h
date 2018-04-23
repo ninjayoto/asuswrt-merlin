@@ -2,7 +2,7 @@
  * MiniUPnP project
  * http://miniupnp.free.fr/ or http://miniupnp.tuxfamily.org/
  * (c) 2015 Tomofumi Hayashi
- *
+ * 
  * This software is subject to the conditions detailed
  * in the LICENCE file provided within the distribution.
  */
@@ -11,7 +11,7 @@
 #define NFT_TABLE_NAT  "nat"
 #define NFT_TABLE_FILTER  "filter"
 
-enum rule_reg_type {
+enum rule_reg_type { 
 	RULE_REG_NONE,
 	RULE_REG_IIF,
 	RULE_REG_OIF,
