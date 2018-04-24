@@ -2844,6 +2844,13 @@ start_ddns(void)
 		return 0;
 	}
 
+	// force update for no change if ez-ipupdate does not
+	if (nvram_match("ddns_return_code", "ddns_query")) {
+		nvram_set("ddns_return_code", "no_change");
+		nvram_set("ddns_return_code_chk", "200");
+		eval("/sbin/ddns_updated");
+	}
+
 	run_custom_script("ddns-start", wan_ip);
 	return 0;
 }
