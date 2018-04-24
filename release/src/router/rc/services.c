@@ -2856,7 +2856,7 @@ stop_ddns(void)
 	if (pids("phddns"))
 		killall("phddns", SIGINT);
 	if (nvram_match("ddns_tunbkrnet", "1")) {
-		eval("iptables-restore", "/tmp/filter_rules");
+		eval("iptables", "-t", "filter", "-D", "INPUT", "-p", "icmp", "-s", "66.220.2.74", "-j", "ACCEPT");
 		nvram_unset("ddns_tunbkrnet");
 	}
 }
