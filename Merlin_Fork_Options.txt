@@ -486,7 +486,7 @@ Allow blocking IPv6 when OpenVPN client is active
 Send empty WPAD response
 
         Can be set in gui:      No
-        Enable via NVRAM:       nvram set dhcpd_wpad_filter=1
+        Enable via NVRAM:       nvram set dhcpd_filter_wpad=1
                                 nvram commit
 
 

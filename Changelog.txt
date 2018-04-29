@@ -4,6 +4,26 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_32D8j9527  (22-April-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: miniupnpd: update to 20180412
+* CHANGED: make: update for new miniupnpd
+* FIXED: kernel: ACPICA: (tomato) Fix memory leak on unusual memory leak
+* FIXED: kernel: (tomato) ACPI: acpi_pad: Fix memory leak in power saving threads
+* FIXED: ddns: re-add forced ddns status update lost in 384 merge
+* FIXED: ddns: fix tunnelbroker ddns flushing iptables during stop
+
+
+374.43_32X8j9527  (21-April-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: MIPS: revert conntrack changes picked up in kernel update 579e26d
+* FIXED: Revert "firewall: correctly remove ipv6 modules if ipv6 disabled"
+
+
+374.43_32D7j9527  (17-April-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: iptables: add statistic netfilter for iptables
+* CHANGED: networkmap: code formatting cleanup, no functional change
+- CHANGED: openvpn: (backport) allow setting remote server via custom ddns when exporting client ovpn
+
+
 374.43_32D6j9527  (14-April-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: samba: (backport) don't start samba if sharing is disabled and master browser or WINS are enabled
 - CHANGED: rc: openvpn: (backport) set server state to -1 if failing to start
