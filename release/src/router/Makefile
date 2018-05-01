@@ -1493,7 +1493,7 @@ miniupnpd: $(IPTABLES) miniupnpd/config.h
 	cp -f ./shared/version.h miniupnpd/.
 	$(MAKE) -C miniupnpd -f Makefile.merlin $(PARALLEL_BUILD) \
 		IPTABLESPATH=$(TOP)/$(IPTABLES) \
-		EXTRACFLAGS="-Os $(EXTRACFLAGS) -idirafter$(TOP)/kernel_header/include -ffunction-sections -fdata-sections -I$(TOP)/e2fsprogs/lib" \
+		EXTRACFLAGS="-Os $(EXTRACFLAGS) -DLEASEFILE_USE_REMAINING_TIME -idirafter$(TOP)/kernel_header/include -ffunction-sections -fdata-sections -I$(TOP)/e2fsprogs/lib" \
 	    LDFLAGS="$(EXTRALDFLAGS) -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(IPTC_LIBDIR) -L$(TOP)/e2fsprogs/lib" \
 	    LDLIBS="-Wl,--as-needed $(IPTC_LIBS) -luuid"
 
