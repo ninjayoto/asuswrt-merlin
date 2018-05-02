@@ -175,6 +175,10 @@ ifeq ($(RTCONFIG_DNSCRYPT),y)
 obj-y += libsodium
 obj-y += dnscrypt
 endif
+ifeq ($(RTCONFIG_STUBBY),y)
+obj-y += libyaml
+obj-y += getdns
+endif
 obj-$(RTCONFIG_DNSSEC) += nettle
 obj-y += etc
 # obj-y += vlan # use Busybox vconfig
@@ -1329,6 +1333,50 @@ dnscrypt-install: dnscrypt
 dnscrypt-clean:
 	-@$(MAKE) -C dnscrypt clean
 	@rm -rf dnscrypt/stamp-h1 dnscrypt/src/dnscrypt-proxy/.deps dnscrypt/Makefile
+
+libyaml/stamp-h1:
+	cd $(TOP)/libyaml && CC=$(CC) AR=$(AR) LD=$(LD) STRIP=$(CROSS_COMPILE)strip \
+	autoreconf -i -f && \
+	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
+	$(CONFIGURE) --prefix=/usr
+	touch libyaml/stamp-h1
+
+libyaml: libyaml/stamp-h1
+	$(MAKE) -C libyaml $(PARALLEL_BUILD)
+
+libyaml-install:
+#	install -d $(INSTALLDIR)/libyaml/usr/lib
+#	install -D libyaml/src/.libs/libyaml-0.so.2.0.5 $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
+#	$(STRIP) -s $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
+#	cd $(INSTALLDIR)/libyaml/usr/lib/ && \
+#		ln -sf libyaml-0.so.2.0.5 libyaml-0.so.2 && \
+#		ln -sf libyaml-0.so.2.0.5 libyaml-0.so
+
+libyaml-clean:
+	-$(MAKE) -C libyaml clean
+	@rm -rf libyaml/stamp-h1 libyaml/src/.deps libyaml/src/tests/.deps
+
+getdns/stamp-h1: openssl libyaml
+	cd $(TOP)/getdns && CC=$(CC) AR=$(AR) LD=$(LD) STRIP=$(CROSS_COMPILE)strip \
+	autoreconf -i -f && \
+	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
+	CPPFLAGS="-I$(TOP)/libyaml/include -I$(TOP)/openssl/include" \
+	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/libyaml/src/.libs -lyaml -L$(TOP)/openssl -lcrypto -lssl" \
+	$(CONFIGURE) --enable-static --disable-shared --prefix=/usr --sysconfdir=/etc --localstatedir=/var --without-libidn --without-libidn2 --without-libunbound  \
+	--enable-stub-only --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby
+	touch getdns/stamp-h1
+
+getdns: getdns/stamp-h1
+	$(MAKE) -C getdns
+
+getdns-install:
+	install -d $(INSTALLDIR)/getdns/usr/sbin
+	install -D getdns/src/stubby $(INSTALLDIR)/getdns/usr/sbin/stubby
+	$(STRIP) -s $(INSTALLDIR)/getdns/usr/sbin/stubby
+
+getdns-clean:
+	-@$(MAKE) -C getdns clean
+	@rm -rf getdns/stamp-h1 getdns/src/.libs getdns/src/tools/.libs
 
 haveged/stamp-h1:
 	cd $(TOP)/haveged && CC=$(CC) AR=$(AR) STRIP=$(CROSS_COMPILE)strip \

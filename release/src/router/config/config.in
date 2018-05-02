@@ -415,6 +415,10 @@ config RTCONFIG_DNSCRYPT
 	bool "DNSCRYPT support"
 	default n
 
+config RTCONFIG_STUBBY
+	bool "DNS over TLS support"
+	default n
+
 config RTCONFIG_NANO
 	bool "nano text editor"
 	default n
