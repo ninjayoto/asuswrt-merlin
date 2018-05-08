@@ -772,7 +772,7 @@ void start_dnsmasq(int force)
 			fprintf(fp, "dhcp-authoritative\n");
 
 		/* Shut up WPAD info requests */
-		if (nvram_get_int("dhcpd_filter_wpad")) {
+		if (nvram_get_int("dhcpd_send_wpad")) {
 			fprintf(fp, "dhcp-option=lan,252,\"\\n\"\n");
 		}
 

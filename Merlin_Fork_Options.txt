@@ -483,18 +483,18 @@ Allow blocking IPv6 when OpenVPN client is active
                                 Setting this option may create delays in opening some IPv6 enabled sites depending on the browser bein used.
                                   IPv6 only sites will not be accessible.
 ---------------------------------------------------------------------------------------------------------------
-Send empty WPAD response
+Do not send empty WPAD response
 
         Can be set in gui:      No
-        Enable via NVRAM:       nvram set dhcpd_filter_wpad=1
+        Enable via NVRAM:       nvram set dhcpd_send_wpad=0
                                 nvram commit
 
 
         Routers Supported:      All
         Released:               Update-32E6
         Reboot Required:        Yes (to refresh wireless leases, ethernet leases must be manually renewed)
-        Notes:                  DNSMASQ now does not send a single linefeed as a WPAD url.  This can create Event Log spam on some Windows
-                                  versions.   Setting this option enables the previous behavior of sending the empty linfeed WPAD response.
+        Notes:                  DNSMASQ by default sends a single linefeed as a WPAD url.  This can prevent the setting of a WPAD proxy in
+                                  certain configurations.   Setting this option to zero prevents sending the empty linfeed WPAD response.
 ---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:

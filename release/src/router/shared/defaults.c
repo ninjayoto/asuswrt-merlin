@@ -619,7 +619,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "dhcpc_mode", "0"},
 	{ "dhcpd_querylog", "1"},
 	{ "dhcpd_dns_router", "1"},
-	{ "dhcpd_filter_wpad", "0"},
+	{ "dhcpd_send_wpad", "1"},
 	// NVRAM for start_dhcpd
 	// Guest DHCP server parameters
 	{ "dhcp1_enable_x", "0" },
