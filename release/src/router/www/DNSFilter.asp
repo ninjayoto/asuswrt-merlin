@@ -83,7 +83,7 @@ function showLANIPList(){
 	for(var i = 1; i < client_list_row.length; i++){
 		var client_list_col = client_list_row[i].split('>');
 		if(client_list_col[1] && client_list_col[1].length > 20)
-			show_name = client_list_col[1].substring(0, 64) + "..";
+			show_name = client_list_col[1].substring(0, 16) + "..";
 		else
 			show_name = client_list_col[1];
 
