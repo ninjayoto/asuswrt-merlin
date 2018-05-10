@@ -456,11 +456,13 @@ function showLANIPList(){
 
 		if(client_list_col[1])
 			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP_mac(\''+client_list_col[1]+'\', \''+client_list_col[3]+'\');"><strong>'+client_list_col[2]+'</strong> ';
-		else
-			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP_mac(\''+client_list_col[3]+'\', \''+client_list_col[3]+'\');"><strong>'+client_list_col[2]+'</strong> ';
-			if(show_name && show_name.length > 0)
-				code += '( '+show_name+' )';
-			code += ' </div></a>';
+		else {
+			var macname = client_list_col[3].replace(/:/g,"-");
+			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP_mac(\''+macname+'\', \''+client_list_col[3]+'\');"><strong>'+client_list_col[2]+'</strong> ';
+		}
+		if(show_name && show_name.length > 0)
+			code += '( '+show_name+' )';
+		code += ' </div></a>';
 	}
 	code +='<!--[if lte IE 6.5]><iframe class="hackiframe2"></iframe><![endif]-->';
 	$("ClientList_Block_PC").innerHTML = code;

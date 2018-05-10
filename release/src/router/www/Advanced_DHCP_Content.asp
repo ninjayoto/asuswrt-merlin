@@ -475,7 +475,12 @@ function showLANIPList(){
 			show_name = client_list_col[1];	
 
 		//client_list_col[]  0:type 1:device 2:ip 3:mac 4: 5: 6:
-		code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP(\''+client_list_col[3]+'\', \''+client_list_col[2]+'\', \''+client_list_col[1]+'\');"><strong>'+client_list_col[3]+'</strong> ';
+		if(client_list_col[1])
+			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP(\''+client_list_col[3]+'\', \''+client_list_col[2]+'\', \''+client_list_col[1]+'\');"><strong>'+client_list_col[3]+'</strong> ';
+		else {
+			var macname = client_list_col[3].replace(/:/g,"-");
+			code += '<a><div onmouseover="over_var=1;" onmouseout="over_var=0;" onclick="setClientIP(\''+client_list_col[3]+'\', \''+client_list_col[2]+'\', \''+macname+'\');"><strong>'+client_list_col[3]+'</strong> ';
+		}	
 		
 		if(show_name && show_name.length > 0)
 				code += '( '+show_name+')';
