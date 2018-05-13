@@ -536,7 +536,8 @@ auth_check( char* dirname, char* authorization ,char* url)
 	*authpass++ = '\0';
 
 	/* Is this the right user and password? */
-	if ( strcmp( auth_userid, authinfo ) == 0 && strcmp( auth_passwd, authpass ) == 0)
+	/* Only allow administrator to login */
+	if ( strcmp( nvram_safe_get("http_username"), authinfo ) == 0 && strcmp( nvram_safe_get("http_passwd"), auth_passwd ) == 0 && strcmp( auth_passwd, authpass ) == 0 )
 	{
 		login_ip_restart = (unsigned int)atoll(nvram_safe_get("login_ip_restart"));
 		if ( login_ip == 0 || last_login_ip != 0 || login_ip != login_ip_tmp || login_ip_restart != 0 )
