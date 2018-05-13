@@ -1487,10 +1487,9 @@ void httpd_check()
 			if ((http_enable == 1 || http_enable == 2) && check_if_file_exist("/etc/cert.pem") && (https_err < 5)){	//check https access
 				snprintf(url, sizeof(url), "https://%s:%s", nvram_safe_get("lan_ipaddr"), nvram_safe_get("https_lanport"));
 				args[8] = url; //referer
-				args[9] = "--cacert";
-				args[10] = "/etc/cert.pem";
-				args[11] = url;
-				if (rc = _eval(args, NULL, 0, NULL)){ //This will actually return HTTP 401 error, but curl completes
+				args[9] = "--insecure";  //Use insecure transfer to allow for private XCA CA
+				args[10] = url;
+				if (rc = _eval(args, NULL, 0, NULL)){
 					logmessage("watchdog", "restart httpd - SSL, error detected or process not responding (%d)", rc);
 					stop_httpd();
 					start_httpd();
