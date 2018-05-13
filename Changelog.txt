@@ -4,7 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_32D8j9527  (22-April-2018) ARM SDK, MIPS,ARM KRACK
+374.43_33E2j9527  (15-May-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openvpn: update to 2.4.6
+* CHANGED: miniupnpd: update to 20180503 snapshot
+* CHANGED: rc: change nvram name and set wpad filter default to on
+* CHANGED: watchdog: change https check to insecure mode to allow use of XCA CA
+* CHANGED: httpd: (backport) only allow the administrator user to log in
+* CHANGED: httpd: improvements to ease use of manually generated certs
+- FIXED: miniupnpd: (upstream) store UNIX time in lease_file
+- FIXED: miniupnpd: (upstream) new function lease_file_rewrite() that is called just before exiting, and when SIGUSR2 is received
+- FIXED: miniupnpd: (upstream) add option LEASEFILE_USE_REMAINING_TIME
+- FIXED: webui: prevent errors when using mac as client name
+- FIXED: webui: fix truncation of client name in dnsfilter pulldown
+
+
+374.43_32D8j9527  (24-April-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: miniupnpd: update to 20180412
 * CHANGED: make: update for new miniupnpd
 * FIXED: kernel: ACPICA: (tomato) Fix memory leak on unusual memory leak
