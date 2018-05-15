@@ -2188,7 +2188,6 @@ void save_cert(void)
 	if (eval("tar", "-C", "/", "-czf", "/tmp/cert.tgz", "/etc/cert.pem", "/etc/key.pem") == 0) {
 		if (nvram_match("jffs2_on", "1") && check_if_dir_exist("/jffs/https")) {
 			system("cp /tmp/cert.tgz /jffs/https/cert.tgz");
-			system("cat /etc/key.pem /etc/cert.pem > /jffs/https/server.pem");
 			nvram_set("https_crt_file", "/jffs/https/cert.tgz");
 		} else {
 			if (nvram_set_file("https_crt_file", "/tmp/cert.tgz", 8192)) {
@@ -2204,9 +2203,12 @@ void erase_cert(void)
 	unlink("/etc/cert.pem");
 	unlink("/etc/key.pem");
 	unlink("/etc/server.pem");
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2)
+	unlink("/jffs/https/cert.pem");
+	unlink("/jffs/https/key.pem");
+	unlink("/jffs/https/cert.tgz");
+#endif
 	nvram_unset("https_crt_file");
-	if (check_if_file_exist("/jffs/https/cert.tgz"))
-		system("rm /jffs/https/cert.tgz");
 	//nvram_unset("https_crt_gen");
 	nvram_set("https_crt_gen", "0");
 }
@@ -2226,11 +2228,20 @@ void start_ssl(void)
 		erase_cert();
 	}
 
+	save = nvram_match("https_crt_save", "1");
+
 	retry = 1;
 	while (1) {
-		save = nvram_match("https_crt_save", "1");
-
-		if ((!f_exists("/etc/cert.pem")) || (!f_exists("/etc/key.pem")) || (!f_exists("/etc/server.pem")) || nvram_match("enable_webdav", "1")) {
+		if ((save) && f_exists("/jffs/https/cert.pem") && f_exists("/jffs/https/key.pem")) {
+			eval("cp", "-p", "/jffs/https/cert.pem", "/jffs/https/key.pem", "/etc/");
+			system("cat /etc/key.pem /etc/cert.pem > /etc/server.pem");
+			if (!check_if_file_exist("/jffs/https/cert.tgz")) {
+				eval("tar", "-C", "/", "-czf", "/jffs/https/cert.tgz", "/etc/cert.pem", "/etc/key.pem");
+				nvram_set("https_crt_file", "/jffs/https/cert.tgz");
+			}
+			ok = 1;
+		}
+		if ((!f_exists("/etc/cert.pem")) || (!f_exists("/etc/key.pem")) || (!f_exists("/etc/server.pem"))) {
 			ok = 0;
 			if (save) {
 				fprintf(stderr, "Restore SSL certificate...\n"); // tmp test
@@ -2261,15 +2272,20 @@ void start_ssl(void)
 			}
 		}
 
-		if ((save) && (*nvram_safe_get("https_crt_file") == 0) && !check_if_file_exist("/jffs/https/cert.tgz")) {
+		if ((!ok) && (save) && (*nvram_safe_get("https_crt_file") == 0) && !check_if_file_exist("/jffs/https/cert.tgz")) {
 			save_cert();
 		}
 
 		if (mssl_init("/etc/cert.pem", "/etc/key.pem")) return;
 
+		logmessage("httpd", "Failed to initialize SSL, generating new key/cert.");
 		erase_cert();
 
-		if (!retry) exit(1);
+		if (!retry) {
+			logmessage("httpd", "Unable to start in SSL mode, exiting!");
+			exit(1);
+		}
+
 		retry = 0;
 	}
 }
