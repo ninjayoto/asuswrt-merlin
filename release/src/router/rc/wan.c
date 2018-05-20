@@ -1410,6 +1410,7 @@ TRACE_PT("3g end.\n");
 			return;
 		}
 #ifdef RTCONFIG_IPV6
+		int need_linklocal_addr = 0;
 		if (nvram_match("ipv6_ifdev", "ppp") &&
 		    (strcmp(wan_proto, "dhcp") == 0 ||
 		     strcmp(wan_proto, "static") == 0)) {
@@ -1428,6 +1429,7 @@ TRACE_PT("3g end.\n");
 			}
 			else
 				enable_ipv6(wan_ifname);
+				need_linklocal_addr = 1;
 		}
 #endif
 		ether_atoe(nvram_safe_get(strcat_r(prefix, "hwaddr", tmp)), eabuf);
@@ -1478,6 +1480,14 @@ TRACE_PT("3g end.\n");
 			ifconfig(wan_ifname, IFUP, NULL, NULL);
 		}
 		close(s);
+
+#ifdef RTCONFIG_IPV6
+		/* Reset linklocal address if necessary after interface is up */
+		if (need_linklocal_addr && !with_ipv6_linklocal_addr(wan_ifname)) {
+			reset_ipv6_linklocal_addr(wan_ifname, 0);
+			enable_ipv6(wan_ifname);
+		}
+#endif
 
 		/* Set initial QoS mode again now that WAN port is ready. */
 #ifdef CONFIG_BCMWL5
