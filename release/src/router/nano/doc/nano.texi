@@ -8,8 +8,8 @@
 
 @smallbook
 @set EDITION 0.5
-@set VERSION 2.9.3
-@set UPDATED January 2018
+@set VERSION 2.9.7
+@set UPDATED May 2018
 
 @dircategory Editors
 @direntry
@@ -23,7 +23,7 @@
 @titlepage
 @title GNU @command{nano}
 @subtitle a small and friendly text editor
-@subtitle version 2.9.3
+@subtitle version 2.9.7
 
 @author Chris Allegretta
 @page
@@ -63,7 +63,7 @@ e-mail: @email{chrisa@@asty.org}@*
 @node Top
 @top
 
-This manual documents the GNU @command{nano} editor, version 2.9.3.
+This manual documents the GNU @command{nano} editor, version 2.9.7.
 
 @menu
 * Introduction::
@@ -217,7 +217,6 @@ Use the blank line below the title bar as extra editing space.
 @itemx --positionlog
 For the 200 most recent files, log the last position of the cursor,
 and place it at that position again upon reopening such a file.
-(The old form of this option, @option{--poslog}, is deprecated.)
 
 @item -Q "@var{characters}"
 @itemx --quotestr="@var{characters}"
@@ -393,6 +392,10 @@ is located at the very bottom of the editor.
 Note: When accessing the help system, Expert Mode is temporarily
 disabled to display the help-system navigation keys.
 
+@item -y
+@itemx --afterends
+Make Ctrl+Right stop at word ends instead of beginnings.
+
 @item -z
 @itemx --suspend
 Enable the ability to suspend @command{nano} using the system's suspend
@@ -498,11 +501,14 @@ the 'Copy Text' command (default key binding: @kbd{M-6}).
 
 Text can be selected by first 'setting the Mark' (default key bindings:
 @kbd{^6} and @kbd{M-A}) and then moving the cursor to the other end of the portion
-to be selected.  The selected portion of text will be highlighted in
-reverse video (or in bold if you set the boldtext option).
+to be selected.  The selected portion of text will be highlighted.
 This selection can now be cut or copied in its entirety with a single
 @kbd{^K} or @kbd{M-6}.  Or the selection can be used to limit the scope of
 a search-and-replace (@kbd{^\}) or spell-checking session (@kbd{^T}).
+
+On some terminals, it is also possible to select text by holding down
+@kbd{Shift} together with the cursor keys.  Such a selection is cancelled
+upon any cursor movement where @kbd{Shift} isn't held.
 
 Cutting or copying selected text will toggle the mark off automatically.
 If necessary, it can be toggled off manually with another @kbd{^6} or @kbd{M-A}.
@@ -567,8 +573,8 @@ cannot be undone any more.  The workaround is, of course, to exit without
 saving.
 
 The recording and playback of keyboard macros works correctly only on a
-terminal emulator, not on a Linux console (VT), because the latter is a
-deficient terminal.
+terminal emulator, not on a Linux console (VT), because the latter does
+not by default distinguish modified from unmodified arrow keys.
 
 @node Built-in Help
 @chapter Built-in Help
@@ -687,6 +693,9 @@ The supported settings in a nanorc file are:
 
 @table @code
 
+@item set afterends
+Make Ctrl+Right stop at word ends instead of beginnings.
+
 @item set allow_insecure_backup
 When backing up files, allow the backup to succeed even if its
 permissions can't be (re)set due to special OS considerations.
@@ -731,12 +740,15 @@ Do case-sensitive searches by default.
 
 @item set constantshow
 Constantly display the cursor position on the status bar.
-(The old form of this option, @code{set const}, is deprecated.)
 Note that this overrides @option{quickblank}.
 
 @item set cutfromcursor
 Use cut-from-cursor-to-end-of-line by default, instead of cutting the whole line.
 (The old form of this option, @code{set cut}, is deprecated.)
+
+@item set errorcolor @var{fgcolor},@var{bgcolor}
+Use this color combination for the status bar when an error message is displayed.
+@xref{@code{set functioncolor}} for valid color names.
 
 @item set fill @var{number}
 Hard-wrap lines at column number @var{number}.  If @var{number} is 0 or less,
@@ -750,7 +762,8 @@ Use this color combination for the concise function descriptions
 in the two help lines at the bottom of the screen.
 Valid names for foreground and background color are:
 @code{white}, @code{black}, @code{blue}, @code{green},
-@code{red}, @code{cyan}, @code{yellow}, and @code{magenta}.
+@code{red}, @code{cyan}, @code{yellow}, @code{magenta}, and @code{normal}
+--- where @code{normal} means the default foreground or background color.
 The name of the foreground color may be prefixed with @code{bright}.
 And either @var{fgcolor} or ,@var{bgcolor} may be left out.
 
@@ -815,7 +828,6 @@ directory feature is turned off.
 @item set positionlog
 Save the cursor position of files between editing sessions.
 The cursor position is remembered for the 200 most-recently edited files.
-(The old form of this option, @code{set poslog}, is deprecated.)
 
 @item set preserve
 Preserve the XON and XOFF keys (@kbd{^Q} and @kbd{^S}).
@@ -904,6 +916,7 @@ Use this color combination for the title bar.
 @item set trimblanks
 Remove trailing whitespace from wrapped lines when automatic
 hard-wrapping occurs or when text is justified.
+(The old form of this option, @code{set justifytrim}, is deprecated.)
 
 @item set unix
 Save a file by default in Unix format.  This overrides nano's
@@ -1037,7 +1050,7 @@ in one of the system-installed files (which normally are not writable).
 @node Rebinding Keys
 @section Rebinding Keys
 
-Key bindings can be changed via the following two commands in a
+Key bindings can be changed via the following three commands in a
 nanorc file:
 
 @table @code
@@ -1045,6 +1058,13 @@ nanorc file:
 @item bind key function menu
 Rebinds @code{key} to @code{function} in the context of @code{menu}
 (or in all menus where the function exists by using @code{all}).
+
+@item bind key "string" menu
+Makes @code{key} produce @code{string} in the context of @code{menu}
+(or in all menus where the key exists when @code{all} is used).
+The @code{string} can consist of text or commands or a mix of them.
+(To enter a command into the @code{string}, precede its keystroke
+with @kbd{M-V}.)
 
 @item unbind key menu
 Unbinds @code{key} from @code{menu}
@@ -1102,7 +1122,6 @@ Starts a backward search for text in the current buffer.
 
 @item searchagain
 Repeats the last search command without prompting.
-(The form @code{research} is deprecated.)
 
 @item findprevious
 As @code{searchagain}, but always in the backward direction.
@@ -1137,7 +1156,6 @@ Cuts all text from the cursor position till the end of the buffer.
 
 @item curpos
 Shows the current cursor position: the line, column, and character positions.
-(The form @code{cursorpos} is deprecated.)
 
 @item wordcount
 Counts the number of words, lines and characters in the current buffer.
@@ -1179,10 +1197,12 @@ Goes one line up (in the editor or browser).
 Goes one line down (in the editor or browser).
 
 @item scrollup
-Scrolls up one line of text from the current position.
+Scrolls the viewport up one row (meaning that the text slides down)
+while keeping the cursor in the same text position, if possible.
 
 @item scrolldown
-Scrolls down one line of text from the current position.
+Scrolls the viewport down one row (meaning that the text slides up)
+while keeping the cursor in the same text position, if possible.
 
 @item prevword
 Moves the cursor to the beginning of the previous word.
@@ -1224,9 +1244,6 @@ Goes to the last line of the file.
 @item gotoline
 Goes to a specific line (and column if specified).  Negative numbers count
 from the end of the file (and end of the line).
-
-@item gototext
-Switches from targeting a line number to searching for text.
 
 @item findbracket
 Moves the cursor to the bracket (brace, parenthesis, etc.) that matches
@@ -1278,7 +1295,6 @@ Toggles case sensitivity in searching (search/replace menus only).
 
 @item regexp
 Toggles whether searching/replacing is based on literal strings or regular expressions.
-(The form @code{regex} is deprecated.)
 
 @item backwards
 Toggles whether searching/replacing goes forward or backward.
@@ -1291,7 +1307,10 @@ Shows the next history entry in the prompt menus (e.g.@: search).
 
 @item flipreplace
 Toggles between searching for something and replacing something.
-(The form @code{dontreplace} is deprecated.)
+
+@item flipgoto
+Toggles between searching for text and targeting a line number.
+(The form @code{gototext} is deprecated.)
 
 @item flipexecute
 Toggles between inserting a file and executing a command.
@@ -1299,7 +1318,6 @@ Toggles between inserting a file and executing a command.
 @item flipnewbuffer
 Toggles between inserting into the current buffer and into a new
 empty buffer.
-(The form @code{newbuffer} is deprecated.)
 
 @item dosformat
 When writing a file, switches to writing a DOS format (CR/LF).
@@ -1337,8 +1355,9 @@ Goes to the last file when using the file browser (reading or writing files).
 @item nohelp
 Toggles the presence of the two-line list of key bindings at the bottom of the screen.
 
-@item constupdate
+@item constantshow
 Toggles the constant display of the current line, column, and character positions.
+(The form @code{constupdate} is deprecated.)
 
 @item morespace
 Toggles the presence of the blank line that 'separates' the title bar from the file text.
@@ -1348,6 +1367,9 @@ Toggles smooth scrolling (when moving around with the arrow keys).
 
 @item softwrap
 Toggles the displaying of overlong lines on multiple screen lines.
+
+@item linenumbers
+Toggles the display of line numbers in front of the text.
 
 @item whitespacedisplay
 Toggles the showing of whitespace.
@@ -1361,9 +1383,10 @@ Toggles the smartness of the Home key.
 @item autoindent
 Toggles whether new lines will contain the same amount of whitespace as the preceding line.
 
-@item cuttoend
+@item cutfromcursor
 Toggles whether cutting text will cut the whole line or just from the current cursor
 position to the end of the line.
+(The form @code{cuttoend} is deprecated.)
 
 @item nowrap
 Toggles whether long lines will be hard-wrapped to the next line.
@@ -1405,7 +1428,6 @@ The 'search to replace' menu.
 
 @item replacewith
 The 'replace with' menu, which comes up after 'search to replace'.
-(The form @code{replace2} is deprecated.)
 
 @item gotoline
 The 'goto line (and column)' menu.
@@ -1429,7 +1451,7 @@ The interactive spell checker Yes/no menu.
 The linter menu.
 
 @item browser
-The file browser for inserting or writing a file.
+The file browser, for choosing a file to read from or write to.
 
 @item whereisfile
 The 'search for a file' menu in the file browser.
@@ -1448,14 +1470,15 @@ it means all menus where the specified @code{key} exists.
 @node The File Browser
 @chapter The File Browser
 
-When reading or writing files, pressing @kbd{^T} will invoke the file browser.
+When in the Read-File (@kbd{^R}) or Write-Out menu (@kbd{^O}),
+pressing @kbd{^T} will invoke the file browser.
 Here, one can navigate directories in a graphical manner in order to
 find the desired file.
 
-Basic movement in the file browser is accomplished with the arrow keys,
-page up, and page down.  More advanced movement is accomplished by
-searching via @kbd{^W} (or @kbd{w'} and changing directories via
-@kbd{^_} (or @kbd{g}).  The behavior of the @kbd{Enter} key (or @kbd{s})
+Basic movement in the file browser is accomplished with the arrow and
+other cursor-movement keys.  More targeted movement is accomplished by
+searching, via @kbd{^W} or @kbd{w'}, or by changing directory, via
+@kbd{^_} or @kbd{g}.  The behavior of the @kbd{Enter} key (or @kbd{s})
 varies by what is currently selected.
 If the currently selected object is a directory, the file browser will
 enter and display the contents of the directory.  If the object is a
@@ -1495,6 +1518,11 @@ again when you later reopen the file.
 The output of the "Display Cursor Position" command (@kbd{^C}) displays
 not only the current line and character position of the cursor,
 but also (between the two) the current column position.
+
+@item Hard-Wrapping
+By default, @command{nano} hard-wraps lines at screen width minus eight
+columns, whereas Pico does it at screen width minus six columns.  You can
+make @command{nano} do the same as Pico by using @option{--fill=-6}.
 
 @item Spell Checking
 In the internal spell checker misspelled words are sorted alphabetically

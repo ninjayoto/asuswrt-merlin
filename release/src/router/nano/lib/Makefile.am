@@ -515,23 +515,22 @@ EXTRA_libgnu_a_SOURCES += gettimeofday.c
 
 ## begin gnulib module glob
 
-BUILT_SOURCES += $(GLOB_H)
+BUILT_SOURCES += glob.h
 
-# We need the following in order to create <glob.h> when the system
-# doesn't have one that works with the given compiler.
-if GL_GENERATE_GLOB_H
-glob.h: glob.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
+# We need the following in order to create <glob.h>.
+glob.h: glob.in.h $(top_builddir)/config.status $(CXXDEFS_H)
 	$(AM_V_GEN)rm -f $@-t $@ && \
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
-	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
+	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	      -e 's|@''REPLACE_GLOB''@|$(REPLACE_GLOB)|g' \
+	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
+	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
+	      -e 's|@''NEXT_GLOB_H''@|$(NEXT_GLOB_H)|g' \
+	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      < $(srcdir)/glob.in.h; \
 	} > $@-t && \
 	mv -f $@-t $@
-else
-glob.h: $(top_builddir)/config.status
-	rm -f $@
-endif
 MOSTLYCLEANFILES += glob.h glob.h-t
 
 EXTRA_DIST += glob-libc.h glob.c glob.in.h glob_internal.h glob_pattern_p.c globfree.c
@@ -625,6 +624,7 @@ langinfo.h: langinfo.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_U
 	      -e 's/@''GNULIB_NL_LANGINFO''@/$(GNULIB_NL_LANGINFO)/g' \
 	      -e 's|@''HAVE_LANGINFO_CODESET''@|$(HAVE_LANGINFO_CODESET)|g' \
 	      -e 's|@''HAVE_LANGINFO_T_FMT_AMPM''@|$(HAVE_LANGINFO_T_FMT_AMPM)|g' \
+	      -e 's|@''HAVE_LANGINFO_ALTMON''@|$(HAVE_LANGINFO_ALTMON)|g' \
 	      -e 's|@''HAVE_LANGINFO_ERA''@|$(HAVE_LANGINFO_ERA)|g' \
 	      -e 's|@''HAVE_LANGINFO_YESEXPR''@|$(HAVE_LANGINFO_YESEXPR)|g' \
 	      -e 's|@''HAVE_NL_LANGINFO''@|$(HAVE_NL_LANGINFO)|g' \
@@ -830,7 +830,7 @@ EXTRA_libgnu_a_SOURCES += malloc.c
 
 libgnu_a_SOURCES += malloca.c
 
-EXTRA_DIST += malloca.h malloca.valgrind
+EXTRA_DIST += malloca.h
 
 ## end   gnulib module malloca
 
@@ -1305,8 +1305,8 @@ signal.h: signal.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_SIGNAL_H''@|$(NEXT_SIGNAL_H)|g' \
-	      -e 's|@''GNULIB_PTHREAD_SIGMASK''@|$(GNULIB_PTHREAD_SIGMASK)|g' \
-	      -e 's|@''GNULIB_RAISE''@|$(GNULIB_RAISE)|g' \
+	      -e 's/@''GNULIB_PTHREAD_SIGMASK''@/$(GNULIB_PTHREAD_SIGMASK)/g' \
+	      -e 's/@''GNULIB_RAISE''@/$(GNULIB_RAISE)/g' \
 	      -e 's/@''GNULIB_SIGNAL_H_SIGPIPE''@/$(GNULIB_SIGNAL_H_SIGPIPE)/g' \
 	      -e 's/@''GNULIB_SIGPROCMASK''@/$(GNULIB_SIGPROCMASK)/g' \
 	      -e 's/@''GNULIB_SIGACTION''@/$(GNULIB_SIGACTION)/g' \
@@ -1945,7 +1945,7 @@ strings.h: strings.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_STRINGS_H''@|$(NEXT_STRINGS_H)|g' \
-	      -e 's|@''GNULIB_FFS''@|$(GNULIB_FFS)|g' \
+	      -e 's/@''GNULIB_FFS''@/$(GNULIB_FFS)/g' \
 	      -e 's|@''HAVE_FFS''@|$(HAVE_FFS)|g' \
 	      -e 's|@''HAVE_STRCASECMP''@|$(HAVE_STRCASECMP)|g' \
 	      -e 's|@''HAVE_DECL_STRNCASECMP''@|$(HAVE_DECL_STRNCASECMP)|g' \

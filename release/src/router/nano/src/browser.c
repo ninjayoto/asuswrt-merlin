@@ -32,9 +32,9 @@ static char **filelist = NULL;
 		/* The list of files to display in the file browser. */
 static size_t filelist_len = 0;
 		/* The number of files in the list. */
-static int width = 0;
+static size_t width = 0;
 		/* The number of files that we can display per screen row. */
-static int longest = 0;
+static size_t longest = 0;
 		/* The number of columns in the longest filename in the list. */
 static size_t selected = 0;
 		/* The currently selected filename in the list; zero-based. */
@@ -168,12 +168,12 @@ char *do_browser(char *path)
 		} else if (func == do_search_forward) {
 			do_filesearch();
 		} else if (func == do_research) {
-			do_fileresearch(TRUE);
+			do_fileresearch(FORWARD);
 #ifndef NANO_TINY
 		} else if (func == do_findprevious) {
-			do_fileresearch(FALSE);
+			do_fileresearch(BACKWARD);
 		} else if (func == do_findnext) {
-			do_fileresearch(TRUE);
+			do_fileresearch(FORWARD);
 #endif
 		} else if (func == do_left) {
 			if (selected > 0)
@@ -187,10 +187,10 @@ char *do_browser(char *path)
 			selected += width - 1 - (selected % width);
 			if (selected >= filelist_len)
 				selected = filelist_len - 1;
-		} else if (func == do_up_void) {
+		} else if (func == do_up) {
 			if (selected >= width)
 				selected -= width;
-		} else if (func == do_down_void) {
+		} else if (func == do_down) {
 			if (selected + width <= filelist_len - 1)
 				selected += width;
 		} else if (func == do_prev_block) {
@@ -258,9 +258,9 @@ char *do_browser(char *path)
 
 			/* In case the specified directory cannot be entered, select it
 			 * (if it is in the current list) so it will be highlighted. */
-			for (i = 0; i < filelist_len; i++)
-				if (strcmp(filelist[i], path) == 0)
-					selected = i;
+			for (size_t j = 0; j < filelist_len; j++)
+				if (strcmp(filelist[j], path) == 0)
+					selected = j;
 
 			/* Try opening and reading the specified directory. */
 			goto read_directory_contents;
@@ -303,6 +303,10 @@ char *do_browser(char *path)
 			/* Try opening and reading the selected directory. */
 			path = mallocstrcpy(path, filelist[selected]);
 			goto read_directory_contents;
+#ifdef ENABLE_NANORC
+		} else if (func == (functionptrtype)implant) {
+			implant(first_sc_for(MBROWSER, func)->expansion);
+#endif
 		} else if (func == do_exit) {
 			/* Exit from the file browser. */
 			break;
@@ -357,7 +361,7 @@ char *do_browse_from(const char *inpath)
 		path = free_and_assign(path, strip_last_component(path));
 
 		if (stat(path, &st) == -1 || !S_ISDIR(st.st_mode)) {
-			char * currentdir = charalloc(PATH_MAX + 1);
+			char *currentdir = charalloc(PATH_MAX + 1);
 
 			free(path);
 			path = getcwd(currentdir, PATH_MAX + 1);
@@ -521,7 +525,7 @@ void browser_refresh(void)
 				/* The length of the filename in columns. */
 		size_t infolen;
 				/* The length of the file information in columns. */
-		int infomaxlen = 7;
+		size_t infomaxlen = 7;
 				/* The maximum length of the file information in columns:
 				 * normally seven, but will be twelve for "(parent dir)". */
 		bool dots = (COLS >= 15 && namelen >= longest - infomaxlen);
@@ -655,42 +659,40 @@ void browser_select_dirname(const char *needle)
 	}
 }
 
-/* Set up the system variables for a filename search.  Return -1 or -2 if
- * the search should be canceled (due to Cancel or a blank search string),
- * return 0 when we have a string, and return a positive value when some
- * function was run. */
+/* Prepare the prompt and ask the user what to search for.  Return -2
+ * for a blank answer, -1 for Cancel, 0 when we have a string, and a
+ * positive value when some function was run. */
 int filesearch_init(void)
 {
-	int input;
-	char *buf;
+	char *thedefault;
+	int response;
 
+	/* If something was searched for before, show it between square brackets. */
 	if (*last_search != '\0') {
 		char *disp = display_string(last_search, 0, COLS / 3, FALSE);
 
-		buf = charalloc(strlen(disp) + 7);
+		thedefault = charalloc(strlen(disp) + 7);
 		/* We use (COLS / 3) here because we need to see more on the line. */
-		sprintf(buf, " [%s%s]", disp,
+		sprintf(thedefault, " [%s%s]", disp,
 				(strlenpt(last_search) > COLS / 3) ? "..." : "");
 		free(disp);
 	} else
-		buf = mallocstrcpy(NULL, "");
+		thedefault = mallocstrcpy(NULL, "");
 
-	/* This is now one simple call.  It just does a lot. */
-	input = do_prompt(FALSE, FALSE, MWHEREISFILE, NULL, &search_history,
-				browser_refresh, "%s%s", _("Search"), buf);
-
-	/* Release buf now that we don't need it anymore. */
-	free(buf);
+	/* Now ask what to search for. */
+	response = do_prompt(FALSE, FALSE, MWHEREISFILE, NULL, &search_history,
+						browser_refresh, "%s%s", _("Search"), thedefault);
+	free(thedefault);
 
 	/* If only Enter was pressed but we have a previous string, it's okay. */
-	if (input == -2 && *last_search != '\0')
+	if (response == -2 && *last_search != '\0')
 		return 0;
 
-	/* Otherwise negative inputs are a bailout. */
-	if (input < 0)
+	/* Otherwise negative responses are a bailout. */
+	if (response < 0)
 		statusbar(_("Cancelled"));
 
-	return input;
+	return response;
 }
 
 /* Look for the given needle in the list of files.  If forwards is TRUE,

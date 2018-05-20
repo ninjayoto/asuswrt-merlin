@@ -48,7 +48,7 @@ void get_homedir(void)
 
 		/* Only set homedir if some home directory could be determined,
 		 * otherwise keep homedir NULL. */
-		if (homenv != NULL && strcmp(homenv, "") != 0)
+		if (homenv != NULL && *homenv != '\0')
 			homedir = mallocstrcpy(NULL, homenv);
 	}
 }
@@ -325,15 +325,18 @@ const char *strstrwrapper(const char *haystack, const char *needle,
 		else
 			return haystack + regmatches[0].rm_so;
 	}
+
 	if (ISSET(CASE_SENSITIVE)) {
 		if (ISSET(BACKWARDS_SEARCH))
 			return revstrstr(haystack, needle, start);
 		else
 			return strstr(start, needle);
-	} else if (ISSET(BACKWARDS_SEARCH))
-		return mbrevstrcasestr(haystack, needle, start);
+	}
 
-	return mbstrcasestr(start, needle);
+	if (ISSET(BACKWARDS_SEARCH))
+		return mbrevstrcasestr(haystack, needle, start);
+	else
+		return mbstrcasestr(start, needle);
 }
 
 /* This is a wrapper for the perror() function.  The wrapper temporarily
@@ -378,10 +381,11 @@ char *mallocstrncpy(char *dest, const char *src, size_t n)
 	if (src == NULL)
 		src = "";
 
-	if (src != dest)
-		free(dest);
-
-	dest = charalloc(n);
+#ifndef NANO_TINY
+	if (src == dest)
+		fprintf(stderr, "\r*** Copying a string to itself -- please report a bug ***");
+#endif
+	dest = charealloc(dest, n);
 	strncpy(dest, src, n);
 
 	return dest;
@@ -455,7 +459,7 @@ size_t strnlenpt(const char *text, size_t maxlen)
 		return 0;
 
 	while (*text != '\0') {
-		int charlen = parse_mbchar(text, NULL, &width);
+		size_t charlen = parse_mbchar(text, NULL, &width);
 
 		if (maxlen <= charlen)
 			break;

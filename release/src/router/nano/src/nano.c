@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-#ifndef NANO_TINY
+#if defined(__linux__) || !defined(NANO_TINY)
 #include <sys/ioctl.h>
 #endif
 #ifdef ENABLE_UTF8
@@ -38,6 +38,15 @@
 #include <termios.h>
 #endif
 #include <unistd.h>
+#ifdef __linux__
+#include <sys/vt.h>
+#endif
+
+#ifdef ENABLE_MULTIBUFFER
+#define read_them_all TRUE
+#else
+#define read_them_all FALSE
+#endif
 
 #ifdef ENABLE_MOUSE
 static int oldinterval = -1;
@@ -60,8 +69,7 @@ static struct sigaction act;
 static bool input_was_aborted = FALSE;
 		/* Whether reading from standard input was aborted via ^C. */
 
-/* Create a new linestruct node.  Note that we do not set prevnode->next
- * to the new line. */
+/* Create a new linestruct node.  Note that we do not set prevnode->next. */
 filestruct *make_new_node(filestruct *prevnode)
 {
 	filestruct *newnode = nmalloc(sizeof(filestruct));
@@ -171,20 +179,24 @@ void free_filestruct(filestruct *src)
 	delete_node(src);
 }
 
-/* Renumber the lines in a buffer, starting with fileptr. */
-void renumber(filestruct *fileptr)
+/* Renumber the lines in a buffer, starting with the given line. */
+void renumber(filestruct *line)
 {
-	ssize_t line;
+	ssize_t number;
 
-	if (fileptr == NULL)
+	if (line == NULL) {
+#ifndef NANO_TINY
+		statusline(ALERT, "Trying to renumber nothing -- please report a bug");
+#endif
 		return;
+	}
 
-	line = (fileptr->prev == NULL) ? 0 : fileptr->prev->lineno;
+	number = (line->prev == NULL) ? 0 : line->prev->lineno;
 
-	assert(fileptr != fileptr->next);
-
-	for (; fileptr != NULL; fileptr = fileptr->next)
-		fileptr->lineno = ++line;
+	while (line != NULL) {
+		line->lineno = ++number;
+		line = line->next;
+	}
 }
 
 /* Partition the current buffer so that it appears to begin at (top, top_x)
@@ -192,12 +204,7 @@ void renumber(filestruct *fileptr)
 partition *partition_filestruct(filestruct *top, size_t top_x,
 		filestruct *bot, size_t bot_x)
 {
-	partition *p;
-
-	assert(top != NULL && bot != NULL && openfile->fileage != NULL && openfile->filebot != NULL);
-
-	/* Initialize the partition. */
-	p = (partition *)nmalloc(sizeof(partition));
+	partition *p = nmalloc(sizeof(partition));
 
 	/* If the top and bottom of the partition are different from the top
 	 * and bottom of the buffer, save the latter and then set them
@@ -240,8 +247,6 @@ partition *partition_filestruct(filestruct *top, size_t top_x,
  * to (filebot, $) again. */
 void unpartition_filestruct(partition **p)
 {
-	assert(p != NULL && openfile->fileage != NULL && openfile->filebot != NULL);
-
 	/* Reattach the line above the top of the partition, and restore the
 	 * text before top_x from top_data.  Free top_data when we're done
 	 * with it. */
@@ -291,8 +296,6 @@ void extract_buffer(filestruct **file_top, filestruct **file_bot,
 	bool mark_inside = FALSE;
 	bool same_line = FALSE;
 #endif
-
-	assert(file_top != NULL && file_bot != NULL && top != NULL && bot != NULL);
 
 	/* If (top, top_x)-(bot, bot_x) doesn't cover any text, get out. */
 	if (top == bot && top_x == bot_x)
@@ -350,8 +353,8 @@ void extract_buffer(filestruct **file_top, filestruct **file_bot,
 
 		delete_node(openfile->fileage);
 
-		/* Renumber, starting with the line after the original file_bot. */
-		renumber(file_bot_save->next);
+		/* Renumber, starting at the last line of the original buffer. */
+		renumber(file_bot_save);
 	}
 
 	/* Since the text has now been saved, remove it from the buffer. */
@@ -404,8 +407,6 @@ void ingraft_buffer(filestruct *somebuffer)
 #ifndef NANO_TINY
 	bool right_side_up = FALSE, single_line = FALSE;
 #endif
-
-	assert(somebuffer != NULL);
 
 #ifndef NANO_TINY
 	/* Keep track of whether the mark begins inside the partition and
@@ -500,17 +501,17 @@ openfilestruct *make_new_opennode(void)
 	return (openfilestruct *)nmalloc(sizeof(openfilestruct));
 }
 
+#ifdef ENABLE_MULTIBUFFER
 /* Unlink a node from the rest of the circular list, and delete it. */
 void unlink_opennode(openfilestruct *fileptr)
 {
-	assert(fileptr != fileptr->prev && fileptr != fileptr->next);
-
+#ifdef ENABLE_MULTIBUFFER
 	if (fileptr == firstfile)
 		firstfile = firstfile->next;
 
 	fileptr->prev->next = fileptr->next;
 	fileptr->next->prev = fileptr->prev;
-
+#endif
 	delete_opennode(fileptr);
 }
 
@@ -527,6 +528,7 @@ void delete_opennode(openfilestruct *fileptr)
 #endif
 	free(fileptr);
 }
+#endif
 
 /* Display a warning about a key disabled in view mode. */
 void print_view_warning(void)
@@ -549,14 +551,15 @@ void say_there_is_no_help(void)
 }
 #endif
 
-/* Make nano exit gracefully. */
+/* Exit normally: restore the terminal state and save history files. */
 void finish(void)
 {
-	/* Blank the statusbar and (if applicable) the shortcut list,
-	 * and move the cursor to the last line of the screen. */
+	/* Blank the statusbar and (if applicable) the shortcut list. */
 	blank_statusbar();
 	blank_bottombars();
 	wrefresh(bottomwin);
+
+	/* Switch on the cursor and exit from curses mode. */
 	curs_set(1);
 	endwin();
 
@@ -580,73 +583,61 @@ void finish(void)
 	exit(0);
 }
 
-/* Make nano die gracefully. */
+/* Die gracefully -- by restoring the terminal state and saving any buffers
+ * that were modified. */
 void die(const char *msg, ...)
 {
 	va_list ap;
+	openfilestruct *firstone = openfile;
 
+	/* Switch on the cursor and leave curses mode. */
 	curs_set(1);
 	endwin();
 
 	/* Restore the old terminal settings. */
 	tcsetattr(0, TCSANOW, &oldterm);
 
+	/* Display the dying message. */
 	va_start(ap, msg);
 	vfprintf(stderr, msg, ap);
 	va_end(ap);
 
+	while (openfile) {
 #ifndef NANO_TINY
-	/* If the current buffer has a lockfile, remove it. */
-	if (openfile && ISSET(LOCKING) && openfile->lock_filename)
-		delete_lockfile(openfile->lock_filename);
+		/* If the current buffer has a lockfile, remove it. */
+		if (ISSET(LOCKING) && openfile->lock_filename)
+			delete_lockfile(openfile->lock_filename);
 #endif
+		/* If the current buffer was modified, ensure it is unpartitioned,
+		 * then save it.  When in restricted mode, we don't save anything,
+		 * because it would write files not mentioned on the command line. */
+		if (openfile->modified && !ISSET(RESTRICTED)) {
+			if (filepart != NULL)
+				unpartition_filestruct(&filepart);
 
-	/* If the current file buffer was modified, save it. */
-	if (openfile && openfile->modified) {
-		/* If the buffer is partitioned, unpartition it first. */
-		if (filepart != NULL)
-			unpartition_filestruct(&filepart);
-
-		die_save_file(openfile->filename, openfile->current_stat);
-	}
-
-#ifdef ENABLE_MULTIBUFFER
-	/* Save all of the other modified file buffers, if any. */
-	if (openfile != NULL) {
-		openfilestruct *firstone = openfile;
-
-		while (openfile->next != firstone) {
-			openfile = openfile->next;
-
-#ifndef NANO_TINY
-			if (ISSET(LOCKING) && openfile->lock_filename)
-				delete_lockfile(openfile->lock_filename);
-#endif
-			if (openfile->modified)
-				die_save_file(openfile->filename, openfile->current_stat);
+			emergency_save(openfile->filename, openfile->current_stat);
 		}
-	}
+
+		filepart = NULL;
+#ifdef ENABLE_MULTIBUFFER
+		openfile = openfile->next;
 #endif
+		if (openfile == firstone)
+			break;
+	}
 
 	/* Abandon the building. */
 	exit(1);
 }
 
-/* Save the current file under the name specified in die_filename, which
- * is modified to be unique if necessary. */
-void die_save_file(const char *die_filename, struct stat *die_stat)
+/* Save the current buffer under the given name.
+ * If necessary, the name is modified to be unique. */
+void emergency_save(const char *die_filename, struct stat *die_stat)
 {
 	char *targetname;
 	bool failed = TRUE;
 
-	/* If we're using restricted mode, don't write any emergency backup
-	 * files, since that would allow reading from or writing to files
-	 * not specified on the command line. */
-	if (ISSET(RESTRICTED))
-		return;
-
-	/* If we can't save, we have really bad problems, but we might as
-	 * well try. */
+	/* If the buffer has no name, simply call it "nano". */
 	if (*die_filename == '\0')
 		die_filename = "nano";
 
@@ -665,9 +656,8 @@ void die_save_file(const char *die_filename, struct stat *die_stat)
 				_("Too many backup files?"));
 
 #ifndef NANO_TINY
-	/* Try and chmod/chown the save file to the values of the original file,
-	 * but don't worry if it fails because we're supposed to be bailing as
-	 * fast as possible. */
+	/* Try to chmod/chown the saved file to the values of the original file,
+	 * but ignore any failure as we are in a hurry to get out. */
 	if (die_stat) {
 		IGNORE_CALL_RESULT(chmod(targetname, die_stat->st_mode));
 		IGNORE_CALL_RESULT(chown(targetname, die_stat->st_uid,
@@ -900,6 +890,9 @@ void usage(void)
 	print_opt("-w", "--nowrap", N_("Don't hard-wrap long lines"));
 #endif
 	print_opt("-x", "--nohelp", N_("Don't show the two help lines"));
+#ifndef NANO_TINY
+	print_opt("-y", "--afterends", N_("Make Ctrl+Right stop at word ends"));
+#endif
 	if (!ISSET(RESTRICTED))
 		print_opt("-z", "--suspend", N_("Enable suspension"));
 #ifndef NANO_TINY
@@ -1099,12 +1092,6 @@ void close_and_go(void)
 		finish();
 }
 
-/* Another placeholder for function mapping. */
-void do_cancel(void)
-{
-	;
-}
-
 /* Make a note that reading from stdin was concluded with ^C. */
 RETSIGTYPE make_a_note(int signal)
 {
@@ -1117,7 +1104,7 @@ bool scoop_stdin(void)
 	struct sigaction oldaction, newaction;
 		/* Original and temporary handlers for SIGINT. */
 	bool setup_failed = FALSE;
-		/* Whether setting up the SIGINT handler failed. */
+		/* Whether setting up the temporary SIGINT handler failed. */
 	FILE *stream;
 	int thetty;
 
@@ -1125,7 +1112,7 @@ bool scoop_stdin(void)
 	endwin();
 	tcsetattr(0, TCSANOW, &oldterm);
 
-	fprintf(stderr, _("Reading from stdin, ^C to abort\n"));
+	fprintf(stderr, _("Reading from standard input; type ^D or ^D^D to finish.\n"));
 
 #ifndef NANO_TINY
 	/* Enable interpretation of the special control keys so that
@@ -1136,12 +1123,12 @@ bool scoop_stdin(void)
 	/* Set things up so that SIGINT will cancel the reading. */
 	if (sigaction(SIGINT, NULL, &newaction) == -1) {
 		setup_failed = TRUE;
-		nperror("sigaction");
+		perror("sigaction");
 	} else {
 		newaction.sa_handler = make_a_note;
 		if (sigaction(SIGINT, &newaction, &oldaction) == -1) {
 			setup_failed = TRUE;
-			nperror("sigaction");
+			perror("sigaction");
 		}
 	}
 
@@ -1157,9 +1144,10 @@ bool scoop_stdin(void)
 	}
 
 	/* Read the input into a new buffer. */
-	open_buffer("", FALSE);
-	read_file(stream, 0, "stdin", TRUE, FALSE);
+	open_buffer("", TRUE);
+	read_file(stream, 0, "stdin", TRUE);
 	openfile->edittop = openfile->fileage;
+	fprintf(stderr, ".\n");
 
 	/* Reconnect the tty as the input source. */
 	thetty = open("/dev/tty", O_RDONLY);
@@ -1174,7 +1162,7 @@ bool scoop_stdin(void)
 
 	/* If it was changed, restore the handler for SIGINT. */
 	if (!setup_failed && sigaction(SIGINT, &oldaction, NULL) == -1)
-		nperror("sigaction");
+		perror("sigaction");
 
 	terminal_init();
 	doupdate();
@@ -1228,6 +1216,18 @@ void signal_init(void)
 		sigaction(SIGTSTP, &act, NULL);
 #endif
 	}
+
+#if !defined(NANO_TINY) && !defined(DEBUG)
+	if (getenv("NANO_NOCATCH") == NULL) {
+		/* Trap SIGSEGV and SIGABRT to save any changed buffers and reset
+		 * the terminal to a usable state.  Reset these handlers to their
+		 * defaults as soon as their signal fires. */
+		act.sa_handler = handle_crash;
+		act.sa_flags |= SA_RESETHAND;
+		sigaction(SIGSEGV, &act, NULL);
+		sigaction(SIGABRT, &act, NULL);
+	}
+#endif
 }
 
 /* Handler for SIGHUP (hangup) and SIGTERM (terminate). */
@@ -1235,6 +1235,14 @@ RETSIGTYPE handle_hupterm(int signal)
 {
 	die(_("Received SIGHUP or SIGTERM\n"));
 }
+
+#if !defined(NANO_TINY) && !defined(DEBUG)
+/* Handler for SIGSEGV (segfault) and SIGABRT (abort). */
+RETSIGTYPE handle_crash(int signal)
+{
+	die(_("Sorry! Nano crashed!  Code: %d.  Please report a bug.\n"), signal);
+}
+#endif
 
 /* Handler for SIGTSTP (suspend). */
 RETSIGTYPE do_suspend(int signal)
@@ -1413,12 +1421,6 @@ void do_toggle(int flag)
 	statusline(HUSH, "%s %s", _(flagtostr(flag)),
 						enabled ? _("enabled") : _("disabled"));
 }
-
-/* Bleh. */
-void do_toggle_void(void)
-{
-	;
-}
 #endif /* !NANO_TINY */
 
 /* Disable extended input and output processing in our terminal
@@ -1426,7 +1428,7 @@ void do_toggle_void(void)
 void disable_extended_io(void)
 {
 #ifdef HAVE_TERMIOS_H
-	struct termios term;
+	struct termios term = {0};
 
 	tcgetattr(0, &term);
 	term.c_lflag &= ~IEXTEN;
@@ -1440,7 +1442,7 @@ void disable_extended_io(void)
 void disable_signals(void)
 {
 #ifdef HAVE_TERMIOS_H
-	struct termios term;
+	struct termios term = {0};
 
 	tcgetattr(0, &term);
 	term.c_lflag &= ~ISIG;
@@ -1454,7 +1456,7 @@ void disable_signals(void)
 void enable_signals(void)
 {
 #ifdef HAVE_TERMIOS_H
-	struct termios term;
+	struct termios term = {0};
 
 	tcgetattr(0, &term);
 	term.c_lflag |= ISIG;
@@ -1511,7 +1513,6 @@ void terminal_init(void)
 
 	if (!newterm_set) {
 #endif
-
 		raw();
 		nonl();
 		noecho();
@@ -1614,6 +1615,29 @@ int do_mouse(void)
 }
 #endif /* ENABLE_MOUSE */
 
+/* Return TRUE when the given function is a cursor-moving command. */
+bool wanted_to_move(void (*func)(void))
+{
+	return func == do_left || func == do_right ||
+			func == do_up || func == do_down ||
+			func == do_home || func == do_end ||
+			func == do_prev_word_void || func == do_next_word_void ||
+#ifdef ENABLE_JUSTIFY
+			func == do_para_begin_void || func == do_para_end_void ||
+#endif
+			func == do_prev_block || func == do_next_block ||
+			func == do_page_up || func == do_page_down ||
+			func == to_first_line || func == to_last_line;
+}
+
+/* Return TRUE when the given shortcut is valid in view mode. */
+bool okay_for_view(const sc *shortcut)
+{
+	const subnfunc *func = sctofunc(shortcut);
+
+	return (func != NULL && func->viewok);
+}
+
 /* Read in a keystroke.  Act on the keystroke if it is a shortcut or a toggle;
  * otherwise, insert it into the edit buffer.  If allow_funcs is FALSE, don't
  * do anything with the keystroke -- just return it. */
@@ -1627,8 +1651,7 @@ int do_input(bool allow_funcs)
 		/* The length of the input buffer. */
 	bool retain_cuts = FALSE;
 		/* Whether to conserve the current contents of the cutbuffer. */
-	const sc *s;
-	bool have_shortcut;
+	const sc *shortcut;
 
 	/* Read in a keystroke, and show the cursor while waiting. */
 	input = get_kbinput(edit, VISIBLE);
@@ -1652,15 +1675,11 @@ int do_input(bool allow_funcs)
 #endif
 
 	/* Check for a shortcut in the main list. */
-	s = get_shortcut(&input);
-
-	/* If we got a shortcut from the main list, or a "universal"
-	 * edit window shortcut, set have_shortcut to TRUE. */
-	have_shortcut = (s != NULL);
+	shortcut = get_shortcut(&input);
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
-	if (!have_shortcut) {
+	if (shortcut == NULL) {
 		if (is_ascii_cntrl_char(input) || meta_key || !is_byte(input)) {
 			unbound_key(input);
 			input = ERR;
@@ -1673,7 +1692,7 @@ int do_input(bool allow_funcs)
 	/* If the keystroke isn't a shortcut nor a toggle, it's a normal text
 	 * character: add the character to the input buffer -- or display a
 	 * warning when we're in view mode. */
-	if (input != ERR && !have_shortcut) {
+	if (input != ERR && shortcut == NULL) {
 		if (ISSET(VIEW_MODE))
 			print_view_warning();
 		else {
@@ -1693,7 +1712,7 @@ int do_input(bool allow_funcs)
 	 * characters waiting after the one we read in, we need to output
 	 * all available characters in the input puddle.  Note that this
 	 * puddle will be empty if we're in view mode. */
-	if (have_shortcut || get_key_buffer_len() == 0) {
+	if (shortcut || get_key_buffer_len() == 0) {
 		if (puddle != NULL) {
 			/* Insert all bytes in the input buffer into the edit buffer
 			 * at once, filtering out any low control codes. */
@@ -1707,33 +1726,38 @@ int do_input(bool allow_funcs)
 		}
 	}
 
-	if (!have_shortcut)
+	if (shortcut == NULL)
 		pletion_line = NULL;
 	else {
-		const subnfunc *f = sctofunc(s);
-
-		if (ISSET(VIEW_MODE) && f && !f->viewok) {
+		if (ISSET(VIEW_MODE) && !okay_for_view(shortcut)) {
 			print_view_warning();
 			return ERR;
 		}
 
 		/* If the function associated with this shortcut is
 		 * cutting or copying text, remember this. */
-		if (s->scfunc == do_cut_text_void
+		if (shortcut->func == do_cut_text_void
 #ifndef NANO_TINY
-				|| s->scfunc == do_copy_text || s->scfunc == do_cut_till_eof
+				|| shortcut->func == do_copy_text
+				|| shortcut->func == do_cut_till_eof
 #endif
 				)
 			retain_cuts = TRUE;
 
 #ifdef ENABLE_WORDCOMPLETION
-		if (s->scfunc != complete_a_word)
+		if (shortcut->func != complete_a_word)
 			pletion_line = NULL;
 #endif
+#ifdef ENABLE_NANORC
+		if (shortcut->func == (functionptrtype)implant) {
+			implant(shortcut->expansion);
+			return 42;
+		}
+#endif
 #ifndef NANO_TINY
-		if (s->scfunc == do_toggle_void) {
-			do_toggle(s->toggle);
-			if (s->toggle != CUT_FROM_CURSOR)
+		if (shortcut->func == do_toggle_void) {
+			do_toggle(shortcut->toggle);
+			if (shortcut->toggle != CUT_FROM_CURSOR)
 				retain_cuts = TRUE;
 		} else
 #endif
@@ -1753,14 +1777,17 @@ int do_input(bool allow_funcs)
 			}
 #endif
 			/* Execute the function of the shortcut. */
-			s->scfunc();
+			shortcut->func();
+
 #ifndef NANO_TINY
 			/* When the marked region changes without Shift being held,
 			 * discard a soft mark.  And when the marked region covers a
 			 * different set of lines, reset  the "last line too" flag. */
-			if (openfile->mark && (openfile->current != was_current ||
-										openfile->current_x != was_x)) {
-				if (!shift_held && openfile->kind_of_mark == SOFTMARK) {
+			if (openfile->mark) {
+				if (!shift_held && openfile->kind_of_mark == SOFTMARK &&
+									(openfile->current != was_current ||
+									openfile->current_x != was_x ||
+									wanted_to_move(shortcut->func))) {
 					openfile->mark = NULL;
 					refresh_needed = TRUE;
 				} else if (openfile->current != was_current)
@@ -1768,15 +1795,19 @@ int do_input(bool allow_funcs)
 			}
 #endif
 #ifdef ENABLE_WRAPPING
-			/* If the cursor moved to another line, clear the prepend flag. */
-			if (openfile->current->next != was_next)
+			/* If the cursor moved to another line and this was not caused
+			 * by adding characters to the buffer, clear the prepend flag. */
+			if (openfile->current->next != was_next &&
+							shortcut->func != do_tab &&
+							shortcut->func != do_verbatim_input)
 				wrap_reset();
 #endif
 #ifdef ENABLE_COLOR
-			if (f && !f->viewok)
+			if (!refresh_needed && !okay_for_view(shortcut))
 				check_the_multis(openfile->current);
 #endif
-			if (!refresh_needed && (s->scfunc == do_delete || s->scfunc == do_backspace))
+			if (!refresh_needed && (shortcut->func == do_delete ||
+									shortcut->func == do_backspace))
 				update_line(openfile->current, openfile->current_x);
 		}
 	}
@@ -1887,7 +1918,8 @@ void do_output(char *output, size_t output_len, bool allow_cntrls)
 	openfile->placewewant = xplustabs();
 
 #ifdef ENABLE_COLOR
-	check_the_multis(openfile->current);
+	if (!refresh_needed)
+		check_the_multis(openfile->current);
 #endif
 
 	if (!refresh_needed)
@@ -1904,11 +1936,6 @@ int main(int argc, char **argv)
 #ifdef ENABLE_WRAPPING
 	bool forced_wrapping = FALSE;
 		/* Should long lines be automatically hard wrapped? */
-#endif
-#ifdef ENABLE_MULTIBUFFER
-	bool is_multibuffer;
-		/* The actual value of the multibuffer option, restored after
-		 * we've loaded all files given on the command line. */
 #endif
 	const struct option long_options[] = {
 		{"boldtext", 0, NULL, 'D'},
@@ -1973,7 +2000,6 @@ int main(int argc, char **argv)
 		{"locking", 0, NULL, 'G'},
 		{"historylog", 0, NULL, 'H'},
 		{"noconvert", 0, NULL, 'N'},
-		{"poslog", 0, NULL, 'P'},  /* deprecated form, remove in 2018 */
 		{"positionlog", 0, NULL, 'P'},
 		{"smooth", 0, NULL, 'S'},
 		{"wordbounds", 0, NULL, 'W'},
@@ -1982,14 +2008,17 @@ int main(int argc, char **argv)
 		{"autoindent", 0, NULL, 'i'},
 		{"cutfromcursor", 0, NULL, 'k'},
 		{"unix", 0, NULL, 'u'},
+		{"afterends", 0, NULL, 'y'},
 		{"softwrap", 0, NULL, '$'},
 #endif
 		{NULL, 0, NULL, 0}
 	};
 
 #ifdef __linux__
+	struct vt_stat dummy;
+
 	/* Check whether we're running on a Linux console. */
-	console = (getenv("DISPLAY") == NULL);
+	on_a_vt = (ioctl(0, VT_GETSTATE, &dummy) == 0);
 #endif
 
 	/* Back up the terminal settings so that they can be restored. */
@@ -2038,15 +2067,9 @@ int main(int argc, char **argv)
 
 	while ((optchr =
 		getopt_long(argc, argv,
-				"ABC:DEFGHIKLMNOPQ:RST:UVWX:Y:abcdefghijklmno:pqr:s:tuvwxz$",
+				"ABC:DEFGHIKLMNOPQ:RST:UVWX:Y:abcdefghijklmno:pqr:s:tuvwxyz$",
 				long_options, NULL)) != -1) {
 		switch (optchr) {
-			case 'b':
-			case 'e':
-			case 'f':
-			case 'j':
-				/* Pico compatibility flags. */
-				break;
 #ifndef NANO_TINY
 			case 'A':
 				SET(SMART_HOME);
@@ -2163,12 +2186,20 @@ int main(int argc, char **argv)
 			case 'g':
 				SET(SHOW_CURSOR);
 				break;
+			case 'h':
+				usage();
+				exit(0);
 #ifndef NANO_TINY
 			case 'i':
 				SET(AUTOINDENT);
 				break;
 			case 'k':
 				SET(CUT_FROM_CURSOR);
+				break;
+#endif
+#ifdef ENABLE_LINENUMBERS
+			case 'l':
+				SET(LINE_NUMBERS);
 				break;
 #endif
 #ifdef ENABLE_MOUSE
@@ -2233,6 +2264,11 @@ int main(int argc, char **argv)
 			case 'x':
 				SET(NO_HELP);
 				break;
+#ifndef NANO_TINY
+			case 'y':
+				SET(AFTER_ENDS);
+				break;
+#endif
 			case 'z':
 				SET(SUSPEND);
 				break;
@@ -2241,14 +2277,11 @@ int main(int argc, char **argv)
 				SET(SOFTWRAP);
 				break;
 #endif
-#ifdef ENABLE_LINENUMBERS
-			case 'l':
-				SET(LINE_NUMBERS);
+			case 'b':  /* Pico compatibility flags. */
+			case 'e':
+			case 'f':
+			case 'j':
 				break;
-#endif
-			case 'h':
-				usage();
-				exit(0);
 			default:
 				printf(_("Type '%s -h' for a list of available options.\n"), argv[0]);
 				exit(1);
@@ -2492,6 +2525,7 @@ int main(int argc, char **argv)
 	interface_color_pair[LINE_NUMBER] = hilite_attribute;
 	interface_color_pair[SELECTED_TEXT] = hilite_attribute;
 	interface_color_pair[STATUS_BAR] = hilite_attribute;
+	interface_color_pair[ERROR_MESSAGE] = hilite_attribute;
 	interface_color_pair[KEY_COMBO] = hilite_attribute;
 	interface_color_pair[FUNCTION_TAG] = A_NORMAL;
 #endif
@@ -2555,13 +2589,8 @@ int main(int argc, char **argv)
 	fprintf(stderr, "Main: open file\n");
 #endif
 
-#ifdef ENABLE_MULTIBUFFER
-	is_multibuffer = ISSET(MULTIBUFFER);
-	SET(MULTIBUFFER);
-#endif
-
 	/* Read the files mentioned on the command line into new buffers. */
-	while (optind < argc && (!openfile || ISSET(MULTIBUFFER))) {
+	while (optind < argc && (!openfile || read_them_all)) {
 		ssize_t givenline = 0, givencol = 0;
 
 		/* If there's a +LINE[,COLUMN] argument here, eat it up. */
@@ -2573,10 +2602,10 @@ int main(int argc, char **argv)
 		/* If the filename is a dash, read from standard input; otherwise,
 		 * open the file; skip positioning the cursor if either failed. */
 		if (strcmp(argv[optind], "-") == 0) {
+			optind++;
 			if (!scoop_stdin())
 				continue;
-			optind++;
-		} else if (!open_buffer(argv[optind++], FALSE))
+		} else if (!open_buffer(argv[optind++], TRUE))
 			continue;
 
 		/* If a position was given on the command line, go there. */
@@ -2596,15 +2625,12 @@ int main(int argc, char **argv)
 	 * directories, then open a blank buffer and allow editing.  Otherwise,
 	 * switch from the last opened file to the next, that is: the first. */
 	if (openfile == NULL) {
-		open_buffer("", FALSE);
+		open_buffer("", TRUE);
 		UNSET(VIEW_MODE);
 	}
 #ifdef ENABLE_MULTIBUFFER
 	else
 		openfile = openfile->next;
-
-	if (!is_multibuffer)
-		UNSET(MULTIBUFFER);
 #endif
 
 #ifdef DEBUG
@@ -2654,6 +2680,7 @@ int main(int argc, char **argv)
 		} else
 			edit_refresh();
 
+		errno = 0;
 		focusing = TRUE;
 
 		/* Forget any earlier statusbar x position. */

@@ -309,7 +309,7 @@ AC_DEFUN([gl_INIT],
   fi
   gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
   gl_GLOB
-  if test -n "$GLOB_H"; then
+  if test $REPLACE_GLOB = 1; then
     AC_LIBOBJ([glob])
     AC_LIBOBJ([glob_pattern_p])
     AC_LIBOBJ([globfree])
@@ -788,7 +788,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/malloc/scratch_buffer_set_array_size.c
   lib/malloca.c
   lib/malloca.h
-  lib/malloca.valgrind
   lib/math.c
   lib/math.in.h
   lib/mbrtowc.c

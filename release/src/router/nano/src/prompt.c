@@ -53,10 +53,9 @@ int do_statusbar_mouse(void)
 #endif
 
 /* Read in a keystroke, interpret it if it is a shortcut or toggle, and
- * return it.  Set ran_func to TRUE if we ran a function associated with
- * a shortcut key, and set finished to TRUE if we're done after running
+ * return it.  Set finished to TRUE if we're done after running
  * or trying to run a function associated with a shortcut key. */
-int do_statusbar_input(bool *ran_func, bool *finished)
+int do_statusbar_input(bool *finished)
 {
 	int input;
 		/* The character we read in. */
@@ -64,11 +63,8 @@ int do_statusbar_input(bool *ran_func, bool *finished)
 		/* The input buffer. */
 	static size_t kbinput_len = 0;
 		/* The length of the input buffer. */
-	const sc *s;
-	bool have_shortcut = FALSE;
-	const subnfunc *f;
+	const sc *shortcut;
 
-	*ran_func = FALSE;
 	*finished = FALSE;
 
 	/* Read in a character. */
@@ -91,15 +87,11 @@ int do_statusbar_input(bool *ran_func, bool *finished)
 #endif
 
 	/* Check for a shortcut in the current list. */
-	s = get_shortcut(&input);
-
-	/* If we got a shortcut from the current list, or a "universal"
-	 * statusbar prompt shortcut, set have_shortcut to TRUE. */
-	have_shortcut = (s != NULL);
+	shortcut = get_shortcut(&input);
 
 	/* If we got a non-high-bit control key, a meta key sequence, or a
 	 * function key, and it's not a shortcut or toggle, throw it out. */
-	if (!have_shortcut) {
+	if (shortcut == NULL) {
 		if (is_ascii_cntrl_char(input) || meta_key || !is_byte(input)) {
 			beep();
 			input = ERR;
@@ -108,7 +100,7 @@ int do_statusbar_input(bool *ran_func, bool *finished)
 
 	/* If the keystroke isn't a shortcut nor a toggle, it's a normal text
 	 * character: add the it to the input buffer, when allowed. */
-	if (input != ERR && !have_shortcut) {
+	if (input != ERR && shortcut == NULL) {
 		/* Only accept input when not in restricted mode, or when not at
 		 * the "Write File" prompt, or when there is no filename yet. */
 		if (!ISSET(RESTRICTED) || currmenu != MWRITEFILE ||
@@ -122,7 +114,7 @@ int do_statusbar_input(bool *ran_func, bool *finished)
 	/* If we got a shortcut, or if there aren't any other keystrokes waiting
 	 * after the one we read in, we need to insert all the characters in the
 	 * input buffer (if not empty) into the answer. */
-	if ((have_shortcut || get_key_buffer_len() == 0) && kbinput != NULL) {
+	if ((shortcut || get_key_buffer_len() == 0) && kbinput != NULL) {
 		/* Inject all characters in the input buffer at once, filtering out
 		 * control characters. */
 		do_statusbar_output(kbinput, kbinput_len, TRUE);
@@ -133,55 +125,54 @@ int do_statusbar_input(bool *ran_func, bool *finished)
 		kbinput = NULL;
 	}
 
-	if (have_shortcut) {
-		if (s->scfunc == do_tab || s->scfunc == do_enter)
+	if (shortcut) {
+		if (shortcut->func == do_tab || shortcut->func == do_enter)
 			;
-		else if (s->scfunc == do_left)
+		else if (shortcut->func == do_left)
 			do_statusbar_left();
-		else if (s->scfunc == do_right)
+		else if (shortcut->func == do_right)
 			do_statusbar_right();
 #ifndef NANO_TINY
-		else if (s->scfunc == do_prev_word_void)
+		else if (shortcut->func == do_prev_word_void)
 			do_statusbar_prev_word();
-		else if (s->scfunc == do_next_word_void)
+		else if (shortcut->func == do_next_word_void)
 			do_statusbar_next_word();
 #endif
-		else if (s->scfunc == do_home)
+		else if (shortcut->func == do_home)
 			do_statusbar_home();
-		else if (s->scfunc == do_end)
+		else if (shortcut->func == do_end)
 			do_statusbar_end();
 		/* When in restricted mode at the "Write File" prompt and the
 		 * filename isn't blank, disallow any input and deletion. */
 		else if (ISSET(RESTRICTED) && currmenu == MWRITEFILE &&
 								openfile->filename[0] != '\0' &&
-								(s->scfunc == do_verbatim_input ||
-								s->scfunc == do_cut_text_void ||
-								s->scfunc == do_delete ||
-								s->scfunc == do_backspace))
+								(shortcut->func == do_verbatim_input ||
+								shortcut->func == do_cut_text_void ||
+								shortcut->func == do_uncut_text ||
+								shortcut->func == do_delete ||
+								shortcut->func == do_backspace))
 			;
-		else if (s->scfunc == do_verbatim_input)
+#ifdef ENABLE_NANORC
+		else if (shortcut->func == (functionptrtype)implant)
+			implant(shortcut->expansion);
+#endif
+		else if (shortcut->func == do_verbatim_input)
 			do_statusbar_verbatim_input();
-		else if (s->scfunc == do_cut_text_void)
+		else if (shortcut->func == do_cut_text_void)
 			do_statusbar_cut_text();
-		else if (s->scfunc == do_delete)
+		else if (shortcut->func == do_delete)
 			do_statusbar_delete();
-		else if (s->scfunc == do_backspace)
+		else if (shortcut->func == do_backspace)
 			do_statusbar_backspace();
-		else if (s->scfunc == do_uncut_text) {
+		else if (shortcut->func == do_uncut_text) {
 			if (cutbuffer != NULL)
 				do_statusbar_uncut_text();
 		} else {
-			/* Handle any other shortcut in the current menu, setting
-			 * ran_func to TRUE if we try to run their associated functions,
-			 * and setting finished to TRUE to indicatethat we're done after
-			 * running or trying to run their associated functions. */
-			f = sctofunc(s);
-			if (s->scfunc != NULL) {
-				*ran_func = TRUE;
-				if (f && (!ISSET(VIEW_MODE) || f->viewok) &&
-								f->scfunc != do_gotolinecolumn_void)
-					f->scfunc();
-			}
+			/* Handle any other shortcut in the current menu, setting finished
+			 * to TRUE to indicate that we're done after running or trying to
+			 * run its associated function. */
+			if (!ISSET(VIEW_MODE) || okay_for_view(shortcut))
+				shortcut->func();
 			*finished = TRUE;
 		}
 	}
@@ -196,27 +187,25 @@ void do_statusbar_output(int *the_input, size_t input_len,
 {
 	char *output = charalloc(input_len + 1);
 	char onechar[MAXCHARLEN];
-	int i, char_len;
+	size_t char_len, i, j = 0;
 
 	/* Copy the typed stuff so it can be treated. */
 	for (i = 0; i < input_len; i++)
 		output[i] = (char)the_input[i];
 	output[i] = '\0';
 
-	i = 0;
-
-	while (i < input_len) {
+	while (j < input_len) {
 		/* Encode any NUL byte as 0x0A. */
-		if (output[i] == '\0')
-			output[i] = '\n';
+		if (output[j] == '\0')
+			output[j] = '\n';
 
 		/* Interpret the next multibyte character. */
-		char_len = parse_mbchar(output + i, onechar, NULL);
+		char_len = parse_mbchar(output + j, onechar, NULL);
 
-		i += char_len;
+		j += char_len;
 
 		/* When filtering, skip any ASCII control character. */
-		if (filtering && is_ascii_cntrl_char(*(output + i - char_len)))
+		if (filtering && is_ascii_cntrl_char(*(output + j - char_len)))
 			continue;
 
 		/* Insert the typed character into the existing answer string. */
@@ -303,17 +292,28 @@ void do_statusbar_cut_text(void)
 void do_statusbar_next_word(void)
 {
 	bool seen_space = !is_word_mbchar(answer + statusbar_x, FALSE);
+	bool seen_word = !seen_space;
 
-	/* Move forward until we reach the start of a word. */
+	/* Move forward until we reach either the end or the start of a word,
+	 * depending on whether the AFTER_ENDS flag is set or not. */
 	while (answer[statusbar_x] != '\0') {
 		statusbar_x = move_mbright(answer, statusbar_x);
 
-		/* If this is not a word character, then it's a separator; else
-		 * if we've already seen a separator, then it's a word start. */
-		if (!is_word_mbchar(answer + statusbar_x, FALSE))
-			seen_space = TRUE;
-		else if (seen_space)
-			break;
+		if (ISSET(AFTER_ENDS)) {
+			/* If this is a word character, continue; else it's a separator,
+			 * and if we've already seen a word, then it's a word end. */
+			if (is_word_mbchar(answer + statusbar_x, FALSE))
+				seen_word = TRUE;
+			else if (seen_word)
+				break;
+		} else {
+			/* If this is not a word character, then it's a separator; else
+			 * if we've already seen a separator, then it's a word start. */
+			if (!is_word_mbchar(answer + statusbar_x, FALSE))
+				seen_space = TRUE;
+			else if (seen_space)
+				break;
+		}
 	}
 
 	update_the_statusbar();
@@ -354,6 +354,8 @@ void do_statusbar_verbatim_input(void)
 	kbinput = get_verbatim_kbinput(bottomwin, &kbinput_len);
 
 	do_statusbar_output(kbinput, kbinput_len, FALSE);
+
+	free(kbinput);
 }
 
 /* Return the zero-based column position of the cursor in the answer. */
@@ -441,7 +443,7 @@ functionptrtype acquire_an_answer(int *actual, bool allow_tabs,
 		void (*refresh_func)(void))
 {
 	int kbinput = ERR;
-	bool ran_func, finished;
+	bool finished;
 	functionptrtype func;
 #ifdef ENABLE_TABCOMP
 	bool tabbed = FALSE;
@@ -468,7 +470,7 @@ functionptrtype acquire_an_answer(int *actual, bool allow_tabs,
 	update_the_statusbar();
 
 	while (TRUE) {
-		kbinput = do_statusbar_input(&ran_func, &finished);
+		kbinput = do_statusbar_input(&finished);
 
 #ifndef NANO_TINY
 		/* If the window size changed, go reformat the prompt string. */
@@ -615,7 +617,8 @@ int do_prompt(bool allow_tabs, bool allow_files,
 
 	bottombars(menu);
 
-	answer = mallocstrcpy(answer, curranswer);
+	if (answer != curranswer || answer == NULL)
+		answer = mallocstrcpy(answer, curranswer);
 
 #ifndef NANO_TINY
   redo_theprompt:
@@ -667,20 +670,16 @@ int do_prompt(bool allow_tabs, bool allow_files,
 int do_yesno_prompt(bool all, const char *msg)
 {
 	int response = -2, width = 16;
-
-	/* TRANSLATORS: For the next three strings, if possible, specify
-	 * the single-byte letters for both your language and English.
-	 * For example, in French: "OoYy", for both "Oui" and "Yes". */
+	/* TRANSLATORS: For the next three strings, specify the starting letters
+	 * of the translations for "Yes"/"No"/"All".  The first letter of each of
+	 * these strings MUST be a single-byte letter; others may be multi-byte. */
 	const char *yesstr = _("Yy");
 	const char *nostr = _("Nn");
 	const char *allstr = _("Aa");
 
-	/* The above three variables consist of all the single-byte characters
-	 * that are accepted for the corresponding answer.  Of each variable,
-	 * the first character is displayed in the help lines. */
-
 	while (response == -2) {
-		int kbinput;
+		char letter[MAXCHARLEN + 1];
+		int kbinput, index = 0;
 
 		if (!ISSET(NO_HELP)) {
 			char shortstr[MAXCHARLEN + 2];
@@ -697,15 +696,15 @@ int do_yesno_prompt(bool all, const char *msg)
 			wmove(bottomwin, 1, 0);
 			post_one_key(shortstr, _("Yes"), width);
 
+			shortstr[1] = nostr[0];
+			wmove(bottomwin, 2, 0);
+			post_one_key(shortstr, _("No"), width);
+
 			if (all) {
 				shortstr[1] = allstr[0];
 				wmove(bottomwin, 1, width);
 				post_one_key(shortstr, _("All"), width);
 			}
-
-			shortstr[1] = nostr[0];
-			wmove(bottomwin, 2, 0);
-			post_one_key(shortstr, _("No"), width);
 
 			wmove(bottomwin, 2, width);
 			post_one_key("^C", _("Cancel"), width);
@@ -723,12 +722,34 @@ int do_yesno_prompt(bool all, const char *msg)
 		/* When not replacing, show the cursor while waiting for a key. */
 		kbinput = get_kbinput(bottomwin, !all);
 
-		/* See if the pressed key is in the Yes, No, or All strings. */
-		if (strchr(yesstr, kbinput) != NULL)
+#ifdef ENABLE_NLS
+		letter[index++] = (unsigned char)kbinput;
+#ifdef ENABLE_UTF8
+		/* If the received code is a UTF-8 starter byte, get also the
+		 * continuation bytes and assemble them into one letter. */
+		if (using_utf8() && 0xC0 <= kbinput && kbinput <= 0xF7) {
+			int extras = (kbinput / 16) % 4 + (kbinput <= 0xCF ? 1 : 0);
+
+			while (extras <= get_key_buffer_len() && extras-- > 0)
+				letter[index++] = (unsigned char)get_kbinput(bottomwin, !all);
+		}
+#endif
+		letter[index] = '\0';
+
+		/* See if the typed letter is in the Yes, No, or All strings. */
+		if (strstr(yesstr, letter) != NULL)
 			response = 1;
-		else if (strchr(nostr, kbinput) != NULL)
+		else if (strstr(nostr, letter) != NULL)
 			response = 0;
-		else if (all && strchr(allstr, kbinput) != NULL)
+		else if (all && strstr(allstr, letter) != NULL)
+			response = 2;
+		else
+#endif /* ENABLE_NLS */
+		if (strchr("Yy", kbinput) != NULL)
+			response = 1;
+		else if (strchr("Nn", kbinput) != NULL)
+			response = 0;
+		else if (all && strchr("Aa", kbinput) != NULL)
 			response = 2;
 		else if (func_from_key(&kbinput) == do_cancel)
 			response = -1;
