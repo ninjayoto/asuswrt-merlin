@@ -4,6 +4,17 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_33E3j9527  (21-May-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: entware: download installer scripts over https
+- CHANGED: nano: update to 2.9.7
+- CHANGED: kernel: ipv6: (backport) revert 'administrative down' address handling changes
+- CHANGED: rc: (backport) stop playing with ipv6 ll/loopback addrs after b3da759a1
+* CHANGED: dnscrypt: update resolvers csv to 20180521
+- FIXED: dnsmasq: ra: fix absence of old prefix annoucements on address lost/flush
+- FIXED: shared: fix ipv6 ll routes lost after address reset
+- FIXED: shared: fix ipv6 gateway address detection
+
+
 374.43_33E2j9527  (15-May-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: openvpn: update to 2.4.6
 * CHANGED: miniupnpd: update to 20180503 snapshot
