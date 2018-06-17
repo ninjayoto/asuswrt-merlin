@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_33E4j9527  (17-June-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: curl: update to 7.60
+- CHANGED: busybox: (backport) enable netstat -p support
+- CHANGED: openvpn: webui: (backport) added AES-*-GCM ciphers to the available legacy ciphers
+- CHANGED: kernel 2.6.36: netfilter: (backport) fix u32 match
+
+
 374.43_33E3j9527  (21-May-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: entware: download installer scripts over https
 - CHANGED: nano: update to 2.9.7
