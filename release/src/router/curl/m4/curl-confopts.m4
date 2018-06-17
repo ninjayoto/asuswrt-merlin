@@ -5,7 +5,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1998 - 2013, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1998 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -37,13 +37,13 @@ AC_HELP_STRING([--enable-threaded-resolver],[Enable threaded resolver])
 AC_HELP_STRING([--disable-threaded-resolver],[Disable threaded resolver]),
   OPT_THRES=$enableval)
   case "$OPT_THRES" in
-    yes)
-      dnl --enable-threaded-resolver option used
-      want_thres="yes"
+    no)
+      dnl --disable-threaded-resolver option used
+      want_thres="no"
       ;;
     *)
       dnl configure option not specified
-      want_thres="no"
+      want_thres="yes"
       ;;
   esac
   AC_MSG_RESULT([$want_thres])
@@ -114,6 +114,7 @@ AC_HELP_STRING([--disable-curldebug],[Disable curl debug memory tracking]),
       dnl as a request to disable curldebug.
       if test "$want_debug" = "yes"; then
         AC_MSG_RESULT([(assumed) yes])
+        AC_DEFINE(CURLDEBUG, 1, [to enable curl debug memory tracking])
       else
         AC_MSG_RESULT([no])
       fi
@@ -130,6 +131,7 @@ AC_HELP_STRING([--disable-curldebug],[Disable curl debug memory tracking]),
       dnl --disable-curldebug had been given setting shell variable
       dnl want_curldebug to 'no'.
       want_curldebug="yes"
+      AC_DEFINE(CURLDEBUG, 1, [to enable curl debug memory tracking])
       AC_MSG_RESULT([yes])
       ;;
   esac
@@ -164,6 +166,7 @@ AC_HELP_STRING([--disable-debug],[Disable debug build options]),
     *)
       dnl --enable-debug option used
       want_debug="yes"
+      AC_DEFINE(DEBUGBUILD, 1, [enable debug build options])
       ;;
   esac
   AC_MSG_RESULT([$want_debug])
