@@ -715,9 +715,12 @@ void start_dnsmasq(int force)
 	if (*nv) {
 		fprintf(fp, "domain=%s\n"
 			    "expand-hosts\n", nv);	// expand hostnames in hosts file
-		if (nvram_get_int("lan_dns_fwd_local") != 1)
-			fprintf(fp, "bogus-priv\n"
-			            "local=/%s/\n", nv);	// Don't forward local queries upstream
+	}
+	if (nvram_get_int("lan_dns_fwd_local") != 1) {
+		fprintf(fp, "bogus-priv\n"				// don't forward private reverse lookups upstream
+		            "domain-needed\n");			// don't forward plain name queries upstream
+		if (*nv)
+			fprintf(fp, "local=/%s/\n", nv);	// don't forward local domain queries upstream
 	}
 
 	/* caching */
