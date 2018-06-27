@@ -5282,14 +5282,14 @@ void dnsfilter6_settings() {
 				continue;
 			if (!*mac || !ether_atoe(mac, ea))
 				continue;
-			if (atoi(mode) == 0)
+			if (atoi(mode) == 0 || atoi(mode) == 11)
  					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "RETURN");
  				else
  					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "DROP");
 		}
 		free(nv);
 
-		if(nvram_match("dnsfilter_mode", "0"))
+		if(nvram_match("dnsfilter_mode", "0") || nvram_match("dnsfilter_mode", "11"))
 			eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-j", "RETURN");
 		else
 			eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-j", "DROP");
