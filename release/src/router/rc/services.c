@@ -878,14 +878,19 @@ void start_dnsmasq(int force)
 		            "dnssec\n");
 
 		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
-		if (!nvram_match("ntp_sync","1"))
+		if (!nvram_match("ntp_sync","1")) {
 			fprintf(fp, "dnssec-no-timecheck\n");
-		else {
+			fprintf(fp, "dnssec-check-unsigned=no\n");
+		} else {
 			/* Force checking of unsigned replies only when NTP set */
 			if (nvram_match("dnssec_check_unsigned","1")) {
 				fprintf(fp, "dnssec-check-unsigned\n");
 				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned enabled");
+			} else {
+				fprintf(fp, "dnssec-check-unsigned=no\n");
+				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned disabled");
 			}
+
 		}
 	}
 #endif
