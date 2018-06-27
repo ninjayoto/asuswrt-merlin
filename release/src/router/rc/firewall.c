@@ -5275,19 +5275,24 @@ void dnsfilter6_settings() {
 		eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-p", "udp", "--dport", "53", "-j", "DNSFILTER");
 		eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-p", "tcp", "--dport", "53", "-j", "DNSFILTER");
 
+		
 		nv = nvp = strdup(nvram_safe_get("dnsfilter_rulelist"));
 		while (nv && (b = strsep(&nvp, "<")) != NULL) {
 			if (vstrsep(b, ">", &name, &mac, &mode) != 3)
 				continue;
 			if (!*mac || !ether_atoe(mac, ea))
 				continue;
-			if (atoi(mode) == 0) 
- 					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "RETURN"); 
- 				else 
- 					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "DROP"); 
-
+			if (atoi(mode) == 0)
+ 					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "RETURN");
+ 				else
+ 					eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-m", "mac", "--mac-source", mac, "-j", "DROP");
 		}
 		free(nv);
+
+		if(nvram_match("dnsfilter_mode", "0"))
+			eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-j", "RETURN");
+		else
+			eval("ip6tables", "-t", "mangle", "-A", "DNSFILTER", "-j", "DROP");
 	}
 }
 #endif	// RTCONFIG_IPV6
