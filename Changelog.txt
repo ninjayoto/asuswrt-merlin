@@ -4,6 +4,17 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_33D5j9527  (27-June-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dnsmasq: change default for dnssec-check-unsigned to enabled
+- CHANGED: dnsmasq: rc: (backport) filter non-FQDN hostname forward queries from being sent to upstream servers, unless told otherwise
+- CHANGED: make: update dnsmasq make to include NO_DUMPFILE
+- CHANGED: dnsmasq: log packet resize reports at debug level instead of warning since they are too frequent
+* CHANGED: dnsmasq: update to 2.80-51e4eee snapshot
+* CHANGED: Revert "ARM: update ctf to 380.68, enable pptp and l2tp ctf"
+* FIXED: dnsfilter: drop ipv6 dns requests if global filter mode set
+* FIXED: dnsfilter: allow ipv6 dns if filter mode set to router
+
+
 374.43_33E4j9527  (17-June-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: curl: update to 7.60
 - CHANGED: busybox: (backport) enable netstat -p support
