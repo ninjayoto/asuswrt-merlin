@@ -4,6 +4,17 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_33E7j9527  (1-July-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dnssec: force default dnssec-check-unsigned on with new nvram var
+* FIXED: ddns: fix missing gui attribute ddns_hostname_info_tr from 384 merge
+* FIXED: httpd: fix specified ip address check for gui access
+* FIXED: dnsmasq: (upstream) Fix sometimes missing DNSSEC RRs when DNSSEC validation not enabled
+
+
+374.43_33D6j9527  (30-June-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: Revert "MIPS: revert conntrack changes picked up in kernel update 579e26d"
+
+
 374.43_33D5j9527  (27-June-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnsmasq: change default for dnssec-check-unsigned to enabled
 - CHANGED: dnsmasq: rc: (backport) filter non-FQDN hostname forward queries from being sent to upstream servers, unless told otherwise
