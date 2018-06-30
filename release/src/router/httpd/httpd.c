@@ -1379,7 +1379,7 @@ int http_client_ip_check(void) {
 		//always allow router
 		sprintf(tmp_access_ip, "%s", nvram_get("lan_ipaddr"));
 		inet_aton(tmp_access_ip, &tmp_access_addr);
-		if(login_ip_tmp==(unsigned int)tmp_access_addr.s_addr);
+		if(login_ip_tmp==(unsigned int)tmp_access_addr.s_addr)
 			return 1;
 
 		//user specified ip
