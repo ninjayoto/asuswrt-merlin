@@ -3332,6 +3332,7 @@ int init_nvram(void)
 	nvram_unset("ipv6_radvd_dl");
 	nvram_unset("ntp_log");
 	nvram_unset("qos_limitbw");
+	nvram_unset("dnssec_check_unsigned");
 
 	// Turn on user scripts after fw load w/o factory reset
 	if(nvram_get("jffs2_scripts") == NULL)

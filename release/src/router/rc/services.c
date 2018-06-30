@@ -883,7 +883,7 @@ void start_dnsmasq(int force)
 			fprintf(fp, "dnssec-check-unsigned=no\n");
 		} else {
 			/* Force checking of unsigned replies only when NTP set */
-			if (nvram_match("dnssec_check_unsigned","1")) {
+			if (nvram_match("dnssec_check_unsigned_x","1")) {
 				fprintf(fp, "dnssec-check-unsigned\n");
 				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned enabled");
 			} else {
