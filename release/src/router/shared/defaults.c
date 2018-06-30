@@ -724,7 +724,7 @@ struct nvram_tuple router_defaults[] = {
 	// DNSSEC option for dnsmasq
 #ifdef RTCONFIG_DNSSEC
 	{ "dnssec_enable", "0" },
-	{ "dnssec_check_unsigned", "1" },
+	{ "dnssec_check_unsigned_x", "1" },
 #endif
 
 	// DNSCRYPT option for dnsmasq
