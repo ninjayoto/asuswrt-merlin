@@ -1178,7 +1178,12 @@ function change_common_radio(o, s, v, r){
 				}
 				showhide("wildcard_field",0);
 			}else{
-				document.form.ddns_hostname_x.parentNode.parentNode.parentNode.style.display = "";
+				if(document.form.ddns_server_x.value == "WWW.ORAY.COM"){
+					if(ddns_updated == "1")
+						document.getElementById("ddns_hostname_info_tr").style.display = "";
+				}
+				else
+					document.form.ddns_hostname_x.parentNode.parentNode.parentNode.style.display = "";
 				inputCtrl(document.form.ddns_username_x, 1);
 				inputCtrl(document.form.ddns_passwd_x, 1);
 				showhide("wildcard_field",1);				
@@ -1188,7 +1193,10 @@ function change_common_radio(o, s, v, r){
 		}else{
 			if(document.form.ddns_server_x.value == "WWW.ASUS.COM"){
 				document.form.DDNSName.parentNode.parentNode.parentNode.style.display = "none";
-			}else{
+			}
+			else{
+				if(document.form.ddns_server_x.value == "WWW.ORAY.COM")
+					document.getElementById("ddns_hostname_info_tr").style.display = "none";
 				document.form.ddns_hostname_x.parentNode.parentNode.parentNode.style.display = "none";
 				inputCtrl(document.form.ddns_username_x, 0);
 				inputCtrl(document.form.ddns_passwd_x, 0);			
