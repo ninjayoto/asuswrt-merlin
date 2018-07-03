@@ -86,11 +86,11 @@ echo "Public DNSCrypt resolvers update complete ($resolvcnt entries)" | logger -
 echo "Checking selected DNSCrypt resolvers..."
 DNSCRYPT1_RESOLVER=$(nvram get dnscrypt1_resolver)
 DNSCRYPT2_RESOLVER=$(nvram get dnscrypt2_resolver)
-if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT1_RESOLVER") == "x" -a "$DNSCRYPT1_RESOLVER" != "none" -a "$DNSCRYPT1_RESOLVER" != "random" ]; then
+if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT1_RESOLVER,") == "x" -a "$DNSCRYPT1_RESOLVER" != "none" -a "$DNSCRYPT1_RESOLVER" != "random" ]; then
         echo "Your first  selected DNSCrypt resolver is no longer available!  Please update your selected servers." | logger -s -t "$scr_name"
 		resolverr=1
 fi
-if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT2_RESOLVER") == "x" -a "$DNSCRYPT2_RESOLVER" != "none" -a "$DNSCRYPT2_RESOLVER" != "random" ]; then
+if [ "x"$(cat "$RESOLVERS_FILE" | grep "$DNSCRYPT2_RESOLVER,") == "x" -a "$DNSCRYPT2_RESOLVER" != "none" -a "$DNSCRYPT2_RESOLVER" != "random" ]; then
         echo "Your second selected DNSCrypt resolver is no longer available!  Please update your selected servers." | logger -s -t "$scr_name"
 		resolverr=1
 fi
