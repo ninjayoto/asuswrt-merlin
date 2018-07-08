@@ -946,10 +946,10 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 	ret += websWrite(wp, "\n");
  	ret += websWrite(wp, "Stations  (flags: P=Powersave Mode, S=Short GI, T=STBC, A=Associated, U=Authenticated)\n");
- 	ret += websWrite(wp, "------------------------------------------------------------------------------------------\n");
+	ret += websWrite(wp, "-------------------------------------------------------------------------------------------\n");
  	
 	if (leaselist) {
-		ret += websWrite(wp, "%-18s%-16s%-16s%-8s%-15s%-12s%-5s\n",
+		ret += websWrite(wp, "%-18s%-16s%-17s%-8s%-15s%-12s%-5s\n",
 				"MAC", "IP Address", "Name", "  RSSI", "  Rx/Tx Rate", "Connected", "Flags");
 	} else {
 		ret += websWrite(wp, "%-18s%-16s%-8s%-15s%-12s%-5s\n",
@@ -983,7 +983,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 			leaselistptr = leaselist;
 			found = 0;
 
-			while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %*s %15s %*s", macentry, hostnameentry) == 2)) {
+			while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %*s %16s %*s", macentry, hostnameentry) == 2)) {
 				if (upper_strcmp(macentry, ether_etoa((void *)&auth->ea[i], ea)) == 0) {
 					found = 1;
 					break;
@@ -992,7 +992,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				}
 			}
 
-			ret += websWrite(wp, "%-15s ", (found ? hostnameentry : ""));
+			ret += websWrite(wp, "%-16s ", (found ? hostnameentry : ""));
 		}
 #endif
 
@@ -1113,7 +1113,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 					leaselistptr = leaselist;
 					found = 0;
 
-					while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %*s %15s %*s", macentry, hostnameentry) == 2)) {
+					while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %*s %16s %*s", macentry, hostnameentry) == 2)) {
 						if (upper_strcmp(macentry, ether_etoa((void *)&auth->ea[i], ea)) == 0) {
 							found = 1;
 							break;
@@ -1122,7 +1122,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 						}
 					}
 
-					ret += websWrite(wp, "%-15s ", (found ? hostnameentry : ""));
+					ret += websWrite(wp, "%-16s ", (found ? hostnameentry : ""));
 				}
 #endif
 
