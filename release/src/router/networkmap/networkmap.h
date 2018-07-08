@@ -85,13 +85,13 @@ typedef unsigned long ULONG;
 typedef struct {
         unsigned char   ip_addr[255][4];
         unsigned char   mac_addr[255][6];
-	unsigned char   device_name[255][16];
+        unsigned char   device_name[255][17];
         int             type[255];
         int             http[255];
         int             printer[255];
         int             itune[255];
         int             ip_mac_num;
-	int 		detail_info_num;
+        int 			detail_info_num;
 } CLIENT_DETAIL_INFO_TABLE, *P_CLIENT_DETAIL_INFO_TABLE;
 
 typedef struct Raw_socket {
@@ -156,17 +156,17 @@ typedef struct
   unsigned char ttl[4];
   unsigned short data_len;
   unsigned char number_of_names;
-  unsigned char device_name1[16];
+  unsigned char device_name1[17];
   unsigned char name_flags1[2];
-  unsigned char device_name2[16];
+  unsigned char device_name2[17];
   unsigned char name_flags2[2];
-  unsigned char device_name3[16];
+  unsigned char device_name3[17];
   unsigned char name_flags3[2];
-  unsigned char device_name4[16];
+  unsigned char device_name4[17];
   unsigned char name_flags4[2];
-  unsigned char device_name5[16];
+  unsigned char device_name5[17];
   unsigned char name_flags5[2];
-  unsigned char device_name6[16];
+  unsigned char device_name6[17];
   unsigned char name_flags6[2];
   unsigned char mac_addr[6];
   unsigned char name_info[58];
