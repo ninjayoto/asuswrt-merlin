@@ -212,10 +212,10 @@ int Nbns_query(unsigned char *src_ip, unsigned char *dest_ip, P_CLIENT_DETAIL_IN
 	    && (other_addr2.sin_addr.s_addr = other_addr1.sin_addr.s_addr))
             {
 		lock = file_lock("networkmap");
-            	memcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], nbns_response->device_name1, 16);
+		memcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], nbns_response->device_name1, 16);
 		fixstr(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num]);
 		file_unlock(lock);
-	    	memcpy(NetBIOS_name, nbns_response->device_name1, 15);
+		memcpy(NetBIOS_name, nbns_response->device_name1, 16);
 		NMP_DEBUG("Device name:%s~%s~\n", nbns_response->device_name1,
 		p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num]);
             	break;
@@ -1706,8 +1706,8 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
                                 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
                                 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
         UCHAR my_hostname[16] = {
-                                0x43, 0x48, 0x49, 0x4E, 0x45, 0x53, 0x45, 0x2d,
-                                0x43, 0x45, 0x52, 0x45, 0x52, 0x45, 0x52, 0x00};
+                                0x41, 0x53, 0x55, 0x53, 0x52, 0x4f, 0x55, 0x54,
+                                0x45, 0x52, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	MY_DEVICE_INFO my_dvinfo;
 
         memcpy(account, "root", 4);
@@ -1813,8 +1813,8 @@ int FindAllApp(unsigned char *src_ip, P_CLIENT_DETAIL_INFO_TABLE p_client_detail
 		//Copy modelname to device name if exist.
 		if(strcmp("",description.modelname) &&
 		  !strcmp("",p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num])) {
-			strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], description.modelname, 15);
-			p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num][15]='\0';
+			strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], description.modelname, 17);
+//			p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num][17]='\0';
 		}
 		file_unlock(lock);
 	    }
@@ -1910,7 +1910,7 @@ int FindHostname(P_CLIENT_DETAIL_INFO_TABLE p_client_detail_info_tab)
 				    (strlen(name) > 0) &&
 				    (!strchr(name, '*')) &&	// Ensure it's not a clientid in
 				    (!strchr(name, ':')))	// case device didn't have a hostname
-						strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 15);
+						strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 17);
 			}
 		}
 		fclose(fp);
@@ -1923,7 +1923,7 @@ int FindHostname(P_CLIENT_DETAIL_INFO_TABLE p_client_detail_info_tab)
 		while ((b = strsep(&nvp, "<")) != NULL) {
 			if ((vstrsep(b, ">", &mac, &ip, &name) == 3) && (strlen(ip) > 0) && (strlen(name) > 0)) {
 				if (!strcmp(ipaddr, ip))
-					strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 15);
+					strlcpy(p_client_detail_info_tab->device_name[p_client_detail_info_tab->detail_info_num], name, 17);
 			}
 		}
 		free(nv);

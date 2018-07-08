@@ -1424,10 +1424,10 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	ret += websWrite(wp, "Stations  (flags: P=Powersave Mode, S=Short GI, T=STBC, A=Associated, U=Auth, G=Guest)\n");
 #endif
 
-	ret += websWrite(wp, "------------------------------------------------------------------------------------------\n");
+	ret += websWrite(wp, "-------------------------------------------------------------------------------------------\n");
 
 	if (leaselist) {
-		ret += websWrite(wp, "%-18s%-16s%-16s%-8s%-15s%-12s%-5s\n",
+		ret += websWrite(wp, "%-18s%-16s%-17s%-8s%-15s%-12s%-5s\n",
 				"MAC", "IP Address", "Name", "  RSSI", "  Rx/Tx Rate", "Connected", "Flags");
 	} else {
 		ret += websWrite(wp, "%-18s%-16s%-8s%-15s%-12s%-5s\n",
@@ -1462,7 +1462,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 		if (leaselist) {
 			leaselistptr = leaselist;
 
-			while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %15s %15s %*s", macentry, ipentry, hostnameentry) == 3)) {
+			while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %15s %16s %*s", macentry, ipentry, hostnameentry) == 3)) {
 
 				if (upper_strcmp(macentry, ether_etoa((void *)&auth->ea[i], ea)) == 0) {
 					found += 2;
@@ -1480,10 +1480,10 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				ret += websWrite(wp, "%-15s ", "");
 			} else if (found == 2) {
 				// Only in leaselist (dynamic IP that has not communicated with router for a while)
-				ret += websWrite(wp, "%-16s%-15s ", ipentry, hostnameentry);
+				ret += websWrite(wp, "%-16s%-16s ", ipentry, hostnameentry);
 			} else if (found == 3) {
 				// In both arplist and leaselist (dynamic IP)
-				ret += websWrite(wp, "%-15s ", hostnameentry);
+				ret += websWrite(wp, "%-16s ", hostnameentry);
 			}
 		}
 #endif
@@ -1616,7 +1616,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				if (leaselist) {
 					leaselistptr = leaselist;
 
-					while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %15s %15s %*s", macentry, ipentry, hostnameentry) == 3)) {
+					while ((leaselistptr < leaselist+strlen(leaselist)-2) && (sscanf(leaselistptr,"%*s %17s %15s %16s %*s", macentry, ipentry, hostnameentry) == 3)) {
 
 						if (upper_strcmp(macentry, ether_etoa((void *)&auth->ea[ii], ea)) == 0) {
 							found += 2;
@@ -1628,16 +1628,16 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 					if (found == 0) {
 						// Not in arplist nor in leaselist
-						ret += websWrite(wp, "%-16s%-15s ", "", "");
+						ret += websWrite(wp, "%-16s%-16s ", "", "");
 					} else if (found == 1) {
 						// Only in arplist (static IP)
-						ret += websWrite(wp, "%-15s ", "");
+						ret += websWrite(wp, "%-16s ", "");
 					} else if (found == 2) {
 						// Only in leaselist (dynamic IP that has not communicated with router for a while)
-						ret += websWrite(wp, "%-16s%-15s ", ipentry, hostnameentry);
+						ret += websWrite(wp, "%-16s%-16s ", ipentry, hostnameentry);
 					} else if (found == 3) {
 						// In both arplist and leaselist (dynamic IP)
-						ret += websWrite(wp, "%-15s ", hostnameentry);
+						ret += websWrite(wp, "%-16s ", hostnameentry);
 					}
 				}
 #endif
