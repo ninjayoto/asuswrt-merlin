@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_33E8j9527  (8-July-2018) ARM SDK, MIPS,ARM KRACK
+* FIXED: dnscrypt: fix update resolvers script when checking valid selected resolvers
+* FIXED: webui: display full 16 char hostnames in gui
+* FIXED: networkmap: standardize networkmap.h in networkmap/shared directories
+
+
 374.43_33E7j9527  (1-July-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnssec: force default dnssec-check-unsigned on with new nvram var
 * FIXED: ddns: fix missing gui attribute ddns_hostname_info_tr from 384 merge
