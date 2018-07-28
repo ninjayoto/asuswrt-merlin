@@ -55,8 +55,10 @@ if(dualWAN_support && ( wans_dualwan.search("wan") >= 0 || wans_dualwan.search("
 <% login_state_hook(); %>
 <% wan_get_parameter(); %>
 
+/* DNSCRYPT-BEGIN */
 // [Name, Fullname, DNSSEC]
 <% get_resolver_array(); %>
+/* DNSCRYPT-END */
 
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var original_wan_type = wan_proto;
@@ -104,6 +106,7 @@ function initial(){
 		document.form.dnssec_strict_ckb.checked = ('<% nvram_get("dnssec_check_unsigned_x"); %>' == 1) ? true : false;
 	}
 
+/* DNSCRYPT-BEGIN */
 	if (isSupport("dnscrypt")){
 		document.getElementById("dnscrypt_tr").style.display = "";
 		display_dnscrypt_opt();
@@ -114,9 +117,11 @@ function initial(){
 	}
 
 	update_resolverlist();
+/* DNSCRYPT-END */
 	display_upnp_range();
 }
 
+/* DNSCRYPT-BEGIN */
 function update_resolverlist(){
 // Resolver list
 	free_options(document.form.dnscrypt1_resolver);
@@ -177,6 +182,7 @@ function display_dnscrypt_opt(){
 	$("dnscrypt_log_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt_nologs_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 }
+/* DNSCRYPT-END */
 
 function display_upnp_range(){
 	$("upnp_secure_mode").style.display = (document.form.wan_upnp_enable[0].checked) ? "" : "none";
@@ -239,6 +245,7 @@ function applyRule(){
 			inputCtrl(document.form.wan_dns2_x, 1);
 		}
 
+/* DNSCRYPT-BEGIN */
 		// Reset VPN Client DNSCrypt option when turning off DNSCrypt
 		if(!document.form.dnscrypt_proxy[0].checked && (dnscrypt_proxy_orig == 1)) {
 			if(document.form.vpn_client1_adns.value == 4)
@@ -258,6 +265,7 @@ function applyRule(){
 		   (document.form.dnscrypt2_port.value != "<% nvram_get("dnscrypt2_port"); %>") ||
 		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
 			document.form.action_script.value += "stop_dnscrypt;";
+/* DNSCRYPT-END */
 
 		document.form.action_script.value += "restart_wan_if";
 
@@ -466,6 +474,7 @@ function validForm(){
 		 if(!validate_string(document.form.wan_heartbeat_x))
 		 	return false;
 
+/* DNSCRYPT-BEGIN */
 	if (document.form.dnscrypt_proxy[0].checked) {
 		if ((document.form.dnscrypt1_resolver.value != "none") && (!validate_number_range(document.form.dnscrypt1_port, 1, 65535)))
 			return false;
@@ -485,6 +494,7 @@ function validForm(){
 			}
 		}
 	}
+/* DNSCRYPT-END */
 
 	return true;
 }
@@ -876,8 +886,10 @@ function pass_checked(obj){
 <input type="hidden" name="wan_pppoe_passwd_org" value="<% nvram_char_to_ascii("", "wan_pppoe_passwd"); %>" />
 <input type="hidden" name="vpn_client1_adns" value="<% nvram_get("vpn_client1_adns"); %>" />
 <input type="hidden" name="vpn_client2_adns" value="<% nvram_get("vpn_client2_adns"); %>" />
+/* DNSCRYPT-BEGIN */
 <input type="hidden" name="dnscrypt1_ipv6" value="<% nvram_get("dnscrypt1_ipv6"); %>" />
 <input type="hidden" name="dnscrypt2_ipv6" value="<% nvram_get("dnscrypt2_ipv6"); %>" />
+/* DNSCRYPT-END */
 <input type="hidden" name="dnssec_check_unsigned_x" value="<% nvram_get("dnssec_check_unsigned_x"); %>" />
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
@@ -1078,6 +1090,7 @@ function pass_checked(obj){
 					<input type="radio" value="0" name="dns_norebind" <% nvram_match("dns_norebind", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
+/* DNSCRYPT-BEGIN */
 			<tr id="dnscrypt_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,33);">Enable DNSCRYPT support<br><i>DNSCRYPT becomes primary DNS server(s)</i></a></th>
 				<td colspan="2" style="text-align:left;">
@@ -1135,6 +1148,7 @@ function pass_checked(obj){
 					</select>
 				</td>
 			</tr>
+/* DNSCRYPT-END */
         		</table>
 
 		  			<table id="PPPsetting" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">

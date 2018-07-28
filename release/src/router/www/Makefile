@@ -272,3 +272,17 @@ ifeq ($(RTCONFIG_ODMPID),y)
 		 ln -sf Model_producticon.png $(INSTALLDIR)/www/images/$(subst U,R,$(BUILD_NAME))Model_producticon.png ; \
 	fi
 endif
+
+# Only include the dnscrypt option if is compiled in
+ifneq ($(RTCONFIG_DNSCRYPT),y)
+	sed -i $(INSTALLDIR)/www/Advanced_WAN_Content.asp -e "/DNSCRYPT-BEGIN/,/DNSCRYPT-END/d"
+endif
+
+# clean up
+	cd $(INSTALLDIR)/www && \
+	for F in $(wildcard *.asp *.js *.html); do \
+		[ -f $(INSTALLDIR)/www/$$F ] && sed -i $$F \
+		-e "/DNSCRYPT-BEGIN/d"	-e "/DNSCRYPT-END/d"\
+		|| true; \
+	done
+
