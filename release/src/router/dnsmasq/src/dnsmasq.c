@@ -752,7 +752,7 @@ int main (int argc, char **argv)
 	my_syslog(LOG_INFO, _("DNS service limited to local subnets"));
     }
   
-  my_syslog(LOG_DEBUG, _("compile time options: %s"), compile_opts);
+  my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
 
   if (chown_warn != 0)
     my_syslog(LOG_WARNING, "chown of PID file %s failed: %s", daemon->runfile, strerror(chown_warn));
@@ -771,7 +771,8 @@ int main (int argc, char **argv)
   if (option_bool(OPT_DNSSEC_VALID))
     {
       int rc;
-
+      struct ds_config *ds;
+      
       /* Delay creating the timestamp file until here, after we've changed user, so that
 	 it has the correct owner to allow updating the mtime later. 
 	 This means we have to report fatal errors via the pipe. */
@@ -792,6 +793,10 @@ int main (int argc, char **argv)
       
       if (rc == 1)
 	my_syslog(LOG_INFO, _("DNSSEC signature timestamps not checked until system time valid"));
+
+      for (ds = daemon->ds; ds; ds = ds->next)
+	my_syslog(LOG_INFO, _("configured with trust anchor for %s keytag %u"),
+		  ds->name[0] == 0 ? "<root>" : ds->name, ds->keytag);
     }
 #endif
 
@@ -1380,10 +1385,6 @@ static void async_event(int pipe, time_t now)
 	   we leave them logging to the old file. */
 	if (daemon->log_file != NULL)
 	  log_reopen(daemon->log_file);
-#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
-        if (daemon->dhcp || daemon->dhcp6)
-          lease_flush_file(now);
-#endif
 	break;
 
       case EVENT_NEWADDR:
@@ -1426,11 +1427,7 @@ static void async_event(int pipe, time_t now)
 	    while (retry_send(close(daemon->helperfd)));
 	  }
 #endif
-
-#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
-        if (daemon->dhcp || daemon->dhcp6)
-          lease_flush_file(now);
-#endif
+	
 	if (daemon->lease_stream)
 	  fclose(daemon->lease_stream);
 
