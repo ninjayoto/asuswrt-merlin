@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34B1j9527  (1-August-2018) ARM SDK, MIPS,ARM KRACK
+- NEW: dnsmasq: implement dns rebind protection
+* NEW: add binary support for libyaml,getdns,stubby - DoT
+* NEW: stubby: functional code and gui support - replaces dnscrypt
+* NEW: webui: implement conditional gui compile for dnscrypt (from tomato)
+* CHANGED: dnsmasq: update to 2.80test3
+
+
 374.43_33E8j9527  (8-July-2018) ARM SDK, MIPS,ARM KRACK
 * FIXED: dnscrypt: fix update resolvers script when checking valid selected resolvers
 * FIXED: webui: display full 16 char hostnames in gui
