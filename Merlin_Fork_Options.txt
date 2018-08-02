@@ -496,6 +496,32 @@ Do not send empty WPAD response
         Notes:                  DNSMASQ by default sends a single linefeed as a WPAD url.  This can prevent the setting of a WPAD proxy in
                                   certain configurations.   Setting this option to zero prevents sending the empty linfeed WPAD response.
 ---------------------------------------------------------------------------------------------------------------
+DNS over TLS (DoT) support
+
+        Can be set in gui:      Yes
+        Enable via NVRAM:       No, must be gui configured
+
+
+        Routers Supported:      All
+        Released:               Update-34B1
+        Reboot Required:        No (WAN is restarted when applying via gui)
+        Notes:                  DNS over TLS provides encryption for DNS queries on supported servers using the open source program stubby.
+                                  Multiple servers may be selected in the gui.
+---------------------------------------------------------------------------------------------------------------
+Disable IPv6 support in DNS over TLS (DoT)
+
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set stubby_noipv6=1
+                                nvram commit
+								service restart_stubby
+
+
+        Routers Supported:      All
+        Released:               Update-34B2
+        Reboot Required:        No, but dnsmasq/stubby must be restarted
+        Notes:                  Normally DNS over TLS support will automatically enable IPv6 DoT servers if available.  This option prevents
+                                  if IPv6 servers from being configured.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 

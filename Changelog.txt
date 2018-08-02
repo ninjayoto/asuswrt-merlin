@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34B2j9527  (2-August-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: stubby: add nvram only option for stubby_noipv6
+* CHANGED: dnsmasq: add server name to insecure DS syslog
+* FIXED: updown: properly initialize vars for dns proxy status
+
+
 374.43_34B1j9527  (1-August-2018) ARM SDK, MIPS,ARM KRACK
 - NEW: dnsmasq: implement dns rebind protection
 * NEW: add binary support for libyaml,getdns,stubby - DoT
