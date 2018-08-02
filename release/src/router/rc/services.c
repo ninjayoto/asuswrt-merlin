@@ -880,7 +880,7 @@ void start_dnsmasq(int force)
 		fprintf(fp, "no-resolv\n");
 
 #ifdef RTCONFIG_IPV6
-		if (ipv6_enabled() && nvram_get_int("stubby_ipv6")) {
+		if (ipv6_enabled() && nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0")) {
 			stubby_lanip = "::1";
 			fprintf(fp, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
 		}
@@ -1258,7 +1258,7 @@ void start_stubby(int force)
 		fprintf(fp, "listen_addresses:\n");
 		if (nvram_get_int("stubby_ipv4"))
 			fprintf(fp, "  - 127.0.0.1@%d\n", nvram_get_int("stubby_port"));
-		if (nvram_get_int("stubby_ipv6"))
+		if (nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0"))
 			fprintf(fp, "  - 0::1@%d\n", nvram_get_int("stubby_port"));
 
 		//processor selected servers
@@ -1286,7 +1286,7 @@ void start_stubby(int force)
 				}
 			}
 
-			if (ipv6_enabled() && (nvram_get_int("stubby_ipv6") > 0) && (nvram_match("ntp_sync", "1"))) { // only config ipv6 after boot
+			if (ipv6_enabled() && nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0") && nvram_match("ntp_sync", "1")) { // only config ipv6 after boot
 				//write the server selections (ipv6)
 				if (strlen(ip6addr) > 0) {
 					fprintf(fp, "# %s\n", dotname);

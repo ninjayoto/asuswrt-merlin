@@ -34,7 +34,7 @@ then
 	proxy_active=1
 	ext_proxy="STUBBY"
 	ext_proxy_port=$(nvram get stubby_port)
-	if [ $(nvram get stubby_ipv6) -gt 0 ]
+	if [ $(nvram get stubby_ipv6) -gt 0 -a $(nvram get stubby_noipv6) -eq 0 ]
 	then
 		ipv6_active=1
 	fi

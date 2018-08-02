@@ -1959,7 +1959,7 @@ void write_vpn_dnsmasq_config(FILE* f)
 						fprintf(f, "no-resolv\n");
 
 #ifdef RTCONFIG_IPV6
-						if (ipv6_enabled() && nvram_get_int("stubby_ipv6")) {
+						if (ipv6_enabled() && nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0")) {
 							stubby_lanip = "::1";
 							fprintf(f, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
 						}
@@ -2022,7 +2022,7 @@ void write_vpn_dnsmasq_config(FILE* f)
 			fprintf(f, "no-resolv\n");
 
 #ifdef RTCONFIG_IPV6
-			if (ipv6_enabled() && nvram_get_int("stubby_ipv6")) {
+			if (ipv6_enabled() && nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0")) {
 				stubby_lanip = "::1";
 				fprintf(f, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
 			}
