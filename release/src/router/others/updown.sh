@@ -15,8 +15,10 @@ if [ "$(nvram get ipv6_service)" == "disabled" ]; then ipv6_enabled=0; else ipv6
 machine_arm=$(uname -r); if [ "$machine_arm" != "${machine_arm%"arm"*}" ]; then machine_arm=1; else machine_arm=0; fi
 if [ $machine_arm == 1 -a $(nvram get allow_routelocal) == 1 ]; then allow_routelocal=1; else allow_routelocal=0; fi
 
+proxy_active=0
+ipv6_active=0
 # DNSCRYPT
-if [ "$(nvram get dnscrypt_proxy)" == 1 ]
+if [ $(nvram get dnscrypt_proxy) == 1 ]
 then
 	proxy_active=1
 	ext_proxy="DNSCRYPT"
@@ -27,7 +29,7 @@ then
 	fi
 fi
 # STUBBY
-if [ "$(nvram get stubby_proxy)" == 1 ]
+if [ $(nvram get stubby_proxy) == 1 ]
 then
 	proxy_active=1
 	ext_proxy="STUBBY"
@@ -101,7 +103,7 @@ create_client_list(){
 			if [ "$TARGET_ROUTE" == "VPN" ]
 			then
 				echo iptables -t nat -A DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $VPNserver >> $dnsscript
-				logger -t "openvpn-updown" "Setting $VPN_IP to use `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo '$ext_proxy'; else echo 'VPN'; fi` DNS servers `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
+				logger -t "openvpn-updown" "Setting $VPN_IP to use `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo $ext_proxy; else echo 'VPN'; fi` DNS servers `if [ $VPNserver != $server ]; then echo '(via dnsmasq)'; fi`"
 			else
 				if [ $allow_ext_resolver == 1 ]
 				then
@@ -110,7 +112,7 @@ create_client_list(){
 				else
 					echo iptables -t nat -I DNSVPN$instance -s $VPN_IP -j DNAT --to-destination $ISPserver >> $dnsscript
 				fi
-				logger -t "openvpn-updown" "Setting $VPN_IP to use default DNS server `if [ $allow_ext_resolver == 1 ]; then echo '($ext_proxy)'; else echo '(Primary WAN)'; fi`"
+				logger -t "openvpn-updown" "Setting $VPN_IP to use default DNS server `if [ $allow_ext_resolver == 1 ]; then echo '('$ext_proxy')'; else echo '(Primary WAN)'; fi`"
 			fi
 		fi
 	done
@@ -138,10 +140,10 @@ then
 		setdns=0
 		if [ -f $dnsscript ]; then rm $resolvfile; fi
 		echo iptables -t nat -N DNSVPN$instance >> $dnsscript
-		logger -t "openvpn-updown" "Using `if [ $allow_ext_resolver == 1 ]; then echo '($ext_proxy)'; else echo '(Primary WAN)'; fi` DNS for non-VPN clients"
+		logger -t "openvpn-updown" "Using `if [ $allow_ext_resolver == 1 ]; then echo '('$ext_proxy')'; else echo '(Primary WAN)'; fi` DNS for non-VPN clients"
 	else
 		setdns=-1
-		logger -t "openvpn-updown" "Using `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo '$ext_proxy'; elif [ $(nvram get vpn_client$(echo $instance)_adns) == 3 ]; then echo 'VPN'; else echo 'Default'; fi` DNS for non-VPN clients"
+		logger -t "openvpn-updown" "Using `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo $ext_proxy; elif [ $(nvram get vpn_client$(echo $instance)_adns) == 3 ]; then echo 'VPN'; else echo 'Default'; fi` DNS for non-VPN clients"
 	fi
 
 	if [ $(nvram get vpn_client$(echo $instance)_adns) -gt 0 ]
