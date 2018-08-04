@@ -1258,7 +1258,7 @@ void start_stubby(int force)
 		fprintf(fp, "listen_addresses:\n");
 		if (nvram_get_int("stubby_ipv4"))
 			fprintf(fp, "  - 127.0.0.1@%d\n", nvram_get_int("stubby_port"));
-		if (nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0"))
+		if (ipv6_enabled() && nvram_get_int("stubby_ipv6") && nvram_match("stubby_noipv6", "0"))
 			fprintf(fp, "  - 0::1@%d\n", nvram_get_int("stubby_port"));
 
 		//processor selected servers
