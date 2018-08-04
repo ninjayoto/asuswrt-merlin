@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34B4j9527  (4-August-2018) ARM SDK, MIPS,ARM KRACK
+* NEW stubby: add support for orderd vs roundrobbin server access
+* CHANGED: webui: add gui support for stubby_noipv6
+* CHANGED: stubby: change default padding blocksize
+* FIXED: stubby: do not listen on ipv6 if not enabled
+
+374.43_34B3j9527  (4-August-2018) ARM SDK, MIPS,ARM KRACK
+Abandoned
+
+
 374.43_34B2j9527  (2-August-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: stubby: add nvram only option for stubby_noipv6
 * CHANGED: dnsmasq: add server name to insecure DS syslog
