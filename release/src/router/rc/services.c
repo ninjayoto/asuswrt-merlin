@@ -1248,7 +1248,7 @@ void start_stubby(int force)
 //			fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
 		fprintf(fp, "tls_query_padding_blocksize: 128\n");
 		fprintf(fp, "edns_client_subnet_private : 1\n");
-		fprintf(fp, "round_robin_upstreams: 1\n");
+		fprintf(fp, "round_robin_upstreams: %s\n", nvram_safe_get("stubby_access"));
 		fprintf(fp, "idle_timeout: 10000\n");
 //		fprintf(fp, "tls_connection_retries: 5\n");			// default 2
 		fprintf(fp, "tls_backoff_time: 900\n");				// default 3600
