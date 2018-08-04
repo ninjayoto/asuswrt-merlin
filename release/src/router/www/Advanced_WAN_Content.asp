@@ -77,12 +77,13 @@ var dnscrypt_csv = '<% nvram_get("dnscrypt_csv"); %>';
 var stubby_proxy_orig = '<% nvram_get("stubby_proxy"); %>';
 var stubby_csv = '<% nvram_get("stubby_csv"); %>';
 var stubby_dns_value = '<% nvram_get("stubby_dns"); %>';
+var accessindex = [];
 /* STUBBY-END */
 var vpn_client1_adns = '<% nvram_get("vpn_client1_adns"); %>';
 var vpn_client2_adns = '<% nvram_get("vpn_client2_adns"); %>';
 var vpn_client1_state = '<% nvram_get("vpn_client1_state"); %>';
 var vpn_client2_state = '<% nvram_get("vpn_client2_state"); %>';
-var ipv6_enabled = '<% nvram_get("ipv6_service"); %>';
+var ipv6_enabled = ('<% nvram_get("ipv6_service"); %>' == "disabled") ? 0 : 1;
 var machine_name = '<% get_machine_name(); %>';
 var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && ('<% nvram_get("allow_routelocal"); %>' ? true : false));
 
@@ -238,6 +239,7 @@ function display_stubby_opt(){
 	$("stubby_server_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 //	$("stubby_log_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_nologs_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
+	$("stubby_noipv6_tr").style.display = (document.form.stubby_proxy[0].checked && ipv6_enabled) ? "" : "none";
 }
 /* STUBBY-END */
 
@@ -1266,6 +1268,13 @@ function pass_checked(obj){
 					<input type="radio" value="1" name="stubby_proxy" onclick="display_stubby_opt();" <% nvram_match("stubby_proxy", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="stubby_proxy" onclick="display_stubby_opt();" <% nvram_match("stubby_proxy", "0", "checked"); %> /><#checkbox_No#>
 				<span id="stubby_csvwarn" style="padding-left:42px;">Using updated server file</span>
+				</td>
+			</tr>
+			<tr id="stubby_noipv6_tr" style="display:none;">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,38);">Enable IPv6 DoT servers</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "0", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "1", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
 			<tr id="stubby_nologs_tr" style="display:none;">
