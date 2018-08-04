@@ -138,7 +138,9 @@ helpcontent[7] = new Array("",
 							 "Exclude DNSCrypt DNS Servers which maintain logs from selection.",
 							 "Enabling this will protect your LAN against DNS rebind attacks, however it will prevent upstream DNS servers from resolving queries to any non-routable IP (for example, 192.168.1.1).",
 							 "Enables DNS over TLS (DoT) Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
-							 "Exclude DoT DNS Servers which maintain logs from selection.");
+							 "Exclude DoT DNS Servers which maintain logs from selection.",
+							 "Automatically adds available IPv6 DoT servers",
+							 "When ordered access is selected, the DoT servers will be queried in the order they are selected.");
 //Firewall
 helpcontent[8] = new Array("",
 						   "<#FirewallConfig_WanLanLog_itemdesc#>",

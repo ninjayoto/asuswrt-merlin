@@ -212,19 +212,23 @@ function update_stubbylist(){
 // Server list
 	free_options(document.form.stubby_server);
 
-	var currentserversarray = stubby_dns_value.split("<");
+	var accessindexname = "<br>Selected servers:<br>";
+	var currentserversarray = stubby_dns_value.split("&#60");
 	var dnssec_enabled = document.form.dnssec_enable[0].checked;
 	var stubby_nologs = document.form.stubby_nologs[0].checked;
+	accessindex = [];
 	//	add_option(document.form.stubby_servers, "Not Defined","none",(currentservers == "none"));
 	for(var i = 0; i < stubbyarray.length; i++){
 		if ((dnssec_enabled == 1 && stubbyarray[i][7] == "yes") || dnssec_enabled == 0) {	// Exclude non-dnssec servers if dnssec is enabled
 			if ((stubby_nologs == 1 && stubbyarray[i][8] == "yes") || stubby_nologs == 0) {	// Exclude logging servers
 				// check if selected
 				isselected = false;
-				for(var j = 0; j < currentserversarray.length; j++){
-					if (currentserversarray[j].indexOf(stubbyarray[i][1]) >= 0)
+				for(var j = 1; j < currentserversarray.length; j++){
+					if (currentserversarray[j].indexOf(stubbyarray[i][1]) >= 0){	// use ipv4 address as lookup
 						isselected = true;
+						accessindex[j-1] = i;
 						break;
+					}
 				}
 				// add to selection list
 				add_option(document.form.stubby_server,
@@ -232,6 +236,29 @@ function update_stubbylist(){
 			}
 		}
 	}
+				for(var j = 0; j < accessindex.length; j++){
+					if (accessindex[j] >= 0)
+						accessindexname += stubbyarray[accessindex[j]][0] + ", ";
+				}
+				$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
+}
+
+function update_accessorder(obj) {
+	var accessindexname = "<br>Selected servers:<br>";
+	for(var i = 0; i < document.form.stubby_server.length; i++){
+		var currindex = accessindex.indexOf(i);
+		if (document.form.stubby_server[i].selected){
+			if (currindex < 0)
+				accessindex[accessindex.length] = i;	// add selection
+		}
+		else
+			accessindex[currindex] = -1;	// mark as deleted
+	}
+	for(var j = 0; j < accessindex.length; j++){
+		if (accessindex[j] >= 0)
+			accessindexname += stubbyarray[accessindex[j]][0] + ", ";
+	}
+	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
 }
 
 function display_stubby_opt(){
@@ -240,6 +267,8 @@ function display_stubby_opt(){
 //	$("stubby_log_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_nologs_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_noipv6_tr").style.display = (document.form.stubby_proxy[0].checked && ipv6_enabled) ? "" : "none";
+	$("stubby_ordered_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
+	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
 }
 /* STUBBY-END */
 
@@ -578,15 +607,18 @@ function validForm(){
 	document.form.stubby_ipv4.value = 0;
 	document.form.stubby_ipv6.value = 0;
 	var stubby_dns_value = "";
-	for (i=0; i < document.form.stubby_server.length; i++) {
-		if (document.form.stubby_server[i].selected) {
-			stubby_dns_value += "<"+stubbyarray[i][0];
-			for (j=1; j < stubbyarray[i].length; j++)
-				stubby_dns_value += ">"+stubbyarray[i][j];
+	for (i=0; i < accessindex.length; i++) {
+		currindex = accessindex[i];
+		if (currindex < 0)
+			continue;
+		if (document.form.stubby_server[currindex].selected) {
+			stubby_dns_value += "<"+stubbyarray[currindex][0];
+			for (j=1; j < stubbyarray[currindex].length; j++)
+				stubby_dns_value += ">"+stubbyarray[currindex][j];
 			document.form.stubby_dns.value = stubby_dns_value;	//save selected server info
-			if (stubbyarray[i][1].length > 0)
+			if (stubbyarray[currindex][1].length > 0)
 				document.form.stubby_ipv4.value++;	// number of ipv4 servers
-			if (stubbyarray[i][2].length > 0)
+			if (stubbyarray[currindex][2].length > 0)
 				document.form.stubby_ipv6.value++;	// number of ipv6 servers
 		}
 	}
@@ -1273,8 +1305,8 @@ function pass_checked(obj){
 			<tr id="stubby_noipv6_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,38);">Enable IPv6 DoT servers</a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "0", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "1", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="0" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "0", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="1" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "1", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
 			<tr id="stubby_nologs_tr" style="display:none;">
@@ -1284,12 +1316,20 @@ function pass_checked(obj){
 					<input type="radio" value="0" name="stubby_nologs" onclick="update_stubbylist();" <% nvram_match("stubby_nologs", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
+			<tr id="stubby_ordered_tr" style="display:none;">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,39);">DoT server access</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="stubby_access" onclick="display_stubby_opt();" <% nvram_match("stubby_access", "1", "checked"); %> />RoundRobin
+					<input type="radio" value="0" name="stubby_access" onclick="display_stubby_opt();" <% nvram_match("stubby_access", "0", "checked"); %> />Ordered
+				</td>
+			</tr>
 			<tr id="stubby_server_tr" style="display:none;">
 				<th>DoT Servers<br><i>Hold Ctrl / Cmd to select multiple servers</i></th>
 				<td colspan="2" style="text-align:left;">
-					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5">
+					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5" onclick="update_accessorder(this);">
 						<option value="none"></option>
 					</select>
+					<span id="stubby_accessorder" style="display:none;"><br>Selected servers</span>
 				</td>
 			</tr>
 			<tr id="stubby_port_tr" style="display:none;">
