@@ -1890,6 +1890,7 @@ void write_vpn_dnsmasq_config(FILE* f)
 	FILE *dnsf;
 	char *dnscrypt1_lanip;
 	char *dnscrypt2_lanip;
+	char *stubby_lanip;
 
 	strlcpy(&buf[0], nvram_safe_get("vpn_serverx_dns"), sizeof(buf));
 	for ( pos = strtok(&buf[0],","); pos != NULL; pos=strtok(NULL, ",") )
@@ -1946,10 +1947,31 @@ void write_vpn_dnsmasq_config(FILE* f)
 							fprintf(f, "server=%s#%d\n", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
 						if (!nvram_match("dnscrypt1_resolver","none"))
 							fprintf(f, "server=%s#%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
-						}
-#endif
+					}
 					break;
 				}
+#endif
+#ifdef RTCONFIG_STUBBY
+				if ( adns == 4 )
+				{
+					if (nvram_match("stubby_proxy", "1")) {
+						vpnlog(VPN_LOG_INFO, "Setting STUBBY server to dnsmasq config for client %d", cur);
+						fprintf(f, "no-resolv\n");
+
+#ifdef RTCONFIG_IPV6
+						if (ipv6_enabled() && nvram_get_int("stubby_ipv6")) {
+							stubby_lanip = "::1";
+							fprintf(f, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
+						}
+#endif
+						if (nvram_get_int("stubby_ipv4")) {
+							stubby_lanip = "127.0.0.1";
+							fprintf(f, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
+						}
+					}
+					break;
+				}
+#endif
 			}
 
 			if ( sscanf(file->d_name, "client%d.con%c", &cur, &ch) == 2 )
@@ -1969,8 +1991,9 @@ void write_vpn_dnsmasq_config(FILE* f)
 			}
 		}
 	}
-#ifdef RTCONFIG_DNSCRYPT
 	else {
+		/* no openvpn dns directory */
+#ifdef RTCONFIG_DNSCRYPT
 		if (nvram_match("dnscrypt_proxy", "1")) {
 			fprintf(f, "no-resolv\n");
 
@@ -1993,8 +2016,24 @@ void write_vpn_dnsmasq_config(FILE* f)
 			if (!nvram_match("dnscrypt1_resolver","none"))
 				fprintf(f, "server=%s#%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
 		}
-	}
 #endif
+#ifdef RTCONFIG_STUBBY
+		if (nvram_match("stubby_proxy", "1")) {
+			fprintf(f, "no-resolv\n");
+
+#ifdef RTCONFIG_IPV6
+			if (ipv6_enabled() && nvram_get_int("stubby_ipv6")) {
+				stubby_lanip = "::1";
+				fprintf(f, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
+			}
+#endif
+			if (nvram_get_int("stubby_ipv4")) {
+				stubby_lanip = "127.0.0.1";
+				fprintf(f, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
+			}
+		}
+#endif
+	}
 }
 
 int get_dnslevel()

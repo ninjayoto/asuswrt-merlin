@@ -277,12 +277,17 @@ endif
 ifneq ($(RTCONFIG_DNSCRYPT),y)
 	sed -i $(INSTALLDIR)/www/Advanced_WAN_Content.asp -e "/DNSCRYPT-BEGIN/,/DNSCRYPT-END/d"
 endif
+# Only include the stubby option if is compiled in
+ifneq ($(RTCONFIG_STUBBY),y)
+	sed -i $(INSTALLDIR)/www/Advanced_WAN_Content.asp -e "/STUBBY-BEGIN/,/STUBBY-END/d"
+endif
 
 # clean up
 	cd $(INSTALLDIR)/www && \
 	for F in $(wildcard *.asp *.js *.html); do \
 		[ -f $(INSTALLDIR)/www/$$F ] && sed -i $$F \
 		-e "/DNSCRYPT-BEGIN/d"	-e "/DNSCRYPT-END/d"\
+		-e "/STUBBY-BEGIN/d"	-e "/STUBBY-END/d"\
 		|| true; \
 	done
 

@@ -136,7 +136,9 @@ helpcontent[7] = new Array("",
 							 "Enables DNSSEC validation.  The specified WAN or DNSCrypt DNS servers must support DNSSEC or errors in DNS name resolution may occur.",
 							 "Enables DNSCrypt DNS Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
 							 "Exclude DNSCrypt DNS Servers which maintain logs from selection.",
-							 "Enabling this will protect your LAN against DNS rebind attacks, however it will prevent upstream DNS servers from resolving queries to any non-routable IP (for example, 192.168.1.1).");
+							 "Enabling this will protect your LAN against DNS rebind attacks, however it will prevent upstream DNS servers from resolving queries to any non-routable IP (for example, 192.168.1.1).",
+							 "Enables DNS over TLS (DoT) Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
+							 "Exclude DoT DNS Servers which maintain logs from selection.");
 //Firewall
 helpcontent[8] = new Array("",
 						   "<#FirewallConfig_WanLanLog_itemdesc#>",

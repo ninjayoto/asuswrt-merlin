@@ -158,25 +158,35 @@ int tcclass_dump(FILE *fp, webs_t wp) {
 	return ret;
 }
 
-// field offsets of DNSCrypt resolver csv
+// common csv defs
 #define NAME		0
-#define FULLNAME	1
-#define DESC		2
-#define LOC		3
-#define COORD		4
-#define URL		5
-#define VERSION		6
 #define DNSSEC		7
 #define LOGS		8
+#define MAX_FIELDS 	15
+#define BUFFER_SIZE	1024	//longest line
+
+// field offsets of DNSCrypt resolver csv
+#define FULLNAME	1
+#define DESC		2
+#define LOC			3
+#define COORD		4
+#define URL			5
+#define VERSION		6
 #define NAMECOIN	9
 #define ADDRESS		10
 #define PROVIDER	11
 #define PUBKEY		12
 #define KEYTEXT		13
-#define NUM_FIELDS 	14
-#define BUFFER_SIZE	1024	//longest line
 
-char *pFields[NUM_FIELDS];
+// field offsets of STUBBY resolver csv
+#define IP4ADDR		1
+#define IP6ADDR		2
+#define TLS_PORT	3
+#define TLS_NAME	4
+#define TLS_DIGEST	5
+#define TLS_PUBKEY	6
+
+char *pFields[MAX_FIELDS];
 
 int ej_resolver_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
 	FILE *fp;
@@ -236,6 +246,64 @@ int resolver_dump(FILE *pFile, webs_t wp) {
 	return ret;
 }
 
+int ej_stubby_dump_array(int eid, webs_t wp, int argc, char_t **argv) {
+	FILE *fp;
+	int ret = 0;
+	char fcsv[128];
+
+	ret += websWrite(wp, "var stubbyarray = [\n");
+
+	sprintf(fcsv, "%s", nvram_safe_get("stubby_csv"));
+	fp = fopen(fcsv, "r");
+	if (fp) {
+		ret += stubby_dump(fp, wp);
+		ret += websWrite(wp, "];\n");
+		fclose(fp);
+	} else {
+		ret += websWrite(wp, "[]];\n");
+	}
+//	unlink(fcsv);
+
+	return ret;
+}
+
+int stubby_dump(FILE *pFile, webs_t wp) {
+	char sInputBuf[BUFFER_SIZE];
+	long lineno = 0L;
+	int firstrow = 1;
+	int ret = 0;
+
+	if(pFile == NULL)
+		return 1;
+
+	while (!feof(pFile)) {
+
+		// load line into static buffer
+		if(fgets(sInputBuf, BUFFER_SIZE-1, pFile)==NULL)
+			break;
+
+		// skip first line (headers)
+		if(++lineno==1)
+			continue;
+
+		// jump over empty lines
+		if(strlen(sInputBuf)==0)
+			continue;
+
+		// set pFields array pointers to null-terminated string fields in sInputBuf
+		if (parse_csv_line(sInputBuf,lineno) == 0){
+			if(firstrow==1)
+				firstrow = 0;
+			else
+				ret += websWrite(wp, ",\n");
+			// On return pFields array pointers point to loaded fields ready for load into DB or whatever
+			// Fields can be accessed via pFields
+			ret += websWrite(wp, "[\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"]", pFields[NAME], pFields[IP4ADDR], pFields[IP6ADDR], pFields[TLS_PORT], pFields[TLS_NAME], pFields[TLS_DIGEST], pFields[TLS_PUBKEY], pFields[DNSSEC], pFields[LOGS]);
+		}
+	}
+	return ret;
+}
+
 int parse_csv_line(char *line, long lineno){
 	char *cptr = line;
 	int fld = 0;
@@ -254,7 +322,7 @@ int parse_csv_line(char *line, long lineno){
 
 
 	pFields[fld]=cptr;
-	while((ch=*cptr) != '\0' && fld < NUM_FIELDS){
+	while((ch=*cptr) != '\0' && fld < MAX_FIELDS){
 		switch(ch) {
 			case '\"':
 				if (!inquote)

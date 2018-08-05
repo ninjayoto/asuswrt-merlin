@@ -576,6 +576,7 @@ void start_dnsmasq(int force)
 	char nvram_name[16], wan_proto[16];
 	char *dnscrypt1_lanip;
 	char *dnscrypt2_lanip;
+	char *stubby_lanip;
 
 	TRACE_PT("begin\n");
 
@@ -590,6 +591,11 @@ void start_dnsmasq(int force)
 #ifdef RTCONFIG_DNSCRYPT
 	if (nvram_match("dnscrypt_proxy", "1")) {
 		restart_dnscrypt(0);
+	}
+#endif
+#ifdef RTCONFIG_STUBBY
+	if (nvram_match("stubby_proxy", "1")) {
+		restart_stubby(0);
 	}
 #endif
 
@@ -869,6 +875,22 @@ void start_dnsmasq(int force)
 			fprintf(fp, "server=%s#%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
 	}
 #endif
+#ifdef RTCONFIG_STUBBY
+	if (nvram_match("stubby_proxy", "1")) {
+		fprintf(fp, "no-resolv\n");
+
+#ifdef RTCONFIG_IPV6
+		if (ipv6_enabled() && nvram_get_int("stubby_ipv6")) {
+			stubby_lanip = "::1";
+			fprintf(fp, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
+		}
+#endif
+		if (nvram_get_int("stubby_ipv4")) {
+			stubby_lanip = "127.0.0.1";
+			fprintf(fp, "server=%s#%d\n", stubby_lanip, nvram_get_int("stubby_port"));
+		}
+	}
+#endif
 #endif
 
 #ifdef RTCONFIG_DNSSEC
@@ -899,6 +921,10 @@ void start_dnsmasq(int force)
 		fprintf(fp, "stop-dns-rebind\n");
 #ifdef RTCONFIG_DNSCRYPT
 		if (nvram_match("dnscrypt_proxy", "1"))
+			fprintf(fp, "rebind-localhost-ok\n");
+#endif
+#ifdef RTCONFIG_STUBBY
+		if (nvram_match("stubby_proxy", "1"))
 			fprintf(fp, "rebind-localhost-ok\n");
 #endif
 	}
@@ -992,6 +1018,11 @@ void stop_dnsmasq(int force)
 		stop_dnscrypt(0);
 	}
 #endif
+#ifdef RTCONFIG_STUBBY
+	if ((nvram_match("stubby_proxy", "0")) && (pids("stubby"))) {
+		stop_stubby(0);
+	}
+#endif
 
 	TRACE_PT("end\n");
 }
@@ -1012,6 +1043,10 @@ void reload_dnsmasq(void)
 #ifdef RTCONFIG_DNSCRYPT
 		if (nvram_match("dnscrypt_proxy", "1"))
 			restart_dnscrypt(0);
+#endif
+#ifdef RTCONFIG_STUBBY
+		if (nvram_match("stubby_proxy", "1"))
+			restart_stubby(0);
 #endif
 }
 
@@ -1034,9 +1069,9 @@ int write_ipv6_dns_servers(FILE *f, const char *prefix, char *dns, const char *s
 }
 #endif
 
-#ifdef RTCONFIG_DNSCRYPT
 static int time_valid = -1;
 
+#ifdef RTCONFIG_DNSCRYPT
 void start_dnscrypt(int force)
 {
 	FILE *fp;
@@ -1158,7 +1193,165 @@ void restart_dnscrypt(int force)
 
 	start_dnscrypt(force);
 }
+#endif //DNSCRYPT
+
+#ifdef RTCONFIG_STUBBY
+void start_stubby(int force)
+{
+	FILE *fp;
+	int argc, pid, rc;
+	int ntp_sync;
+	int stubby_mode;
+	char tmp[64];
+	char *stubby_lanip;
+	char *buf, *g, *p;
+	char *dotname, *ip4addr, *ip6addr, *tlsport, *authname, *tlsdigest, *tlspubkey, *dnssec, *nolog;
+
+	// Only start on first call or clock sync
+	ntp_sync = nvram_get_int("ntp_sync");
+	if (time_valid == ntp_sync)
+		return;
+
+	if(!force && getpid() != 1){
+		notify_rc("start_stubby");
+		return;
+	}
+
+//	stop_stubby(0);
+	time_valid = ntp_sync;
+
+	if ((fp = fopen("/etc/stubby.yml", "w")) == NULL)
+		return;
+
+	if (nvram_match("stubby_proxy", "1")) {
+		fprintf(fp, "tls_ca_file: \"/rom/ca-bundle.crt\"\n");
+		fprintf(fp, "resolution_type: GETDNS_RESOLUTION_STUB\n");
+		fprintf(fp, "dns_transport_list:\n");
+		if (nvram_match("ntp_sync", "1")) {
+			fprintf(fp, "  - GETDNS_TRANSPORT_TLS\n");
+			if (nvram_match("stubby_type", "1")) {	//strict mode
+				fprintf(fp, "tls_authentication: GETDNS_AUTHENTICATION_REQUIRED\n");
+				logmessage("stubby-proxy", "configured strict mode");
+			} else {	//opportunistic mode
+				fprintf(fp, "  - GETDNS_TRANSPORT_UDP\n");
+				fprintf(fp, "  - GETDNS_TRANSPORT_TCP\n");
+				fprintf(fp, "tls_authentication: GETDNS_AUTHENTICATION_NONE\n");
+				logmessage("stubby-proxy", "configured opportunistic mode");
+			}
+		} else {	//time not set, no TLS
+			fprintf(fp, "  - GETDNS_TRANSPORT_UDP\n");
+			fprintf(fp, "  - GETDNS_TRANSPORT_TCP\n");
+			fprintf(fp, "tls_authentication: GETDNS_AUTHENTICATION_NONE\n");
+			logmessage("stubby-proxy", "configured no-TLS mode");
+		}
+//		if (nvram_match("dnssec_enable", "1") && nvram_match("dnssec_check_unsigned_x", "1"))
+//			fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
+		fprintf(fp, "tls_query_padding_blocksize: 128\n");
+		fprintf(fp, "edns_client_subnet_private : 1\n");
+		fprintf(fp, "round_robin_upstreams: 1\n");
+		fprintf(fp, "idle_timeout: 10000\n");
+//		fprintf(fp, "tls_connection_retries: 5\n");			// default 2
+		fprintf(fp, "tls_backoff_time: 900\n");				// default 3600
+//		fprintf(fp, "limit_outstanding_queries: 100\n");	// default 100
+//		fprintf(fp, "timeout: 2\n");						// default 5
+		fprintf(fp, "appdata_dir: \"/var/tmp/stubby\"\n");
+		fprintf(fp, "listen_addresses:\n");
+		if (nvram_get_int("stubby_ipv4"))
+			fprintf(fp, "  - 127.0.0.1@%d\n", nvram_get_int("stubby_port"));
+		if (nvram_get_int("stubby_ipv6"))
+			fprintf(fp, "  - 0::1@%d\n", nvram_get_int("stubby_port"));
+
+		//processor selected servers
+		fprintf(fp, "upstream_recursive_servers:\n");
+		g = buf = strdup(nvram_safe_get("stubby_dns"));
+		while (g) {
+			if ((p = strsep(&g, "<")) == NULL) break;
+			if ((vstrsep(p, ">", &dotname, &ip4addr, &ip6addr, &tlsport, &authname, &tlsdigest, &tlspubkey, &dnssec, &nolog)) != 9) continue;
+
+			if (nvram_get_int("stubby_ipv4") > 0) {
+				//write the server selections (ipv4)
+				if (strlen(ip4addr) > 0) {
+					fprintf(fp, "# %s\n", dotname);
+					fprintf(fp, "  - address_data: %s\n", ip4addr);
+					if ((strlen(tlsport) > 0) && (strcmp(tlsport, "853") != 0))
+						fprintf(fp, "    tls_port: %s\n", tlsport);
+					if (strlen(authname) > 0)
+						fprintf(fp, "    tls_auth_name: \"%s\"\n", authname);
+					if (strlen(tlspubkey) > 0) {
+						fprintf(fp, "    tls_pubkey_pinset:\n");
+						fprintf(fp, "    - digest: \"%s\"\n", tlsdigest);
+						fprintf(fp, "      value: %s\n", tlspubkey);
+					}
+					logmessage("stubby-proxy", "configured server '%s' at address %s:%s", dotname, ip4addr, tlsport);
+				}
+			}
+
+			if (ipv6_enabled() && (nvram_get_int("stubby_ipv6") > 0) && (nvram_match("ntp_sync", "1"))) { // only config ipv6 after boot
+				//write the server selections (ipv6)
+				if (strlen(ip6addr) > 0) {
+					fprintf(fp, "# %s\n", dotname);
+					fprintf(fp, "  - address_data: %s\n", ip6addr);
+					if ((strlen(tlsport) > 0) && (strcmp(tlsport, "853") != 0))
+						fprintf(fp, "    tls_port: %s\n", tlsport);
+					if (strlen(authname) > 0)
+						fprintf(fp, "    tls_auth_name: \"%s\"\n", authname);
+					if (strlen(tlspubkey) > 0) {
+						fprintf(fp, "    tls_pubkey_pinset:\n");
+						fprintf(fp, "    - digest: \"%s\"\n", tlsdigest);
+						fprintf(fp, "      value: %s\n", tlspubkey);
+					}
+					logmessage("stubby-proxy", "configured server '%s' at address [%s]:%s", dotname, ip6addr, tlsport);
+				}
+			}
+		}
+
+		append_custom_config("stubby.yml",fp);
+
+		fclose(fp);
+
+		use_custom_config("stubby.yml","/etc/stubby.yml");
+		run_postconf("stubby.postconf","/etc/stubby.yml");
+
+		rc = eval("stubby", "-g", "-v", nvram_safe_get("stubby_log"), "-C", "/etc/stubby.yml");
+		logmessage("stubby-proxy", "start stubby (%d)", rc);
+	}
+
+}
+
+void stop_stubby(int force)
+{
+	if(!force && getpid() != 1){
+		notify_rc("stop_stubby");
+		return;
+	}
+
+	killall_tk("stubby");
+	logmessage("stubby-proxy", "stop stubby");
+	time_valid = -1;
+	unlink("/var/run/stubby.pid");
+
+#ifdef RTCONFIG_DNSMASQ
+	restart_dnsmasq(0);
+#else
+	restart_dns();
 #endif
+}
+
+void restart_stubby(int force)
+{
+	int ntp_sync;
+
+	// Only restart on first call or clock sync
+	ntp_sync = nvram_get_int("ntp_sync");
+	if ((time_valid == ntp_sync) && !force)
+		return;
+
+	if (pids("stubby"))
+		stop_stubby(force);
+
+	start_stubby(force);
+}
+#endif //STUBBY
 
 // -----------------------------------------------------------------------------
 #ifdef RTCONFIG_IPV6
@@ -4159,6 +4352,9 @@ stop_services(void)
 #ifdef RTCONFIG_DNSCRYPT
 	stop_dnscrypt(0);
 #endif
+#ifdef RTCONFIG_STUBBY
+	stop_stubby(0);
+#endif
 #if defined(RTCONFIG_MDNS)
 	stop_mdns();
 #endif
@@ -4685,6 +4881,9 @@ again:
 #ifdef RTCONFIG_DNSCRYPT
 				stop_dnscrypt(0);
 #endif
+#ifdef RTCONFIG_STUBBY
+				stop_stubby(0);
+#endif
 				stop_networkmap();
 				stop_wpsaide();
 #endif
@@ -4743,6 +4942,9 @@ again:
 #ifdef RTCONFIG_DNSCRYPT
 	stop_dnscrypt(0);
 #endif
+#ifdef RTCONFIG_STUBBY
+	stop_stubby(0);
+#endif
 #if defined(RTCONFIG_MDNS)
 		stop_mdns();
 #endif
@@ -4766,6 +4968,9 @@ again:
 #endif
 #ifdef RTCONFIG_DNSCRYPT
 			stop_dnscrypt(0);
+#endif
+#ifdef RTCONFIG_STUBBY
+			stop_stubby(0);
 #endif
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
@@ -4839,6 +5044,9 @@ again:
 #endif
 #ifdef RTCONFIG_DNSCRYPT
 			stop_dnscrypt(0);
+#endif
+#ifdef RTCONFIG_STUBBY
+			stop_stubby(0);
 #endif
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
@@ -4923,6 +5131,9 @@ again:
 #endif
 #ifdef RTCONFIG_DNSCRYPT
 			stop_dnscrypt(0);
+#endif
+#ifdef RTCONFIG_STUBBY
+			stop_stubby(0);
 #endif
 #if defined(RTCONFIG_MDNS)
 			stop_mdns();
@@ -5518,6 +5729,13 @@ check_ddr_done:
 		if(action&RC_SERVICE_START) start_dnscrypt(0);
 	}
 #endif
+#ifdef RTCONFIG_STUBBY
+	else if (strcmp(script, "stubby") == 0)
+	{
+		if(action&RC_SERVICE_STOP) stop_stubby(0);
+		if(action&RC_SERVICE_START) start_stubby(0);
+	}
+#endif
 	else if (strcmp(script, "upnp") == 0)
 	{
 		if(action&RC_SERVICE_STOP) stop_upnp();
@@ -5736,6 +5954,9 @@ check_ddr_done:
 			stop_dnsmasq(0);
 #ifdef RTCONFIG_DNSCRYPT
 			stop_dnscrypt(0);
+#endif
+#ifdef RTCONFIG_STUBBY
+			stop_stubby(0);
 #endif
 			stop_lan_wlc();
 			stop_lan_port();

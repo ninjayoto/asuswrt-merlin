@@ -59,14 +59,25 @@ if(dualWAN_support && ( wans_dualwan.search("wan") >= 0 || wans_dualwan.search("
 // [Name, Fullname, DNSSEC]
 <% get_resolver_array(); %>
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+// [Name, Fullname, DNSSEC]
+<% get_stubby_array(); %>
+/* STUBBY-END */
 
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var original_wan_type = wan_proto;
 var original_wan_dhcpenable = parseInt('<% nvram_get("wan_dhcpenable_x"); %>');
 var original_dnsenable = parseInt('<% nvram_get("wan_dnsenable_x"); %>');
 var wan_unit_flag = '<% nvram_get("wan_unit"); %>';
+/* DNSCRYPT-BEGIN */
 var dnscrypt_proxy_orig = '<% nvram_get("dnscrypt_proxy"); %>';
 var dnscrypt_csv = '<% nvram_get("dnscrypt_csv"); %>';
+/* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+var stubby_proxy_orig = '<% nvram_get("stubby_proxy"); %>';
+var stubby_csv = '<% nvram_get("stubby_csv"); %>';
+var stubby_dns_value = '<% nvram_get("stubby_dns"); %>';
+/* STUBBY-END */
 var vpn_client1_adns = '<% nvram_get("vpn_client1_adns"); %>';
 var vpn_client2_adns = '<% nvram_get("vpn_client2_adns"); %>';
 var vpn_client1_state = '<% nvram_get("vpn_client1_state"); %>';
@@ -118,6 +129,18 @@ function initial(){
 
 	update_resolverlist();
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+	if (isSupport("stubby")){
+		document.getElementById("stubby_tr").style.display = "";
+		display_stubby_opt();
+		if (stubby_csv != "/rom/stubby-resolvers.csv")  // warn if not using rom csv file
+			showhide("stubby_csvwarn", true);
+		else
+			showhide("stubby_csvwarn", false);
+	}
+
+	update_stubbylist();
+/* STUBBY-END */
 	display_upnp_range();
 }
 
@@ -183,6 +206,40 @@ function display_dnscrypt_opt(){
 	$("dnscrypt_nologs_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 }
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+function update_stubbylist(){
+// Server list
+	free_options(document.form.stubby_server);
+
+	var currentserversarray = stubby_dns_value.split("<");
+	var dnssec_enabled = document.form.dnssec_enable[0].checked;
+	var stubby_nologs = document.form.stubby_nologs[0].checked;
+	//	add_option(document.form.stubby_servers, "Not Defined","none",(currentservers == "none"));
+	for(var i = 0; i < stubbyarray.length; i++){
+		if ((dnssec_enabled == 1 && stubbyarray[i][7] == "yes") || dnssec_enabled == 0) {	// Exclude non-dnssec servers if dnssec is enabled
+			if ((stubby_nologs == 1 && stubbyarray[i][8] == "yes") || stubby_nologs == 0) {	// Exclude logging servers
+				// check if selected
+				isselected = false;
+				for(var j = 0; j < currentserversarray.length; j++){
+					if (currentserversarray[j].indexOf(stubbyarray[i][1]) >= 0)
+						isselected = true;
+						break;
+				}
+				// add to selection list
+				add_option(document.form.stubby_server,
+					stubbyarray[i][0] + " (" + (stubbyarray[i][4].length > 0 ? stubbyarray[i][4] : "no DNS name") + ")", stubbyarray[i][1], isselected);
+			}
+		}
+	}
+}
+
+function display_stubby_opt(){
+	$("stubby_port_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
+	$("stubby_server_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
+//	$("stubby_log_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
+	$("stubby_nologs_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
+}
+/* STUBBY-END */
 
 function display_upnp_range(){
 	$("upnp_secure_mode").style.display = (document.form.wan_upnp_enable[0].checked) ? "" : "none";
@@ -266,6 +323,26 @@ function applyRule(){
 		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
 			document.form.action_script.value += "stop_dnscrypt;";
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+
+		// Reset VPN Client Stubby option when turning off Stubby
+		if(!document.form.stubby_proxy[0].checked && (stubby_proxy_orig == 1)) {
+			if(document.form.vpn_client1_adns.value == 4)
+				document.form.vpn_client1_adns.value = 3;
+			if(document.form.vpn_client2_adns.value == 4)
+				document.form.vpn_client2_adns.value = 3;
+		}
+
+		// Restart services if required
+		//if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
+		//	document.form.action_script += ";restart_firewall";
+
+		if((document.form.stubby_proxy[0].checked != "<% nvram_get("stubby_proxy"); %>") ||
+		   (document.form.stubby_dns.value != "<% nvram_get("stubby_dns"); %>") ||
+		   (document.form.stubby_port.value != "<% nvram_get("stubby_port"); %>") ||
+		   (document.form.stubby_log.value != "<% nvram_get("stubby_log"); %>"))
+			document.form.action_script.value += "stop_stubby;";
+/* STUBBY-END */
 
 		document.form.action_script.value += "restart_wan_if";
 
@@ -345,7 +422,7 @@ function validForm(){
 				return false;
 		}				
 		*/
-		
+
 		if(document.form.wan_gateway_x.value == document.form.wan_ipaddr_x.value){
 			document.form.wan_ipaddr_x.focus();
 			alert("<#IPConnection_warning_WANIPEQUALGatewayIP#>");
@@ -495,6 +572,33 @@ function validForm(){
 		}
 	}
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+	document.form.stubby_ipv4.value = 0;
+	document.form.stubby_ipv6.value = 0;
+	var stubby_dns_value = "";
+	for (i=0; i < document.form.stubby_server.length; i++) {
+		if (document.form.stubby_server[i].selected) {
+			stubby_dns_value += "<"+stubbyarray[i][0];
+			for (j=1; j < stubbyarray[i].length; j++)
+				stubby_dns_value += ">"+stubbyarray[i][j];
+			document.form.stubby_dns.value = stubby_dns_value;	//save selected server info
+			if (stubbyarray[i][1].length > 0)
+				document.form.stubby_ipv4.value++;	// number of ipv4 servers
+			if (stubbyarray[i][2].length > 0)
+				document.form.stubby_ipv6.value++;	// number of ipv6 servers
+		}
+	}
+	if (document.form.stubby_ipv4.value == 0 && document.form.stubby_ipv6.value == 0) {
+		document.form.stubby_server.focus();
+		alert("Must select at least one DoT server!");
+		return false;
+	}
+
+	if (document.form.stubby_proxy[0].checked) {
+		if (!validate_number_range(document.form.stubby_port, 1, 65535))
+			return false;
+	}
+/* STUBBY-END */
 
 	return true;
 }
@@ -890,6 +994,11 @@ function pass_checked(obj){
 <input type="hidden" name="dnscrypt1_ipv6" value="<% nvram_get("dnscrypt1_ipv6"); %>" />
 <input type="hidden" name="dnscrypt2_ipv6" value="<% nvram_get("dnscrypt2_ipv6"); %>" />
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+<input type="hidden" name="stubby_dns" value="<% nvram_get("stubby_dns"); %>" />
+<input type="hidden" name="stubby_ipv4" value="<% nvram_get("stubby_ipv4"); %>" />
+<input type="hidden" name="stubby_ipv6" value="<% nvram_get("stubby_ipv6"); %>" />
+/* STUBBY-END */
 <input type="hidden" name="dnssec_check_unsigned_x" value="<% nvram_get("dnssec_check_unsigned_x"); %>" />
 
 <table class="content" align="center" cellpadding="0" cellspacing="0">
@@ -1119,6 +1228,7 @@ function pass_checked(obj){
 				<td colspan="2" style="text-align:left;">
 					<input type="text" maxlength="5" name="dnscrypt1_port" class="input_6_table" value="<% nvram_get("dnscrypt1_port"); %>" onKeyPress="return is_number(this,event);"/>
 				</td>
+			</tr>
 			<tr id="dnscrypt2_resolv_tr" style="display:none;">
 				<th>DNSCRYPT Resolver2</th>
 				<td colspan="2" style="text-align:left;">
@@ -1149,6 +1259,52 @@ function pass_checked(obj){
 				</td>
 			</tr>
 /* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+			<tr id="stubby_tr" style="display:none;">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,36);">Enable DNS over TLS support<br><i>DoT becomes primary DNS server(s)</i></a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="stubby_proxy" onclick="display_stubby_opt();" <% nvram_match("stubby_proxy", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="stubby_proxy" onclick="display_stubby_opt();" <% nvram_match("stubby_proxy", "0", "checked"); %> /><#checkbox_No#>
+				<span id="stubby_csvwarn" style="padding-left:42px;">Using updated server file</span>
+				</td>
+			</tr>
+			<tr id="stubby_nologs_tr" style="display:none;">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,37);">Exclude DoT servers with logs</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="stubby_nologs" onclick="update_stubbylist();" <% nvram_match("stubby_nologs", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="stubby_nologs" onclick="update_stubbylist();" <% nvram_match("stubby_nologs", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
+			<tr id="stubby_server_tr" style="display:none;">
+				<th>DoT Servers<br><i>Hold Ctrl / Cmd to select multiple servers</i></th>
+				<td colspan="2" style="text-align:left;">
+					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5">
+						<option value="none"></option>
+					</select>
+				</td>
+			</tr>
+			<tr id="stubby_port_tr" style="display:none;">
+				<th>DoT Local Port</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="text" maxlength="5" name="stubby_port" class="input_6_table" value="<% nvram_get("stubby_port"); %>" onKeyPress="return is_number(this,event);"/>
+				</td>
+			</tr>
+			<tr id="stubby_log_tr" style="display:none;">
+				<th>DoT log level</th>
+				<td colspan="2" style="text-align:left;">
+					<select id="stubby_log" class="input_option" name="stubby_log">
+						<option value="0" <% nvram_match("stubby_log", "0", "selected"); %>>Emergency</option>
+						<option value="1" <% nvram_match("stubby_log", "1", "selected"); %>>Alert</option>
+						<option value="2" <% nvram_match("stubby_log", "2", "selected"); %>>Critical</option>
+						<option value="3" <% nvram_match("stubby_log", "3", "selected"); %>>Error</option>
+						<option value="4" <% nvram_match("stubby_log", "4", "selected"); %>>Warning</option>
+						<option value="5" <% nvram_match("stubby_log", "5", "selected"); %>>Notice</option>
+						<option value="6" <% nvram_match("stubby_log", "6", "selected"); %>>Info</option>
+						<option value="7" <% nvram_match("stubby_log", "7", "selected"); %>>Debug</option>
+					</select>
+				</td>
+			</tr>
+/* STUBBY-END */
         		</table>
 
 		  			<table id="PPPsetting" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">

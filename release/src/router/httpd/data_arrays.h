@@ -17,6 +17,8 @@
 
 extern int ej_tcclass_dump_array(int eid, webs_t wp, int argc, char_t **argv);
 extern int ej_resolver_dump_array(int eid, webs_t wp, int argc, char_t **argv);
+extern int ej_stubby_dump_array(int eid, webs_t wp, int argc, char_t **argv);
 int tcclass_dump(FILE *fp, webs_t wp);
 int resolver_dump(FILE *fp, webs_t wp);
+int stubby_dump(FILE *fp, webs_t wp);
 int parse_csv_line(char *line, long lineno);

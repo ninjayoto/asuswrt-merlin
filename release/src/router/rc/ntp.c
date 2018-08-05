@@ -88,6 +88,12 @@ static void ntp_service()
 			restart_dnscrypt(0);
 		}
 #endif
+#ifdef RTCONFIG_STUBBY
+		if (nvram_match("stubby_proxy", "1")) {
+			/* restart stubby to invoke TLS */
+			restart_stubby(0);
+		}
+#endif
 	}
 }
 

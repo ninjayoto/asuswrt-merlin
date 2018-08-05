@@ -752,6 +752,19 @@ struct nvram_tuple router_defaults[] = {
 	{ "dnscrypt_csv","/rom/dnscrypt-resolvers.csv"},	// list of resolvers
 #endif
 
+	// STUBBY option for dnsmasq
+#ifdef RTCONFIG_STUBBY
+	{ "stubby_proxy", "0" },
+	{ "stubby_type", "1" },			// opportunistic(0) or strict(1)
+	{ "stubby_port", "5453"}, 		// local port
+	{ "stubby_dns", ""},			// server list
+	{ "stubby_ipv4", "0"},	 		// number of ipv4 servers defined
+	{ "stubby_ipv6", "0"},	 		// number of ipv6 servers defined
+	{ "stubby_log", "5"},			// log level
+	{ "stubby_nologs", "0"},		// Show only non-logging servers
+	{ "stubby_csv","/rom/stubby-resolvers.csv"},	// list of DoT enabled resolvers
+#endif
+
 #ifdef RTCONFIG_BCMARM
 	{ "allow_routelocal", "1" },		// allow routing to localhost for ARM
 #else

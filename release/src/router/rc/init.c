@@ -3548,6 +3548,10 @@ int init_nvram(void)
 	add_rc_support("dnscrypt");
 #endif
 
+#ifdef RTCONFIG_STUBBY
+	add_rc_support("stubby");
+#endif
+
 #ifdef RTCONFIG_WPSMULTIBAND
 	add_rc_support("wps_multiband");
 #endif

@@ -300,6 +300,14 @@
 	padding-left:2px;
 }
 
+.multi_option{
+	background-color:#576D73;
+	border-color:#888;
+	color:#FFFFFF;
+	font-family: "Lucida Console", Monaco, monospace;
+	font-size:13px;
+}
+
 .input_option{
 	height:25px;
 	background-color:#576D73;

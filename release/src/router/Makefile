@@ -1372,6 +1372,7 @@ getdns: getdns/stamp-h1
 getdns-install:
 	install -d $(INSTALLDIR)/getdns/usr/sbin
 	install -D getdns/src/stubby $(INSTALLDIR)/getdns/usr/sbin/stubby
+	install -D -m 0644 getdns/stubby/stubby-resolvers.csv $(INSTALLDIR)/rom/rom/stubby-resolvers.csv
 	$(STRIP) -s $(INSTALLDIR)/getdns/usr/sbin/stubby
 
 getdns-clean:
