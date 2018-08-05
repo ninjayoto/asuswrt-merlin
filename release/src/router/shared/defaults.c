@@ -726,6 +726,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "dnssec_enable", "0" },
 	{ "dnssec_check_unsigned_x", "1" },
 #endif
+	{ "dns_norebind", "0"},			// dnsmasq DNS rebind protection
 
 	// DNSCRYPT option for dnsmasq
 #ifdef RTCONFIG_DNSCRYPT
@@ -749,8 +750,8 @@ struct nvram_tuple router_defaults[] = {
 	{ "dnscrypt_log", "4"},			// log level
 	{ "dnscrypt_nologs", "0"},		// Show only non-logging servers
 	{ "dnscrypt_csv","/rom/dnscrypt-resolvers.csv"},	// list of resolvers
-
 #endif
+
 #ifdef RTCONFIG_BCMARM
 	{ "allow_routelocal", "1" },		// allow routing to localhost for ARM
 #else
