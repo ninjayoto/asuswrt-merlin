@@ -895,6 +895,14 @@ void start_dnsmasq(int force)
 	}
 #endif
 
+	if (nvram_match("dns_norebind", "1")) {
+		fprintf(fp, "stop-dns-rebind\n");
+#ifdef RTCONFIG_DNSCRYPT
+		if (nvram_match("dnscrypt_proxy", "1"))
+			fprintf(fp, "rebind-localhost-ok\n");
+#endif
+	}
+
 #ifdef RTCONFIG_IPV6
 	/* Support local ipv6 name resolution for EUI-64 addresses */
 	if (ipv6_enabled() && nvram_get_int("ipv6_hosts")) {

@@ -1071,6 +1071,13 @@ function pass_checked(obj){
 					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>
+			<tr>
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,35);">Enable DNS Rebind protection</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dns_norebind" <% nvram_match("dns_norebind", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dns_norebind" <% nvram_match("dns_norebind", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
 			<tr id="dnscrypt_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,33);">Enable DNSCRYPT support<br><i>DNSCRYPT becomes primary DNS server(s)</i></a></th>
 				<td colspan="2" style="text-align:left;">
