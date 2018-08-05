@@ -132,8 +132,16 @@ var $j = jQuery.noConflict();
 var wan_route_x = '<% nvram_get("wan_route_x"); %>';
 var wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 var wan_proto = '<% nvram_get("wan_proto"); %>';
-var dnscrypt_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
-var dnscrypt_ipv6 = '<% nvram_get("dnscrypt1_ipv6"); %>';
+/* DNSCRYPT-BEGIN */
+var ext_name = "DNSCrypt"
+var ext_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
+var ext_ipv6 = '<% nvram_get("dnscrypt1_ipv6"); %>';
+/* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+var ext_name = "DoT"
+var ext_proxy = '<% nvram_get("stubby_proxy"); %>';
+var ext_ipv6 = '<% nvram_get("stubby_ipv6"); %>';
+/* STUBBY-END */
 var ipv6_enabled = ('<% nvram_get("ipv6_service"); %>' == "disabled") ? 0 : 1;
 var machine_name = '<% get_machine_name(); %>';
 var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && (('<% nvram_get("allow_routelocal"); %>' == 1) ? true : false));
@@ -367,43 +375,44 @@ function update_visibility(){
 	showhide("ncp_enable", (auth == "tls"));
 	showhide("ncp_ciphers", ((ncp > 0) && (auth == "tls")));
 
-	showhide("dnscrypt_adns", (dnscrypt_proxy == 1));
+	showhide("ext_adns", (ext_proxy == 1));
 	showhide("enable_dns_span", (adns >= 3 && rgw == 2 && dnsf == 0));
-	showhide("dnscrypt_opt", (adns >= 3 && rgw == 2 && dnsf == 0));
+	showhide("ext_opt", (adns >= 3 && rgw == 2 && dnsf == 0));
 	showhide("dnsfilter_opt", (adns >= 3 && rgw == 2 && dnsf == 1));
 	showhide("ipv6warning", (ipv6_enabled == 1 && blockipv6 == 0));
 	showhide("client_blockipv6", (ipv6_enabled == 1 && rgw > 0));
 
 	if (rgw == 2) {
-		$('dnscrypt_opt').innerHTML = "";
+		$('ext_opt').innerHTML = "";
+		$('ext_adns').innerHTML = ext_name;
 		if (adns == 3) {
-			if (dnscrypt_proxy == 1 && dnscrypt_ipv6 == 0 && allow_routelocal)
-				$('dnscrypt_opt').innerHTML = "DNSCrypt Resolver";
+			if (ext_proxy == 1 && ext_ipv6 == 0 && allow_routelocal)
+				$('ext_opt').innerHTML = ext_name + " Resolver";
 			else
-				$('dnscrypt_opt').innerHTML = "WAN DNS Server";
-			showhide("dnscrypt_opt", true);
+				$('ext_opt').innerHTML = "WAN DNS Server";
+			showhide("ext_opt", true);
 		} else if (adns == 4) {
-			$('dnscrypt_opt').innerHTML = "WAN DNS Server";
-			showhide("dnscrypt_opt", true);
+			$('ext_opt').innerHTML = "WAN DNS Server";
+			showhide("ext_opt", true);
 		}
 		else
-			showhide("dnscrypt_opt", false);
+			showhide("ext_opt", false);
 
-		if ((!allow_routelocal || dnscrypt_ipv6 == 1 || adns == 1 || adns == 2) && dnscrypt_proxy == 1) {
-			$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;&nbsp;(DNSCrypt unavailable)";
-			showhide("dnscrypt_opt", true);
+		if ((!allow_routelocal || ext_ipv6 == 1 || adns == 1 || adns == 2) && ext_proxy == 1) {
+			$('ext_opt').innerHTML = $('ext_opt').innerHTML + "&nbsp;&nbsp;(" + ext_name + " unavailable)";
+			showhide("ext_opt", true);
 		}
 
 		if (dnsf == 1) {
 			showhide("enable_dns_span", false);
-			showhide("dnscrypt_opt", false);
+			showhide("ext_opt", false);
 			showhide("dnsfilter_opt", true);
 		}
 	}
 
 	if (rstrict == 1 && adns == 2) {
-		showhide("dnscrypt_opt", true);
-		$('dnscrypt_opt').innerHTML = $('dnscrypt_opt').innerHTML + "&nbsp;&nbsp;Reverse Strict set";
+		showhide("ext_opt", true);
+		$('ext_opt').innerHTML = $('ext_opt').innerHTML + "&nbsp;&nbsp;Reverse Strict set";
 	}
 
 // Since instancing certs/keys would waste many KBs of nvram,
@@ -420,10 +429,10 @@ function update_visibility(){
 	showhide("edit_vpn_crt_client2_static",(openvpn_unit == "2"));
 }
 
-function dnscrypt_warn(){
+function ext_warn(){
 	var adns = document.form.vpn_client_adns.value;
-	if (dnscrypt_proxy == 1 && (adns == 1 || adns == 2 || adns == 3) && !allow_routelocal)
-		alert("WARNING:\nThis DNS configuration will prevent the use of DNSCrypt");
+	if (ext_proxy == 1 && (adns == 1 || adns == 2 || adns == 3) && !allow_routelocal)
+		alert("WARNING:\nThis DNS configuration will prevent the use of external resolvers");
 }
 
 function set_Keys(auth){
@@ -1263,15 +1272,15 @@ function defaultSettings() {
 					<tr id="client_adns">
 						<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(48,2);">Accept DNS Configuration</a></th>
 						<td>
-							<select name="vpn_client_adns" class="input_option" onclick="update_visibility();dnscrypt_warn();">
+							<select name="vpn_client_adns" class="input_option" onclick="update_visibility();ext_warn();">
 								<option value="0" <% nvram_match("vpn_client_adns","0","selected"); %> >Disabled</option>
 								<option value="1" <% nvram_match("vpn_client_adns","1","selected"); %> >Relaxed</option>
 								<option value="2" <% nvram_match("vpn_client_adns","2","selected"); %> >Strict</option>
 								<option value="3" <% nvram_match("vpn_client_adns","3","selected"); %> >Exclusive</option>
-								<option id="dnscrypt_adns" value="4" <% nvram_match("vpn_client_adns","4","selected"); %> >DNSCrypt</option>
+								<option id="ext_adns" value="4" <% nvram_match("vpn_client_adns","4","selected"); %> >ext_name</option>
 							</select>
 							<span id="enable_dns_span"><input type="checkbox" name="enable_dns_ckb" id="enable_dns_ckb" value="" style="margin-left:20px;" onclick="document.form.vpn_dns_mode.value=(this.checked==true)?1:0;">WAN clients use</input></span>
-							<span id="dnscrypt_opt">Unknown</span>
+							<span id="ext_opt">Unknown</span>
 							<span id="dnsfilter_opt">&nbsp;&nbsp;Clients use DNSFilter</span>
 			   			</td>
 					</tr>

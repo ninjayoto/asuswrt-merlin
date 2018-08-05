@@ -402,7 +402,13 @@ char *organize_tcpcheck_cmd(char *dns_list, char *cmd, int size){
 	sprintf(cmd, "/sbin/tcpcheck %d", TCPCHECK_TIMEOUT);
 
 	foreach(buf, dns_list, next){
+#if defined(RTCONFIG_DNSCRYPT)
 		port = (nvram_match("dnscrypt_proxy", "1") ? nvram_get_int("dnscrypt1_port") : 53);
+#elif defined(RTCONFIG_STUBBY)
+		port = (nvram_match("stubby_proxy", "1") ? nvram_get_int("stubby_port") : 53);
+#else
+		port = 53;
+#endif
 		sprintf(cmd, "%s %s:%d", cmd, buf, port);
 	}
 
@@ -477,6 +483,7 @@ int do_tcp_dns_detect(int wan_unit){
 	sprintf(prefix_wan, "wan%d_", wan_unit);
 
 	memset(wan_dns, 0, 256);
+#if defined(RTCONFIG_DNSCRYPT)
 	if (nvram_match("dnscrypt_proxy", "1")) {
 		if (nvram_match("dnscrypt1_ipv6", "0"))
 			strcpy(wan_dns, "127.0.0.1");
@@ -484,6 +491,15 @@ int do_tcp_dns_detect(int wan_unit){
 			return 1;  //if can't test, assume up
 	}
 	else
+#elif defined(RTCONFIG_STUBBY)
+	if (nvram_match("stubby_proxy", "1")) {
+		if (nvram_get_int("stubby_ipv4"))
+			strcpy(wan_dns, "127.0.0.1");
+		else
+			return 1;  //if can't test, assume up
+	}
+	else
+#endif
 		strcpy(wan_dns, nvram_safe_get(strcat_r(prefix_wan, "dns", nvram_name)));
 
 	remove(DETECT_FILE);
@@ -979,7 +995,7 @@ void handle_wan_line(int wan_unit, int action){
 	 */
 	else if(conn_changed_state[wan_unit] == D2C || conn_changed_state[wan_unit] == CONNED){
 //		start_nat_rules();
-		start_firewall(wan_unit, 0);  //must restart firewall to handle vpn and dnscrypt
+		start_firewall(wan_unit, 0);  //must restart firewall to handle vpn and dnscrypt/stubby
 
 		memset(prefix_wan, 0, 8);
 		sprintf(prefix_wan, "wan%d_", wan_unit);

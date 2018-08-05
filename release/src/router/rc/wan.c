@@ -1932,7 +1932,7 @@ int update_resolvconf(void)
 	dnsstrict = get_dnslevel();
 	if (nvram_get_int("vpn_reverse_strict") == 0)	// standard dns configs
 		write_vpn_resolv(fp);
-	// If dns not set to exclusive/dnscrypt
+	// If dns not set to exclusive/dnscrypt/stubby
 	if (dnsstrict < 3) {
 #endif
 #ifdef RTCONFIG_DUALWAN
@@ -2004,7 +2004,7 @@ int update_resolvconf(void)
 
 #ifdef RTCONFIG_DNSMASQ
 #ifdef RTCONFIG_OPENVPN
-	if ((dnsstrict == 2) || (dnsstrict != dnsstrict_last) || (nvram_match("dnscrypt_proxy", "1"))) {
+	if ((dnsstrict == 2) || (dnsstrict != dnsstrict_last) || (nvram_match("dnscrypt_proxy", "1")) || (nvram_match("stubby_proxy", "1"))) {
 		restart_dnsmasq(0);	// add strict-order or no-resolv
 		dnsstrict_last = dnsstrict;
 	}
