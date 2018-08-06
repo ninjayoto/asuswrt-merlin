@@ -1311,6 +1311,7 @@ void start_stubby(int force)
 
 		use_custom_config("stubby.yml","/etc/stubby.yml");
 		run_postconf("stubby.postconf","/etc/stubby.yml");
+		chmod("/etc/stubby.yml", 0644);
 
 		rc = eval("stubby", "-g", "-v", nvram_safe_get("stubby_log"), "-C", "/etc/stubby.yml");
 		logmessage("stubby-proxy", "start stubby (%d)", rc);
