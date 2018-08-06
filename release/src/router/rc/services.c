@@ -1247,7 +1247,7 @@ void start_stubby(int force)
 //		if (nvram_match("dnssec_enable", "1") && nvram_match("dnssec_check_unsigned_x", "1"))
 //			fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
 		fprintf(fp, "tls_query_padding_blocksize: 256\n");
-		fprintf(fp, "edns_client_subnet_private : 1\n");
+		fprintf(fp, "edns_client_subnet_private: 1\n");
 		fprintf(fp, "round_robin_upstreams: %s\n", nvram_safe_get("stubby_access"));
 		fprintf(fp, "idle_timeout: 10000\n");
 //		fprintf(fp, "tls_connection_retries: 5\n");			// default 2
@@ -1272,15 +1272,15 @@ void start_stubby(int force)
 				//write the server selections (ipv4)
 				if (strlen(ip4addr) > 0) {
 					fprintf(fp, "# %s\n", dotname);
-					fprintf(fp, "  - address_data: %s\n", ip4addr);
+						fprintf(fp, "  - address_data: %s\n", ip4addr);
 					if ((strlen(tlsport) > 0) && (strcmp(tlsport, "853") != 0))
 						fprintf(fp, "    tls_port: %s\n", tlsport);
 					if (strlen(authname) > 0)
 						fprintf(fp, "    tls_auth_name: \"%s\"\n", authname);
 					if (strlen(tlspubkey) > 0) {
 						fprintf(fp, "    tls_pubkey_pinset:\n");
-						fprintf(fp, "    - digest: \"%s\"\n", tlsdigest);
-						fprintf(fp, "      value: %s\n", tlspubkey);
+						fprintf(fp, "      - digest: \"%s\"\n", tlsdigest);
+						fprintf(fp, "        value: %s\n", tlspubkey);
 					}
 					logmessage("stubby-proxy", "configured server '%s' at address %s:%s", dotname, ip4addr, tlsport);
 				}
@@ -1290,15 +1290,15 @@ void start_stubby(int force)
 				//write the server selections (ipv6)
 				if (strlen(ip6addr) > 0) {
 					fprintf(fp, "# %s\n", dotname);
-					fprintf(fp, "  - address_data: %s\n", ip6addr);
+						fprintf(fp, "  - address_data: %s\n", ip6addr);
 					if ((strlen(tlsport) > 0) && (strcmp(tlsport, "853") != 0))
 						fprintf(fp, "    tls_port: %s\n", tlsport);
 					if (strlen(authname) > 0)
 						fprintf(fp, "    tls_auth_name: \"%s\"\n", authname);
 					if (strlen(tlspubkey) > 0) {
 						fprintf(fp, "    tls_pubkey_pinset:\n");
-						fprintf(fp, "    - digest: \"%s\"\n", tlsdigest);
-						fprintf(fp, "      value: %s\n", tlspubkey);
+						fprintf(fp, "      - digest: \"%s\"\n", tlsdigest);
+						fprintf(fp, "        value: %s\n", tlspubkey);
 					}
 					logmessage("stubby-proxy", "configured server '%s' at address [%s]:%s", dotname, ip6addr, tlsport);
 				}
