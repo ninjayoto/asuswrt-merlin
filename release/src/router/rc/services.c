@@ -1254,7 +1254,10 @@ void start_stubby(int force)
 		fprintf(fp, "tls_backoff_time: 900\n");				// default 3600
 //		fprintf(fp, "limit_outstanding_queries: 100\n");	// default 100
 //		fprintf(fp, "timeout: 2\n");						// default 5
+
+		mkdir_if_none("/var/tmp/stubby");
 		fprintf(fp, "appdata_dir: \"/var/tmp/stubby\"\n");
+
 		fprintf(fp, "listen_addresses:\n");
 		if (nvram_get_int("stubby_ipv4"))
 			fprintf(fp, "  - 127.0.0.1@%d\n", nvram_get_int("stubby_port"));
@@ -1313,7 +1316,7 @@ void start_stubby(int force)
 		run_postconf("stubby.postconf","/etc/stubby.yml");
 		chmod("/etc/stubby.yml", 0644);
 
-		rc = eval("stubby", "-g", "-v", nvram_safe_get("stubby_log"), "-C", "/etc/stubby.yml");
+		rc = eval("stubby", "-g", "-v", nvram_safe_get("stubby_log"), "-C", "/etc/stubby.yml", "-F", "/var/tmp/stubby/stubby.log");
 		logmessage("stubby-proxy", "start stubby (%d)", rc);
 	}
 
