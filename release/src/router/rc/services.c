@@ -1313,7 +1313,7 @@ void start_stubby(int force)
 		run_postconf("stubby.postconf","/etc/stubby.yml");
 		chmod("/etc/stubby.yml", 0644);
 
-		rc = eval("stubby", "-g", "-v", nvram_safe_get("stubby_log"), "-C", "/etc/stubby.yml");
+		rc = eval("stubby", "-g", "-v", nvram_safe_get("stubby_log"), "-C", "/etc/stubby.yml", "2>/var/tmp/stubby/stubby.log");
 		logmessage("stubby-proxy", "start stubby (%d)", rc);
 	}
 
