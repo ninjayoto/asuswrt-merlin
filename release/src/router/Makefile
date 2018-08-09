@@ -1345,14 +1345,14 @@ libyaml: libyaml/stamp-h1
 	$(MAKE) -C libyaml $(PARALLEL_BUILD)
 
 libyaml-install:
-	install -d $(INSTALLDIR)/libyaml/usr/lib
-	install -D libyaml/src/.libs/libyaml-0.so.2.0.5 $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
-	$(STRIP) -s $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
-	cd $(INSTALLDIR)/libyaml/usr/lib/ && \
-		ln -sf libyaml-0.so.2.0.5 libyaml-0.so.2 && \
-		ln -sf libyaml-0.so.2.0.5 libyaml-0.so
+#	install -d $(INSTALLDIR)/libyaml/usr/lib
+#	install -D libyaml/src/.libs/libyaml-0.so.2.0.5 $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
+#	$(STRIP) -s $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
+#	cd $(INSTALLDIR)/libyaml/usr/lib/ && \
+#		ln -sf libyaml-0.so.2.0.5 libyaml-0.so.2 && \
+#		ln -sf libyaml-0.so.2.0.5 libyaml-0.so
 
-libyaml-clean:
+libyaml-clean:d
 	-$(MAKE) -C libyaml clean
 	@rm -rf libyaml/stamp-h1 libyaml/src/.deps libyaml/src/tests/.deps
 
@@ -1361,8 +1361,8 @@ getdns/stamp-h1: openssl libyaml
 	autoreconf -i -f && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 	CPPFLAGS="-I$(TOP)/libyaml/include -I$(TOP)/openssl/include" \
-	LDFLAGS="-static -L$(TOP)/libyaml/src/.libs -L$(TOP)/openssl" \
-	$(CONFIGURE) --enable-static --enable-shared --prefix=/usr --sysconfdir=/etc --localstatedir=/var --without-libidn --without-libidn2 --without-libunbound  \
+	LDFLAGS="-static -L$(TOP)/libyaml/src/.libs -lyaml -L$(TOP)/openssl -lcrypto -lssl" \
+	$(CONFIGURE) --enable-static --disable-shared --prefix=/usr --sysconfdir=/etc --localstatedir=/var --without-libidn --without-libidn2 --without-libunbound  \
 	--enable-stub-only --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby
 	touch getdns/stamp-h1
 
