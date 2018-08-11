@@ -4,16 +4,26 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34B6j9527  (11-August-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: make: build getdns with static libraries
+* CHANGED: stubby: add debug error messages
+* CHANGED: webui: clean up wan dns display elements
+* FIXED: stubby: services - redirect stderr to var/tmp/stubby/stubby.log
+* FIXED: stubby: work around broken getaddrinfo on MIPS
+
+
 374.43_34B5j9527  (6-August-2018) ARM SDK, MIPS,ARM KRACK
 - FIXED: dnsmasq: (upstream) fix crash parsing a --synth-domain with no prefix
 * FIXED: stubby: services - set correct permissions on stubby.yml
 * FIXED: stubby: services - clean up yml file formatting
+
 
 374.43_34B4j9527  (4-August-2018) ARM SDK, MIPS,ARM KRACK
 * NEW stubby: add support for orderd vs roundrobbin server access
 * CHANGED: webui: add gui support for stubby_noipv6
 * CHANGED: stubby: change default padding blocksize
 * FIXED: stubby: do not listen on ipv6 if not enabled
+
 
 374.43_34B3j9527  (4-August-2018) ARM SDK, MIPS,ARM KRACK
 Abandoned
