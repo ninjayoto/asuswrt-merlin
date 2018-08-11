@@ -608,17 +608,22 @@ getdns_list_set_string(getdns_list *list, size_t index, const char *value)
 	getdns_bindata *newbindata;
 	getdns_return_t r;
 
-	if (!list || !value)
+	if (!list || !value) {
+		fprintf(stderr, "list_set_string: bad list or value\n");
 		return GETDNS_RETURN_INVALID_PARAMETER;
+	}
 
 	if (!(newbindata = _getdns_bindata_copy(
-	    &list->mf, strlen(value) + 1, (uint8_t *)value)))
+	    &list->mf, strlen(value) + 1, (uint8_t *)value))) {
+		fprintf(stderr, "list_set string: memory error\n");
 		return GETDNS_RETURN_MEMORY_ERROR;
+	}
 
 	newbindata->size -= 1;
 
 	if ((r = _getdns_list_request_index(list, index))) {
 		_getdns_bindata_destroy(&list->mf, newbindata);
+		fprintf(stderr, "list_set_string: could not request index\n");
 		return r;
 	}
 	list->items[index].dtype = t_bindata;
@@ -665,7 +670,10 @@ _getdns_list_append_const_bindata(
 getdns_return_t
 _getdns_list_append_string(getdns_list *list, const char *value)
 {
-	if (!list) return GETDNS_RETURN_INVALID_PARAMETER;
+	if (!list) {
+		fprintf(stderr, "list_append_string: list not found\n");
+		return GETDNS_RETURN_INVALID_PARAMETER;
+	}
 	return getdns_list_set_string(list, list->numinuse, value);
 }
 getdns_return_t

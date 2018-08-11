@@ -270,18 +270,23 @@ getdns_dict_get_names(const getdns_dict *dict, getdns_list **answer)
 {
 	struct getdns_dict_item *item;
 
-	if (!dict || !answer)
+	if (!dict || !answer) {
+		fprintf(stderr, "dict_get_names: dict or answer invalid\n");
 		return GETDNS_RETURN_INVALID_PARAMETER;
+	}
 
 	*answer = getdns_list_create_with_extended_memory_functions(
 		dict->mf.mf_arg, dict->mf.mf.ext.malloc,
 		dict->mf.mf.ext.realloc, dict->mf.mf.ext.free);
-	if (!*answer)
+	if (!*answer) {
+		fprintf(stderr, "dict_get_names: no such dict name\n");
 		return GETDNS_RETURN_NO_SUCH_DICT_NAME;
+	}
 
 	RBTREE_FOR(item, struct getdns_dict_item *,
 		(_getdns_rbtree_t *)&(dict->root)) {
 		_getdns_list_append_string(*answer, item->node.key);
+		fprintf(stderr, "dict_get_names: append %s %s\n", answer, item->node.key);
 	}
 	return GETDNS_RETURN_GOOD;
 }				/* getdns_dict_get_names */

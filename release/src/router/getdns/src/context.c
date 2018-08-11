@@ -3063,8 +3063,10 @@ getdns_context_set_upstream_recursive_servers(struct getdns_context *context,
 			}
 			(void) snprintf(portstr, 1024, "%d", (int)port);
 
-			if (getaddrinfo(addrstr, portstr, &hints, &ai))
+			if (r = getaddrinfo(addrstr, portstr, &hints, &ai)) {
+				fprintf(stderr, "set_upstream_recursive_servers: getaddrinfo error %s %s rc %d\n", addrstr, portstr, r);
 				goto invalid_parameter;
+			}
 			if (!ai)
 				continue;
 
@@ -4983,8 +4985,10 @@ getdns_context_config(getdns_context *context, const getdns_dict *config_dict)
 
 	for (i = 0; !(r = getdns_list_get_bindata(settings,i,&setting)); i++) {
 		if ((r = _getdns_context_config_setting(
-		    context, config_dict, setting)))
+		    context, config_dict, setting))) {
+			fprintf(stderr, "list_get_bindata: i=%d r=%d\n", i, r);
 			break;
+		}
 	}
 	if (r == GETDNS_RETURN_NO_SUCH_LIST_ITEM)
 		r = GETDNS_RETURN_GOOD;
