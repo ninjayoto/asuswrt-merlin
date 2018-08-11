@@ -127,8 +127,6 @@ function initial(){
 		else
 			showhide("dnscrypt_csvwarn", false);
 	}
-
-	update_resolverlist();
 /* DNSCRYPT-END */
 /* STUBBY-BEGIN */
 	if (isSupport("stubby")){
@@ -139,9 +137,8 @@ function initial(){
 		else
 			showhide("stubby_csvwarn", false);
 	}
-
-	update_stubbylist();
 /* STUBBY-END */
+	update_resolverlist();
 	display_upnp_range();
 }
 
@@ -182,6 +179,7 @@ function update_resolverlist(){
 			}
 //		}
 	}
+	document.getElementById("dnssec_strict_span").style.display = (dnssec_enabled) ? "" : "none";
 }
 
 function set_dnscrypt_protocol(instance, name){
@@ -208,7 +206,7 @@ function display_dnscrypt_opt(){
 }
 /* DNSCRYPT-END */
 /* STUBBY-BEGIN */
-function update_stubbylist(){
+function update_resolverlist(){
 // Server list
 	free_options(document.form.stubby_server);
 
@@ -236,11 +234,13 @@ function update_stubbylist(){
 			}
 		}
 	}
-				for(var j = 0; j < accessindex.length; j++){
-					if (accessindex[j] >= 0)
-						accessindexname += stubbyarray[accessindex[j]][0] + ", ";
-				}
-				$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
+	for(var j = 0; j < accessindex.length; j++){
+		if (accessindex[j] >= 0)
+			accessindexname += stubbyarray[accessindex[j]][0] + ", ";
+	}
+	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
+
+	document.getElementById("dnssec_strict_span").style.display = (dnssec_enabled) ? "" : "none";
 }
 
 function update_accessorder(obj) {
@@ -1305,15 +1305,15 @@ function pass_checked(obj){
 			<tr id="stubby_noipv6_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,38);">Enable IPv6 DoT servers</a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="0" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "0", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="1" name="stubby_noipv6" onclick="update_stubbylist();" <% nvram_match("stubby_noipv6", "1", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="0" name="stubby_noipv6" onclick="update_resolverlist();" <% nvram_match("stubby_noipv6", "0", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="1" name="stubby_noipv6" onclick="update_resolverlist();" <% nvram_match("stubby_noipv6", "1", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
 			<tr id="stubby_nologs_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,37);">Exclude DoT servers with logs</a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="stubby_nologs" onclick="update_stubbylist();" <% nvram_match("stubby_nologs", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="stubby_nologs" onclick="update_stubbylist();" <% nvram_match("stubby_nologs", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="stubby_nologs" onclick="update_resolverlist();" <% nvram_match("stubby_nologs", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="stubby_nologs" onclick="update_resolverlist();" <% nvram_match("stubby_nologs", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
 			<tr id="stubby_ordered_tr" style="display:none;">
