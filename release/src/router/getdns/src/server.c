@@ -923,23 +923,17 @@ getdns_return_t getdns_context_set_listen_addresses(
 	DEBUG_SERVER("getdns_context_set_listen_addresses(%p, <func>, %p)\n",
 	    (void *)context, (void *)listen_addresses);
 
-	if (!(mf = &context->mf)) {
-		fprintf(stderr, "set_listen_address: invalid mf\n");
+	if (!(mf = &context->mf))
 		return GETDNS_RETURN_GENERIC_ERROR;
-	}
 
-	if ((r = getdns_context_get_eventloop(context, &loop))) {
-		fprintf(stderr, "set_listen_address: eventloop error\n");
+	if ((r = getdns_context_get_eventloop(context, &loop)))
 		return r;
-	}
 
 	if (listen_addresses == NULL)
 		new_set_count = 0;
 
-	else if ((r = getdns_list_get_length(listen_addresses, &new_set_count))) {
-		fprintf(stderr, "set_listen_address: length error\n");
+	else if ((r = getdns_list_get_length(listen_addresses, &new_set_count)))
 		return r;
-	}
 
 	if ((current_set = context->server)) {
 		for (i = 0; i < current_set->count; i++)
@@ -954,17 +948,13 @@ getdns_return_t getdns_context_set_listen_addresses(
 		remove_listeners(current_set);
 		return GETDNS_RETURN_GOOD;
 	}
-	if (!request_handler) {
-		fprintf(stderr, "set_listen_address: request_handler error\n");
+	if (!request_handler)
 		return GETDNS_RETURN_INVALID_PARAMETER;
-	}
 
 	if (!(new_set = (listen_set *)GETDNS_XMALLOC(*mf, uint8_t,
 	    sizeof(listen_set) +
-	    sizeof(listener) * new_set_count * n_transports))) {
-		fprintf(stderr, "set_listen_address: memory error\n");
+	    sizeof(listener) * new_set_count * n_transports)))
 		return GETDNS_RETURN_MEMORY_ERROR;
-	}
 
 	_getdns_rbtree_init(&new_set->connections_set, ptr_cmp);
 
@@ -999,36 +989,29 @@ getdns_return_t getdns_context_set_listen_addresses(
 
 		if ((r = getdns_list_get_dict(listen_addresses, i, &dict))) {
 			if ((r = getdns_list_get_bindata(
-			    listen_addresses, i, &address_data))) {
-				fprintf(stderr, "set_listen_address: get_dict listen_addresses error\n");
+			    listen_addresses, i, &address_data)))
 				break;
-			}
 
 		} else if ((r = getdns_dict_get_bindata(
-		    dict, "address_data", &address_data))) {
-			fprintf(stderr, "set_listen_address: get_dict address_data error\n");
+		    dict, "address_data", &address_data)))
 			break;
-		}
 
 		if (address_data->size == 4)
 			addr.ss_family = AF_INET;
 		else if (address_data->size == 16)
 			addr.ss_family = AF_INET6;
 		else {
-			fprintf(stderr, "set_listen_address: address size check error\n");
 			r = GETDNS_RETURN_INVALID_PARAMETER;
 			break;
 		}
 		if (inet_ntop(addr.ss_family,
 		    address_data->data, addrstr, 1024) == NULL) {
-			fprintf(stderr, "set_listen_address: get_dict address ntop error\n");
 			r = GETDNS_RETURN_INVALID_PARAMETER;
 			break;
 		}
 		if (dict && getdns_dict_get_bindata(dict,"scope_id",&scope_id)
 		    == GETDNS_RETURN_GOOD) {
 			if (strlen(addrstr) + scope_id->size > 1022) {
-				fprintf(stderr, "set_listen_address: get_bindata scope_id error");
 				r = GETDNS_RETURN_INVALID_PARAMETER;
 				break;
 			}
@@ -1055,8 +1038,7 @@ getdns_return_t getdns_context_set_listen_addresses(
 
 			(void) snprintf(portstr, 1024, "%d", (int)port);
 
-			if (r = getaddrinfo(addrstr, portstr, &hints, &ai)) {
-				fprintf(stderr, "set_listen_address: getaddrinfo error %s %s rc %d\n", addrstr, portstr, r);
+			if (getaddrinfo(addrstr, portstr, &hints, &ai)) {
 				r = GETDNS_RETURN_INVALID_PARAMETER;
 				break;
 			}

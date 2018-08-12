@@ -213,20 +213,20 @@ static getdns_return_t parse_config(const char *config_str, int yaml_config)
 		if (!listen_dict &&
 		    !(listen_dict = getdns_dict_create())) {
 			fprintf(stderr, "Could not create "
-					"listen_dict\n");
+					"listen_dict");
 			r = GETDNS_RETURN_MEMORY_ERROR;
 
 		} else if ((r = getdns_dict_set_list(
 		    listen_dict, "listen_list", list)))
-			fprintf(stderr, "Could not set listen_list\n");
+			fprintf(stderr, "Could not set listen_list");
 
 		else if ((r = getdns_dict_get_list(
 		    listen_dict, "listen_list", &listen_list)))
-			fprintf(stderr, "Could not get listen_list\n");
+			fprintf(stderr, "Could not get listen_list");
 
 		else if ((r = getdns_list_get_length(
 		    listen_list, &listen_count)))
-			fprintf(stderr, "Could not get listen_count\n");
+			fprintf(stderr, "Could not get listen_count");
 
 		(void) getdns_dict_remove_name(
 		    config_dict, "listen_addresses");
