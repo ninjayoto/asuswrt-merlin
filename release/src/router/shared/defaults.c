@@ -762,7 +762,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "stubby_ipv6", "0"},	 		// number of ipv6 servers defined
 	{ "stubby_noipv6", "0"},		// do not configure ipv6 servers
 	{ "stubby_access", "1"},		// 0-Ordered 1-Roundrobin
-	{ "stubby_log", "4"},			// log level
+	{ "stubby_loglevel", "4"},		// log level
 	{ "stubby_nologs", "0"},		// Show only non-logging servers
 	{ "stubby_csv","/rom/stubby-resolvers.csv"},	// list of DoT enabled resolvers
 #endif

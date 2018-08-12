@@ -371,7 +371,7 @@ function applyRule(){
 		if((document.form.stubby_proxy[0].checked != "<% nvram_get("stubby_proxy"); %>") ||
 		   (document.form.stubby_dns.value != "<% nvram_get("stubby_dns"); %>") ||
 		   (document.form.stubby_port.value != "<% nvram_get("stubby_port"); %>") ||
-		   (document.form.stubby_log.value != "<% nvram_get("stubby_log"); %>"))
+		   (document.form.stubby_loglevel.value != "<% nvram_get("stubby_loglevel"); %>"))
 			document.form.action_script.value += "stop_stubby;";
 /* STUBBY-END */
 
@@ -1341,15 +1341,15 @@ function pass_checked(obj){
 			<tr id="stubby_log_tr" style="display:none;">
 				<th>DoT log level</th>
 				<td colspan="2" style="text-align:left;">
-					<select id="stubby_log" class="input_option" name="stubby_log">
-						<option value="0" <% nvram_match("stubby_log", "0", "selected"); %>>Emergency</option>
-						<option value="1" <% nvram_match("stubby_log", "1", "selected"); %>>Alert</option>
-						<option value="2" <% nvram_match("stubby_log", "2", "selected"); %>>Critical</option>
-						<option value="3" <% nvram_match("stubby_log", "3", "selected"); %>>Error</option>
-						<option value="4" <% nvram_match("stubby_log", "4", "selected"); %>>Warning</option>
-						<option value="5" <% nvram_match("stubby_log", "5", "selected"); %>>Notice</option>
-						<option value="6" <% nvram_match("stubby_log", "6", "selected"); %>>Info</option>
-						<option value="7" <% nvram_match("stubby_log", "7", "selected"); %>>Debug</option>
+					<select id="stubby_loglevel" class="input_option" name="stubby_loglevel">
+						<option value="0" <% nvram_match("stubby_loglevel", "0", "selected"); %>>Emergency</option>
+						<option value="1" <% nvram_match("stubby_loglevel", "1", "selected"); %>>Alert</option>
+						<option value="2" <% nvram_match("stubby_loglevel", "2", "selected"); %>>Critical</option>
+						<option value="3" <% nvram_match("stubby_loglevel", "3", "selected"); %>>Error</option>
+						<option value="4" <% nvram_match("stubby_loglevel", "4", "selected"); %>>Warning</option>
+						<option value="5" <% nvram_match("stubby_loglevel", "5", "selected"); %>>Notice</option>
+						<option value="6" <% nvram_match("stubby_loglevel", "6", "selected"); %>>Info</option>
+						<option value="7" <% nvram_match("stubby_loglevel", "7", "selected"); %>>Debug</option>
 					</select>
 				</td>
 			</tr>
