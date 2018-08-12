@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34E1j9527  (12-August-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: Revert "stubby: add debug error messages"
+* CHANGED: stubby: change tls_backoff_time log to warning
+* CHANGED: stubby: change nvram var for loglevel
+* FIXED: stubby: add proper support for logfile when run as daemon
+
+
 374.43_34B6j9527  (11-August-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: make: build getdns with static libraries
 * CHANGED: stubby: add debug error messages
