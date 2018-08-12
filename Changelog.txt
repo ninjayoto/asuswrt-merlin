@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34E2j9527  (15-August-2018) ARM SDK, MIPS,ARM KRACK
+* NEW: stubby: add update resolvers script
+* CHANGED: dnsmasq: improve insecure ds syslog to handle servers that really do not support dnssec
+* CHANGED: webui: add warning on dnssec strict mode to popup help
+* CHANGED: httpd: support comments in csv files
+* FIXED: webui: do not force stubby server selection if stubby not enabled
+
+
 374.43_34E1j9527  (12-August-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: Revert "stubby: add debug error messages"
 * CHANGED: stubby: change tls_backoff_time log to warning
