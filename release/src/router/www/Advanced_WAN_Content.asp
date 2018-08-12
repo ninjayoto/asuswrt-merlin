@@ -622,7 +622,7 @@ function validForm(){
 				document.form.stubby_ipv6.value++;	// number of ipv6 servers
 		}
 	}
-	if (document.form.stubby_ipv4.value == 0 && document.form.stubby_ipv6.value == 0) {
+	if (document.form.stubby_ipv4.value == 0 && document.form.stubby_ipv6.value == 0 && document.form.stubby_proxy[0].checked) {
 		document.form.stubby_server.focus();
 		alert("Must select at least one DoT server!");
 		return false;
