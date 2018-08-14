@@ -33,6 +33,11 @@ ifeq ($(RTCONFIG_DNSCRYPT),y)
 	install -m 0755 dnscrypt-update-resolvers.sh $(INSTALLDIR)/usr/sbin
 endif
 
+# stubby resolver updater
+ifeq ($(RTCONFIG_STUBBY),y)
+	install -m 0755 stubby-update-resolvers.sh $(INSTALLDIR)/usr/sbin
+endif
+
 # ipv6 hosts updater
 ifeq ($(RTCONFIG_DNSMASQ),y)
 	install -m 0755 v6hosts.sh $(INSTALLDIR)/usr/sbin
