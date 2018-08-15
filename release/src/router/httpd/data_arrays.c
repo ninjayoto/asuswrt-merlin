@@ -232,6 +232,10 @@ int resolver_dump(FILE *pFile, webs_t wp) {
 		if(strlen(sInputBuf)==0)
 			continue;
 
+		// jump over comments
+		if(sInputBuf[0]==0x23) // # for commented lines
+			continue;
+
 		// set pFields array pointers to null-terminated string fields in sInputBuf
 		if (parse_csv_line(sInputBuf,lineno) == 0){
 			if(firstrow==1)
@@ -288,6 +292,10 @@ int stubby_dump(FILE *pFile, webs_t wp) {
 
 		// jump over empty lines
 		if(strlen(sInputBuf)==0)
+			continue;
+
+		// jump over comments
+		if(sInputBuf[0]==0x23) // # for commented lines
 			continue;
 
 		// set pFields array pointers to null-terminated string fields in sInputBuf
