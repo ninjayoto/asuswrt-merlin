@@ -5,7 +5,7 @@ Stop copy of syslog files to JFFS
 
         Can be set in gui:      Yes (as of Update-11, Administration/System/Save syslog to JFFS)
         Enable via NVRAM:       nvram set jffs2_log=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      AC66,AC56,AC68
         Released:               Update-02
@@ -16,7 +16,7 @@ Enable Comcast DSCP fix
 
         Can be set in gui:      Yes (Firewall/General/Enable DSCP override)
         Enable via NVRAM:       nvram set DSCP_fix_enable=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-07
@@ -43,7 +43,7 @@ ports for SSH access
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set sshd_addr=[address:]port,[address:]port,[address:]port,[address:]port
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-07
@@ -58,7 +58,7 @@ remote monitoring
 
         Can be set in gui:      Yes (Update-15)
         Enable via NVRAM:       nvram set log_small=0
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-08 (NVRAM) Update-15 (GUI)
@@ -70,7 +70,7 @@ Save HTTPS certificate
 
         Can be set in gui:      Yes (Administration/System/Save HTTPS certificate)
         Enable via NVRAM:       nvram set https_crt_save=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-11
@@ -96,7 +96,7 @@ CROND logging options
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set cron_loglevel=N (default is 8)
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-11
@@ -278,7 +278,7 @@ Set preferred interface for bandwidth limiter
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set qos_iface=[iface]
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-17
@@ -291,7 +291,7 @@ Use alternate NAT Loopback implementation (ASUS)
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set fw_nat_loopback=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-17
@@ -307,7 +307,7 @@ Ability to disable DNSSEC permissive mode
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set dnssec_check_unsigned=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-17
@@ -320,7 +320,7 @@ Ability to enable DFS channels for N66U/AC66U-MIPS EU routers
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set wl_dfs_enable=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      N66U/R/W, AC66U_B0
         Released:               Update-18
@@ -336,7 +336,7 @@ Ability to set the Site Level Aggregation identifier (sla-id)
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set ipv6_slaid=[number]
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-19
@@ -349,7 +349,7 @@ Control release of IPv6 Addresses on exit
 
         Can be set in gui:      Yes
         Enable via NVRAM:       nvram set ipv6_dhcp6c_release=[1 release,  0 no release]
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-19
@@ -361,7 +361,7 @@ Ability force a DHCPv6 request during IPv6 prefix delegation
 
         Can be set in gui:      Yes
         Enable via NVRAM:       nvram set ipv6_dhcp6c_force=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-19
@@ -373,7 +373,7 @@ Special IPv6 options
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set ipv6_isp_opt=xx
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-20
@@ -391,7 +391,7 @@ OpenVPN Client Reverse Strict DNS
 
         Can be set in gui:      No
         Enable via NVRAM:       nvram set vpn_reverse_strict=1
-                                nvram commit && reboot
+                                nvram commit && service reboot
 
         Routers Supported:      All
         Released:               Update-23

@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_34E3j9527  (17-August-2018) ARM SDK, MIPS,ARM KRACK
+* NEW: webui: add popup detail for stubby server selection
+* CHANGED: stubby: update resolvers csv
+* FIXED: webui: update stubby selection to handle edge case server definitions
+
+
 374.43_34E2j9527  (15-August-2018) ARM SDK, MIPS,ARM KRACK
 * NEW: stubby: add update resolvers script
 * CHANGED: dnsmasq: improve insecure ds syslog to handle servers that really do not support dnssec
