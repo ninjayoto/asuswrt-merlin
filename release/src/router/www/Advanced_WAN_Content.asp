@@ -219,18 +219,22 @@ function update_resolverlist(){
 	for(var i = 0; i < stubbyarray.length; i++){
 		if ((dnssec_enabled == 1 && stubbyarray[i][7] == "yes") || dnssec_enabled == 0) {	// Exclude non-dnssec servers if dnssec is enabled
 			if ((stubby_nologs == 1 && stubbyarray[i][8] == "yes") || stubby_nologs == 0) {	// Exclude logging servers
-				// check if selected
-				isselected = false;
-				for(var j = 1; j < currentserversarray.length; j++){
-					if (currentserversarray[j].indexOf(stubbyarray[i][1]) >= 0){	// use ipv4 address as lookup
-						isselected = true;
-						accessindex[j-1] = i;
-						break;
+				if ((ipv6_enabled && stubbyarray[i][2].length > 0) || stubbyarray[i][1].length > 0) {	// Exclude ipv6 only servers if ipv6 not enabled
+					// check if selected
+					isselected = false;
+					var searchip = "";
+					for(var j = 1; j < currentserversarray.length; j++){
+						searchip = "&#62" + ((stubbyarray[i][1].length > 0) ? stubbyarray[i][1] : stubbyarray[i][2]);
+						if ((currentserversarray[j].indexOf(searchip) >= 0) && (currentserversarray[j].indexOf("&#62"+stubbyarray[i][3]) >= 0)){	// use ip address and port as lookup
+							isselected = true;
+							accessindex[j-1] = i;
+							break;
+						}
 					}
+					// add to selection list
+					add_option(document.form.stubby_server,
+						stubbyarray[i][0] + " (" + (stubbyarray[i][1].length > 0 ? stubbyarray[i][1] : stubbyarray[i][2]) + ":" + stubbyarray[i][3] + ")", i, isselected);
 				}
-				// add to selection list
-				add_option(document.form.stubby_server,
-					stubbyarray[i][0] + " (" + (stubbyarray[i][4].length > 0 ? stubbyarray[i][4] : "no DNS name") + ")", stubbyarray[i][1], isselected);
 			}
 		}
 	}
@@ -246,10 +250,10 @@ function update_resolverlist(){
 function update_accessorder(obj) {
 	var accessindexname = "<br>Selected servers:<br>";
 	for(var i = 0; i < document.form.stubby_server.length; i++){
-		var currindex = accessindex.indexOf(i);
+		var currindex = accessindex.indexOf(parseInt(document.form.stubby_server[i].value));
 		if (document.form.stubby_server[i].selected){
 			if (currindex < 0)
-				accessindex[accessindex.length] = i;	// add selection
+				accessindex[accessindex.length] = parseInt(document.form.stubby_server[i].value);	// add selection
 		}
 		else
 			accessindex[currindex] = -1;	// mark as deleted
