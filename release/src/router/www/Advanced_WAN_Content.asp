@@ -127,6 +127,7 @@ function initial(){
 		else
 			showhide("dnscrypt_csvwarn", false);
 	}
+	update_resolverlist();
 /* DNSCRYPT-END */
 /* STUBBY-BEGIN */
 	if (isSupport("stubby")){
@@ -137,8 +138,15 @@ function initial(){
 		else
 			showhide("stubby_csvwarn", false);
 	}
-/* STUBBY-END */
 	update_resolverlist();
+	$("stubby_server").onmouseover = function (event) {
+		event = event || window.event;
+		var target = event.target ? event.target : event.srcElement;
+		if ( target.nodeName.toLowerCase() === 'option' ) {
+			stubby_details($(target).value);
+		}
+	}
+/* STUBBY-END */
 	display_upnp_range();
 }
 
@@ -233,7 +241,7 @@ function update_resolverlist(){
 					}
 					// add to selection list
 					add_option(document.form.stubby_server,
-						stubbyarray[i][0] + " (" + (stubbyarray[i][1].length > 0 ? stubbyarray[i][1] : stubbyarray[i][2]) + ":" + stubbyarray[i][3] + ")", i, isselected);
+						stubbyarray[i][0] + (stubbyarray[i][3] != "853" ? " (Port: " + stubbyarray[i][3] + ")" : ""), i, isselected);
 				}
 			}
 		}
@@ -273,6 +281,18 @@ function display_stubby_opt(){
 	$("stubby_noipv6_tr").style.display = (document.form.stubby_proxy[0].checked && ipv6_enabled) ? "" : "none";
 	$("stubby_ordered_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
+}
+
+function stubby_details(i){
+	var statusmenu = "";
+	statusmenu += "<div class='StatusHint' style='width:300px;'>" + stubbyarray[i][0] + "</div>";
+	statusmenu += "<span class='StatusHint'></span>";
+	statusmenu += "Auth Domain: " + (stubbyarray[i][4].length ? stubbyarray[i][4] : "None") + "<br>";
+	statusmenu += "IPv4 Addr: " + (stubbyarray[i][1].length ? stubbyarray[i][1] : "None") + "<br>";
+	statusmenu += "IPv6 Addr: " + (stubbyarray[i][2].length ? stubbyarray[i][2] : "None") + "<br>";
+	statusmenu += "Port: " + stubbyarray[i][3] + "<br>";
+
+	return overlib(statusmenu, OFFSETX, 0, RIGHT, DELAY, 2000);
 }
 /* STUBBY-END */
 
@@ -1328,9 +1348,9 @@ function pass_checked(obj){
 				</td>
 			</tr>
 			<tr id="stubby_server_tr" style="display:none;">
-				<th>DoT Servers<br><i>Hold Ctrl / Cmd to select multiple servers</i></th>
+				<th>DoT Servers<br><i>Hold Ctrl / Cmd to select multiple servers<br>Hover on selection for server details</i></th>
 				<td colspan="2" style="text-align:left;">
-					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5" onclick="update_accessorder(this);">
+					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5" onclick="update_accessorder(this);" onmouseout="nd();">
 						<option value="none"></option>
 					</select>
 					<span id="stubby_accessorder" style="display:none;"><br>Selected servers</span>
