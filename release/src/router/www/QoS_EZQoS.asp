@@ -180,12 +180,12 @@ function applyRule(){
 			document.form.qos_ibw.select();
 			return false;
 		}
-
-		if($("qos_obw_scale").value == "Mb/s")
-			document.form.qos_obw.value = Math.round(document.form.qos_obw.value*value1K);
-		if($("qos_ibw_scale").value == "Mb/s")
-			document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*value1K);
 	}
+
+	if($("qos_obw_scale").value == "Mb/s")
+		document.form.qos_obw.value = Math.round(document.form.qos_obw.value*value1K);
+	if($("qos_ibw_scale").value == "Mb/s")
+		document.form.qos_ibw.value = Math.round(document.form.qos_ibw.value*value1K);
 
 	if(document.form.qos_enable.value == "0")
 		document.form.action_script.value = "";
