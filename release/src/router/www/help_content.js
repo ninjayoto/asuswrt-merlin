@@ -288,4 +288,9 @@ helpcontent[26] = new Array("",
 //OpenVPN
 helpcontent[48] = new Array("",
 				"OpenVPN can automatically negotiate the cipher based on a list.  Requires OpenVPN 2.4.  For older remote client/servers, disable it, or use Enabled with Fallback mode, which will use the legacy cipher parameter when connecting to older remotes.",
+/* DNSCRYPT-BEGIN */
 				"<B>Disabled</B>: VPN DNS servers are not used.<br/><B>Relaxed</B>: Both VPN and WAN DNS servers may by used.<br/><B>Strict</B>: VPN DNS servers are tried first, before WAN DNS servers.<br/><B>Exclusive</B>: Only VPN DNS servers are used with the router caching DNS requests.<br/><B>DNSCrypt</B>: VPN DNS requests use the defined DNSCrypt servers.");
+/* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+				"<B>Disabled</B>: VPN DNS servers are not used.<br/><B>Relaxed</B>: Both VPN and WAN DNS servers may by used.<br/><B>Strict</B>: VPN DNS servers are tried first, before WAN DNS servers.<br/><B>Exclusive</B>: Only VPN DNS servers are used with the router caching DNS requests.<br/><B>DoT</B>: VPN DNS requests use the defined DoT servers.");
+/* STUBBY-END */
