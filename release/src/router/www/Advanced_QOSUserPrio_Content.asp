@@ -24,6 +24,7 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var qos_orates = '<% nvram_get("qos_orates"); %>';
 var qos_irates = '<% nvram_get("qos_irates"); %>';
+var qos_irates_min = '<% nvram_get("qos_irates_min"); %>';
 var value1K = 1000;
 
 function initial(){
@@ -81,22 +82,37 @@ function save_checkbox(){
 }
 
 function save_options(){
+	var qos_orates_min_total = 0;
+	var qos_irates_min_total = 0;
 	document.form.qos_orates.value = "";
+	document.form.qos_irates.value = "";
+	document.form.qos_irates_min.value = "";
 	for(var j=0; j<5; j++){
 		var upload_bw_max = eval("document.form.upload_bw_max_"+j);
 		var upload_bw_min = eval("document.form.upload_bw_min_"+j);
+		qos_orates_min_total += parseInt(upload_bw_min.value);
 		var download_bw_max = eval("document.form.download_bw_max_"+j);
+		var download_bw_min = eval("document.form.download_bw_min_"+j);
+		qos_irates_min_total += parseInt(download_bw_min.value);
 		if(parseInt(upload_bw_max.value) < parseInt(upload_bw_min.value)){
 			alert("<#QoS_invalid_period#>");
 			upload_bw_max.focus();
 			return false;
 		}
-
 		document.form.qos_orates.value += upload_bw_min.value + "-" + upload_bw_max.value + ",";
 		document.form.qos_irates.value += download_bw_max.value + ",";
+		document.form.qos_irates_min.value += download_bw_min.value + ",";
 	}
+	if (qos_orates_min_total > 100){
+		alert("WARNING:\nTotal Upload Minimum Reserved Bandwidth\n>exceeds 100% of available bandwidth!");
+	}
+	if (qos_irates_min_total > 100){
+		alert("WARNING:\nTotal Download Minimum Reserved Bandwidth\nexceeds 100% of available bandwidth!");
+	}
+
 	document.form.qos_orates.value += "0-0,0-0,0-0,0-0,0-0";
 	document.form.qos_irates.value += "0,0,0,0,0";
+	document.form.qos_irates_min.value += "0,0,0,0,0";
 	return true;
 }
 
@@ -130,13 +146,6 @@ function validForm(){
 		parse_port="";
 		return false;
 	}	
-		
-	if(document.form.qos_max_transferred_x_0.value.length > 0 
-	   && document.form.qos_max_transferred_x_0.value < document.form.qos_min_transferred_x_0.value){
-				document.form.qos_max_transferred_x_0.focus();
-				alert("<#vlaue_haigher_than#> "+document.form.qos_min_transferred_x_0.value);	
-				return false;
-	}
 	
 	return true;
 }
@@ -152,16 +161,20 @@ function gen_options(){
 	if($("upload_bw_min_0").innerHTML == ""){
 		var qos_orates_row = qos_orates.split(',');
 		var qos_irates_row = qos_irates.split(',');
+		var qos_irates_min_row = qos_irates_min.split(',');
 		for(var j=0; j<5; j++){
 			var upload_bw_max = eval("document.form.upload_bw_max_"+j);
 			var upload_bw_min = eval("document.form.upload_bw_min_"+j);
 			var download_bw_max = eval("document.form.download_bw_max_"+j);
+			var download_bw_min = eval("document.form.download_bw_min_"+j);
 			//Viz 2011.06 var download_bw_min = eval("document.form.download_bw_min_"+j);
 			var qos_orates_col = qos_orates_row[j].split('-');
 			var qos_irates_col = qos_irates_row[j].split('-');
+			var qos_irates_min_col = qos_irates_min_row[j].split('-');
 			for(var i=5; i<101; i=i+5){
 				add_options_value(upload_bw_min, i, qos_orates_col[0]);
 				add_options_value(upload_bw_max, i, qos_orates_col[1]);
+				add_options_value(download_bw_min, i, qos_irates_min_col[0]);
 				add_options_value(download_bw_max, i, qos_irates_col[0]);
 			}
 			var upload_bw_desc = eval('document.getElementById("upload_bw_'+j+'_desc")');
@@ -175,10 +188,11 @@ function gen_options(){
 			var upload_bw_max = eval("document.form.upload_bw_max_"+j);
 			var upload_bw_min = eval("document.form.upload_bw_min_"+j);
 			var download_bw_max = eval("document.form.download_bw_max_"+j);
+			var download_bw_min = eval("document.form.download_bw_min_"+j);
 			var upload_bw_desc = eval('document.getElementById("upload_bw_'+j+'_desc")');
 			var download_bw_desc = eval('document.getElementById("download_bw_'+j+'_desc")');	
 			upload_bw_desc.innerHTML = Math.round(upload_bw_min.value*document.form.qos_obw_orig.value)/100 + " ~ " + Math.round(upload_bw_max.value*document.form.qos_obw_orig.value)/100 + " " + $("qos_obw_scale").value;
-			download_bw_desc.innerHTML = "0 ~ " + Math.round(download_bw_max.value*document.form.qos_ibw_orig.value)/100 + " " + $("qos_ibw_scale").value;
+			download_bw_desc.innerHTML = Math.round(download_bw_min.value*document.form.qos_ibw_orig.value)/100 + " ~ " + Math.round(download_bw_max.value*document.form.qos_ibw_orig.value)/100 + " " + $("qos_ibw_scale").value;
 		}
 	}
 }
@@ -220,6 +234,7 @@ function switchPage(page){
 <input type="hidden" name="firmver" value="<% nvram_get("firmver"); %>">
 <input type="hidden" name="qos_orates" value=''>
 <input type="hidden" name="qos_irates" value=''>
+<input type="hidden" name="qos_irates_min" value=''>
 <input type="hidden" name="qos_obw_orig" id="qos_obw" value="<% nvram_get("qos_obw"); %>">
 <input type="hidden" name="qos_ibw_orig" id="qos_ibw" value="<% nvram_get("qos_ibw"); %>">
 
@@ -287,17 +302,17 @@ function switchPage(page){
 								<td>
 										<table width="100%" border="0" cellpadding="4" cellspacing="0">
 										<tr>
-											<td width="58%" style="font-size:12px; border-collapse: collapse;border:0; padding-left:0;">			  
-												<table width="100%" border="0" cellpadding="4" cellspacing="0" style="font-size:12px; border-collapse: collapse;border:0;">
+											<td width="50%" style="font-size:12px; border-collapse:collapse; border:0; padding-left:0;">
+												<table width="100%" border="0" cellpadding="4" cellspacing="0" style="font-size:12px; border-collapse:collapse; border:0;">
 												<thead>	
 												<tr>
 													<td colspan="4" ><#upload_bandwidth#></td>
 												</tr>
 												<tr style="height: 55px;">
-													<th style="width:22%;line-height:15px;color:#FFFFFF;"><#upload_prio#></th>
+													<th style="width:20%;line-height:15px;color:#FFFFFF;"><#upload_prio#></th>
 													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,3);"><div class="table_text"><#min_bound#></div></a></th>
-													<th style="width:26%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,4);"><div class="table_text"><#max_bound#></div></a></th>
-													<th style="width:27%;line-height:15px;color:#FFFFFF;"><#current_settings#></th>
+													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,4);"><div class="table_text"><#max_bound#></div></a></th>
+													<th style="width:30%;line-height:15px;color:#FFFFFF;"><#current_settings#></th>
 												</tr>
 												</thead>												
 												<tr>
@@ -373,21 +388,26 @@ function switchPage(page){
 												</table>
 											</td>
 
-											<td width="42%" style="font-size:12px; border-collapse: collapse;border:0;">
-												<table width="100%" border="0" cellpadding="4" cellspacing="0" style="font-size:12px; border-collapse: collapse;border:0;">
+											<td width="50%" style="font-size:12px; border-collapse:collapse; border:0; padding-left:0;">
+												<table width="100%" border="0" cellpadding="4" cellspacing="0" style="font-size:12px; border-collapse:collapse; border:0;">
 												<thead>
 												<tr>
-													<td colspan="3"><#download_bandwidth#></td>
+													<td colspan="4"><#download_bandwidth#></td>
 												</tr>
 												<tr style="height: 55px;">
-													<th style="width:31%;line-height:15px;color:#FFFFFF;"><#download_prio#></th>
-													<th style="width:37%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,5);"><div class="table_text"><#max_bound#></div></a></th>
-													<th style="width:32%;line-height:15px;color:#FFFFFF;"><#current_settings#></th>
+													<th style="width:20%;line-height:15px;color:#FFFFFF;"><#download_prio#></th>
+													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,3);"><div class="table_text"><#min_bound#></div></a></th>
+													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,4);"><div class="table_text"><#max_bound#></div></a></th>
+													<th style="width:30%;line-height:15px;color:#FFFFFF;"><#current_settings#></th>
 												</tr>
 												</thead>
 												<tr>
-													<th style="width:31%;line-height:15px;"><#Highest#></th>
-													<td align="center"> 
+													<th style="width:22%;line-height:15px;"><#Highest#></th>
+													<td align="center">
+														<select name="download_bw_min_0" class="input_option" id="download_bw_min_0" onchange="gen_options();"></select>
+														<span style="color:white">%</span>
+													</td>
+													<td align="center">
 														<select name="download_bw_max_0" class="input_option" id="download_bw_max_0" onchange="gen_options();"></select>
 														<span style="color:white">%</span>														
 													</td>
@@ -396,7 +416,11 @@ function switchPage(page){
 													</td>
 												</tr>
 												<tr>
-													<th style="width:31%;line-height:15px;"><#High#></th>
+													<th style="width:22%;line-height:15px;"><#High#></th>
+													<td align="center">
+														<select name="download_bw_min_1" class="input_option" id="download_bw_min_1" onchange="gen_options();"></select>
+														<span style="color:white">%</span>
+													</td>
 													<td align="center">
 														<select name="download_bw_max_1" class="input_option" id="download_bw_max_1" onchange="gen_options();"></select>
 														<span style="color:white">%</span>
@@ -406,8 +430,12 @@ function switchPage(page){
 													</td>
 												</tr>
 												<tr>
-													<th style="width:31%;line-height:15px;"><#Medium#></th>
-													<td align="center">			  
+													<th style="width:22%;line-height:15px;"><#Medium#></th>
+													<td align="center">
+														<select name="download_bw_min_2" class="input_option" id="download_bw_min_2" onchange="gen_options();"></select>
+														<span style="color:white">%</span>
+													</td>
+													<td align="center">
 														<select name="download_bw_max_2" class="input_option" id="download_bw_max_2" onchange="gen_options();"></select>
 														<span style="color:white">%</span>
 													</td>
@@ -416,7 +444,11 @@ function switchPage(page){
 													</td>
 												</tr>
 												<tr>
-													<th style="width:31%;line-height:15px;"><#Low#></th>
+													<th style="width:22%;line-height:15px;"><#Low#></th>
+													<td align="center">
+														<select name="download_bw_min_3" class="input_option" id="download_bw_min_3" onchange="gen_options();"></select>
+														<span style="color:white">%</span>
+													</td>
 													<td align="center">
 														<select name="download_bw_max_3" class="input_option" id="download_bw_max_3" onchange="gen_options();"></select>
 														<span style="color:white">%</span>
@@ -426,7 +458,11 @@ function switchPage(page){
 													</td>
 												</tr>
 												<tr>
-													<th style="width:31%;line-height:15px;"><#Lowest#></th>
+													<th style="width:22%;line-height:15px;"><#Lowest#></th>
+													<td align="center">
+														<select name="download_bw_min_4" class="input_option" id="download_bw_min_4" onchange="gen_options();"></select>
+														<span style="color:white">%</span>
+													</td>
 													<td align="center">
 														<select name="download_bw_max_4" class="input_option" id="download_bw_max_4" onchange="gen_options();"></select>
 														<span style="color:white">%</span>

@@ -995,6 +995,7 @@ int start_tqos(void)
 {
 	int i;
 	char *buf, *g, *p;
+	char *buf2, *g2, *p2;
 	char *wan_ifname;
 	unsigned int rate, irate_min;
 	unsigned int ceil;
@@ -1319,6 +1320,7 @@ int start_tqos(void)
 
 	if (bw > 0) {
 		g = buf = strdup(nvram_safe_get("qos_irates"));
+		g2 = buf2 = strdup(nvram_safe_get("qos_irates_min"));
 		for (i = 0; i < 5; ++i) { // 0~4 , 0:highest, 4:lowest 
 			if ((!g) || ((p = strsep(&g, ",")) == NULL)) break;
 			if ((inuse & (1 << i)) == 0) continue;
@@ -1349,8 +1351,12 @@ int start_tqos(void)
 
 			// rate in kb/s
 			u = calc(bw, rate);
+
 			// lowest rate to try and maintain
-			l = calc(bw, 10); // 10% of input bandwidthf
+			if ((!g2) || ((p2 = strsep(&g2, ",")) == NULL))
+				l = calc(bw, 10); // 10% of input bandwidth
+			else
+				l = calc(bw, atoi(p2));
 
 			// burst rate
 			v = u / 50; // recommended 2% of rate
