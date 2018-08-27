@@ -360,8 +360,18 @@ function change_channel(obj){
 			}
 		}
 	}
-	
-	if(country == "EU"){		// for DFS channel
+
+	if(country == "Q2"){		//display checkbox of DFS/band1 channel under 5GHz
+		if(based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC69U"){
+			if(document.form.wl_channel.value  == '0' && '<% nvram_get("wl_unit"); %>' == '1'){
+				if (wl1_dfs == "1")
+					$('dfs_checkbox').style.display = "";
+				else
+					$('acs_band1_checkbox').style.display = "";
+			}
+		}
+	} 	
+	else if(country == "EU" || country == "JP"){		// for DFS channel
 		if(based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "RT-AC69U" || based_modelid == "DSL-AC68U"
 		|| based_modelid == "RT-AC87U"
 		|| (based_modelid == "RT-AC56U" && wl_dfs_enable == "1")
@@ -393,5 +403,9 @@ function change_channel(obj){
 				document.form.acs_band1.disabled = true;
 			}
 		}
+	}
+	else if(odmpid == "RT-AC66U_B1" && country == "AU"){
+		if(document.form.wl_channel.value  == '0' && wl_unit == '1')
+			document.getElementById('dfs_checkbox').style.display = "";
 	}	
 }

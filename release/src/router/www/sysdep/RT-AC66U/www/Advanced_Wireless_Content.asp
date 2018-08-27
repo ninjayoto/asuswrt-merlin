@@ -102,8 +102,19 @@ function initial(){
 		document.form.wl_subunit.value = ('<% nvram_get("wl_unit"); %>' == '<% nvram_get("wlc_band"); %>') ? 1 : -1;
 				
 	change_wl_nmode(document.form.wl_nmode_x);
-	if(country == "EU" | country == "JP"){		//display checkbox of DFS channel under 5GHz
-		if(based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC69U"  
+
+	if(country == "Q2"){		//display checkbox of DFS/band1 channel under 5GHz
+		if(based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC69U"){
+			if(document.form.wl_channel.value  == '0' && '<% nvram_get("wl_unit"); %>' == '1'){
+				if (wl1_dfs == "1")
+					$('dfs_checkbox').style.display = "";
+				else
+					$('acs_band1_checkbox').style.display = "";
+			}
+		}
+	} 
+	else if(country == "EU" || country == "JP"){		//display checkbox of DFS channel under 5GHz
+		if((based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" || based_modelid == "RT-AC69U")  
 		|| based_modelid == "RT-AC87U"
 		|| (based_modelid == "RT-AC56U" && wl_dfs_enable == "1")
 		|| (based_modelid == "RT-AC66U" && wl1_dfs == "1" && wl_dfs_enable == "1")        //0: A2 not support, 1: B0 support
@@ -126,7 +137,7 @@ function initial(){
 	else if(odmpid == "RT-AC66U_B1" && country == "AU"){
 		if(document.form.wl_channel.value  == '0' && wl_unit == '1')
 			document.getElementById('dfs_checkbox').style.display = "";
-	}	
+	}
 }
 
 function change_wl_nmode(o){
