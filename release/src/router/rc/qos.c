@@ -1324,7 +1324,7 @@ int start_tqos(void)
 		for (i = 0; i < 5; ++i) { // 0~4 , 0:highest, 4:lowest 
 			if ((!g) || ((p = strsep(&g, ",")) == NULL)) break;
 			if ((inuse & (1 << i)) == 0) continue;
-			if ((rate = atoi(p)) < 1) continue;	// 0 = off
+			if ((ceil = atoi(p)) < 1) continue;	// 0 = off
 
 			if (first) {
 				first = 0;
@@ -1350,13 +1350,14 @@ int start_tqos(void)
 			}	
 
 			// rate in kb/s
-			u = calc(bw, rate);
+			u = calc(bw, ceil);
 
 			// lowest rate to try and maintain
 			if ((!g2) || ((p2 = strsep(&g2, ",")) == NULL))
-				l = calc(bw, 10); // 10% of input bandwidth
+				rate = 10;  // 10% of input bandwidth
 			else
-				l = calc(bw, atoi(p2));
+				rate = atoi(p2);
+			l = calc(bw, rate);
 
 			// burst rate
 			v = u / 50; // recommended 2% of rate
@@ -1366,12 +1367,12 @@ int start_tqos(void)
 //#ifdef CLS_ACT
 			x = (i + 1) * 10;
 			fprintf(f,
-				"# ingress %d: %u%%\n"
+				"# ingress %d: %u-%u%%\n"
 				"\t$TCADL parent 2:2 classid 2:%d htb rate %ukbit ceil %ukbit %s prio %d quantum %u %s\n"
 				"\t$TQADL parent 2:%d handle %d: $SFQ\n"
 				"\t$TFADL parent 2: prio %d protocol all handle %d fw flowid 2:%d\n"
 				"\t$TFADL parent 2: prio %d protocol all handle %d fw flowid 2:%d\n",
-					i, rate,
+					i, rate, ceil,
 					x, l, u, burst_leaf, (i >= 6) ? 7 : (i + 1), mtu, overheadstr,
 					x, x,
 					x, (i + 1), x,
