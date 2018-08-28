@@ -25,6 +25,16 @@ var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var qos_orates = '<% nvram_get("qos_orates"); %>';
 var qos_irates = '<% nvram_get("qos_irates"); %>';
 var qos_irates_min = '<% nvram_get("qos_irates_min"); %>';
+var qos_rulelist = "<% nvram_get("qos_rulelist"); %>".replace(/&#62/g, ">").replace(/&#60/g, "<");
+var qos_default = '<% nvram_get("qos_default"); %>';
+var qos_inuse = (1 << parseInt(qos_default));
+var qos_rulelist_row = qos_rulelist.split("<");
+for (var i=1; i < qos_rulelist_row.length; i++){
+	qos_rulelist_col = qos_rulelist_row[i].split(">");
+	qos_inuse = qos_inuse | (1 << parseInt(qos_rulelist_col[5]));
+}
+var qos_orates_min_total = 0;
+var qos_irates_min_total = 0;
 var value1K = 1000;
 
 function initial(){
@@ -34,7 +44,11 @@ function initial(){
 	//load_QoS_rule();		
 	
 	if('<% nvram_get("qos_enable"); %>' == "1")
-		$('is_qos_enable_desc').style.display = "none";	
+		$('is_qos_enable_desc').style.display = "none";
+	else
+		$('is_qos_enable_desc').style.display = "";
+
+	check_bandwidth();
 }
 
 function init_changeScale(_obj_String){
@@ -82,37 +96,38 @@ function save_checkbox(){
 }
 
 function save_options(){
-	var qos_orates_min_total = 0;
-	var qos_irates_min_total = 0;
 	document.form.qos_orates.value = "";
 	document.form.qos_irates.value = "";
 	document.form.qos_irates_min.value = "";
+
 	for(var j=0; j<5; j++){
 		var upload_bw_max = eval("document.form.upload_bw_max_"+j);
 		var upload_bw_min = eval("document.form.upload_bw_min_"+j);
-		qos_orates_min_total += parseInt(upload_bw_min.value);
+		
 		var download_bw_max = eval("document.form.download_bw_max_"+j);
 		var download_bw_min = eval("document.form.download_bw_min_"+j);
-		qos_irates_min_total += parseInt(download_bw_min.value);
+
 		if(parseInt(upload_bw_max.value) < parseInt(upload_bw_min.value)){
 			alert("<#QoS_invalid_period#>");
 			upload_bw_max.focus();
+			return false;
+		}
+		if(parseInt(download_bw_max.value) < parseInt(download_bw_min.value)){
+			alert("<#QoS_invalid_period#>");
+			download_bw_max.focus();
 			return false;
 		}
 		document.form.qos_orates.value += upload_bw_min.value + "-" + upload_bw_max.value + ",";
 		document.form.qos_irates.value += download_bw_max.value + ",";
 		document.form.qos_irates_min.value += download_bw_min.value + ",";
 	}
-	if (qos_orates_min_total > 100){
-		alert("WARNING:\nTotal Upload Minimum Reserved Bandwidth\n>exceeds 100% of available bandwidth!");
-	}
-	if (qos_irates_min_total > 100){
-		alert("WARNING:\nTotal Download Minimum Reserved Bandwidth\nexceeds 100% of available bandwidth!");
-	}
 
 	document.form.qos_orates.value += "0-0,0-0,0-0,0-0,0-0";
 	document.form.qos_irates.value += "0,0,0,0,0";
 	document.form.qos_irates_min.value += "0,0,0,0,0";
+
+	check_bandwidth();
+
 	return true;
 }
 
@@ -130,24 +145,6 @@ function addRow(obj, head){
 	obj.value= "";
 	document.form.qos_min_transferred_x_0.value= "";
 	document.form.qos_max_transferred_x_0.value= "";
-}
-
-function validForm(){
-	if(!Block_chars(document.form.qos_service_name_x_0, ["<" ,">" ,"'" ,"%"])){
-				return false;		
-	}
-	
-	if(!valid_IPorMAC(document.form.qos_ip_x_0)){
-		return false;
-	}
-	
-	replace_symbol();
-	if(document.form.qos_port_x_0.value != "" && !Check_multi_range(document.form.qos_port_x_0, 1, 65535)){
-		parse_port="";
-		return false;
-	}	
-	
-	return true;
 }
 
 function conv_to_transf(){
@@ -190,11 +187,27 @@ function gen_options(){
 			var download_bw_max = eval("document.form.download_bw_max_"+j);
 			var download_bw_min = eval("document.form.download_bw_min_"+j);
 			var upload_bw_desc = eval('document.getElementById("upload_bw_'+j+'_desc")');
-			var download_bw_desc = eval('document.getElementById("download_bw_'+j+'_desc")');	
+			var download_bw_desc = eval('document.getElementById("download_bw_'+j+'_desc")');
+			if ((parseInt(qos_inuse) & (1 << j)) > 0){
+				qos_orates_min_total += parseInt(upload_bw_min.value);
+				qos_irates_min_total += parseInt(download_bw_min.value);
+			}
 			upload_bw_desc.innerHTML = Math.round(upload_bw_min.value*document.form.qos_obw_orig.value)/100 + " ~ " + Math.round(upload_bw_max.value*document.form.qos_obw_orig.value)/100 + " " + $("qos_obw_scale").value;
 			download_bw_desc.innerHTML = Math.round(download_bw_min.value*document.form.qos_ibw_orig.value)/100 + " ~ " + Math.round(download_bw_max.value*document.form.qos_ibw_orig.value)/100 + " " + $("qos_ibw_scale").value;
 		}
 	}
+}
+
+function check_bandwidth(){
+	if (qos_orates_min_total > 100)
+		$("qos_orates_warn").style.display = "";
+	else
+		$("qos_orates_warn").style.display = "none";
+
+	if (qos_irates_min_total > 100)
+		$("qos_irates_warn").style.display = "";
+	else
+		$("qos_irates_warn").style.display = "none";
 }
 
 function add_options_value(o, arr, orig){
@@ -285,9 +298,11 @@ function switchPage(page){
         			</tr>
 					<tr>
 						<td style="font-style: italic;font-size: 14px;">
-		  				<div class="formfontdesc"><#UserQoS_desc#></div>
-							<div class="formfontdesc" id="is_qos_enable_desc" style="color:#FFCC00;"><#UserQoS_desc_zero#></div>
-		  			</td>
+							<div class="formfontdesc"><#UserQoS_desc#></div>
+							<div class="formfontdesc" id="is_qos_enable_desc"><#UserQoS_desc_zero#></div>
+							<div class="formfontdesc" id="qos_orates_warn" style="color:#FFCC00; display:none;"><span style="color:red;">WARNING:</span>  The total Upload Minimum Reserved Bandwidth of your defined rules exceeds 100% of available bandwidth!</div>
+							<div class="formfontdesc" id="qos_irates_warn" style="color:#FFCC00; display:none;"><span style="color:red;">WARNING:</span>  The total Download Minimum Reserved Bandwidth of your defined rules exceeds 100% of available bandwidth!</div>
+						</td>
 					</tr>
 
 					<tr><td>		
@@ -500,23 +515,23 @@ function switchPage(page){
 											</tr>
 											<tr>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">		
-													<input type="checkbox" name="qos_ack_checkbox" <% nvram_match("qos_ack", "on", "checked"); %> onclick="changeButton();">ACK
+													<input type="checkbox" name="qos_ack_checkbox" <% nvram_match("qos_ack", "on", "checked"); %>>ACK
 													<input type="hidden" name="qos_ack">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_syn_checkbox" <% nvram_match("qos_syn", "on", "checked"); %> onclick="changeButton();">SYN
+													<input type="checkbox" name="qos_syn_checkbox" <% nvram_match("qos_syn", "on", "checked"); %>>SYN
 													<input type="hidden" name="qos_syn">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_fin_checkbox" <% nvram_match("qos_fin", "on", "checked"); %> onclick="changeButton();">FIN
+													<input type="checkbox" name="qos_fin_checkbox" <% nvram_match("qos_fin", "on", "checked"); %>>FIN
 													<input type="hidden" name="qos_fin">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_rst_checkbox" <% nvram_match("qos_rst", "on", "checked"); %> onclick="changeButton();">RST
+													<input type="checkbox" name="qos_rst_checkbox" <% nvram_match("qos_rst", "on", "checked"); %>>RST
 													<input type="hidden" name="qos_rst">
 												</td>
 												<td style="font-size:12px; border-collapse: collapse;border:0;">
-													<input type="checkbox" name="qos_icmp_checkbox" <% nvram_match("qos_icmp", "on", "checked"); %> onclick="changeButton();">ICMP
+													<input type="checkbox" name="qos_icmp_checkbox" <% nvram_match("qos_icmp", "on", "checked"); %>>ICMP
 													<input type="hidden" name="qos_icmp">
 												</td>
 											</tr>

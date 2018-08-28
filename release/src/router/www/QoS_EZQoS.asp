@@ -617,11 +617,11 @@ function showqos_bw_rulelist(){
 											<th>Default Priority Level</th>
 											<td>
 												<select name="qos_default" class="input_option">
-													<option value="0" <% nvram_match("qos_default", "0","selected"); %> onclick="changeButton();">Highest</option>
-													<option value="1" <% nvram_match("qos_default", "1","selected"); %> onclick="changeButton();">High</option>
-													<option value="2" <% nvram_match("qos_default", "2","selected"); %> onclick="changeButton();">Medium</option>
-													<option value="3" <% nvram_match("qos_default", "3","selected"); %> onclick="changeButton();">Low (Default)</option>
-													<option value="4" <% nvram_match("qos_default", "4","selected"); %> onclick="changeButton();">Lowest</option>
+													<option value="0" <% nvram_match("qos_default", "0","selected"); %>>Highest</option>
+													<option value="1" <% nvram_match("qos_default", "1","selected"); %>>High</option>
+													<option value="2" <% nvram_match("qos_default", "2","selected"); %>>Medium</option>
+													<option value="3" <% nvram_match("qos_default", "3","selected"); %>>Low (Default)</option>
+													<option value="4" <% nvram_match("qos_default", "4","selected"); %>>Lowest</option>
 												</select>
 												<span>&nbsp;&nbsp;(Default level is also used by any VPN connections)</span>
 											</td>

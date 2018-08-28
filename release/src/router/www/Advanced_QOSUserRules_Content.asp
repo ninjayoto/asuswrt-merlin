@@ -61,6 +61,9 @@
 	color:#FFFFFF;
 	cursor:default;
 }
+::placeholder{
+	color:#FFF;
+}
 </style>
 <script>
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
@@ -71,6 +74,10 @@ wan_proto = '<% nvram_get("wan_proto"); %>';
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 
 var qos_rulelist_array = "<% nvram_char_to_ascii("","qos_rulelist"); %>";
+var qos_orates = '<% nvram_get("qos_orates"); %>';
+var qos_irates_min = '<% nvram_get("qos_irates_min"); %>';
+var qos_default = '<% nvram_get("qos_default"); %>';
+var qos_inuse = (1 << parseInt(qos_default));
 
 var overlib_str0 = new Array();	//Viz add 2011.06 for record longer qos rule desc
 var overlib_str = new Array();	//Viz add 2011.06 for record longer portrange value
@@ -86,12 +93,13 @@ function initial(){
 	showqos_rulelist();
 
 	load_QoS_rule();
-	if('<% nvram_get("qos_enable"); %>' != "1")
+	if('<% nvram_get("qos_enable"); %>' == "1")
 		$('is_qos_enable_desc').style.display = "none";
 	else
 		$('is_qos_enable_desc').style.display = "";
-		
-	showLANIPList();	
+
+	showLANIPList();
+	check_bandwidth();
 }
 
 function applyRule(){
@@ -302,7 +310,8 @@ function deleteRow_main(obj){
 
 function showqos_rulelist(){
 	var qos_rulelist_row = "";
-	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');	
+	qos_rulelist_row = decodeURIComponent(qos_rulelist_array).split('<');
+	qos_inuse = (1 << parseInt(qos_default));
 	var client_list_array = '<% get_client_detail_info(); %>';
 	var client_list_row = client_list_array.split('<');
 
@@ -356,28 +365,38 @@ function showqos_rulelist(){
 								code += '<td width="'+wid[j]+'%"><select class="input_option" style="width:85px;">';
 
 
-								if(qos_rulelist_col[5] =="0")
+								if(qos_rulelist_col[5] =="0"){
 									code += '<option value="0" selected><#Highest#></option>';
+									qos_inuse = qos_inuse | 1;
+								}
 								else
 									code += '<option value="0"><#Highest#></option>';
 
-								if(qos_rulelist_col[5] =="1")
+								if(qos_rulelist_col[5] =="1"){
 									code += '<option value="1" selected><#High#></option>';
+									qos_inuse = qos_inuse | 2;
+								}
 								else
 									code += '<option value="1"><#High#></option>';
 
-								if(qos_rulelist_col[5] =="2")
+								if(qos_rulelist_col[5] =="2"){
 									code += '<option value="2" selected><#Medium#></option>';
+									qos_inuse = qos_inuse | 4;
+								}
 								else
 									code += '<option value="2"><#Medium#></option>';
 
-								if(qos_rulelist_col[5] =="3")
+								if(qos_rulelist_col[5] =="3"){
 									code += '<option value="3" selected><#Low#></option>';
+									qos_inuse = qos_inuse | 8;
+								}
 								else
 									code += '<option value="3"><#Low#></option>';
 
-								if(qos_rulelist_col[5] =="4")
+								if(qos_rulelist_col[5] =="4"){
 									code += '<option value="4" selected><#Lowest#></option>';
+									qos_inuse = qos_inuse | 16;
+								}
 								else
 									code += '<option value="4"><#Lowest#></option>';
 
@@ -388,11 +407,39 @@ function showqos_rulelist(){
 				code +='<input class="remove_btn" type="button" onclick="deleteRow_main(this);"/></td></tr>';
 		}
 	}
+
 	code +='</table>';
 	$("qos_rulelist_Block").innerHTML = code;
-	
-	
+
 	parse_port="";
+}
+
+function check_bandwidth(){
+	var qos_orates_row = qos_orates.split(",");
+	var qos_irates_min_row = qos_irates_min.split(",");
+	var qos_orates_min_total = 0;
+	var qos_irates_min_total = 0;
+	for(var j=0; j<5; j++){
+		if ((parseInt(qos_inuse) & (1 << j)) > 0){
+			var qos_orates_col = qos_orates_row[j].split("-");
+			qos_orates_min_total += parseInt(qos_orates_col[0]);
+			qos_irates_min_total += parseInt(qos_irates_min_row[j]);
+		}
+	}
+	if (qos_orates_min_total > 100)
+		$("qos_orates_warn").style.display = "";
+	else
+		$("qos_orates_warn").style.display = "none";
+
+	if (qos_irates_min_total > 100)
+		$("qos_irates_warn").style.display = "";
+	else
+		$("qos_irates_warn").style.display = "none";
+
+	if ((qos_orates_min_total > 100) || (qos_irates_min_total > 100))
+		$("qos_check_warn").style.display = "";
+	else
+		$("qos_check_warn").style.display = "none"; 
 }
 
 function conv_to_transf(){
@@ -907,15 +954,18 @@ function linkport(obj){
 		  			<tr>
           				<td height="5"><img src="images/New_ui/export/line_export.png" /></td>
         			</tr>
-					<tr id="is_qos_enable_desc">
-					<td>
-					<div class="formfontdesc" style="font-style: italic;font-size: 14px;">
-							<ul>
+					<tr>
+						<td style="font-style: italic;font-size: 14px;">
+							<div class="formfontdesc" id="is_qos_enable_desc">
+								<ul>
 									<li><#UserQoSRule_desc_zero#></li>
 									<!-- <li><#UserQoSRule_desc_one#></li> -->
-							</ul>
-					</div>
-					</td>
+								</ul>
+							</div>
+							<div class="formfontdesc" id="qos_orates_warn" style="color:#FFCC00; display:none;"><span style="color:red;">WARNING:</span>  The total Upload Minimum Reserved Bandwidth of your defined rules exceeds 100% of available bandwidth!</div>
+							<div class="formfontdesc" id="qos_irates_warn" style="color:#FFCC00; display:none;"><span style="color:red;">WARNING:</span>  The total Download Minimum Reserved Bandwidth of your defined rules exceeds 100% of available bandwidth!</div>
+							<div class="formfontdesc" id="qos_check_warn" style="color:#FFCC00; display:none;">Please review your QoS User-defined priorities.</div>
+						</td>
 					</tr>
 					<tr>
 					<td>
@@ -971,7 +1021,7 @@ function linkport(obj){
 									<input type="hidden" name="qos_transferred_x_0" value="">
 								</td>
 								<td width="9%">
-									<select name='qos_prio_x_0' class="input_option" style="width:87px;" onclick="changeButton();"> <!--style="width:auto;"-->
+									<select name='qos_prio_x_0' class="input_option" style="width:87px;"> <!--style="width:auto;"-->
 										<option value='0'><#Highest#></option>
 										<option value='1' selected><#High#></option>
 										<option value='2'><#Medium#></option>
