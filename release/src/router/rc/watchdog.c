@@ -1514,6 +1514,22 @@ void sshd_check()
 	}
 }
 
+static int dnsmasq_err=0;
+void dnsmasq_check()
+{
+/* this is a failsafe recovery - dnsmasq must be dead for at least 1m 30s
+   to avoid false postives during startup */
+	if (!pids("dnsmasq") && !g_reboot){
+		dnsmasq_err++;
+		if (dnsmasq_err == 4) {
+	        logmessage("watchdog", "restart dnsmasq");
+	        restart_dnsmasq(0);
+		}
+	}
+	else
+		dnsmasq_err = 0;
+}
+
 static int ntpflag = 0;
 void ntpd_check()
 {
@@ -2107,6 +2123,9 @@ void watchdog(int sig)
 #if 0
 	cpu_usage_monitor();
 #endif
+
+	if (nvram_get_int("sw_mode") == SW_MODE_ROUTER)
+		dnsmasq_check();
 
 	/* Force a DDNS update every "x" days - default is 21 days */
 	period = nvram_get_int("ddns_refresh_x");
