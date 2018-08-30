@@ -33,12 +33,6 @@
  * tested under Linux and Solaris.
  * 
  */
-//2007.03.14 Yau add
-#ifdef ASUS_DDNS
-#include "asus_ddns.h"
-#include <bcmnvram.h>
-#endif  // ASUS_DDNS
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -197,10 +191,19 @@
 #  endif
 #endif
 
+//2007.03.14 Yau add
+#ifdef ASUS_DDNS
+#include "asus_ddns.h"
+#include <bcmnvram.h>
+#endif  // ASUS_DDNS
+
 #include <dprintf.h>
 #include <conf_file.h>
 #include <cache_file.h>
 #include <pid_file.h>
+#ifdef HAVE_SSL
+#include <mssl.h>
+#endif
 
 #if !defined(__GNUC__) && !defined(HAVE_SNPRINTF)
 #error "get gcc, fix this code, or find yourself a snprintf!"
@@ -282,6 +285,7 @@ int wildcard = 0;
 char *mx = NULL;
 char *url = NULL;
 char *host = NULL;
+int ssl = -1;
 char *cloak_title = NULL;
 char *interface = NULL;
 int ntrys = 1;
@@ -305,8 +309,10 @@ char update_entry_putbuf[BUFFER_SIZE+1];
 //2007.03.14 Yau add
 #ifdef ASUS_DDNS
 volatile int client_sockfd;
+volatile FILE * volatile client_sockfp;
 #else   // !ASUS_DDNS
 static volatile int client_sockfd;
+static volatile FILE * volatile client_sockfp;
 #endif  // ASUS_DDNS
 static volatile int last_sig = 0;
 
@@ -677,6 +683,7 @@ enum {
   CMD_offline,
   CMD_partner,
   CMD_once,
+  CMD_ssl,
 //2007.03.14 Yau add
 #ifdef ASUS_DDNS
   CMD_asus,
@@ -695,6 +702,9 @@ static struct conf_cmd conf_commands[] = {
   { CMD_foreground,      "foreground",      CONF_NO_ARG,   1, conf_handler, "%s" },
   { CMD_pid_file,        "pid-file",        CONF_NEED_ARG, 1, conf_handler, "%s=<file>" },
   { CMD_host,            "host",            CONF_NEED_ARG, 1, conf_handler, "%s=<host>" },
+#ifdef HAVE_SSL
+  { CMD_ssl,             "ssl",             CONF_OPT_ARG,  1, conf_handler, "%s[=<1|0> enable or disable ssl]" },
+#endif
   { CMD_interface,       "interface",       CONF_NEED_ARG, 1, conf_handler, "%s=<interface>" },
   { CMD_mx,              "mx",              CONF_NEED_ARG, 1, conf_handler, "%s=<mail exchanger>" },
   { CMD_max_interval,    "max-interval",    CONF_NEED_ARG, 1, conf_handler, "%s=<number of seconds between updates>" },
@@ -725,7 +735,7 @@ static struct conf_cmd conf_commands[] = {
 void print_usage( void );
 void print_version( void );
 void parse_args( int argc, char **argv );
-int do_connect(int *sock, char *host, char *port);
+int do_connect( FILE **fd, char *host, char *port, int ssl );
 void base64Encode(char *intext, char *output);
 int main( int argc, char **argv );
 void warn_fields(char **okay_fields);
@@ -755,6 +765,9 @@ void print_usage( void )
   fprintf(stdout, "  -F, --pidfile <file>\t\tuse <file> as a pid file\n");
   fprintf(stdout, "  -g, --request-uri <uri>\tURI to send updates to\n");
   fprintf(stdout, "  -h, --host <host>\t\tstring to send as host parameter\n");
+#ifdef HAVE_SSL
+  fprintf(stdout, "  -l, --ssl [<0|1>]\t\tenable or disable ssl\n");
+#endif
   fprintf(stdout, "  -i, --interface <iface>\twhich interface to use\n");
   fprintf(stdout, "  -L, --cloak_title <host>\tsome stupid thing for DHS only\n");
   fprintf(stdout, "  -m, --mx <mail exchange>\tstring to send as your mail exchange\n");
@@ -827,7 +840,7 @@ void print_signalhelp( void )
 RETSIGTYPE sigint_handler(int sig)
 {
   char message[] = "interupted.\n";
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   write(2, message, sizeof(message)-1);
 
 #if HAVE_GETPID
@@ -1121,6 +1134,12 @@ int option_handler(int id, char *optarg)
       dprintf((stderr, "host: %s\n", host));
       break;
 
+#ifdef HAVE_SSL
+    case CMD_ssl:
+      ssl = (optarg && *optarg) ? atoi(optarg) : 1;
+      break;
+#endif
+
     case CMD_interface:
 #ifdef IF_LOOKUP
       if(interface) { free(interface); }
@@ -1366,6 +1385,9 @@ void parse_args( int argc, char **argv )
       {"foreground",      no_argument,            0, 'f'},
       {"pid-file",        required_argument,      0, 'F'},
       {"host",            required_argument,      0, 'h'},
+#ifdef HAVE_SSL
+      {"ssl",             optional_argument,      0, 'l'},
+#endif
       {"interface",       required_argument,      0, 'i'},
       {"cloak_title",     required_argument,      0, 'L'},
       {"mx",              required_argument,      0, 'm'},
@@ -1402,9 +1424,9 @@ void parse_args( int argc, char **argv )
 
 //2007.03.14 Yau add
 #ifdef ASUS_DDNS
-  while((opt=xgetopt(argc, argv, "A:a:b:c:dDe:fF:h:i:L:m:M:N:o:p:P:qr:R:s:S:t:T:U:u:wHVCZ", long_options, NULL)) != -1)
+  while((opt=xgetopt(argc, argv, "A:a:b:c:dDe:fF:h:l::i:L:m:M:N:o:p:P:qr:R:s:S:t:T:U:u:wHVCZ", long_options, NULL)) != -1)
 #else   // !ASUS_DDNS
-  while((opt=xgetopt(argc, argv, "a:b:c:dDe:fF:h:i:L:m:M:N:o:p:P:qr:R:s:S:t:T:U:u:wHVCZ", long_options, NULL)) != -1)
+  while((opt=xgetopt(argc, argv, "a:b:c:dDe:fF:h:l::i:L:m:M:N:o:p:P:qr:R:s:S:t:T:U:u:wHVCZ", long_options, NULL)) != -1)
 #endif  // ASUS_DDNS
   {
     switch (opt)
@@ -1465,6 +1487,12 @@ void parse_args( int argc, char **argv )
       case 'h':
         option_handler(CMD_host, optarg);
         break;
+
+#ifdef HAVE_SSL
+      case 'l':
+        option_handler(CMD_ssl, optarg);
+        break;
+#endif
 
       case 'i':
         option_handler(CMD_interface, optarg);
@@ -1594,16 +1622,17 @@ void parse_args( int argc, char **argv )
  * connect a socket and return the file descriptor
  *
  */
-int do_connect(int *sock, char *host, char *port)
+int do_connect( FILE **fp, char *host, char *port, int ssl )
 {
   struct sockaddr_in address;
+  int sock;
   int len;
   int result;
   struct hostent *hostinfo;
   struct servent *servinfo;
 
   // set up the socket
-  if((*sock=socket(AF_INET, SOCK_STREAM, 0)) == -1)
+  if((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
   {
     if(!(options & OPT_QUIET))
     {
@@ -1621,7 +1650,7 @@ int do_connect(int *sock, char *host, char *port)
     {
       herror("gethostbyname");
     }
-    close(*sock);
+    close(sock);
     return(-1);
   }
   address.sin_addr = *(struct in_addr *)*hostinfo -> h_addr_list;
@@ -1639,15 +1668,38 @@ int do_connect(int *sock, char *host, char *port)
 
   // connect the socket
   len = sizeof(address);
-  if((result=connect(*sock, (struct sockaddr *)&address, len)) == -1) 
+  if((result = connect(sock, (struct sockaddr *)&address, len)) == -1) 
   {
     if(!(options & OPT_QUIET))
     {
       perror("connect");
     }
-    close(*sock);
+    close(sock);
     return(-1);
   }
+
+#ifdef HAVE_SSL
+  if(ssl > 0 || (ssl < 0 && address.sin_port == htons(443)))
+  {
+    *fp = ssl_client_fopen(sock);
+  }
+  else
+#endif
+  {
+    *fp = fdopen(sock, "r+");
+  }
+  if(*fp == NULL)
+  {
+    if(!(options & OPT_QUIET))
+    {
+      perror("fopen");
+    }
+    close(sock);
+    return(-1);
+  }
+
+  client_sockfd = sock;
+
   // print out some info
   if(!(options & OPT_QUIET))
   {
@@ -1755,10 +1807,11 @@ void output(void *buf)
     /* if we woke up on client_sockfd do the data passing */
     if(FD_ISSET(client_sockfd, &writefds))
     {
-      if(send(client_sockfd, buf, strlen(buf), 0) == -1)
+      if(fwrite(buf, 1, strlen(buf), (FILE *)client_sockfp) == -1)
       {
         show_message("error send()ing request: %s\n", error_string);
       }
+      fflush((FILE *)client_sockfp);
     }
     else
     {
@@ -1800,7 +1853,7 @@ fprintf(stderr, "read_input ret: %d\n", ret);
     /* if we woke up on client_sockfd do the data passing */
     if(FD_ISSET(client_sockfd, &readfds))
     {
-      bread = recv(client_sockfd, buf, len-1, 0);
+      bread = fread(buf, 1, len-1, (FILE *)client_sockfp);
       dprintf((stderr, "bread: %d\n", bread));
       buf[bread] = '\0';
       dprintf((stderr, "got: %s\n", buf));
@@ -1860,7 +1913,7 @@ static int PGPOW_read_response(char *buf)
   bytes = read_input(buf, BUFFER_SIZE);
   if(bytes < 1)
   {
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(-1);
   }
   buf[bytes] = '\0';
@@ -1891,7 +1944,7 @@ static int ODS_read_response(char *buf, int len)
     bytes += bread;
     if(bytes < 1)
     {
-      close(client_sockfd);
+      fclose((FILE *)client_sockfp);
       return(-1);
     }
     if(strstr(buf, "\r\n") > 0)
@@ -1941,7 +1994,7 @@ int EZIP_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -1986,7 +2039,7 @@ int EZIP_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -2079,7 +2132,7 @@ int NOIP_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -2140,7 +2193,7 @@ int NOIP_update_entry(void)
     dprintf((stderr, "btot: %d\n", btot));
   }
 
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -2252,7 +2305,7 @@ int DYNDNS_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -2317,7 +2370,7 @@ int DYNDNS_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   //show_message("server output: %s\n", buf);//Yaudbg
@@ -2532,7 +2585,7 @@ int PGPOW_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -2545,7 +2598,7 @@ int PGPOW_update_entry(void)
   if(PGPOW_read_response(buf) != 0)
   {
     show_message("strange server response, are you connecting to the right server?\n");
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2564,7 +2617,7 @@ int PGPOW_update_entry(void)
     {
       show_message("error talking to server:\n\t%s\n", buf);
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2582,7 +2635,7 @@ int PGPOW_update_entry(void)
     {
       show_message("error talking to server:\n\t%s\n", buf);
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2600,7 +2653,7 @@ int PGPOW_update_entry(void)
     {
       show_message("error talking to server:\n\t%s\n", buf);
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2618,7 +2671,7 @@ int PGPOW_update_entry(void)
     {
       show_message("error talking to server:\n\t%s\n", buf);
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2636,7 +2689,7 @@ int PGPOW_update_entry(void)
     {
       show_message("error talking to server:\n\t%s\n", buf);
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2656,7 +2709,7 @@ int PGPOW_update_entry(void)
       {
         show_message("error talking to server:\n\t%s\n", buf);
       }
-      close(client_sockfd);
+      fclose((FILE *)client_sockfp);
       return(UPDATERES_ERROR);
     }
   }
@@ -2675,7 +2728,7 @@ int PGPOW_update_entry(void)
     {
       show_message("error talking to server:\n\t%s\n", buf);
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -2684,7 +2737,7 @@ int PGPOW_update_entry(void)
     show_message("request successful\n");
   }
 
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   return(UPDATERES_OK);
 }
 #endif
@@ -2769,7 +2822,7 @@ int DHS_update_entry(void)
 
   dprintf((stderr, "hostname: %s, domain: %s\n", hostname, domain));
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -2849,7 +2902,7 @@ int DHS_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -2906,7 +2959,7 @@ int DHS_update_entry(void)
     // I personally will NEVER use dhs, it is laughable.
     sleep(DHS_SUCKY_TIMEOUT < timeout.tv_sec ? DHS_SUCKY_TIMEOUT : timeout.tv_sec);
 
-    if(do_connect((int*)&client_sockfd, server, port) != 0)
+    if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
     {
       if(!(options & OPT_QUIET))
       {
@@ -2986,7 +3039,7 @@ int DHS_update_entry(void)
       btot += bytes;
       dprintf((stderr, "btot: %d\n", btot));
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     buf[btot] = '\0';
 
     dprintf((stderr, "server output: %s\n", buf));
@@ -3078,7 +3131,7 @@ int ODS_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -3091,7 +3144,7 @@ int ODS_update_entry(void)
   if(ODS_read_response(buf, BUFFER_SIZE) != 100)
   {
     show_message("strange server response, are you connecting to the right server?\n");
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -3110,7 +3163,7 @@ int ODS_update_entry(void)
     {
       show_message("error talking to server\n");
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -3128,7 +3181,7 @@ int ODS_update_entry(void)
     {
       show_message("error talking to server\n");
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -3148,7 +3201,7 @@ int ODS_update_entry(void)
     {
       show_message("error talking to server\n");
     }
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
 
@@ -3157,7 +3210,7 @@ int ODS_update_entry(void)
     show_message("request successful\n");
   }
 
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   return(UPDATERES_OK);
 }
 #endif
@@ -3204,7 +3257,7 @@ int TZO_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -3242,7 +3295,7 @@ int TZO_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -3278,7 +3331,7 @@ int TZO_update_entry(void)
         // reuse the auth buffer
         *auth = '\0';
         bp = strstr(buf, "Location: ");
-        if((bp < strstr(buf, "\r\n\r\n")) && (sscanf(bp, "Location: http://%*[^/]%255[^\r\n]", auth) == 1))
+        if(bp && (bp < strstr(buf, "\r\n\r\n")) && (sscanf(bp, "Location: htt%*[^:]://%*[^/]%255[^\r\n]", auth) == 1))
         {
           bp = strrchr(auth, '/') + 1;
         }
@@ -3366,7 +3419,7 @@ int EASYDNS_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -3411,7 +3464,7 @@ int EASYDNS_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -3527,7 +3580,7 @@ int EASYDNS_PARTNER_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -3570,7 +3623,7 @@ int EASYDNS_PARTNER_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -3726,7 +3779,7 @@ int GNUDIP_update_entry(void)
   }
   domainname = p;
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -3737,7 +3790,7 @@ int GNUDIP_update_entry(void)
 
   if((bytes=read_input(buf, BUFFER_SIZE)) <= 0)
   {
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
   buf[bytes] = '\0';
@@ -3772,7 +3825,7 @@ int GNUDIP_update_entry(void)
   bytes = 0;
   if((bytes=read_input(buf, BUFFER_SIZE)) <= 0)
   {
-    close(client_sockfd);
+    fclose((FILE *)client_sockfp);
     return(UPDATERES_ERROR);
   }
   buf[bytes] = '\0';
@@ -3780,7 +3833,7 @@ int GNUDIP_update_entry(void)
   dprintf((stderr, "bytes: %d\n", bytes));
   dprintf((stderr, "server output: %s\n", buf));
 
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
 
   if(sscanf(buf, "%d", &ret) != 1)
   {
@@ -3875,7 +3928,7 @@ int JUSTL_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -3915,7 +3968,7 @@ int JUSTL_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -4020,7 +4073,7 @@ int DYNS_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -4060,7 +4113,7 @@ int DYNS_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -4165,7 +4218,7 @@ int HN_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -4202,7 +4255,7 @@ int HN_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -4342,7 +4395,7 @@ int ZONEEDIT_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -4384,7 +4437,7 @@ int ZONEEDIT_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -4486,7 +4539,7 @@ int HEIPV6TB_update_entry(void)
 
   buf[BUFFER_SIZE] = '\0';
 
-  if(do_connect((int*)&client_sockfd, server, port) != 0)
+  if(do_connect((FILE **)&client_sockfp, server, port, ssl) != 0)
   {
     if(!(options & OPT_QUIET))
     {
@@ -4531,7 +4584,7 @@ int HEIPV6TB_update_entry(void)
     btot += bytes;
     dprintf((stderr, "btot: %d\n", btot));
   }
-  close(client_sockfd);
+  fclose((FILE *)client_sockfp);
   buf[btot] = '\0';
 
   dprintf((stderr, "server output: %s\n", buf));
@@ -4757,7 +4810,6 @@ show_message("ez-ipupdate: starting...\n");
   timeout.tv_usec = 0;
   parse_service(DEF_SERVICE);
 
-
 #if HAVE_SIGNAL_H
   // catch user interupts
   signal(SIGINT,  sigint_handler);
@@ -4778,6 +4830,10 @@ show_message("ez-ipupdate: starting...\n");
     openlog(program_name, LOG_PID, LOG_USER );
 #endif
 
+#ifdef HAVE_SSL
+  if(ssl)
+    mssl_init(NULL, NULL);
+#endif
 
   dprintf((stderr, "options: 0x%04X\n", options));
   dprintf((stderr, "interface: %s\n", interface));
