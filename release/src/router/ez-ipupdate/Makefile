@@ -101,9 +101,9 @@ CFLAGS += -I$(SRCBASE)/include -I$(TOP)/shared -DASUS_DDNS
 LDFLAGS += -L$(TOP)/shared -lshared -L$(TOP)/nvram${BCMEX} -lnvram 
 #end of Yau add
 ifeq ($(RTCONFIG_HTTPS),y)
-CFLAGS += -I$(TOP)/mssl -DHAVE_SSL
-LDFLAGS += -L$(TOP)/mssl
-LIBS += -lmssl
+CFLAGS += -I$(TOP)/mssl -I$(TOP)/openssl/include -DHAVE_SSL
+LDFLAGS += -L$(TOP)/mssl -L$(TOP)/openssl
+LIBS += -lmssl -lssl -lcrypto -ldl
 endif
 ifeq ($(RTCONFIG_BCMARM),y)
 LDFLAGS += -lgcc_s

@@ -1221,6 +1221,9 @@ openssl-stage:
 
 mssl:	openssl
 
+mssl-install:
+	$(MAKE) -C mssl INSTALLDIR=$(INSTALLDIR)/mssl install
+
 mdu:	shared mssl
 
 wb: openssl libxml2 curl
@@ -2100,6 +2103,8 @@ ifeq ($(RTCONFIG_L2TP),y)
 	install -D pppd/pppd/plugins/pppol2tp/pppol2tp.so $(INSTALLDIR)/pppd/usr/lib/pppd/pppol2tp.so
 	$(STRIP) $(INSTALLDIR)/pppd/usr/lib/pppd/*.so
 endif
+
+ez-ipupdate: openssl mssl
 
 ez-ipupdate-install:
 	install -D ez-ipupdate/ez-ipupdate $(INSTALLDIR)/ez-ipupdate/usr/sbin/ez-ipupdate
