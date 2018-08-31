@@ -1246,14 +1246,14 @@ void start_stubby(int force)
 		}
 //		if (nvram_match("dnssec_enable", "1") && nvram_match("dnssec_check_unsigned_x", "1"))
 //			fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
-		fprintf(fp, "tls_query_padding_blocksize: 256\n");
+		fprintf(fp, "tls_query_padding_blocksize: 128\n");	// default 256
 		fprintf(fp, "edns_client_subnet_private: 1\n");
 		fprintf(fp, "round_robin_upstreams: %s\n", nvram_safe_get("stubby_access"));
-		fprintf(fp, "idle_timeout: 10000\n");
-//		fprintf(fp, "tls_connection_retries: 5\n");			// default 2
-		fprintf(fp, "tls_backoff_time: 900\n");				// default 3600
+		fprintf(fp, "idle_timeout: %d\n", nvram_get_int("stubby_idletimeout"));	// default 10000 ms
+		fprintf(fp, "tls_connection_retries: 5\n");			// default 2
+		fprintf(fp, "tls_backoff_time: 900\n");				// default 3600 s
 //		fprintf(fp, "limit_outstanding_queries: 100\n");	// default 100
-//		fprintf(fp, "timeout: 2\n");						// default 5
+		fprintf(fp, "timeout: 2000\n");						// default 5000 ms
 
 		mkdir_if_none("/var/tmp/stubby");
 		fprintf(fp, "appdata_dir: \"/var/tmp/stubby\"\n");

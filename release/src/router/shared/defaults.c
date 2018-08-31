@@ -755,15 +755,16 @@ struct nvram_tuple router_defaults[] = {
 	// STUBBY option for dnsmasq
 #ifdef RTCONFIG_STUBBY
 	{ "stubby_proxy", "0" },
-	{ "stubby_type", "1" },			// opportunistic(0) or strict(1)
-	{ "stubby_port", "5453"}, 		// local port
-	{ "stubby_dns", ""},			// server list
-	{ "stubby_ipv4", "0"},	 		// number of ipv4 servers defined
-	{ "stubby_ipv6", "0"},	 		// number of ipv6 servers defined
-	{ "stubby_noipv6", "0"},		// do not configure ipv6 servers
-	{ "stubby_access", "1"},		// 0-Ordered 1-Roundrobin
-	{ "stubby_loglevel", "4"},		// log level
-	{ "stubby_nologs", "0"},		// Show only non-logging servers
+	{ "stubby_type", "1" },				// opportunistic(0) or strict(1)
+	{ "stubby_port", "5453"}, 			// local port
+	{ "stubby_dns", ""},				// server list
+	{ "stubby_ipv4", "0"},	 			// number of ipv4 servers defined
+	{ "stubby_ipv6", "0"},	 			// number of ipv6 servers defined
+	{ "stubby_noipv6", "0"},			// do not configure ipv6 servers
+	{ "stubby_access", "1"},			// 0-Ordered 1-Roundrobin
+	{ "stubby_idletimeout", "2000"},	// idle_timeout
+	{ "stubby_loglevel", "4"},			// log level
+	{ "stubby_nologs", "0"},			// show only non-logging servers
 	{ "stubby_csv","/rom/stubby-resolvers.csv"},	// list of DoT enabled resolvers
 #endif
 
