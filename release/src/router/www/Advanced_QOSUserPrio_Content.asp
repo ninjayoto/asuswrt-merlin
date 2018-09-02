@@ -192,8 +192,11 @@ function gen_options(){
 				qos_orates_min_total += parseInt(upload_bw_min.value);
 				qos_irates_min_total += parseInt(download_bw_min.value);
 			}
-			upload_bw_desc.innerHTML = Math.round(upload_bw_min.value*document.form.qos_obw_orig.value)/100 + " ~ " + Math.round(upload_bw_max.value*document.form.qos_obw_orig.value)/100 + " " + $("qos_obw_scale").value;
-			download_bw_desc.innerHTML = Math.round(download_bw_min.value*document.form.qos_ibw_orig.value)/100 + " ~ " + Math.round(download_bw_max.value*document.form.qos_ibw_orig.value)/100 + " " + $("qos_ibw_scale").value;
+			upload_bw_desc.innerHTML = parseFloat(((upload_bw_min.value*document.form.qos_obw_orig.value)/100).toFixed(1)) + " ~ " + parseFloat(((upload_bw_max.value*document.form.qos_obw_orig.value)/100).toFixed(1));
+			upload_bw_header_desc.innerHTML = "<#current_settings#><br>" + "<B>(" + $("qos_obw_scale").value + ")</B>";			
+			download_bw_desc.innerHTML = parseFloat(((download_bw_min.value*document.form.qos_ibw_orig.value)/100).toFixed(1)) + " ~ " + parseFloat(((download_bw_max.value*document.form.qos_ibw_orig.value)/100).toFixed(1));
+			download_bw_header_desc.innerHTML = "<#current_settings#><br>" + "<B>(" + $("qos_ibw_scale").value + ")</B>";
+
 		}
 	}
 }
@@ -327,7 +330,7 @@ function switchPage(page){
 													<th style="width:20%;line-height:15px;color:#FFFFFF;"><#upload_prio#></th>
 													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,3);"><div class="table_text"><#min_bound#></div></a></th>
 													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,4);"><div class="table_text"><#max_bound#></div></a></th>
-													<th style="width:30%;line-height:15px;color:#FFFFFF;"><#current_settings#></th>
+													<th style="width:30%;line-height:15px;color:#FFFFFF;" name="upload_bw_header_desc" id="upload_bw_header_desc"><#current_settings#></th>
 												</tr>
 												</thead>												
 												<tr>
@@ -413,7 +416,7 @@ function switchPage(page){
 													<th style="width:20%;line-height:15px;color:#FFFFFF;"><#download_prio#></th>
 													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,3);"><div class="table_text"><#min_bound#></div></a></th>
 													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,4);"><div class="table_text"><#max_bound#></div></a></th>
-													<th style="width:30%;line-height:15px;color:#FFFFFF;"><#current_settings#></th>
+													<th style="width:30%;line-height:15px;color:#FFFFFF;"name="download_bw_header_desc" id="download_bw_header_desc"><#current_settings#></th>
 												</tr>
 												</thead>
 												<tr>
