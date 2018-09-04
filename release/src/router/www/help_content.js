@@ -133,9 +133,16 @@ helpcontent[7] = new Array("",
 							 "<#PPPConnection_Authentication_itemdesc#>",
 							 "<#PPPConnection_Authentication_itemdesc2#>", //30
 							 "<#IPConnection_LocalIP_itemdesc#> or fixed Interface (Device) ID starting with ::<br/>A fixed Interface ID is commonly an EUI-64 address.",
+/* DNSCRYPT-BEGIN */
 							 "Enables DNSSEC validation.  The specified WAN or DNSCrypt DNS servers must support DNSSEC or errors in DNS name resolution may occur.  Note that disabling Strict enforcement will nullify a good portion of the added security provided by DNSSEC.",
 							 "Enables DNSCrypt DNS Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
 							 "Exclude DNSCrypt DNS Servers which maintain logs from selection.",
+/* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+							 "Enables DNSSEC validation.  The specified WAN or DoT DNS servers must support DNSSEC or errors in DNS name resolution may occur.  Note that disabling Strict enforcement will nullify a good portion of the added security provided by DNSSEC.",
+							 "Enables DoT DNS Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
+							 "Exclude DoT DNS Servers which maintain logs from selection.",
+/* STUBBY-END */
 							 "Enabling this will protect your LAN against DNS rebind attacks, however it will prevent upstream DNS servers from resolving queries to any non-routable IP (for example, 192.168.1.1).",
 							 "Enables DNS over TLS (DoT) Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
 							 "Exclude DoT DNS Servers which maintain logs from selection.",

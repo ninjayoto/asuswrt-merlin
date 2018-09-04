@@ -415,7 +415,7 @@ function switchPage(page){
 												<tr style="height: 55px;">
 													<th style="width:20%;line-height:15px;color:#FFFFFF;"><#download_prio#></th>
 													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,3);"><div class="table_text"><#min_bound#></div></a></th>
-													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,4);"><div class="table_text"><#max_bound#></div></a></th>
+													<th style="width:25%;line-height:15px;color:#FFFFFF;"><a href="javascript:void(0);" onClick="openHint(20,5);"><div class="table_text"><#max_bound#></div></a></th>
 													<th style="width:30%;line-height:15px;color:#FFFFFF;"name="download_bw_header_desc" id="download_bw_header_desc"><#current_settings#></th>
 												</tr>
 												</thead>
