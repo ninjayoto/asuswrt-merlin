@@ -62,7 +62,7 @@
 	cursor:default;
 }
 ::placeholder{
-	color:#FFF;
+	color:#CFF;
 }
 </style>
 <script>

@@ -61,6 +61,9 @@
 	color:#FFFFFF;
 	cursor:default;
 }
+::placeholder{
+color:#CFF;
+}
 </style>
 <script>
 <% login_state_hook(); %>
