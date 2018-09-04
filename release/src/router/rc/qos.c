@@ -1322,7 +1322,8 @@ int start_tqos(void)
 		g = buf = strdup(nvram_safe_get("qos_irates"));
 		g2 = buf2 = strdup(nvram_safe_get("qos_irates_min"));
 		for (i = 0; i < 5; ++i) { // 0~4 , 0:highest, 4:lowest 
-			if ((!g) || ((p = strsep(&g, ",")) == NULL)) break;
+			if ((!g) || ((p = strsep(&g, ",")) == NULL) ||
+				(!g2) || ((p2 = strsep(&g2, ",")) == NULL)) break;
 			if ((inuse & (1 << i)) == 0) continue;
 			if ((ceil = atoi(p)) < 1) continue;	// 0 = off
 
@@ -1353,7 +1354,7 @@ int start_tqos(void)
 			u = calc(bw, ceil);
 
 			// lowest rate to try and maintain
-			if ((!g2) || ((p2 = strsep(&g2, ",")) == NULL))
+			if (atoi(p2) == 0)
 				rate = 10;  // 10% of input bandwidth
 			else
 				rate = atoi(p2);
