@@ -123,6 +123,11 @@
 #define HEIPV6TB_DEFAULT_PORT HTTP_DEFAULT_PORT
 #define HEIPV6TB_REQUEST "/ipv4_end.php"
 
+//Andy Chiu, 2015/04/02, add for SelfHost.de
+#define SELFHOST_DEFAULT_SERVER	"carol.selfhost.de"
+#define SELFHOST_DEFAULT_PORT	HTTP_DEFAULT_PORT
+#define SELFHOST_REQUEST	"/nic/update"
+
 #define DEFAULT_TIMEOUT 15 //120
 #define DEFAULT_UPDATE_PERIOD 120
 #define DEFAULT_RESOLV_PERIOD 30
@@ -498,6 +503,17 @@ struct service_t services[] = {
     QDNS_DEFAULT_SERVER,
     QDNS_DEFAULT_PORT,
     QDNS_REQUEST
+  },
+  //Andy Chiu, 2015/04/02, add for SelfHost.de
+  { "selfhost",
+    {  "selfhost", 0, 0 },
+    DYNDNS_init,
+    DYNDNS_update_entry,
+    DYNDNS_check_info,
+    DYNDNS_fields_used,
+    SELFHOST_DEFAULT_SERVER,
+    SELFHOST_DEFAULT_PORT,
+    SELFHOST_REQUEST
   },
   { "qdns-static",
     {"qdns-static"},
