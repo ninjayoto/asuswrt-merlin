@@ -21,6 +21,7 @@
 wan_route_x = '<% nvram_get("wan_route_x"); %>';
 wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 wan_proto = '<% nvram_get("wan_proto"); %>';
+ntpd_server = '<% nvram_get("ntpd_server"); %>';
 
 <% login_state_hook(); %>
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
@@ -28,6 +29,8 @@ var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 function initial(){
 	show_menu();
 	change_firewall('<% nvram_get("fw_enable_x"); %>');
+
+	$("ntpd_filter_tr").style.display = (ntpd_server == 0) ? "none" : "";
 
 	if(WebDav_support){
 		hideAll(1);
@@ -221,6 +224,13 @@ function done_validating(action){
 			<td>
 								<input type="radio" value="1" name="ptcsrv_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ptcsrv_enable', '1')" <% nvram_match("ptcsrv_enable", "1", "checked"); %>><#checkbox_Yes#>
 								<input type="radio" value="0" name="ptcsrv_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ptcsrv_enable', '0')" <% nvram_match("ptcsrv_enable", "0", "checked"); %>><#checkbox_No#>
+			</td>
+		</tr>
+		<tr id="ntpd_filter_tr" style="display:none;">
+			<th align="right"><a class="hintstyle" href="javascript:void(0);" onClick="openHint(8,13);">Enable NTPD Filter</a></th>
+			<td>
+								<input type="radio" value="1" name="ntpdfilter_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ntpdfilter_enable', '1')" <% nvram_match("ntpdfilter_enable", "1", "checked"); %>><#checkbox_Yes#>
+								<input type="radio" value="0" name="ntpdfilter_enable" class="input" onClick="return change_common_radio(this, 'FirewallConfig', 'ntpdfilter_enable', '0')" <% nvram_match("ntpdfilter_enable", "0", "checked"); %>><#checkbox_No#>
 			</td>
 		</tr>
 <!--		<tr>

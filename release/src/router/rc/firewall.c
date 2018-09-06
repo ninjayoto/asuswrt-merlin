@@ -68,6 +68,9 @@ void write_upnp_filter(FILE *fp, char *wan_if);
 void redirect_setting();
 #endif
 
+void ntpdfilter_settings(FILE *fp, char *lan_ip);
+void ntpdfilter6_settings();
+
 #ifdef RTCONFIG_DNSFILTER
 void dnsfilter_settings(FILE *fp, char *lan_ip);
 void dnsfilter6_settings();
@@ -1189,11 +1192,11 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 	}
 #endif
 
-
 #ifdef RTCONFIG_DNSFILTER
 	dnsfilter_settings(fp, lan_ip);
 #endif
 
+	ntpdfilter_settings(fp, lan_ip);
 
 	// need multiple instance for tis?
 	if (nvram_match("misc_http_x", "1"))
@@ -1468,6 +1471,7 @@ void nat_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)	//
 	dnsfilter_settings(fp, lan_ip);
 #endif
 
+	ntpdfilter_settings(fp, lan_ip);
 
 	// need multiple instance for tis?
 	if (nvram_match("misc_http_x", "1"))
@@ -4414,6 +4418,9 @@ mangle_setting(char *wan_if, char *wan_ip, char *lan_if, char *lan_ip, char *log
 #endif
 #endif
 
+/* NTPDFilter - prevent NTP access over IPv6 since the NTPD server is IPv4 only */
+	ntpdfilter6_settings();
+
 /* For NAT loopback */
 	if(!nvram_match("fw_nat_loopback", "1"))
 	eval("iptables", "-t", "mangle", "-A", "PREROUTING", "!", "-i", wan_if,
@@ -4543,6 +4550,9 @@ mangle_setting2(char *lan_if, char *lan_ip, char *logaccept, char *logdrop)
 	dnsfilter6_settings();
 #endif
 #endif
+
+/* NTPDFilter - prevent NTP access over IPv6 since the NTPD server is IPv4 only */
+	ntpdfilter6_settings();
 
 /* For NAT loopback */
 	for(unit = WAN_UNIT_FIRST; unit < WAN_UNIT_MAX; ++unit){
@@ -5221,6 +5231,35 @@ void ipt_account(FILE *fp, char *interface) {
 	}
 }
 
+void ntpdfilter_settings(FILE *fp, char *lan_ip) {
+
+	char *name, *mac, *mode;
+	unsigned char ea[ETHER_ADDR_LEN];
+	char *nv, *nvp, *b;
+	char lan_class[32];
+
+	if (nvram_get_int("ntpd_server") && nvram_get_int("ntpdfilter_enable")) {
+		/* Reroute all NTP requests from LAN */
+		ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
+		fprintf(fp,
+			"-A PREROUTING -s %s -p udp -m udp --dport 123 -j DNAT --to-destination %s\n"
+			"-A PREROUTING -s %s -p tcp -m tcp --dport 123 -j DNAT --to-destination %s\n",
+			lan_class, lan_ip, lan_class, lan_ip);
+	}
+}
+
+#ifdef RTCONFIG_IPV6
+void ntpdfilter6_settings() {
+	char *nv, *nvp, *b;
+	char *name, *mac, *mode;
+	unsigned char ea[ETHER_ADDR_LEN];
+
+	if (nvram_get_int("ntpd_server") && nvram_get_int("ntpdfilter_enable")) {
+		eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-p", "udp", "--dport", "123", "-j", "DROP");
+		eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-p", "tcp", "--dport", "123", "-j", "DROP");
+	}
+}
+#endif	// RTCONFIG_IPV6
 
 #ifdef RTCONFIG_DNSFILTER
 void dnsfilter_settings(FILE *fp, char *lan_ip) {

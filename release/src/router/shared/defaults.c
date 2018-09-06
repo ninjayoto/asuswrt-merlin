@@ -1148,6 +1148,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ttl_inc_enable", "0"},       // enable TTL increment
 	{ "DSCP_fix_enable", "0" },
 	{ "ptcsrv_enable", "1" },	// ASUS protection server
+	{ "ntpdfilter_enable", "0" },	// redirect NTP requests
 	
 	// UrlList
 	{ "url_enable_x", "0"},
