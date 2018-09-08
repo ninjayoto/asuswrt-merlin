@@ -623,7 +623,7 @@ function showqos_bw_rulelist(){
 													<option value="3" <% nvram_match("qos_default", "3","selected"); %>>Low (Default)</option>
 													<option value="4" <% nvram_match("qos_default", "4","selected"); %>>Lowest</option>
 												</select>
-												<span>&nbsp;&nbsp;(Default level is also used by any VPN connections)</span>
+												<!-- <span>&nbsp;&nbsp;(Default level is also used by any VPN connections)</span> -->
 											</td>
 										</tr>
 
