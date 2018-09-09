@@ -757,7 +757,7 @@ int main (int argc, char **argv)
 	my_syslog(LOG_INFO, _("DNS service limited to local subnets"));
     }
   
-  my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
+  my_syslog(LOG_DEBUG, _("compile time options: %s"), compile_opts);
 
   if (chown_warn != 0)
     my_syslog(LOG_WARNING, "chown of PID file %s failed: %s", daemon->runfile, strerror(chown_warn));
@@ -1400,6 +1400,10 @@ static void async_event(int pipe, time_t now)
 	   we leave them logging to the old file. */
 	if (daemon->log_file != NULL)
 	  log_reopen(daemon->log_file);
+#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
+        if (daemon->dhcp || daemon->dhcp6)
+          lease_flush_file(now);
+#endif
 	break;
 
       case EVENT_NEWADDR:
@@ -1442,7 +1446,11 @@ static void async_event(int pipe, time_t now)
 	    while (retry_send(close(daemon->helperfd)));
 	  }
 #endif
-	
+
+#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
+        if (daemon->dhcp || daemon->dhcp6)
+          lease_flush_file(now);
+#endif
 	if (daemon->lease_stream)
 	  fclose(daemon->lease_stream);
 
