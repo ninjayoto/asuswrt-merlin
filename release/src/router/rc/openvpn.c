@@ -13,6 +13,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <time.h>
+#include <shared.h>
 
 // Line number as text string
 #define __LINE_T__ __LINE_T_(__LINE__)
@@ -54,6 +55,7 @@ void start_vpnclient(int clientNum)
 	char buffer[BUF_SIZE];
 	char buffer2[4000];
 	char *argv[6];
+	char *buf, *p;
 	int argc = 0;
 	enum { TLS, SECRET, CUSTOM } cryptMode = CUSTOM;
 	enum { TAP, TUN } ifType = TUN;
@@ -382,7 +384,9 @@ void start_vpnclient(int clientNum)
 	fprintf(fp, "status status 10\n"); //update status file every 10 sec
 	fprintf(fp, "\n# Custom Configuration\n");
 	sprintf(&buffer[0], "vpn_client%d_custom", clientNum);
-	fprintf(fp, "%s", nvram_safe_get(&buffer[0]));
+	p = buf = strdup(nvram_safe_get(&buffer[0]));
+	remove_char(p, '\r');  //strip carriage returns
+	fprintf(fp, "%s\n", p);
 	fclose(fp);
 
 	vpnlog(VPN_LOG_EXTRA,"Done writing config file");
@@ -663,6 +667,7 @@ void start_vpnserver(int serverNum)
 	char buffer[BUF_SIZE];
 	char buffer2[4000];
 	char *argv[6], *chp, *route;
+	char *buf, *p;
 	int argc = 0;
 	int c2c = 0;
 	enum { TAP, TUN } ifType = TUN;
@@ -1165,7 +1170,9 @@ void start_vpnserver(int serverNum)
 	fprintf(fp, "status status 10\n"); //update status file every 10 sec
 	fprintf(fp, "\n# Custom Configuration\n");
 	sprintf(&buffer[0], "vpn_server%d_custom", serverNum);
-	fprintf(fp, "%s", nvram_safe_get(&buffer[0]));
+	p = buf = strdup(nvram_safe_get(&buffer[0]));
+	remove_char(p, '\r');  //strip carriage returns
+	fprintf(fp, "%s\n", p);
 	fclose(fp);
 
 	// Run postconf customs cript on it if it exists
