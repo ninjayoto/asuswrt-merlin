@@ -5729,15 +5729,31 @@ check_ddr_done:
 #ifdef RTCONFIG_DNSCRYPT
 	else if (strcmp(script, "dnscrypt") == 0)
 	{
-		if(action&RC_SERVICE_STOP) stop_dnscrypt(0);
-		if(action&RC_SERVICE_START) start_dnscrypt(0);
+		_dprintf("%s: dnscrypt: %s.\n", __FUNCTION__, cmd[1]);
+		if(cmd[1]) {
+			if(action&RC_SERVICE_STOP) stop_dnscrypt(atoi(cmd[1]));
+			if(action&RC_SERVICE_START) start_dnscrypt(atoi(cmd[1]));
+		}
+		else
+		{
+			if(action&RC_SERVICE_STOP) stop_dnscrypt(0);
+			if(action&RC_SERVICE_START) start_dnscrypt(0);
+		}
 	}
 #endif
 #ifdef RTCONFIG_STUBBY
 	else if (strcmp(script, "stubby") == 0)
 	{
-		if(action&RC_SERVICE_STOP) stop_stubby(0);
-		if(action&RC_SERVICE_START) start_stubby(0);
+		_dprintf("%s: stubby: %s.\n", __FUNCTION__, cmd[1]);
+		if(cmd[1]) {
+			if(action&RC_SERVICE_STOP) stop_stubby(atoi(cmd[1]));
+			if(action&RC_SERVICE_START) start_stubby(atoi(cmd[1]));
+		}
+		else
+		{
+			if(action&RC_SERVICE_STOP) stop_stubby(0);
+			if(action&RC_SERVICE_START) start_stubby(0);
+		}
 	}
 #endif
 	else if (strcmp(script, "upnp") == 0)
