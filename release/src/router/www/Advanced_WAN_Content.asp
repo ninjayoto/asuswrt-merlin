@@ -357,6 +357,8 @@ function applyRule(){
 			inputCtrl(document.form.wan_dns2_x, 1);
 		}
 
+		document.form.action_script.value = "restart_wan_if";
+
 /* DNSCRYPT-BEGIN */
 		// Reset VPN Client DNSCrypt option when turning off DNSCrypt
 		if(!document.form.dnscrypt_proxy[0].checked && (dnscrypt_proxy_orig == 1)) {
@@ -376,7 +378,7 @@ function applyRule(){
 		   (document.form.dnscrypt2_resolver.value != "<% nvram_get("dnscrypt2_resolver"); %>") ||
 		   (document.form.dnscrypt2_port.value != "<% nvram_get("dnscrypt2_port"); %>") ||
 		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
-			document.form.action_script.value += "stop_dnscrypt;";
+			document.form.action_script.value += ";stop_dnscrypt";
 /* DNSCRYPT-END */
 /* STUBBY-BEGIN */
 
@@ -396,10 +398,8 @@ function applyRule(){
 		   (document.form.stubby_dns.value != "<% nvram_get("stubby_dns"); %>") ||
 		   (document.form.stubby_port.value != "<% nvram_get("stubby_port"); %>") ||
 		   (document.form.stubby_loglevel.value != "<% nvram_get("stubby_loglevel"); %>"))
-			document.form.action_script.value += "stop_stubby;";
+			document.form.action_script.value += ";stop_stubby";
 /* STUBBY-END */
-
-		document.form.action_script.value += "restart_wan_if";
 
 		document.form.action_wait.value = eval("<% get_default_reboot_time(); %> / 2");
 		document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1"; //force progress bar to always be shown
