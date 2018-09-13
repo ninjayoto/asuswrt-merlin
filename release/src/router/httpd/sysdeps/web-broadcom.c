@@ -822,7 +822,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	char *arplist = NULL, *arplistptr;
 	char *leaselist = NULL, *leaselistptr;
 #ifdef RTCONFIG_DNSMASQ
-	char hostnameentry[16];
+	char hostnameentry[40];
 #endif
 	char ipentry[40], macentry[18];
 	int found;
@@ -974,7 +974,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				}
 			}
 
-			ret += websWrite(wp, "%-16s", (found ? ipentry : ""));
+			ret += websWrite(wp, "%-16s", (found ? ipentry : "-"));
 		}
 
 #ifdef RTCONFIG_DNSMASQ
@@ -992,7 +992,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 				}
 			}
 
-			ret += websWrite(wp, "%-16s ", (found ? hostnameentry : ""));
+			ret += websWrite(wp, "%-16s ", (found ? hostnameentry : "-"));
 		}
 #endif
 

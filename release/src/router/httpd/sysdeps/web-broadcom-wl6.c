@@ -1269,7 +1269,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 	char *leaselist = NULL, *leaselistptr;
 	sta_info_t *sta = NULL;
 #ifdef RTCONFIG_DNSMASQ
-	char hostnameentry[16];
+	char hostnameentry[40];
 #endif
 	char ipentry[40], macentry[18];
 	int found;
@@ -1453,7 +1453,7 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 			}
 
 			if (found || !leaselist) {
-				ret += websWrite(wp, "%-16s", (found ? ipentry : ""));
+				ret += websWrite(wp, "%-16s", (found ? ipentry : "-"));
 			}
 		}
 
@@ -1474,10 +1474,10 @@ ej_wl_status(int eid, webs_t wp, int argc, char_t **argv, int unit)
 
 			if (found == 0) {
 				// Not in arplist nor in leaselist
-				ret += websWrite(wp, "%-16s%-15s ", "", "");
+				ret += websWrite(wp, "%-16s%-16s ", "-", "-");
 			} else if (found == 1) {
 				// Only in arplist (static IP)
-				ret += websWrite(wp, "%-15s ", "");
+				ret += websWrite(wp, "%-16s ", "-");
 			} else if (found == 2) {
 				// Only in leaselist (dynamic IP that has not communicated with router for a while)
 				ret += websWrite(wp, "%-16s%-16s ", ipentry, hostnameentry);
