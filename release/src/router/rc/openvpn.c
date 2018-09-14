@@ -1126,7 +1126,6 @@ void start_vpnserver(int serverNum)
 				fprintf(fp, "verify-client-cert none\n");
 				fprintf(fp, "username-as-common-name\n");
 			}
-			fprintf(fp, "duplicate-cn\n");
 		}
 
 		//sprintf(&buffer[0], "vpn_crt_server%d_ca", serverNum);
