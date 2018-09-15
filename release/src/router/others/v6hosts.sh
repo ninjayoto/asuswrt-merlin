@@ -13,17 +13,21 @@ else
     LOGB="/dev/null"
 fi
 V6HOSTS="/etc/hosts.autov6"
+DHCPHOSTS=$(grep "dhcp-hostsfile" "/etc/dnsmasq.conf" | awk -F "=" '{ print $NF }')
 
 if [ "$1" != "add" -a "$1" != "old" ]; then
     exit 0
 fi
 
-if [ -n "$4" ]; then
+DHCPNAME=$(grep "$2" "$DHCPHOSTS" | awk -F "," '{ print $NF }')
+if [ -n "$DHCPNAME" ]; then
+	HNAME="$DHCPNAME"
+elif [ -n "$DNSMASQ_OLD_HOSTNAME" ]; then
+    HNAME="$DNSMASQ_OLD_HOSTNAME"
+elif [ -n "$4" ]; then
     HNAME="$4"
 elif [ -n "$DNSMASQ_SUPPLIED_HOSTNAME" ]; then
     HNAME="$DNSMASQ_SUPPLIED_HOSTNAME"
-elif [ -n "$DNSMASQ_OLD_HOSTNAME" ]; then
-    HNAME="$DNSMASQ_OLD_HOSTNAME"
 else
     echo "$(date) no name $2" >> "$LOGA"
     exit 0
