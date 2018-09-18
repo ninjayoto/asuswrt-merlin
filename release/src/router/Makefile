@@ -2749,23 +2749,28 @@ lzo-install: lzo
 	$(STRIP) $(INSTALLDIR)/lzo/usr/lib/liblzo2.so.2
 	cd $(INSTALLDIR)/lzo/usr/lib && ln -sf liblzo2.so.2 liblzo2.so
 
-openpam/stamp-h1:
-	cd openpam && ./autogen.sh && \
-	$(CONFIGURE) --without-doc --with-pam-unix
-	touch $@
+openpam: openpam/Makefile
+	$(MAKE) -C $@ $(PARALLEL_BUILD)
 
-openpam: openpam/stamp-h1
-	$(MAKE) -C openpam $(PARALLEL_BUILD)
+openpam/Makefile:
+	$(MAKE) openpam-configure
 
-openpam-install: openpam
+openpam-configure:
+	( cd openpam && ./autogen.sh && \
+		LDFLAGS=-ldl \
+		$(CONFIGURE) \
+		--without-doc --with-pam-unix \
+	)
+
+openpam-install:
 	install -D openpam/lib/libpam/.libs/libpam.so.2.0.0 $(INSTALLDIR)/openpam/usr/lib/libpam.so.2
 	$(STRIP) -s $(INSTALLDIR)/openpam/usr/lib/libpam.so.2
 	install -D openpam/modules/pam_unix/.libs/pam_unix.so.2.0.0 $(INSTALLDIR)/openpam/usr/lib/pam_unix.so
 	$(STRIP) -s $(INSTALLDIR)/openpam/usr/lib/pam_unix.so
 
 openpam-clean:
-	@[ ! -f openpam/Makefile ] || $(MAKE) -C openpam clean
-	@rm -f openpam/stamp-h1
+	[ ! -f openpam/Makefile ] || $(MAKE) -C openpam distclean
+	@rm -f openpam/Makefile
 
 openvpn/stamp-h1:
 	cd openvpn && ./autogen.sh && \
