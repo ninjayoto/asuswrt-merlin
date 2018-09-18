@@ -1157,9 +1157,9 @@ endif
 
 #OPENSSL_CIPHERS:=enable-aes enable-tls1 enable-tlsext
 
-openssl/stamp-h1:
+openssl/Makefile:
 	cd openssl && \
-	./Configure $(HOSTCONFIG) --openssldir=/etc --cross-compile-prefix=' ' \
+	./Configure $(HOSTCONFIG) -DOPENSSL_NO_BUF_FREELISTS --prefix=/usr --openssldir=/etc --cross-compile-prefix=' ' \
 	-ffunction-sections -fdata-sections -Wl,--gc-sections \
 	shared $(OPENSSL_CIPHERS)
 #	no-sha0 no-smime no-camellia no-krb5 no-rmd160 no-ripemd \
@@ -1171,60 +1171,38 @@ openssl/stamp-h1:
 	-@$(MAKE) -C openssl clean depend
 	@touch $@
 
-openssl: openssl/stamp-h1
+openssl: openssl/Makefile
 	$(MAKE) -C openssl && $(MAKE) $@-stage
 
 openssl-clean:
-	-@$(MAKE) -C openssl clean
-	@rm -f openssl/stamp-h1
+	[ ! -f openssl/Makefile ] || $(MAKE) -C openssl clean depend
+	@rm -f openssl/Makefile
 
-openssl-install: openssl
-	install -D openssl/libcrypto.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libcrypto.so.1.0.0
-	$(STRIP) $(INSTALLDIR)/openssl/usr/lib/libcrypto.so.1.0.0
-	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libcrypto.so.1.0.0 libcrypto.so
+openssl-install:
+	[ ! -f openssl/Makefile ] || install -D openssl/libcrypto.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libcrypto.so.1.0.0
+	[ ! -f openssl/Makefile ] || $(STRIP) $(INSTALLDIR)/openssl/usr/lib/libcrypto.so.1.0.0
+	[ ! -f openssl/Makefile ] || cd $(INSTALLDIR)/openssl/usr/lib && rm -f libcrypto.so && ln -sf libcrypto.so.1.0.0 libcrypto.so
 
-	install -D openssl/apps/openssl $(INSTALLDIR)/openssl/usr/sbin/openssl
-	$(STRIP) $(INSTALLDIR)/openssl/usr/sbin/openssl
-	chmod 0500 $(INSTALLDIR)/openssl/usr/sbin/openssl
+	[ ! -f openssl/Makefile ] || install -D openssl/apps/openssl $(INSTALLDIR)/openssl/usr/sbin/openssl
+	[ ! -f openssl/Makefile ] || $(STRIP) $(INSTALLDIR)/openssl/usr/sbin/openssl
+	[ ! -f openssl/Makefile ] || chmod 0500 $(INSTALLDIR)/openssl/usr/sbin/openssl
 
-# add for webdav
-	install -D openssl/libssl.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	$(STRIP) $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libssl.so.1.0.0 libssl.so
-
-	install -D -m 0500 httpd/gencert.sh $(INSTALLDIR)/openssl/usr/sbin/gencert.sh
-
-#	perl -e 'while (<>) { s/.SECS/time()-(24*60*60)/e; print; }' < httpd/gencert.sh > $(INSTALLDIR)/openssl/usr/sbin/gencert.sh
-#	chmod 0500 $(INSTALLDIR)/openssl/usr/sbin/gencert.sh
-
-ifeq ($(RTCONFIG_FTP_SSL),y)
-# !!TB
-	install -D openssl/libssl.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	$(STRIP) $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libssl.so.1.0.0 libssl.so
+ifeq ($(or $(RTCONFIG_WEBDAV),$(RTCONFIG_FTP_SSL),$(RTCONFIG_OPENVPN),$(RTCONFIG_HTTPS)),y)
+	[ ! -f openssl/Makefile ] || install -D openssl/libssl.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
+	[ ! -f openssl/Makefile ] || $(STRIP) $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
+	[ ! -f openssl/Makefile ] || cd $(INSTALLDIR)/openssl/usr/lib && rm -f libssl.so && ln -sf libssl.so.1.0.0 libssl.so
 endif
-
-ifeq ($(RTCONFIG_OPENVPN),y)
-	install -D openssl/libssl.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	$(STRIP) $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libssl.so.1.0.0 libssl.so
-endif
-
-ifeq ($(RTCONFIG_HTTPS),y)
-	install -D openssl/libssl.so.1.0.0 $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	$(STRIP) $(INSTALLDIR)/openssl/usr/lib/libssl.so.1.0.0
-	cd $(INSTALLDIR)/openssl/usr/lib && ln -sf libssl.so.1.0.0 libssl.so
-endif
+	[ ! -f openssl/Makefile ] || install -D -m 0500 httpd/gencert.sh $(INSTALLDIR)/openssl/usr/sbin/gencert.sh
 
 openssl-stage:
-	@$(MAKE) -C openssl install_sw INSTALL_PREFIX=$(STAGEDIR)
+	$(MAKE) -C openssl install_sw INSTALL_PREFIX=$(STAGEDIR)
 
-mssl:	openssl
+mssl: openssl
 
 mssl-install:
 	$(MAKE) -C mssl INSTALLDIR=$(INSTALLDIR)/mssl install
 
-mdu:	shared mssl
+mdu: shared mssl
 
 wb: openssl libxml2 curl
 
