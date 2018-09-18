@@ -216,7 +216,7 @@ int main (int argc, char **argv)
 #endif
 
 #ifndef HAVE_AUTH
-  if (daemon->authserver)
+  if (daemon->authserver || daemon->auth_zones)
     die(_("authoritative DNS not available: set HAVE_AUTH in src/config.h"), NULL, EC_BADCONF);
 #endif
 
@@ -225,13 +225,18 @@ int main (int argc, char **argv)
     die(_("loop detection not available: set HAVE_LOOP in src/config.h"), NULL, EC_BADCONF);
 #endif
 
+#ifndef HAVE_UBUS
+  if (option_bool(OPT_UBUS))
+    die(_("Ubus not available: set HAVE_UBUS in src/config.h"), NULL, EC_BADCONF);
+#endif
+  
   if (daemon->max_port < daemon->min_port)
     die(_("max_port cannot be smaller than min_port"), NULL, EC_BADCONF);
 
   now = dnsmasq_time();
 
   /* Create a serial at startup if not configured. */
-  if (daemon->authinterface && daemon->soa_sn == 0)
+  if (daemon->auth_zones && daemon->soa_sn == 0)
 #ifdef HAVE_BROKEN_RTC
     die(_("zone serial must be configured in --auth-soa"), NULL, EC_BADCONF);
 #else
@@ -752,7 +757,7 @@ int main (int argc, char **argv)
 	my_syslog(LOG_INFO, _("DNS service limited to local subnets"));
     }
   
-  my_syslog(LOG_DEBUG, _("compile time options: %s"), compile_opts);
+  my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
 
   if (chown_warn != 0)
     my_syslog(LOG_WARNING, "chown of PID file %s failed: %s", daemon->runfile, strerror(chown_warn));
@@ -771,7 +776,8 @@ int main (int argc, char **argv)
   if (option_bool(OPT_DNSSEC_VALID))
     {
       int rc;
-
+      struct ds_config *ds;
+      
       /* Delay creating the timestamp file until here, after we've changed user, so that
 	 it has the correct owner to allow updating the mtime later. 
 	 This means we have to report fatal errors via the pipe. */
@@ -792,6 +798,10 @@ int main (int argc, char **argv)
       
       if (rc == 1)
 	my_syslog(LOG_INFO, _("DNSSEC signature timestamps not checked until system time valid"));
+
+      for (ds = daemon->ds; ds; ds = ds->next)
+	my_syslog(LOG_INFO, _("configured with trust anchor for %s keytag %u"),
+		  ds->name[0] == 0 ? "<root>" : ds->name, ds->keytag);
     }
 #endif
 
@@ -942,8 +952,13 @@ int main (int argc, char **argv)
 
 #ifdef HAVE_DBUS
       set_dbus_listeners();
-#endif	
-  
+#endif
+
+#ifdef HAVE_UBUS
+      if (option_bool(OPT_UBUS))
+	  set_ubus_listeners();
+#endif
+	  
 #ifdef HAVE_DHCP
       if (daemon->dhcp || daemon->relay4)
 	{
@@ -1073,7 +1088,12 @@ int main (int argc, char **argv)
 	}
       check_dbus_listeners();
 #endif
-      
+
+#ifdef HAVE_UBUS
+      if (option_bool(OPT_UBUS))
+        check_ubus_listeners();
+#endif
+
       check_dns_listeners(now);
 
 #ifdef HAVE_TFTP
@@ -1380,10 +1400,6 @@ static void async_event(int pipe, time_t now)
 	   we leave them logging to the old file. */
 	if (daemon->log_file != NULL)
 	  log_reopen(daemon->log_file);
-#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
-        if (daemon->dhcp || daemon->dhcp6)
-          lease_flush_file(now);
-#endif
 	break;
 
       case EVENT_NEWADDR:
@@ -1426,11 +1442,7 @@ static void async_event(int pipe, time_t now)
 	    while (retry_send(close(daemon->helperfd)));
 	  }
 #endif
-
-#if defined(HAVE_DHCP) && defined(HAVE_LEASEFILE_EXPIRE)
-        if (daemon->dhcp || daemon->dhcp6)
-          lease_flush_file(now);
-#endif
+	
 	if (daemon->lease_stream)
 	  fclose(daemon->lease_stream);
 
