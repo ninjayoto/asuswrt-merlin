@@ -2758,7 +2758,7 @@ openpam/Makefile:
 openpam-configure:
 	( cd openpam && ./autogen.sh && \
 		LDFLAGS=-ldl \
-		$(CONFIGURE) \
+		$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
 		--without-doc --with-pam-unix \
 	)
 
