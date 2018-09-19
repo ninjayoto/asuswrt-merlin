@@ -1337,7 +1337,7 @@ libyaml-clean:
 	-$(MAKE) -C libyaml clean
 	@rm -rf libyaml/stamp-h1 libyaml/src/.deps libyaml/src/tests/.deps
 
-getdns/stamp-h1: openssl libyaml
+getdns/stamp-h1:
 	cd $(TOP)/getdns && CC=$(CC) AR=$(AR) LD=$(LD) STRIP=$(CROSS_COMPILE)strip \
 	autoreconf -i -f && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
@@ -1347,7 +1347,7 @@ getdns/stamp-h1: openssl libyaml
 	--enable-stub-only --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby
 	touch getdns/stamp-h1
 
-getdns: getdns/stamp-h1
+getdns: getdns/stamp-h1 openssl libyaml
 	$(MAKE) -C getdns
 
 getdns-install:
