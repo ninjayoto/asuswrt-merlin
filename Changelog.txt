@@ -4,6 +4,89 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36E2j9527  (22-September-2018) ARM SDK, MIPS,ARM KRACK
+31856355a wanduck: restart stubby/dnscrypt on WAN restore
+9773aacf3 getdns: add missing define for log_warn
+7fa23b6c4 make: misc updates for stubby
+b9d89673b make: re-add usr directories to configure options for openpam
+7b5426be0 make: remove openvpn deprecated disable-socks option, add openvpn missing libraries
+
+
+374.43_36E1j9527  (19-September-2018) ARM SDK, MIPS,ARM KRACK !!!Repository Reset!!!
+63a14400d make: update recipe for curl
+f816a5035 curl: update to 7.61.1
+51ae04c6a wget: update to 1.19.5
+7fd1d4d47 make: update recipe for openpam
+c3941bca2 make: update recipe for getdns
+966e92856 make: update recipe for openvpn
+6c111d020 make: update recipe for openssl
+1ecf2f06b networkmap: increase name field declaration to 32 bytes
+dd8f0cf67 v6hosts: handle host name reassignment via dhcp-hostsfile
+bdb028c4e openvpn: remove extra incorrect call to postconf script for vpnserver
+d8af57dd5 openvpn: add server enabled nvram
+ddf3dbd04 openvpn: eliminate repeated duplicate-cn statement in server config
+a529b6fa3 webui: stop dnscrypt/stubby after wan restart when changing wan options
+ff33d011b services: support force flag on dnscrypt and stubby commands
+e21aacd17 webui: fix wireless status formatting with blank fields
+b89f6cbbc openvpn: remove carriage returns from custom config sections
+14812c39c webui: qos: remove misleading VPN message re traditional qos
+9f5f8de01 ez-ipupdate: add missing defs for selfhost.de
+e296b2e2c ez-ipupdate: allow to disable https for default services with --ssl=0
+ddb14d0ae ez-ipupdate, mssl: implement tls sni support
+f8baa4ffd mssl: fix ssl context ciphers & options wasn't applied
+1ad9c5662 firewall: add ntpd filter
+1a379b84a webui: misc popup help updates
+0162a804c webui: change placeholder attribute for readability
+4dfc78aa5 qos: keep download minimums in sync with unused priorities
+2513554be webui: fix field wrap in qos user priorities bandwidths
+20ed982da stubby: update default configuration parameters, add idle_timeout nvram
+687d24bd7 ez-ipupdate: (backport) use https for: no-ip,dyndns,easydns,zoneedit,tunnelbroker,namecheap
+e3b23579b ez-ipupdate: (backport) fix indirect linking with openssl
+48f2dc7f7 ez-ipupdate: (backport) implement general ssl support, no services affected so far
+1b43073cc dnsmasq: improve insecure ds syslog
+e92928515 dnsmasq: ASUS/Merlin custom modifications (2.80)
+085695560 dnsmasq: update to 2.80test6
+5fc0a62df openpam: refresh from merlin 380
+eb79b83b9 openssl: update to 1.0.2p
+57e75b337 watchdog: add dnsmasq watchdog
+c308be628 webui: qos: improve checking and notification of reserved bandwidth values
+a23afd09f wl: update dfs channel support for ARM/MIPS
+011b39f67 qos: add rate-ceil to ingress comments, update variable names for consistency
+f2f65c1d8 webui: update popup help for vpn DoT support
+9f3c8876b qos: add support for download minimum bandwidth
+2d372ae04 webui: qos: store correct units adjusted global bw values when switching to bw limiter
+b6219f544 webui: add popup detail for stubby server selection
+d9fcb8ef2 stubby: update resolvers csv, add verified field
+9229c3c7f webui: update stubby selection to handle edge case server definitions
+183ab9c18 httpd: support comments in csv files
+1758c08c1 stubby: add update resolvers script
+a3f50e09b webui: add warning on dnssec strict mode to popup help
+3a51987cf webui: do not force stubby server selection if stubby not enabled
+82c92b754 stubby: change nvram var for loglevel
+30672121e stubby: change tls_backoff_time log to warning
+5a21f8504 webui: clean up wan dns display elements
+a724e096e stubby: work around broken getaddrinfo on MIPS
+ef5258c64 stubby: add logfile support when run as daemon
+b2c455ae8 stubby: services - set correct permissions on stubby.yml
+c08fd51f9 stubby: services - clean up yml file formatting
+1628b76c4 stubby: do not listen on ipv6 if not enabled
+be08b0376 stubby: change default padding blocksize
+a0a76e54b stubby: add support for orderd vs roundrobbin server access
+846e40435 webui: add gui support for stubby_noipv6
+906e69671 stubby: add nvram only option for stubby_noipv6
+bf763f586 updown: properly initialize vars for dns proxy status
+44ac71368 stubby: functional code and gui support - disable dnscrypt v1
+d71eac2b0 webui: implement conditional gui compile for dnscrypt (from tomato)
+86382669d make: add make and config support for stubby
+ac49e2883 getdns: add source 1.4.2
+3b056a769 libyaml: add source 0.2.1
+56d319b27 dnsmasq: implement dns rebind protection
+
+
+374.43_35xxj9527  Abandoned
+374.43_34E3j9527  Abandoned
+
+
 374.43_33E8j9527  (8-July-2018) ARM SDK, MIPS,ARM KRACK
 * FIXED: dnscrypt: fix update resolvers script when checking valid selected resolvers
 * FIXED: webui: display full 16 char hostnames in gui
