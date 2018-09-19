@@ -2779,13 +2779,12 @@ openvpn/stamp-h1:
 	export OPENSSL_SSL_CFLAGS="-I$(TOP)/openssl"; \
 	export OPENSSL_SSL_LIBS="-L$(TOP)/openssl -lssl"; \
 	CFLAGS="-O3 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections $(if $(RTCONFIG_HTTPS),-I$(TOP)/openssl/include/ssl) $(if $(RTCONFIG_BCMARM),,-std=gnu99)" \
-	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl -lcrypto -lssl) -L$(TOP)/zlib -lz -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl -lcrypto -lssl) -L$(TOP)/zlib -lz -lpthread -ldl -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	CPPFLAGS="-I$(TOP)/lzo/include -I$(TOP)/openssl/include -I$(TOP)/openpam/include -I$(TOP)/shared -I$(SRCBASE)/include" \
 	IPROUTE="/usr/sbin/ip" IFCONFIG="/sbin/ifconfig" ROUTE="/sbin/route" \
 	$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib  --enable-iproute2 \
 	--disable-debug --enable-management --disable-small \
-	--disable-selinux --disable-socks \
-	--enable-plugin-auth-pam \
+	--disable-selinux --enable-plugin-auth-pam \
 	ac_cv_lib_resolv_gethostbyname=no
 	touch $@
 
