@@ -171,14 +171,6 @@ else
 obj-y += dproxy
 obj-y += udhcpd
 endif
-ifeq ($(RTCONFIG_DNSCRYPT),y)
-obj-y += libsodium
-obj-y += dnscrypt
-endif
-ifeq ($(RTCONFIG_STUBBY),y)
-obj-y += libyaml
-obj-y += getdns
-endif
 obj-$(RTCONFIG_DNSSEC) += nettle
 obj-y += etc
 # obj-y += vlan # use Busybox vconfig
@@ -490,6 +482,14 @@ obj-y += libmnl
 obj-y += ipset_arm
 else
 obj-y += ipset
+endif
+ifeq ($(RTCONFIG_DNSCRYPT),y)
+obj-y += libsodium
+obj-y += dnscrypt
+endif
+ifeq ($(RTCONFIG_STUBBY),y)
+obj-y += libyaml
+obj-y += getdns
 endif
 obj-$(RTCONFIG_NANO) += ncurses
 obj-$(RTCONFIG_NANO) += nano
@@ -1326,6 +1326,7 @@ libyaml: libyaml/stamp-h1
 	$(MAKE) -C libyaml $(PARALLEL_BUILD)
 
 libyaml-install:
+	@echo "do nothing"
 #	install -d $(INSTALLDIR)/libyaml/usr/lib
 #	install -D libyaml/src/.libs/libyaml-0.so.2.0.5 $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
 #	$(STRIP) -s $(INSTALLDIR)/libyaml/usr/lib/libyaml-0.so.2.0.5
@@ -1342,15 +1343,21 @@ getdns/stamp-h1:
 	autoreconf -i -f && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 	CPPFLAGS="-I$(TOP)/libyaml/include -I$(TOP)/openssl/include" \
-	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/libyaml/src/.libs -lyaml -L$(TOP)/openssl -lcrypto -lssl" \
-	$(CONFIGURE) --enable-static --disable-shared --prefix=/usr --sysconfdir=/etc --localstatedir=/var --without-libidn --without-libidn2 --without-libunbound  \
-	--enable-stub-only --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby
+	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/openssl -lcrypto -lssl -ldl -L$(TOP)/libyaml/src/.libs -lyaml" \
+	$(CONFIGURE) --enable-static --disable-shared --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib --sysconfdir=/etc --localstatedir=/var \
+	--enable-stub-only --without-libidn --without-libidn2 --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby
 	touch getdns/stamp-h1
 
 getdns: getdns/stamp-h1 openssl libyaml
 	$(MAKE) -C getdns
 
 getdns-install:
+#	install -d $(INSTALLDIR)/getdns/usr/lib
+#	install -D getdns/src/.libs/libgetdns.so.10.0.2 $(INSTALLDIR)/getdns/usr/lib/libgetdns.so.10.0.2
+#	$(STRIP) -s $(INSTALLDIR)/getdns/usr/lib/libgetdns.so.10.0.2
+#	cd $(INSTALLDIR)/getdns/usr/lib/ && \
+#		ln -sf libgetdns.so.10.0.2 libgetdns.so.10 && \
+#		ln -sf libgetdns.so.10.0.2 libgetdns.so
 	install -d $(INSTALLDIR)/getdns/usr/sbin
 	install -D getdns/src/stubby $(INSTALLDIR)/getdns/usr/sbin/stubby
 	install -D -m 0644 getdns/stubby/stubby-resolvers.csv $(INSTALLDIR)/rom/rom/stubby-resolvers.csv
@@ -2750,19 +2757,16 @@ lzo-install: lzo
 	cd $(INSTALLDIR)/lzo/usr/lib && ln -sf liblzo2.so.2 liblzo2.so
 
 openpam: openpam/Makefile
-	$(MAKE) -C $@ $(PARALLEL_BUILD)
+	$(MAKE) -C $@ $(PARALLEL_BUILD) && $(MAKE) $@-stage
 
 openpam/Makefile:
-	$(MAKE) openpam-configure
-
-openpam-configure:
 	( cd openpam && ./autogen.sh && \
 		LDFLAGS=-ldl \
 		$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib \
 		--without-doc --with-pam-unix \
 	)
 
-openpam-install:
+openpam-install: openpam
 	install -D openpam/lib/libpam/.libs/libpam.so.2.0.0 $(INSTALLDIR)/openpam/usr/lib/libpam.so.2
 	$(STRIP) -s $(INSTALLDIR)/openpam/usr/lib/libpam.so.2
 	install -D openpam/modules/pam_unix/.libs/pam_unix.so.2.0.0 $(INSTALLDIR)/openpam/usr/lib/pam_unix.so
@@ -3614,6 +3618,7 @@ wget-install:
 #
 
 %:
+	@[ ! -d $* ] || [ -f $*/Makefile ] || $(MAKE) $*-configure
 	@[ ! -d $* ] || ( $(SEP); $(MAKE) -C $* )
 
 
@@ -3624,12 +3629,24 @@ wget-install:
 	@echo $*
 	@[ ! -d $* ] || $(MAKE) -C $* install INSTALLDIR=$(INSTALLDIR)/$*
 
-%-stage: %
+%-stage:
 	@echo $*
 	@[ ! -d $* ] || $(MAKE) -C $* install DESTDIR=$(STAGEDIR)
 
 %-build:
 	$(MAKE) $*-clean $*
+
+%/Makefile:
+	[ ! -d $* ] || $(MAKE) $*-configure
+
+%-configure:
+	@[ ! -d $* ] || ( cd $* ; \
+		$(CONFIGURE) \
+		--prefix=/usr \
+		--bindir=/usr/sbin \
+		--libdir=/usr/lib \
+	)
+
 
 $(obj-y) $(obj-n) $(obj-clean) $(obj-install): dummy
 
