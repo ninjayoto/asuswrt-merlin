@@ -372,13 +372,14 @@ function applyRule(){
 		//if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
 		//	document.form.action_script += ";restart_firewall";
 
-		if((document.form.dnscrypt_proxy[0].checked != "<% nvram_get("dnscrypt_proxy"); %>") ||
-		   (document.form.dnscrypt1_resolver.value != "<% nvram_get("dnscrypt1_resolver"); %>") ||
-		   (document.form.dnscrypt1_port.value != "<% nvram_get("dnscrypt1_port"); %>") ||
-		   (document.form.dnscrypt2_resolver.value != "<% nvram_get("dnscrypt2_resolver"); %>") ||
-		   (document.form.dnscrypt2_port.value != "<% nvram_get("dnscrypt2_port"); %>") ||
-		   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
-			document.form.action_script.value += ";stop_dnscrypt";
+		// restart via wanduck after restart_wan_if
+		//if((document.form.dnscrypt_proxy[0].checked != "<% nvram_get("dnscrypt_proxy"); %>") ||
+		//   (document.form.dnscrypt1_resolver.value != "<% nvram_get("dnscrypt1_resolver"); %>") ||
+		//   (document.form.dnscrypt1_port.value != "<% nvram_get("dnscrypt1_port"); %>") ||
+		//   (document.form.dnscrypt2_resolver.value != "<% nvram_get("dnscrypt2_resolver"); %>") ||
+		//   (document.form.dnscrypt2_port.value != "<% nvram_get("dnscrypt2_port"); %>") ||
+		//   (document.form.dnscrypt_log.value != "<% nvram_get("dnscrypt_log"); %>"))
+		//	document.form.action_script.value += ";stop_dnscrypt";
 /* DNSCRYPT-END */
 /* STUBBY-BEGIN */
 
@@ -394,11 +395,12 @@ function applyRule(){
 		//if(document.form.web_redirect.value != "<% nvram_get("web_redirect"); %>")
 		//	document.form.action_script += ";restart_firewall";
 
-		if((document.form.stubby_proxy[0].checked != "<% nvram_get("stubby_proxy"); %>") ||
-		   (document.form.stubby_dns.value != "<% nvram_get("stubby_dns"); %>") ||
-		   (document.form.stubby_port.value != "<% nvram_get("stubby_port"); %>") ||
-		   (document.form.stubby_loglevel.value != "<% nvram_get("stubby_loglevel"); %>"))
-			document.form.action_script.value += ";stop_stubby";
+		// restart via wanduck after restart_wan_if
+		//if((document.form.stubby_proxy[0].checked != "<% nvram_get("stubby_proxy"); %>") ||
+		//   (document.form.stubby_dns.value != "<% nvram_get("stubby_dns"); %>") ||
+		//   (document.form.stubby_port.value != "<% nvram_get("stubby_port"); %>") ||
+		//   (document.form.stubby_loglevel.value != "<% nvram_get("stubby_loglevel"); %>"))
+		//	document.form.action_script.value += ";stop_stubby";
 /* STUBBY-END */
 
 		document.form.action_wait.value = eval("<% get_default_reboot_time(); %> / 2");
