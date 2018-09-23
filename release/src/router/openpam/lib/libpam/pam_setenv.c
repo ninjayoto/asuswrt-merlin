@@ -39,6 +39,7 @@
 # include "config.h"
 #endif
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -65,12 +66,12 @@ pam_setenv(pam_handle_t *pamh,
 	int r;
 
 	ENTER();
-	if (pamh == NULL)
-		RETURNC(PAM_SYSTEM_ERR);
 
 	/* sanity checks */
-	if (name == NULL || value == NULL || strchr(name, '=') != NULL)
+	if (*name == '\0' || strchr(name, '=') != NULL) {
+		errno = EINVAL;
 		RETURNC(PAM_SYSTEM_ERR);
+	}
 
 	/* is it already there? */
 	if (!overwrite && openpam_findenv(pamh, name, strlen(name)) >= 0)

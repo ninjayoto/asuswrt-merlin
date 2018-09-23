@@ -1,12 +1,6 @@
 /*-
- * Copyright (c) 2002-2003 Networks Associates Technology, Inc.
- * Copyright (c) 2004-2011 Dag-Erling Smørgrav
+ * Copyright (c) 2014 Dag-Erling Smørgrav
  * All rights reserved.
- *
- * This software was developed for the FreeBSD Project by ThinkSec AS and
- * Network Associates Laboratories, the Security Research Division of
- * Network Associates, Inc.  under DARPA/SPAWAR contract N66001-01-C-8035
- * ("CBOSS"), as part of the DARPA CHATS research program.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,53 +26,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: pam_getenv.c 648 2013-03-05 17:54:27Z des $
+ * $OpenPAM: openpam_strlset.h 938 2017-04-30 21:34:42Z des $
  */
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
+#ifndef OPENPAM_STRLSET_H_INCLUDED
+#define OPENPAM_STRLSET_H_INCLUDED
+
+#ifndef HAVE_STRLSET
+size_t openpam_strlset(char *, int, size_t);
+#undef strlset
+#define strlset(arg, ...) openpam_strlset(arg, __VA_ARGS__)
 #endif
 
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <security/pam_appl.h>
-
-#include "openpam_impl.h"
-
-/*
- * XSSO 4.2.1
- * XSSO 6 page 44
- *
- * Retrieve the value of a PAM environment variable
- */
-
-const char *
-pam_getenv(pam_handle_t *pamh,
-	const char *name)
-{
-	char *str;
-	int i;
-
-	ENTERS(name);
-	if (strchr(name, '=') != NULL) {
-		errno = EINVAL;
-		RETURNS(NULL);
-	}
-	if ((i = openpam_findenv(pamh, name, strlen(name))) < 0)
-		RETURNS(NULL);
-	if ((str = strchr(pamh->env[i], '=')) == NULL)
-		RETURNS("");
-	RETURNS(str);
-}
-
-/**
- * The =pam_getenv function returns the value of an environment variable.
- * Its semantics are similar to those of =getenv, but it accesses the PAM
- * context's environment list instead of the application's.
- *
- * >pam_getenvlist
- * >pam_putenv
- * >pam_setenv
- */
+#endif
