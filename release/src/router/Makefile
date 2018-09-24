@@ -2788,7 +2788,7 @@ openvpn/stamp-h1:
 	IPROUTE="/usr/sbin/ip" IFCONFIG="/sbin/ifconfig" ROUTE="/sbin/route" \
 	$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib  --enable-iproute2 \
 	--disable-debug --enable-management --disable-small \
-	--disable-selinux --enable-plugin-auth-pam \
+	--disable-selinux $(if $(RTCONFIG_BCMARM),--enable-plugin-auth-pam) \
 	ac_cv_lib_resolv_gethostbyname=no
 	touch $@
 

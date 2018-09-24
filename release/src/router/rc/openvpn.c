@@ -1116,7 +1116,12 @@ void start_vpnserver(int serverNum)
 
 		if ( userauth ) {
 			//authentication
+#ifdef RTCONFIG_BCMARM
 			fprintf(fp, "plugin /usr/lib/openvpn-plugin-auth-pam.so openvpn\n");
+#else
+			fprintf(fp, "auth-user-pass-verify /usr/sbin/ovpnauth.sh via-file\n");
+			fprintf(fp, "script-security 2\n");
+#endif
 			fprintf(fp_client, "auth-user-pass\n");
 
 			//ignore client certificate, but only if user/pass auth is enabled
@@ -1160,7 +1165,9 @@ void start_vpnserver(int serverNum)
 	{
 		sprintf(&buffer[0], "/etc/openvpn/server%d/updown.sh", serverNum);
 		symlink("/jffs/scripts/openvpn-event", &buffer[0]);
+#ifdef RTCONFIG_BCMARM
 		fprintf(fp, "script-security 2\n");
+#endif
 		fprintf(fp, "up updown.sh\n");
 		fprintf(fp, "down updown.sh\n");
 	}
