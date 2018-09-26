@@ -1094,9 +1094,6 @@ void start_dnscrypt(int force)
 //	stop_dnscrypt(0);
 	time_valid = ntp_sync;
 
-	if ((fp = fopen("/etc/dnscrypt-proxy1.conf", "w")) == NULL)
-		return;
-
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled() && nvram_get_int("dnscrypt1_ipv6"))
 		dnscrypt1_lanip = "[::1]";
@@ -1105,6 +1102,9 @@ void start_dnscrypt(int force)
 		dnscrypt1_lanip = "127.0.0.1";
 
 	if (!nvram_match("dnscrypt1_resolver", "none")) {
+		if ((fp = fopen("/etc/dnscrypt-proxy1.conf", "w")) == NULL)
+			return;
+
 		fprintf(fp, "Daemonize yes\n");
 		fprintf(fp, "LocalAddress %s:%d\n", dnscrypt1_lanip, nvram_get_int("dnscrypt1_port"));
 		fprintf(fp, "LogLevel %s\n", nvram_safe_get("dnscrypt_log"));
@@ -1126,9 +1126,6 @@ void start_dnscrypt(int force)
 //		logmessage("dnscrypt-proxy", "start dnscrypt-proxy1 (%d)", rc);
 	}
 
-	if ((fp = fopen("/etc/dnscrypt-proxy2.conf", "w")) == NULL)
-		return;
-
 #ifdef RTCONFIG_IPV6
 	if (ipv6_enabled() && nvram_get_int("dnscrypt2_ipv6"))
 		dnscrypt2_lanip = "[::1]";
@@ -1137,6 +1134,9 @@ void start_dnscrypt(int force)
 		dnscrypt2_lanip = "127.0.0.1";
 
 	if (!nvram_match("dnscrypt2_resolver", "none")) {
+		if ((fp = fopen("/etc/dnscrypt-proxy2.conf", "w")) == NULL)
+			return;
+
 		fprintf(fp, "Daemonize yes\n");
 		fprintf(fp, "LocalAddress %s:%d\n", dnscrypt2_lanip, nvram_get_int("dnscrypt2_port"));
 		fprintf(fp, "LogLevel %s\n", nvram_safe_get("dnscrypt_log"));
@@ -1220,10 +1220,10 @@ void start_stubby(int force)
 //	stop_stubby(0);
 	time_valid = ntp_sync;
 
-	if ((fp = fopen("/etc/stubby.yml", "w")) == NULL)
-		return;
-
 	if (nvram_match("stubby_proxy", "1")) {
+		if ((fp = fopen("/etc/stubby.yml", "w")) == NULL)
+			return;
+
 		fprintf(fp, "tls_ca_file: \"/rom/ca-bundle.crt\"\n");
 		fprintf(fp, "resolution_type: GETDNS_RESOLUTION_STUB\n");
 		fprintf(fp, "dns_transport_list:\n");
