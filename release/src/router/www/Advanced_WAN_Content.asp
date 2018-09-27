@@ -83,6 +83,8 @@ var vpn_client1_adns = '<% nvram_get("vpn_client1_adns"); %>';
 var vpn_client2_adns = '<% nvram_get("vpn_client2_adns"); %>';
 var vpn_client1_state = '<% nvram_get("vpn_client1_state"); %>';
 var vpn_client2_state = '<% nvram_get("vpn_client2_state"); %>';
+var vpn_client1_enabled = '<% nvram_get("vpn_client1_enabled"); %>';
+var vpn_client2_enabled = '<% nvram_get("vpn_client2_enabled"); %>';
 var ipv6_enabled = ('<% nvram_get("ipv6_service"); %>' == "disabled") ? 0 : 1;
 var machine_name = '<% get_machine_name(); %>';
 var allow_routelocal = (((machine_name.search("arm") == -1) ? false : true) && ('<% nvram_get("allow_routelocal"); %>' ? true : false));
@@ -362,10 +364,14 @@ function applyRule(){
 /* DNSCRYPT-BEGIN */
 		// Reset VPN Client DNSCrypt option when turning off DNSCrypt
 		if(!document.form.dnscrypt_proxy[0].checked && (dnscrypt_proxy_orig == 1)) {
-			if(document.form.vpn_client1_adns.value == 4)
-				document.form.vpn_client1_adns.value = 3;
-			if(document.form.vpn_client2_adns.value == 4)
-				document.form.vpn_client2_adns.value = 3;
+			if(vpn_client1_enabled == 1) {
+				if(document.form.vpn_client1_adns.value == 4)
+					document.form.vpn_client1_adns.value = 3;
+			}
+			if(vpn_client2_enabled == 1) {
+				if(document.form.vpn_client2_adns.value == 4)
+					document.form.vpn_client2_adns.value = 3;
+			}
 		}
 
 		// Restart services if required
@@ -384,10 +390,14 @@ function applyRule(){
 
 		// Reset VPN Client Stubby option when turning off Stubby
 		if(!document.form.stubby_proxy[0].checked && (stubby_proxy_orig == 1)) {
-			if(document.form.vpn_client1_adns.value == 4)
-				document.form.vpn_client1_adns.value = 3;
-			if(document.form.vpn_client2_adns.value == 4)
-				document.form.vpn_client2_adns.value = 3;
+			if(vpn_client1_enabled == 1) {
+				if(document.form.vpn_client1_adns.value == 4)
+					document.form.vpn_client1_adns.value = 3;
+			}
+			if(vpn_client2_enabled == 1) {
+				if(document.form.vpn_client2_adns.value == 4)
+					document.form.vpn_client2_adns.value = 3;
+			}
 		}
 
 		// Restart services if required
