@@ -1695,6 +1695,8 @@ TRACE_PT("3g end.\n");
 			/* Start dhcp daemon */
 			start_udhcpc(wan_ifname, unit, &pid);
 
+			update_resolvconf();
+
 			update_wan_state(prefix, WAN_STATE_CONNECTING, 0);
 		}
 		/* Configure static IP connection. */
@@ -2004,9 +2006,10 @@ int update_resolvconf(void)
 
 #ifdef RTCONFIG_DNSMASQ
 #ifdef RTCONFIG_OPENVPN
-	if ((dnsstrict == 2) || (dnsstrict != dnsstrict_last) || (nvram_match("dnscrypt_proxy", "1")) || (nvram_match("stubby_proxy", "1"))) {
-		restart_dnsmasq(0);	// add strict-order or no-resolv
-		dnsstrict_last = dnsstrict;
+	if (nvram_get_int("vpn_clientx_enabled") &&
+		((dnsstrict == 2) || (dnsstrict != dnsstrict_last))) {
+			restart_dnsmasq(0);	// add strict-order or no-resolv
+			dnsstrict_last = dnsstrict;
 	}
 	else
 #endif
