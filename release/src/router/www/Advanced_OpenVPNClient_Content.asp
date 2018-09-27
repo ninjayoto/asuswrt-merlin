@@ -1077,6 +1077,8 @@ function defaultSettings() {
 
 								$j('#radio_service_enable').iphoneSwitch(service_state,
 									 function() {
+										if (document.form.vpn_client_adns.value == 4 && ext_proxy == 0)  // reset dns mode if proxy selected but proxy not active
+											document.form.vpn_client_adns.value = 3;
 										document.form.action_wait.value = 15;
 										document.form.action_script.value = "start_vpnclient" + openvpn_unit;
 										document.form.showloading_x.value = (document.form.showloading_x.value == "1") ? "0" : "1";
