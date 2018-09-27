@@ -1039,12 +1039,14 @@ restore_defaults(void)
 	/* reset vpn client status */
 	nvram_set("vpn_client1_enabled", "0");
 	nvram_set("vpn_client2_enabled", "0");
+	nvram_set("vpn_clientx_enabled", "0");
 	nvram_set("vpn_client1_block", "0");
 	nvram_set("vpn_client2_block", "0");
 
 	/* reset vpn server status */
 	nvram_set("vpn_server1_enabled", "0");
 	nvram_set("vpn_server2_enabled", "0");
+	nvram_set("vpn_serverx_enabled", "0");
 
 #ifdef RTCONFIG_QTN
 	nvram_unset("qtn_ready");

@@ -524,6 +524,8 @@ void start_vpnclient(int clientNum)
 	// Start the VPN client
 	sprintf(&buffer[0], "vpn_client%d_enabled", clientNum);
 	nvram_set(&buffer[0], "1");
+	sprintf(&buffer[0], "vpn_clientx_enabled");
+	nvram_set_int(&buffer[0], (nvram_get_int(&buffer[0])+1));
 #ifdef RTCONFIG_BCMARM
         if (cpu_num > 1)
 		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnclient%d --cd /etc/openvpn/client%d --config config.ovpn", (clientNum % 2 ? 1 : 0), clientNum, clientNum);
@@ -594,6 +596,8 @@ void stop_vpnclient(int clientNum)
 	vpnlog(VPN_LOG_EXTRA,"Stopping OpenVPN client.");
 	sprintf(&buffer[0], "vpn_client%d_enabled", clientNum);
 	nvram_set(&buffer[0], "0");
+	sprintf(&buffer[0], "vpn_clientx_enabled");
+	nvram_set_int(&buffer[0], (nvram_get_int(&buffer[0])-1));
 	sprintf(&buffer[0], "vpnclient%d", clientNum);
 	if ( !ovpn_waitfor(&buffer[0]) )
 		vpnlog(VPN_LOG_EXTRA,"OpenVPN client stopped.");
@@ -1576,6 +1580,8 @@ void start_vpnserver(int serverNum)
 	// Start the VPN server
 	sprintf(&buffer[0], "vpn_server%d_enabled", serverNum);
 	nvram_set(&buffer[0], "1");
+	sprintf(&buffer[0], "vpn_serverx_enabled");
+	nvram_set_int(&buffer[0], (nvram_get_int(&buffer[0])+1));
 #ifdef RTCONFIG_BCMARM
         if (cpu_num > 1)
 		sprintf(&buffer[0], "taskset -c %d /etc/openvpn/vpnserver%d --cd /etc/openvpn/server%d --config config.ovpn", (serverNum % 2 ? 1 : 0), serverNum, serverNum);
@@ -1656,6 +1662,8 @@ void stop_vpnserver(int serverNum)
 	vpnlog(VPN_LOG_EXTRA,"Stopping OpenVPN server.");
 	sprintf(&buffer[0], "vpn_server%d_enabled", serverNum);
 	nvram_set(&buffer[0], "0");
+	sprintf(&buffer[0], "vpn_serverx_enabled");
+	nvram_set_int(&buffer[0], (nvram_get_int(&buffer[0])-1));
 	sprintf(&buffer[0], "vpnserver%d", serverNum);
 	if ( !ovpn_waitfor(&buffer[0]) )
 		vpnlog(VPN_LOG_EXTRA,"OpenVPN server stopped.");
@@ -1746,9 +1754,6 @@ void start_vpn_eas()
 			stop_vpnserver(nums[i]);
 		}
 
-		sprintf(&buffer[0], "vpn_server%d_enabled", nums[i]);
-		nvram_set(&buffer[0], "1");
-
 		// Start server
 		vpnlog(VPN_LOG_INFO, "Starting OpenVPN server %d (eas)", nums[i]);
 		start_vpnserver(nums[i]);
@@ -1769,8 +1774,6 @@ void start_vpn_eas()
 			stop_vpnclient(nums[i]);
 		}
 
-		sprintf(&buffer[0], "vpn_client%d_enabled", nums[i]);
-		nvram_set(&buffer[0], "1");
 
 		// Setup client routing in case some are set to be blocked when tunnel is down
 		update_vpnrouting(nums[i]);
