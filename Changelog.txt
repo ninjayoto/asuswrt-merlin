@@ -4,7 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_36E3j9527  (24-September-2018) ARM SDK, MIPS,ARM KRACK
+374.43_36E4j9527  (27-September-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: Revert "wanduck: restart stubby/dnscrypt on WAN restore"
+* CHANGED: openvpn: add global status for vpn server/client enabled
+* CHANGED: webui: wan: only update vpn client dns mode on dns change if client enabled
+* CHANGED: webui: openvpn: reset dns mode to exclusive on start if proxy selected but not active
+* FIXED: wan: ensure dnscrypt/stubby/dnsmasq are properly restarted if required
+* FIXED: services: fix memory leak in dnscrypt and stubby start
+
+
 * NEW: iptables: add tproxy module for ARM routers
 * CHANGED: openvpn: MIPS: replace openvpn server username/password auth plugin with custom script
 * CHANGED: openpam: (upstream) changeset 877 - memory leak in openpam_readlinev.c
