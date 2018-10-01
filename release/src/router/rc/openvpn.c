@@ -1171,6 +1171,9 @@ void start_vpnserver(int serverNum)
 		symlink("/jffs/scripts/openvpn-event", &buffer[0]);
 #ifdef RTCONFIG_BCMARM
 		fprintf(fp, "script-security 2\n");
+#else
+		if ( !userauth )
+			fprintf(fp, "script-security 2\n");
 #endif
 		fprintf(fp, "up updown.sh\n");
 		fprintf(fp, "down updown.sh\n");
