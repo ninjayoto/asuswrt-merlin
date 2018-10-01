@@ -33,6 +33,8 @@
 #include <shutils.h>
 #include <rc.h>
 
+#define BUF_SIZE 256
+
 /* Zeroconf support if DHCP fails */
 #undef DHCP_ZEROCONF
 
@@ -577,6 +579,9 @@ bound_lan(void)
 {
 	char *lan_ifname = safe_getenv("interface");
 	char *value;
+	char buffer[BUF_SIZE];
+	char word[256], *next;
+	int i=1;
 
 	if ((value = getenv("ip")))
 		nvram_set("lan_ipaddr", trim_r(value));
@@ -588,10 +593,17 @@ bound_lan(void)
 		nvram_set("lan_lease", trim_r(value));
 		expires_lan(lan_ifname, atoi(value));
 	}
+
 	if (nvram_get_int("lan_dnsenable_x") && (value = getenv("dns"))){
 		nvram_set("lan_dns", trim_r(value));
-		nvram_set("lan_dns1_x", trim_r(value));
+		nvram_set("lan_dns1_x", "");
 		nvram_set("lan_dns2_x", "");
+		nvram_set("lan_dns3_x", "");
+		foreach(word, trim_r(value), next) {
+			sprintf(&buffer[0], "lan_dns%d_x", i);
+			nvram_set(&buffer[0], trim_r(word));
+			i++;
+		}
 	}
 
 _dprintf("%s: IFUP.\n", __FUNCTION__);
