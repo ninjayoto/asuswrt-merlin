@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36E5j9527  (3-October-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: udhcpc: parse lan dns servers into individual server nvram vars
+* CHANGED: webui: display 3rd lan dns server if automatic and not router mode
+* CHANGED: dnsmasq: improve insecure dnssec log, ratelimit generic failure log msgs
+* CHANGED: stubby: add nvram for stubby timeout and connection retries
+* FIXED: openvpn: fix setting script-security without username/password auth on MIPS
+
+
 374.43_36E4j9527  (27-September-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: Revert "wanduck: restart stubby/dnscrypt on WAN restore"
 * CHANGED: openvpn: add global status for vpn server/client enabled
