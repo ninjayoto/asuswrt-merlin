@@ -496,6 +496,26 @@ Do not send empty WPAD response
         Notes:                  DNSMASQ by default sends a single linefeed as a WPAD url.  This can prevent the setting of a WPAD proxy in
                                   certain configurations.   Setting this option to zero prevents sending the empty linfeed WPAD response.
 ---------------------------------------------------------------------------------------------------------------
+Stubby (DoT) operational parameters
+
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set stubby_idletimeout=x
+                                nvram set stubby_timeout=x
+                                nvram set stubby_retires=x
+                                nvram commit
+                                service restart_stubby
+                                  (where x = value in msec)
+
+
+        Routers Supported:      All
+        Released:               Update-36E6
+        Reboot Required:        No (must restart stubby to activate changes)
+        Notes:                  Allows changing stubby parameters
+                                  idle_timeout:
+                                  timeout:
+                                  tls_connection_retries:
+                                to customize stubby for your location/hardware.   See the stubby man page for further information.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 

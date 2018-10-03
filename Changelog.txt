@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36E6j9527  (3-October-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dnsmasq: update to 2.80test7
+* CHANGED: dnsmasq: reject wpad hostname (protect against VU#598349)
+
+
 374.43_36E5j9527  (3-October-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: udhcpc: parse lan dns servers into individual server nvram vars
 * CHANGED: webui: display 3rd lan dns server if automatic and not router mode
