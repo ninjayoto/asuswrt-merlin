@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=У цьому полі вказано ІР-а
 IPConnection_x_DNSServer1_itemname=DNS Server1:
 IPConnection_x_DNSServer2_itemdesc=У цьому полі вказано ІР-адресу DNS, до якої підключається ZVMODELVZ.
 IPConnection_x_DNSServer2_itemname=DNS Server2:
+IPConnection_x_DNSServer3_itemname=DNS Server3:
 IPConnection_x_DNSServerEnable_itemdesc=Надає маршрутизатору можливість автоматично отримати ІР-адресу DNS від Інтернет-провайдера.
 IPConnection_x_DNSServerEnable_itemname=Підключитися до сервера DNS автоматично?
 IPConnection_x_ExternalGateway_itemdesc=Якщо для підключення до WAN потрібна статична ІР-адреса, введіть у це поле ІР-адресу шлюзу.

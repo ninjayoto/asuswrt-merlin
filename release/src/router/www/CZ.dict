@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Toto pole naznačuje IP adresu DNS, se kterou
 IPConnection_x_DNSServer1_itemname=DNS Server1
 IPConnection_x_DNSServer2_itemdesc=Toto pole naznačuje IP adresu DNS, se kterou ZVMODELVZ spojil.
 IPConnection_x_DNSServer2_itemname=DNS Server2
+IPConnection_x_DNSServer3_itemname=DNS Server3
 IPConnection_x_DNSServerEnable_itemdesc=Umožňuje tomuto směrovači automaticky získat adresu IP serveru DNS od ISP.
 IPConnection_x_DNSServerEnable_itemname=Připojit k DNS serveru automaticky
 IPConnection_x_ExternalGateway_itemdesc=Pokud vaše připojení WAN vyžaduje statickou adresu IP, zadejte adresu IP brány do tohoto pole.

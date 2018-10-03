@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=В этом поле указывается I
 IPConnection_x_DNSServer1_itemname=DNS-сервер 1
 IPConnection_x_DNSServer2_itemdesc=В этом поле указывается IP-адрес DNS, к которому обращается ZVMODELVZ.
 IPConnection_x_DNSServer2_itemname=DNS-сервер 2
+IPConnection_x_DNSServer3_itemname=DNS-сервер 3
 IPConnection_x_DNSServerEnable_itemdesc=Позволяет маршрутизатору, получить IP адрес DNS от провайдера автоматически.
 IPConnection_x_DNSServerEnable_itemname=Подключаться к DNS-серверу автоматически
 IPConnection_x_ExternalGateway_itemdesc=Если WAN соединение требует статического IP-адреса, введите адрес шлюза IP в этой области

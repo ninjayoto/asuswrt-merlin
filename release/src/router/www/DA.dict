@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Dette felt angiver den DNS-servers IP-adresse
 IPConnection_x_DNSServer1_itemname=DNS-server 1
 IPConnection_x_DNSServer2_itemdesc=Dette felt angiver den DNS-servers IP-adresse, som ZVMODELVZ\'en kontakter.
 IPConnection_x_DNSServer2_itemname=DNS-server 2
+IPConnection_x_DNSServer3_itemname=DNS-server 3
 IPConnection_x_DNSServerEnable_itemdesc=Tillader denne router, at hente DNS IP-adressen fra ISP automatisk.
 IPConnection_x_DNSServerEnable_itemname=Skal der kobles automatisk til DNS-serveren
 IPConnection_x_ExternalGateway_itemdesc=Hvis din WAN forbindelse kræver en statisk IP-adresse, skal du indtaste gateway IP-adressen i dette felt.

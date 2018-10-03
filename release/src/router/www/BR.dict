@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Este campo o endereço IP do DNS que o ZVMODE
 IPConnection_x_DNSServer1_itemname=Servidor DNS 1
 IPConnection_x_DNSServer2_itemdesc=Este campo o endereço IP do DNS que o ZVMODELVZ está conectado.
 IPConnection_x_DNSServer2_itemname=Servidor DNS 2
+IPConnection_x_DNSServer3_itemname=Servidor DNS 3
 IPConnection_x_DNSServerEnable_itemdesc=Permite que este roteador obtenha o endereço IP DNS de ISP automaticamente.
 IPConnection_x_DNSServerEnable_itemname=Conectar ao servidor DNS automaticamente
 IPConnection_x_ExternalGateway_itemdesc=Se sua conexão WAN necessita de um endereço IP estático, digite o endereço IP gateway neste campo.

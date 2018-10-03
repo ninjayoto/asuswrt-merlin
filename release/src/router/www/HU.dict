@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Adja meg az elsődleges DNS szerver IP-címé
 IPConnection_x_DNSServer1_itemname=DNS szerver1
 IPConnection_x_DNSServer2_itemdesc=Adja meg a másodlagos DNS szerver IP-címét.
 IPConnection_x_DNSServer2_itemname=DNS szerver2
+IPConnection_x_DNSServer3_itemname=DNS szerver3
 IPConnection_x_DNSServerEnable_itemdesc=Lehetővé teszi, hogy a router automatikusan lekérje a DNS IP-címet az ISP-től.
 IPConnection_x_DNSServerEnable_itemname=Automatikus csatlakozás a DNS szerverhez
 IPConnection_x_ExternalGateway_itemdesc=Amennyiben WAN-kapcsolata statikus IP-cím használatát igényli, gépelje az átjáró IP-címet ebbe a mezőbe.

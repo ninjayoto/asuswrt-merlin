@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=设置 ZVMODELVZ 第一组DNS的IP地址。
 IPConnection_x_DNSServer1_itemname=DNS 服务器1
 IPConnection_x_DNSServer2_itemdesc=手动设置的第二组DNS IP地址。
 IPConnection_x_DNSServer2_itemname=DNS 服务器2
+IPConnection_x_DNSServer3_itemname=DNS 服务器3
 IPConnection_x_DNSServerEnable_itemdesc=允许此路由器自动从 ISP 中获取 DNS 的 IP 地址。
 IPConnection_x_DNSServerEnable_itemname=自动接上 DNS 服务器
 IPConnection_x_ExternalGateway_itemdesc=若您的 WAN 连接需要一个固定的 IP 地址，请在此栏中输入网关 IP 地址。

@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=ฟิลด์นี้ระบุถึง
 IPConnection_x_DNSServer1_itemname=DNS เซิร์ฟเวอร์ 1
 IPConnection_x_DNSServer2_itemdesc=ฟิลด์นี้ระบุถึง IP แอดเดรสของ DNS ที่ ZVMODELVZ เชื่อมต่อไปยัง
 IPConnection_x_DNSServer2_itemname=DNS เซิร์ฟเวอร์ 2
+IPConnection_x_DNSServer3_itemname=DNS เซิร์ฟเวอร์ 3
 IPConnection_x_DNSServerEnable_itemdesc=อนุญาตให้เราเตอร์นี้รับ DNS IP แอดเดรสจาก ISP โดยอัตโนมัติ
 IPConnection_x_DNSServerEnable_itemname=เชื่อมต่อไปยัง DNS เซิร์ฟเวอร์โดยอัตโนมัติ
 IPConnection_x_ExternalGateway_itemdesc=ถ้าการเชื่อมต่อ WAN ของคุณต้องการสแตติก IP แอดเดรส, ให้ป้อนเกตเวย์ IP แอดเดรสในฟิลด์นี้

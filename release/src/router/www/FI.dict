@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Tämä kenttä ilmaisee DNS-palvelimen IP-oso
 IPConnection_x_DNSServer1_itemname=DNS-palvelin1
 IPConnection_x_DNSServer2_itemdesc=Tämä kenttä ilmaisee DNS-palvelimen IP-osoitteen, johon ZVMODELVZ-reititin muodostaa yhteyden.
 IPConnection_x_DNSServer2_itemname=DNS-palvelin2
+IPConnection_x_DNSServer3_itemname=DNS-palvelin3
 IPConnection_x_DNSServerEnable_itemdesc=Sallii tämän reitittimen hakea DNS IP -osoitteita internetpalveluntarjoajalta automaattisesti.
 IPConnection_x_DNSServerEnable_itemname=Yhdistetäänkö DNS-palvelimeen automaattisesti
 IPConnection_x_ExternalGateway_itemdesc=Jos WAN-yhteys vaatii staattisen IP-osoitteen, näppäile yhdyskäytävän IP-osoite tähän kenttään.

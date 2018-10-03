@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=To pole wskazuje adres IP z DNS, z którym sk
 IPConnection_x_DNSServer1_itemname=DNS Server1
 IPConnection_x_DNSServer2_itemdesc=To pole wskazuje adres IP z DNS, z którym skontaktował się ZVMODELVZ.
 IPConnection_x_DNSServer2_itemname=DNS Server2
+IPConnection_x_DNSServer3_itemname=DNS Server3
 IPConnection_x_DNSServerEnable_itemdesc=Umożliwia automatyczne uzyskiwanie przez ten router adresu IP DNS od dostawcy usługi połączenia z Interenetem.
 IPConnection_x_DNSServerEnable_itemname=Połączyć z serwerem DNS automatycznie
 IPConnection_x_ExternalGateway_itemdesc=Jeśli połączenie WAN wymaga statycznego adresu IP, w tym polu należy wprowadzić adres IP bramy.

@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Bu alan, ZVMODELVZ yönlendiricisinin irtibat
 IPConnection_x_DNSServer1_itemname=DNS Sunucusu1
 IPConnection_x_DNSServer2_itemdesc=Bu alan, ZVMODELVZ yönlendiricisinin irtibat sağladığı DNS IP adresini gösterir.
 IPConnection_x_DNSServer2_itemname=DNS Sunucusu2
+IPConnection_x_DNSServer3_itemname=DNS Sunucusu3
 IPConnection_x_DNSServerEnable_itemdesc=Bu yönlendiricinin ISP'den otomatik olarak DNS IP adresi almasını sağlar.
 IPConnection_x_DNSServerEnable_itemname=DNS Sunucusuna otomatik bağlansın mı
 IPConnection_x_ExternalGateway_itemdesc=Eğer WAN bağlantınız sabit bir IP adresi gerektirirse, bu alandaki ağ geçidi IP adresini girin.

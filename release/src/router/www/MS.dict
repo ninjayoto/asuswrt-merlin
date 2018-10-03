@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Medan ini menunjukkan alamat IP bagi DNS yang
 IPConnection_x_DNSServer1_itemname=Pelayan DNS 1
 IPConnection_x_DNSServer2_itemdesc=Medan ini menunjukkan alamat IP bagi DNS yang ZVMODELVZ berhubung.
 IPConnection_x_DNSServer2_itemname=Pelayan DNS 2
+IPConnection_x_DNSServer3_itemname=Pelayan DNS 3
 IPConnection_x_DNSServerEnable_itemdesc=Benarkan penghala ini untuk mendapatkan alamat IP DNS daripada ISP secara automatik.
 IPConnection_x_DNSServerEnable_itemname=Menyambung kepada Pelayan DNS secara automatik
 IPConnection_x_ExternalGateway_itemdesc=Jika sambungan WAN anda memerlukan alamat IP statik, masukkan alamat IP get laluan dalam medan ini.

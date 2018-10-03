@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=This field indicates the IP address of DNS th
 IPConnection_x_DNSServer1_itemname=DNS Server1
 IPConnection_x_DNSServer2_itemdesc=This field indicates the IP address of DNS that ZVMODELVZ contact to.
 IPConnection_x_DNSServer2_itemname=DNS Server2
+IPConnection_x_DNSServer3_itemname=DNS Server3
 IPConnection_x_DNSServerEnable_itemdesc=Allows this router to get the DNS IP address from the ISP automatically.
 IPConnection_x_DNSServerEnable_itemname=Connect to DNS Server automatically
 IPConnection_x_ExternalGateway_itemdesc=If your WAN connection requires a static IP address, key in the gateway IP address in this field.

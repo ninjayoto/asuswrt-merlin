@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=このフィールドは ZVMODELVZ が通信�
 IPConnection_x_DNSServer1_itemname=DNS サーバー1
 IPConnection_x_DNSServer2_itemdesc=このフィールドは ZVMODELVZ が通信する DNS の IP アドレスが表示されます。
 IPConnection_x_DNSServer2_itemname=DNS サーバー2
+IPConnection_x_DNSServer3_itemname=DNS サーバー3
 IPConnection_x_DNSServerEnable_itemdesc=このフィールドでは、リモートネットワークから DNS IP アドレスを自動取得できます。
 IPConnection_x_DNSServerEnable_itemname=DNS サーバーに自動接続しますか
 IPConnection_x_ExternalGateway_itemdesc=これはデフォルトゲートウェイのIPアドレスで、ZVMODELVZ とリモートネットワーク、ホストの間に通信に使用されます。

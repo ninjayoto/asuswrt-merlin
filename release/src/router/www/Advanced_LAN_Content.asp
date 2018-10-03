@@ -48,6 +48,7 @@ function initial(){
 		 $("table_dnsenable").style.display = "none";
 		 $("table_dns1").style.display = "none";
 		 $("table_dns2").style.display = "none";
+		 $("table_dns3").style.display = "none";
 		 /*  Not needed to show out. Viz 2012.04
 		 if(pptpd_support){
 		 	var chk_vpn = check_vpn();
@@ -308,6 +309,14 @@ function changed_DHCP_IP_pool(){
 function display_lan_dns(flag){
 	inputCtrl(document.form.lan_dns1_x, conv_flag(flag));
 	inputCtrl(document.form.lan_dns2_x, conv_flag(flag));
+	if(!flag)
+		$("table_dns3").style.display = "none";
+	else{
+		if(sw_mode != "1"){
+			$("table_dns3").style.display = "";
+		}
+	}
+	inputCtrl(document.form.lan_dns3_x, conv_flag(flag));
 }
 
 function change_ip_setting(flag){
@@ -484,6 +493,15 @@ function check_vpn(){		//true: lAN ip & VPN client ip conflict
 				<input type="text" maxlength="15" class="input_15_table" name="lan_dns2_x" value="<% nvram_get("lan_dns2_x"); %>" onkeypress="return is_ipaddr(this, event)" >
 			</td>
       </tr>  
+
+      <tr id="table_dns3">
+      <th>
+				<a class="hintstyle" href="javascript:void(0);"><#IPConnection_x_DNSServer3_itemname#></a>
+			</th>
+      <td>
+				<input type="text" maxlength="15" class="input_15_table" name="lan_dns3_x" value="<% nvram_get("lan_dns3_x"); %>" onkeypress="return is_ipaddr(this, event)" >
+			</td>
+      </tr>
 
 		</table>	
 		

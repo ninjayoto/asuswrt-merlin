@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=設定 ZVMODELVZ 第一組 DNS IP 位址。
 IPConnection_x_DNSServer1_itemname=DNS 伺服器1
 IPConnection_x_DNSServer2_itemdesc=手動設定的第二組 DNS IP 位址。
 IPConnection_x_DNSServer2_itemname=DNS 伺服器2
+IPConnection_x_DNSServer3_itemname=DNS 伺服器3
 IPConnection_x_DNSServerEnable_itemdesc=允許此路由器自動從 ISP 中獲取 DNS 的 IP 位址。
 IPConnection_x_DNSServerEnable_itemname=自動接上 DNS 伺服器
 IPConnection_x_ExternalGateway_itemdesc=若您的 WAN 連接需要一個固定的 IP 位址，請在此欄中輸入閘道 IP 位址。

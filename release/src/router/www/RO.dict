@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Introduceţi adresa IP a serverului DNS princ
 IPConnection_x_DNSServer1_itemname=Server DNS 1
 IPConnection_x_DNSServer2_itemdesc=Introduceţi adresa IP a serverului DNS secundar.
 IPConnection_x_DNSServer2_itemname=Server DNS 2
+IPConnection_x_DNSServer3_itemname=Server DNS 3
 IPConnection_x_DNSServerEnable_itemdesc=Permiteţi acestui router să obţină automat adresa IP de la ISP.
 IPConnection_x_DNSServerEnable_itemname=Conectare automată la serverul DNS
 IPConnection_x_ExternalGateway_itemdesc=În cazul în care conexiunea dvs. WAN necesită o adresă IP statică, introduceţi adresa IP a gateway-ului în acest câmp.

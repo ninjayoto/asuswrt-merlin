@@ -84,6 +84,7 @@ IPConnection_x_DNSServer1_itemdesc=Ce champ indique l\'adresse IP du DNS auquel 
 IPConnection_x_DNSServer1_itemname=Serveur DNS 1
 IPConnection_x_DNSServer2_itemdesc=Ce champ indique l\'adresse IP du DNS auquel le ZVMODELVZ est connecté.
 IPConnection_x_DNSServer2_itemname=Serveur DNS 2
+IPConnection_x_DNSServer3_itemname=Serveur DNS 3
 IPConnection_x_DNSServerEnable_itemdesc=Permet au routeur d'obtenir les adresses de serveur DNS automatiquement auprès du FAI (Fournisseur d'accès à Internet).
 IPConnection_x_DNSServerEnable_itemname=Se connecter automatiquement au serveur DNS
 IPConnection_x_ExternalGateway_itemdesc=Si votre connexion Internet nécessite une adresse IP fixe, entrez l\'adresse de la passerelle dans ce champ.
