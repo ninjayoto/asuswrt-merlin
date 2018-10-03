@@ -880,7 +880,7 @@ int dnssec_validate_ds(time_t now, struct dns_header *header, size_t plen, char 
   if (rc == STAT_INSECURE)
     {
 	  if (strchr(name, '.') != NULL) // is a full qualified domain
-		my_syslog(LOG_WARNING, _("Insecure DS reply received from %s"), name);
+ 		my_syslog(LOG_WARNING, _("Insecure DS reply received from %s"), name);
 	  else {
 		insecure_count++;
 		if (insecure_count % MSG_INTERVAL == 0 || insecure_count == 1)
