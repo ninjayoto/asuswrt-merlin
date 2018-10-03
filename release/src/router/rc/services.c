@@ -929,6 +929,10 @@ void start_dnsmasq(int force)
 #endif
 	}
 
+	/* Protect against VU#598349 */
+	fprintf(fp,"dhcp-name-match=set:wpad-ignore,wpad\n"
+		   "dhcp-ignore-names=tag:wpad-ignore\n");
+
 #ifdef RTCONFIG_IPV6
 	/* Support local ipv6 name resolution for EUI-64 addresses */
 	if (ipv6_enabled() && nvram_get_int("ipv6_hosts")) {
