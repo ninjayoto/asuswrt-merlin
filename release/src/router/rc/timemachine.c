@@ -97,7 +97,10 @@ int generate_afp_config(char *mpname)
 	if(nvram_get_int("tm_vol_size") > 0)
 		fprintf(fp, "vol size limit = %s\n", nvram_get("tm_vol_size"));
 
+	append_custom_config("afp.conf", fp);
 	fclose(fp);
+	use_custom_config("afp.conf", afp_config);
+	run_postconf("afp.postconf", afp_config);
 
 	return ret;
 }
