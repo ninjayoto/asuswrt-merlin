@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36E7j9527  (5-October-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: afp: add support for merlin custom scripts
+* CHANGED: dnsmasq: (backport) theMiron custom modifications
+* CHANGED: dnsmasq: add wpad to valid_hostname check
+
+
 374.43_36E6j9527  (3-October-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnsmasq: update to 2.80test7
 * CHANGED: dnsmasq: reject wpad hostname (protect against VU#598349)
