@@ -204,8 +204,10 @@ int valid_hostname(char *name)
 {
   static const char *reserved[] = {
     "localhost",
+	"wpad",
     "ip6-localhost",
     "ip6-loopback",
+	"ip6-wpad",
     NULL
   };
   const char **next;
