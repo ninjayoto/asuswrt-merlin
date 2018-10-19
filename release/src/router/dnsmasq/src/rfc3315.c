@@ -164,7 +164,7 @@ static int dhcp6_maybe_relay(struct state *state, void *inbuff, size_t sz,
       if (!state->context)
 	{
 	  if (option_bool(OPT_LOG_OPTS))
-	    my_syslog(MS_DHCP | LOG_WARNING, 
+	    my_syslog(MS_DHCP | LOG_WARNING,
 		    _("no address range available for DHCPv6 request via %s"), state->iface_name);
 	  return 0;
 	}
@@ -498,11 +498,16 @@ static int dhcp6_no_relay(struct state *state, int msg_type, void *inbuff, size_
 	}
       else if (state->client_hostname)
 	{
+	  struct dhcp_match_name *m;
+	  size_t nl;
+
 	  state->domain = strip_hostname(state->client_hostname);
+	  nl = strlen(state->client_hostname);
 	  
 	  if (strlen(state->client_hostname) != 0)
 	    {
 	      state->hostname = state->client_hostname;
+	      
 	      if (!config)
 		{
 		  /* Search again now we have a hostname. 
@@ -511,6 +516,30 @@ static int dhcp6_no_relay(struct state *state, int msg_type, void *inbuff, size_
 		  struct dhcp_config *new = find_config(daemon->dhcp_conf, state->context, NULL, 0, NULL, 0, 0, state->hostname);
 		  if (new && !have_config(new, CONFIG_CLID) && !new->hwaddr)
 		    config = new;
+		}
+	      
+	      for (m = daemon->dhcp_name_match; m; m = m->next)
+		{
+		  size_t ml = strlen(m->name);
+		  char save = 0;
+		  
+		  if (nl < ml)
+		    continue;
+		  if (nl > ml)
+		    {
+		      save = state->client_hostname[ml];
+		      state->client_hostname[ml] = 0;
+		    }
+		  
+		  if (hostname_isequal(state->client_hostname, m->name) &&
+		      (save == 0 || m->wildcard))
+		    {
+		      m->netid->next = state->tags;
+		      state->tags = m->netid;
+		    }
+		  
+		  if (save != 0)
+		    state->client_hostname[ml] = save;
 		}
 	    }
 	}

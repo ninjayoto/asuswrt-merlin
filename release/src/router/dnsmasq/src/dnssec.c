@@ -880,7 +880,7 @@ int dnssec_validate_ds(time_t now, struct dns_header *header, size_t plen, char 
   if (rc == STAT_INSECURE)
     {
 	  if (strchr(name, '.') != NULL) // is a full qualified domain
- 		my_syslog(LOG_WARNING, _("Insecure DS reply received from %s"), name);
+		my_syslog(LOG_WARNING, _("Insecure DS reply received from %s"), name);
 	  else {
 		insecure_count++;
 		if (insecure_count % MSG_INTERVAL == 0 || insecure_count == 1)
@@ -1771,7 +1771,7 @@ int dnssec_validate_reply(time_t now, struct dns_header *header, size_t plen, ch
 
   unsigned char *ans_start, *p1, *p2;
   int type1, class1, rdlen1 = 0, type2, class2, rdlen2, qclass, qtype, targetidx;
-  int i, j, rc;
+  int i, j, rc = STAT_INSECURE;
   int secure = STAT_SECURE;
 
   /* extend rr_status if necessary */
@@ -1845,10 +1845,10 @@ int dnssec_validate_reply(time_t now, struct dns_header *header, size_t plen, ch
   
   for (p1 = ans_start, i = 0; i < ntohs(header->ancount) + ntohs(header->nscount); i++)
     {
-       if (i != 0 && !ADD_RDLEN(header, p1, plen, rdlen1))
-	 return STAT_BOGUS;
-
-       if (!extract_name(header, plen, &p1, name, 1, 10))
+      if (i != 0 && !ADD_RDLEN(header, p1, plen, rdlen1))
+	return STAT_BOGUS;
+      
+      if (!extract_name(header, plen, &p1, name, 1, 10))
 	return STAT_BOGUS; /* bad packet */
       
       GETSHORT(type1, p1);
@@ -2036,19 +2036,11 @@ int dnskey_keytag(int alg, int flags, unsigned char *key, int keylen)
 }
 
 size_t dnssec_generate_query(struct dns_header *header, unsigned char *end, char *name, int class, 
-			     int type, union mysockaddr *addr, int edns_pktsz)
+			     int type, int edns_pktsz)
 {
   unsigned char *p;
-  char *types = querystr("dnssec-query", type);
   size_t ret;
 
-  if (addr->sa.sa_family == AF_INET) 
-    log_query(F_NOEXTRA | F_DNSSEC | F_IPV4, name, (struct all_addr *)&addr->in.sin_addr, types);
-#ifdef HAVE_IPV6
-  else
-    log_query(F_NOEXTRA | F_DNSSEC | F_IPV6, name, (struct all_addr *)&addr->in6.sin6_addr, types);
-#endif
-  
   header->qdcount = htons(1);
   header->ancount = htons(0);
   header->nscount = htons(0);
