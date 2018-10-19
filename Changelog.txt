@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36E8j9527  (19-October-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dnsmasq: update to 2.80 final including custom mods
+
+
 374.43_36E7j9527  (5-October-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: afp: add support for merlin custom scripts
 * CHANGED: dnsmasq: (backport) theMiron custom modifications
@@ -31,7 +35,7 @@ Changelog
 * FIXED: wan: ensure dnscrypt/stubby/dnsmasq are properly restarted if required
 * FIXED: services: fix memory leak in dnscrypt and stubby start
 
-
+374.43_36E3j9527  (23-September-2018) ARM SDK, MIPS,ARM KRACK
 * NEW: iptables: add tproxy module for ARM routers
 * CHANGED: openvpn: MIPS: replace openvpn server username/password auth plugin with custom script
 * CHANGED: openpam: (upstream) changeset 877 - memory leak in openpam_readlinev.c
