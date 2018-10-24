@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36E9j9527  (27-October-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: dropbear: Wait to fail invalid usernames (backport from upstream)
+- CHANGED: openvpn: (backport) add option for lz4-v2
+* CHANGED: webui: get default port forwarding desc from services file if defined
+
+
 374.43_36E8j9527  (19-October-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnsmasq: update to 2.80 final including custom mods
 
