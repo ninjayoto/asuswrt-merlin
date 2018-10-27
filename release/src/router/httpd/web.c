@@ -9826,7 +9826,7 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 	char *nat_argv[] = {"iptables", "-t", "nat", "-nxL", NULL};
 	char line[512], tmp[512], linel[128];
 	char target[16], proto[16], chain[16], src[19], dst[19];
-	char desc[64], desc2[128];
+	char services_str[64], desc[64], desc2[128];
 	char *range, *host, *port, *ptr, *val;
 	char *name, *eport, *iaddr, *iport, *eproto, *srcip, *timestamp;
 	char *buf, *g, *p;
@@ -9890,18 +9890,6 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 
 		_dprintf("HTTPD: %s\n", line);
 
-		/* uppercase proto */
-		for (ptr = proto; *ptr; ptr++)
-			*ptr = toupper(*ptr);
-#ifdef NATSRC_SUPPORT
-		/* parse source */
-		if (strcmp(src, "0.0.0.0/0") == 0)
-			strcpy(src, "All");
-#endif
-		/* parse destination */
-		if (strcmp(dst, "0.0.0.0/0") == 0)
-			strcpy(dst, "All");
-
 		/* parse options */
 		port = host = range = "";
 		ptr = tmp;
@@ -9916,9 +9904,37 @@ get_nat_vserver_table(int eid, webs_t wp, int argc, char_t **argv)
 			}
 		}
 
+		sprintf(services_str, "%s/%s", port ? : range, proto);
+
+		/* uppercase proto */
+		for (ptr = proto; *ptr; ptr++)
+			*ptr = toupper(*ptr);
+#ifdef NATSRC_SUPPORT
+		/* parse source */
+		if (strcmp(src, "0.0.0.0/0") == 0)
+			strcpy(src, "All");
+#endif
+		/* parse destination */
+		if (strcmp(dst, "0.0.0.0/0") == 0)
+			strcpy(dst, "All");
+
 		strcpy(timestr, "N/A");
 		strcpy(desc, "N/A");
 		strcpy(desc2, "N/A");
+
+		/* check services for default description */
+		fpl = fopen("/etc/services", "r");
+		if (fpl != NULL) {
+			while (fgets(linel, sizeof(linel), fpl) != NULL) {
+				if(strstr(linel, services_str)) {
+					p = buf = strdup(linel);
+					remove_char(p, '\n');  //strip linefeeds
+					strlcpy(desc, p, sizeof(desc));
+					break;
+				}
+			}
+			fclose(fpl);
+		}
 
 		if ((strncmp(chain, "VUPNP", 5) != 0) && (strncmp(chain, "FUPNP", 5) != 0 )) {
 			/* get the server name or description from vts rulelist */
