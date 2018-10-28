@@ -233,14 +233,14 @@ save(const struct ip6t_ip6 *ip,
 	    || route_info->gw[2] 
 	    || route_info->gw[3]) {
 		char address[INET6_ADDRSTRLEN];
-		printf("--gw %s ", inet_ntop(AF_INET6, route_info->gw, address, INET6_ADDRSTRLEN));
+		printf(" --gw %s", inet_ntop(AF_INET6, route_info->gw, address, INET6_ADDRSTRLEN));
 	}
 
 	if (route_info->flags & IP6T_ROUTE_CONTINUE)
-		printf("--continue ");
+		printf(" --continue");
 
 	if (route_info->flags & IP6T_ROUTE_TEE)
-		printf("--tee ");
+		printf(" --tee");
 }
 
 

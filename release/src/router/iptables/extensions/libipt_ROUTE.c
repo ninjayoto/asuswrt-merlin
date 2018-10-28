@@ -259,14 +259,14 @@ save(const struct ipt_ip *ip,
 
 	if (route_info->gw) {
 		struct in_addr gw = { route_info->gw };
-		printf("--gw %s ", inet_ntoa(gw));
+		printf(" --gw %s", inet_ntoa(gw));
 	}
 
 	if (route_info->flags & IPT_ROUTE_CONTINUE)
-		printf("--continue ");
+		printf(" --continue");
 
 	if (route_info->flags & IPT_ROUTE_TEE)
-		printf("--tee ");
+		printf(" --tee");
 }
 
 
