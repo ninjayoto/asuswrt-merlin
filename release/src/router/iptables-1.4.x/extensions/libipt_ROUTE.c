@@ -179,24 +179,24 @@ ROUTE_print(const void *ip, const struct xt_entry_target *target,
 	const struct ipt_route_target_info *route_info
 		= (const struct ipt_route_target_info *)target->data;
 
-	printf("ROUTE ");
+	printf(" ROUTE");
 
 	if (route_info->oif[0])
-		printf("oif:%s ", route_info->oif);
+		printf(" oif:%s", route_info->oif);
 
 	if (route_info->iif[0])
-		printf("iif:%s ", route_info->iif);
+		printf(" iif:%s", route_info->iif);
 
 	if (route_info->gw) {
 		struct in_addr ip_1 = { route_info->gw };
-		printf("gw:%s ", inet_ntoa(ip_1));
+		printf(" gw:%s", inet_ntoa(ip_1));
 	}
 
 	if (route_info->flags & IPT_ROUTE_CONTINUE)
-		printf("continue");
+		printf(" continue");
 
 	if (route_info->flags & IPT_ROUTE_TEE)
-		printf("tee");
+		printf(" tee");
 
 }
 

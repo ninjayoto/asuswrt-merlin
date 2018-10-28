@@ -191,7 +191,7 @@ print(const struct ip6t_ip6 *ip,
 	const struct ip6t_route_target_info *route_info
 		= (const struct ip6t_route_target_info *)target->data;
 
-	printf("ROUTE ");
+	printf(" ROUTE");
 
 	if (route_info->oif[0])
 		printf("oif:%s ", route_info->oif);
@@ -201,14 +201,14 @@ print(const struct ip6t_ip6 *ip,
 	    || route_info->gw[2] 
 	    || route_info->gw[3]) {
 		char address[INET6_ADDRSTRLEN];
-		printf("gw:%s ", inet_ntop(AF_INET6, route_info->gw, address, INET6_ADDRSTRLEN));
+		printf(" gw:%s", inet_ntop(AF_INET6, route_info->gw, address, INET6_ADDRSTRLEN));
 	}
 
 	if (route_info->flags & IP6T_ROUTE_CONTINUE)
-		printf("continue");
+		printf(" continue");
 
 	if (route_info->flags & IP6T_ROUTE_TEE)
-		printf("tee");
+		printf(" tee");
 
 }
 
