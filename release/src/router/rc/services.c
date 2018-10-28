@@ -894,25 +894,28 @@ void start_dnsmasq(int force)
 #endif
 
 #ifdef RTCONFIG_DNSSEC
-	if (nvram_match("dnssec_enable", "1")) {
-		fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
-			    "trust-anchor=.,20326,8,2,E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D\n"
-		            "dnssec\n");
+	if (nvram_match("dnssec_enable", "1")) { 
+		if (nvram_match("stubby_proxy", "0")) {
+			fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
+					    "trust-anchor=.,20326,8,2,E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D\n"
+		    	        "dnssec\n");
 
-		/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
-		if (!nvram_match("ntp_sync","1")) {
-			fprintf(fp, "dnssec-no-timecheck\n");
-			fprintf(fp, "dnssec-check-unsigned=no\n");
-		} else {
-			/* Force checking of unsigned replies only when NTP set */
-			if (nvram_match("dnssec_check_unsigned_x","1")) {
-				fprintf(fp, "dnssec-check-unsigned\n");
-				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned enabled");
-			} else {
+			/* If NTP isn't set yet, wait until rc's ntp signals us to start validating time */
+			if (!nvram_match("ntp_sync","1")) {
+				fprintf(fp, "dnssec-no-timecheck\n");
 				fprintf(fp, "dnssec-check-unsigned=no\n");
-				logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned disabled");
+			} else {
+				/* Force checking of unsigned replies only when NTP set */
+				if (nvram_match("dnssec_check_unsigned_x","1")) {
+					fprintf(fp, "dnssec-check-unsigned\n");
+					logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned enabled");
+				} else {
+					fprintf(fp, "dnssec-check-unsigned=no\n");
+					logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned disabled");
+				}
 			}
-
+		} else { /* using stubby dnssec */
+			fprintf(fp, "proxy-dnssec\n");
 		}
 	}
 #endif
@@ -1242,14 +1245,18 @@ void start_stubby(int force)
 				fprintf(fp, "tls_authentication: GETDNS_AUTHENTICATION_NONE\n");
 				logmessage("stubby-proxy", "configured opportunistic mode");
 			}
-		} else {	//time not set, no TLS
+			if (nvram_match("dnssec_enable", "1")) {
+				fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
+				logmessage("stubby-proxy", "DNSSEC enabled");
+			}
+		} else {	//time not set, no TLS, no DNSSEC
 			fprintf(fp, "  - GETDNS_TRANSPORT_UDP\n");
 			fprintf(fp, "  - GETDNS_TRANSPORT_TCP\n");
 			fprintf(fp, "tls_authentication: GETDNS_AUTHENTICATION_NONE\n");
 			logmessage("stubby-proxy", "configured no-TLS mode");
+			if (nvram_match("dnssec_enable", "1"))
+				logmessage("stubby-proxy", "DNSSEC pending ntp sync");
 		}
-//		if (nvram_match("dnssec_enable", "1") && nvram_match("dnssec_check_unsigned_x", "1"))
-//			fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
 		fprintf(fp, "tls_query_padding_blocksize: 128\n");	// default 256
 		fprintf(fp, "edns_client_subnet_private: 1\n");
 		fprintf(fp, "round_robin_upstreams: %s\n", nvram_safe_get("stubby_access"));

@@ -166,6 +166,7 @@ function update_resolverlist(){
 	add_option(document.form.dnscrypt2_resolver, "Random","random",(currentresolver2 == "random"));
 
 	var dnssec_enabled = document.form.dnssec_enable[0].checked;
+	var dnscrypt_proxy = document.form.dnscrypt_proxy[0].checked;
 	var dnscrypt_nologs = document.form.dnscrypt_nologs[0].checked;
 	for(var i = 0; i < resolverarray.length; i++){
 		// Exclude non-dnssec resolvers if dnssec is enabled
@@ -223,6 +224,7 @@ function update_resolverlist(){
 	var accessindexname = "<br>Selected servers:<br>";
 	var currentserversarray = stubby_dns_value.split("&#60");
 	var dnssec_enabled = document.form.dnssec_enable[0].checked;
+	var stubby_proxy = document.form.stubby_proxy[0].checked;
 	var stubby_nologs = document.form.stubby_nologs[0].checked;
 	accessindex = [];
 	//	add_option(document.form.stubby_servers, "Not Defined","none",(currentservers == "none"));
@@ -254,7 +256,7 @@ function update_resolverlist(){
 	}
 	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
 
-	document.getElementById("dnssec_strict_span").style.display = (dnssec_enabled) ? "" : "none";
+	document.getElementById("dnssec_strict_span").style.display = (dnssec_enabled && !stubby_proxy) ? "" : "none";
 }
 
 function update_accessorder(obj) {
@@ -283,6 +285,7 @@ function display_stubby_opt(){
 	$("stubby_noipv6_tr").style.display = (document.form.stubby_proxy[0].checked && ipv6_enabled) ? "" : "none";
 	$("stubby_ordered_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
+	$("dnssec_strict_span").style.display = (document.form.stubby_proxy[0].checked) ? "none" : "";	
 }
 
 function stubby_details(i){
@@ -1252,21 +1255,6 @@ function pass_checked(obj){
             		<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,14);"><#IPConnection_x_DNSServer2_itemname#></a></th>
             		<td><input type="text" maxlength="15" class="input_15_table" name="wan_dns2_x" value="<% nvram_get("wan_dns2_x"); %>" onkeypress="return is_ipaddr(this, event)" ></td>
           		</tr>
-			<tr id="dnssec_tr" style="display:none;">
-				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,32);">Enable DNSSEC support<br><i>DNS servers must support DNSSEC</i></a></th>
-				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
-					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;"> Strict DNSSEC enforcement</input></span>
-				</td>
-			</tr>
-			<tr>
-				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,35);">Enable DNS Rebind protection</a></th>
-				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="dns_norebind" <% nvram_match("dns_norebind", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="dns_norebind" <% nvram_match("dns_norebind", "0", "checked"); %> /><#checkbox_No#>
-				</td>
-			</tr>
 /* DNSCRYPT-BEGIN */
 			<tr id="dnscrypt_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,33);">Enable DNSCRYPT support<br><i>DNSCRYPT becomes primary DNS server(s)</i></a></th>
@@ -1388,6 +1376,21 @@ function pass_checked(obj){
 				</td>
 			</tr>
 /* STUBBY-END */
+			<tr id="dnssec_tr" style="display:none;">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,32);">Enable DNSSEC support<br><i>DNS servers must support DNSSEC</i></a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;"> Strict DNSSEC enforcement</input></span>
+				</td>
+			</tr>
+			<tr>
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,35);">Enable DNS Rebind protection</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="dns_norebind" <% nvram_match("dns_norebind", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dns_norebind" <% nvram_match("dns_norebind", "0", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
         		</table>
 
 		  			<table id="PPPsetting" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
