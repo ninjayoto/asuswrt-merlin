@@ -375,6 +375,12 @@ start_udhcpc(char *wan_ifname, int unit, pid_t *ppid)
 	/* Use unit */
 	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
 
+	if (f_exists(pid)) {
+		logmessage("start_udhcpc()", "perform DHCP release");
+		kill_pidfile_s(pid, SIGUSR2);
+		kill_pidfile_s(pid, SIGTERM);
+	}
+
 	if (nvram_get_int("dhcpc_mode") == 0)
 	{
 		/* 2 discover packets max (default 3 discover packets) */
