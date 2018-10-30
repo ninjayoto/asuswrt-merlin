@@ -2026,9 +2026,9 @@ main(int argc, char * * argv)
 		if (getifaddr(ext_if_name, if_addr, INET_ADDRSTRLEN, &addr, NULL) < 0) {
 			syslog(LOG_WARNING, "Cannot get IP address for ext interface %s. Network is down", ext_if_name);
 		} else if (addr_is_reserved(&addr)) {
-			syslog(LOG_INFO, "Reserved / private IP address %s on ext interface %s: Port forwarding is impossible", if_addr, ext_if_name);
-			syslog(LOG_INFO, "You are probably behind NAT, enable option ext_perform_stun=yes to detect public IP address");
-			disable_port_forwarding = 1;
+			syslog(LOG_INFO, "Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
+			syslog(LOG_INFO, "You may need to take additional steps for upnp port forwarding to be successful");
+			disable_port_forwarding = 0;
 		}
 	}
 
@@ -2234,10 +2234,10 @@ main(int argc, char * * argv)
 					if (disable_port_forwarding && !reserved) {
 						syslog(LOG_INFO, "Public IP address %s on ext interface %s: Port forwarding is enabled", if_addr, ext_if_name);
 					} else if (!disable_port_forwarding && reserved) {
-						syslog(LOG_INFO, "Reserved / private IP address %s on ext interface %s: Port forwarding is impossible", if_addr, ext_if_name);
-						syslog(LOG_INFO, "You are probably behind NAT, enable option ext_perform_stun=yes to detect public IP address");
+						syslog(LOG_INFO, "Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
+						syslog(LOG_INFO, "You may need to take additional steps for upnp port forwarding to be successful");
 					}
-					disable_port_forwarding = reserved;
+					disable_port_forwarding = 0;
 				}
 			}
 #ifdef ENABLE_NATPMP
