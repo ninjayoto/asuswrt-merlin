@@ -612,16 +612,17 @@ void start_dnsmasq(int force)
 
 	/* write /etc/hosts */
 	if ((fp = fopen("/etc/hosts", "w")) != NULL) {
-		/* loclhost ipv4 */
+		/* localhost ipv4 */
 		fprintf(fp, "127.0.0.1 localhost.localdomain localhost\n");
-		fprintf(fp, "%s %s\n", lan_ipaddr, DUT_DOMAIN_NAME);
-		fprintf(fp, "%s %s\n", lan_ipaddr, OLD_DUT_DOMAIN_NAME1);
-		fprintf(fp, "%s %s\n", lan_ipaddr, OLD_DUT_DOMAIN_NAME2);
 		/* productid/samba name */
 		if (is_valid_hostname(nv = nvram_safe_get("computer_name")) ||
 		    is_valid_hostname(nv = get_productid()))
 			fprintf(fp, "%s %s.%s %s\n", lan_ipaddr,
 				    nv, nvram_safe_get("lan_domain"), nv);
+		/* default hostnames */
+		fprintf(fp, "%s %s\n", lan_ipaddr, DUT_DOMAIN_NAME);
+		fprintf(fp, "%s %s\n", lan_ipaddr, OLD_DUT_DOMAIN_NAME1);
+		fprintf(fp, "%s %s\n", lan_ipaddr, OLD_DUT_DOMAIN_NAME2);
 		/* lan hostname.domain hostname */
 		if (nvram_invmatch("lan_hostname", "")) {
 			fprintf(fp, "%s %s.%s %s\n", lan_ipaddr,
@@ -638,10 +639,15 @@ void start_dnsmasq(int force)
 				    "ff00::0 ip6-mcastprefix\n"
 				    "ff02::1 ip6-allnodes\n"
 				    "ff02::2 ip6-allrouters\n");
+			nv = getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
+			/* productid/samba name */
+			if (is_valid_hostname(nv2 = nvram_safe_get("computer_name")) ||
+			    is_valid_hostname(nv2 = get_productid()))
+				fprintf(fp, "%s %s.%s %s\n", nv,
+					    nv2, nvram_safe_get("lan_domain"), nv2);
 			/* lan6 hostname.domain hostname */
 //			nv = (char*) ipv6_router_address(NULL);
 //			if (*nv && nvram_invmatch("lan_hostname", "")) {
-			nv = getifaddr(nvram_safe_get("lan_ifname"), AF_INET6, GIF_LINKLOCAL) ? : "";
 			fprintf(fp, "%s %s\n", nv, DUT_DOMAIN_NAME);
 			if (*nv && nvram_invmatch("lan_hostname", "")) {
 				fprintf(fp, "%s %s.%s %s\n", nv,
