@@ -942,9 +942,9 @@ void start_vpnserver(int serverNum)
 	strlcpy(buffer2, nvram_safe_get(&buffer[0]), sizeof (buffer2));
 
 	if (strcmp(buffer2, "-1")) {
-		if (!strcmp(buffer, "lz4") || !strcmp(buffer, "lz4-v2")) {
-			fprintf(fp, "compress %s\n", buffer);
-			fprintf(fp_client, "compress %s\n", buffer);
+		if (!strcmp(buffer2, "lz4") || !strcmp(buffer2, "lz4-v2")) {
+			fprintf(fp, "compress %s\n", buffer2);
+			fprintf(fp_client, "compress %s\n", buffer2);
 		} else if (!strcmp(buffer2, "yes")) {
 			fprintf(fp, "compress lzo\n");
 			fprintf(fp_client, "compress lzo\n");
