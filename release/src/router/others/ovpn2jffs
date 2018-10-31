@@ -8,9 +8,9 @@ fi
 instance=$1
 type=${instance:0:6}
 ovpn_vars="vpn_crt_${instance}_ca vpn_crt_${instance}_crt vpn_crt_${instance}_key vpn_crt_${instance}_dh vpn_crt_${instance}_crl vpn_crt_${instance}_static \
-        vpn_crt_${instance}_client_crt vpn_crt_${instance}_client_key"
+        vpn_crt_${instance}_client_crt vpn_crt_${instance}_client_key vpn_crt_${instance}_ca_key"
 ovpn_files="ca.crt $type.crt $type.key dh.pem crl.pem static.key \
-        client.crt client.key"
+        client.crt client.key ca.key"
 ovpn_jffs="/jffs/openvpn/${instance}/"
 OLDIF=IFS; IFS=" ";
 
