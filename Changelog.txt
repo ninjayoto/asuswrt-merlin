@@ -4,6 +4,22 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_36EAj9527  (1-November-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: nettle: update to 3.4
+* CHANGED: dnssec: use stubby dnssec if stubby proxy enabled
+* CHANGED: hosts: move computername hosts entry before defaults; add ipv6 computername entry
+- CHANGED: nano: update to 3.1
+- CHANGED: miniupnpd: updated to 20180907 (includes PCP fix)
+* CHANGED: miniupnpd: change fail to info msg only for reserved/private ext addresses
+* FIXED: iptables: fix iptables list formatting for ROUTE target
+* FIXED: iptables: fix iptables-save for ROUTE target
+* FIXED: udhcpc: prevent orphan instances of udhcpc on wan failure
+* FIXED: openvpn: fix error in backport of lz4-v2 support
+* FIXED: openvpn: fix username/password auth on MIPS
+* FIXED: openvpn: also move ca.key to/from jffs/nvram via move scripts
+* FIXED: make: add missing recipe for phddns
+
+
 374.43_36E9j9527  (27-October-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: dropbear: Wait to fail invalid usernames (backport from upstream)
 - CHANGED: openvpn: (backport) add option for lz4-v2
