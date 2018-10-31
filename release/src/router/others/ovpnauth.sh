@@ -22,15 +22,18 @@ password=`echo $userpass | awk '{print $2}'`
 
 # computing password md5
 salt=`cat $conf | grep $username: | awk -F"$" '{print $3}'`
-userpass=`openssl passwd -1 -salt ${salt} ${password}`
-authpass=`cat $conf | grep $username: | awk -F":" '{print $2}'`
-
-# verify password
-if [ "${userpass}" = "${authpass}" ]
+if [ ${#salt} -gt 0 ]
 then
-	log "OpenVPN authentication successfull: $username ${password}"
-	#logenv
-	exit 0
+	userpass=`openssl passwd -1 -salt ${salt} ${password}`
+	authpass=`cat $conf | grep $username: | awk -F":" '{print $2}'`
+
+	# verify password
+	if [ "${userpass}" = "${authpass}" ]
+	then
+		log "OpenVPN authentication successfull: $username ${password}"
+		#logenv
+		exit 0
+	fi
 fi
 
 log "OpenVPN authentication failed:      $username ${password}"
