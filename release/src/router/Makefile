@@ -423,6 +423,7 @@ endif
 obj-y += networkmap
 obj-y += infosvr
 obj-y += ez-ipupdate
+obj-y += phddns
 
 obj-$(RTCONFIG_STRACE) += strace
 
@@ -2094,6 +2095,24 @@ ez-ipupdate: openssl mssl
 ez-ipupdate-install:
 	install -D ez-ipupdate/ez-ipupdate $(INSTALLDIR)/ez-ipupdate/usr/sbin/ez-ipupdate
 	$(STRIP) $(INSTALLDIR)/ez-ipupdate/usr/sbin/ez-ipupdate
+
+phddns/stamp-h1:
+	cd phddns && $(CONFIGURE) --prefix="" \
+		CFLAGS="-Os -I$(SRCBASE)/include -I$(TOP)/shared $(EXTRACFLAGS)" \
+		LDFLAGS="-L$(TOP)/nvram$(BCMEX)$(EX7) -L$(TOP)/shared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client) $(EXTRALDFLAGS)" \
+		LIBS="-lnvram -lshared $(if $(RTCONFIG_QTN),-lqcsapi_client)"
+	@touch $@
+
+phddns: phddns/stamp-h1
+	$(MAKE) -C phddns
+
+phddns-install:
+	install -D phddns/src/phddns $(INSTALLDIR)/phddns/usr/sbin/phddns
+	$(STRIP) $(INSTALLDIR)/phddns/usr/sbin/phddns
+
+phddns-clean:
+	@[ ! -f phddns/Makefile ] || $(MAKE) -C phddns clean
+	@rm -f phddns/stamp-h1
 
 zebra/stamp-h1:
 	@cd zebra && rm -f config.cache && \
