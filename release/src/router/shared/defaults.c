@@ -2306,6 +2306,7 @@ struct nvram_tuple router_state_defaults[] = {
 #endif
 	{ "ddns_cache", ""},
 	{ "ddns_ipaddr", ""},
+	{ "ddns_ipcheck", "0"}, // 0 - from interface, 1 - from ministun
 	{ "ddns_status", ""},
 	{ "ddns_server_x_old", ""},
 	{ "ddns_hostname_old", ""},

@@ -1092,6 +1092,7 @@ int option_handler(int id, char *optarg)
       if(address) { free(address); }
       address = strdup(optarg);
       dprintf((stderr, "address: %s\n", address));
+	  show_message("ddns host address %s (%s)\n", address, (nvram_match("ddns_ipcheck", "1")) ? "external" : "internal");
       break;
 
 //2007.03.14 Yau add
@@ -1154,6 +1155,7 @@ int option_handler(int id, char *optarg)
       if(host) { free(host); }
       host = strdup(optarg);
       dprintf((stderr, "host: %s\n", host));
+	  show_message("ddns host name %s\n", host);
       break;
 
 #ifdef HAVE_SSL

@@ -32,5 +32,5 @@ for server in $servers; do
 	result=""
 done
 
-[ "${DEV:0:3}" == "tun" ] && nvram set "vpn_client${INSTANCE}_rip"=$result
+[ "${DEV:0:3}" == "tun" ] && nvram set "vpn_client${INSTANCE}_rip"=$result || nvram set "ext_ipaddr"=$result
 echo "$result"

@@ -2934,8 +2934,13 @@ start_ddns(void)
 	unit = wan_primary_ifunit();
 	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
 
-	wan_ip = nvram_safe_get(strcat_r(prefix, "ipaddr", tmp));
 	wan_ifname = get_wan_ifname(unit);
+	if(nvram_match("ddns_ipcheck", "0"))
+		wan_ip = nvram_safe_get(strcat_r(prefix, "ipaddr", tmp));
+	else {
+		eval("getextip.sh", wan_ifname);
+		wan_ip = nvram_safe_get("ext_ipaddr");
+	}
 
 	if (!wan_ip || strcmp(wan_ip, "") == 0 || !inet_addr(wan_ip)) {
 		logmessage("ddns", "WAN IP is empty.");
@@ -3056,6 +3061,7 @@ start_ddns(void)
 			fprintf(fp, "szUserID = %s\n", user);
 			fprintf(fp, "szUserPWD = %s\n", passwd);
 			fprintf(fp, "nicName = %s\n", wan_ifname);
+			fprintf(fp, "szSelectedAddress = %s\n", wan_ip);
 			fprintf(fp, "szLog = /var/log/phddns.log\n");
 			fclose(fp);
 
@@ -3066,12 +3072,12 @@ start_ddns(void)
 		char *nserver = nvram_invmatch("ddns_serverhost_x", "") ?
 			nvram_safe_get("ddns_serverhost_x") :
 			"nwsrv-ns1.asus.com";
-		char *argv[] = { "ez-ipupdate", "-S", service, "-i", wan_ifname,
+		char *argv[] = { "ez-ipupdate", "-S", service, "-a", wan_ip, "-i", wan_ifname,
 				"-h", host, "-A", "2", "-s", nserver,
 				"-e", "/sbin/ddns_updated", "-b", "/tmp/ddns.cache", NULL };
 		_eval(argv, NULL, 0, &pid);
 	} else if (*service) {
-		char *argv[] = { "ez-ipupdate", "-S", service, "-i", wan_ifname, "-h", host,
+		char *argv[] = { "ez-ipupdate", "-S", service, "-a", wan_ip, "-i", wan_ifname, "-h", host,
 		     "-u", usrstr, wild ? "-w" : "", "-e", "/sbin/ddns_updated",
 		     "-b", "/tmp/ddns.cache", NULL };
 		_eval(argv, NULL, 0, &pid);

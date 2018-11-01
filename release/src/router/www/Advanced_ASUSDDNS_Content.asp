@@ -38,14 +38,20 @@ function check_update(){
 
 	var ddns_server_x_t = '<% nvram_get("ddns_server_x"); %>';
     var ddns_updated_t = '<% nvram_get("ddns_updated"); %>';
+	var ddns_ipcheck_t = '<% nvram_get("ddns_ipcheck"); %>';
     if ((wanlink_ipaddr() == ddns_ipaddr_t) &&
         (ddns_server_x_t == document.form.ddns_server_x.value) &&
         (ddns_hostname_x_t == document.form.ddns_hostname_x.value) &&
-	(ddns_updated_t == '1') && (document.form.ddns_enable_x[0].checked == true)){
+        (ddns_ipcheck_t == document.form.ddns_ipcheck.value) &&
+		(ddns_updated_t == '1') && (document.form.ddns_enable_x[0].checked == true)){
 			force_update();
     }else{
-			showLoading();
-			document.form.submit();
+		//force update
+		document.form.ddns_ipaddr.value = "";
+		document.form.ddns_cache.value = "";
+
+		showLoading();
+		document.form.submit();
     }
 }
 
@@ -122,6 +128,7 @@ function ddns_load_body(){
 							document.getElementById("ddns_hostname_x").value = "<#asusddns_inputhint#>";
 			}
 			inputCtrl(document.form.ddns_refresh_x, 1);
+			showhide("ddns_ipcheck_tr", 1);
 
 			change_ddns_setting(document.form.ddns_server_x.value);		
 	}else{
@@ -133,27 +140,27 @@ function ddns_load_body(){
 			document.form.ddns_wildcard_x[1].disabled= 1;
 			inputCtrl(document.form.ddns_refresh_x, 0);
 			showhide("wildcard_field",0);
+			showhide("ddns_ipcheck_tr", 0);
 	}	
 	
 	hideLoading();
+
+	valid_wan_ip();
 
 	if(ddns_return_code == 'register,-1')
 		alert("<#LANHostConfig_x_DDNS_alarm_2#>");
 	else if(ddns_return_code.indexOf('200')!=-1){
 		alert("<#LANHostConfig_x_DDNS_alarm_3#>");
-		showhide("wan_ip_hide2", 0);
 		if(ddns_server_x == "WWW.ASUS.COM")
 			showhide("wan_ip_hide3", 1);		
 	}else if(ddns_return_code.indexOf('203')!=-1)
 		alert("<#LANHostConfig_x_DDNS_alarm_hostname#> '"+hostname_x+"' <#LANHostConfig_x_DDNS_alarm_registered#>");
 	else if(ddns_return_code.indexOf('220')!=-1){
 		alert("<#LANHostConfig_x_DDNS_alarm_4#>");
-		showhide("wan_ip_hide2", 0);
 		if(ddns_server_x == "WWW.ASUS.COM")
 			showhide("wan_ip_hide3", 1);		
 	}else if(ddns_return_code == 'register,230'){
 		alert("<#LANHostConfig_x_DDNS_alarm_5#>");
-		showhide("wan_ip_hide2", 0);
 		if(ddns_server_x == "WWW.ASUS.COM")
 			showhide("wan_ip_hide3", 1);		
 	}else if(ddns_return_code.indexOf('233')!=-1)
@@ -168,12 +175,10 @@ function ddns_load_body(){
 		alert("<#LANHostConfig_x_DDNS_alarm_9#>");
 	else if(ddns_return_code.indexOf('401')!=-1){
 		alert("<#LANHostConfig_x_DDNS_alarm_10#>");
-		showhide("wan_ip_hide2", 0);
 		if(ddns_server_x == "WWW.ASUS.COM")
 			showhide("wan_ip_hide3", 0);
 	}else if(ddns_return_code.indexOf('407')!=-1){
 		alert("<#LANHostConfig_x_DDNS_alarm_11#>");
-		showhide("wan_ip_hide2", 0);
 		if(ddns_server_x == "WWW.ASUS.COM")
 			showhide("wan_ip_hide3", 0);
 	}else if(ddns_return_code == 'Time-out')
@@ -417,7 +422,8 @@ function onSubmitApply(s){
 		  		<div class="formfonttitle"><#menu5_3#> - <#menu5_3_6#></div>
 		  		<div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"></div>
 		 		  <div class="formfontdesc"><#LANHostConfig_x_DDNSEnable_sectiondesc#></div>
-				  <div class="formfontdesc" id="wan_ip_hide2" style="color:#FFCC00;"><#LANHostConfig_x_DDNSEnable_sectiondesc2#></div>
+				  <div class="formfontdesc" id="wan_ip_hide2" style="color:#FFCC00; display:none;">The wireless router currently uses a private WAN IP address.<p>This router may be in the multiple-NAT environment.  While using an External check might allow DDNS to reflect the correct IP address, this might still interfere with remote access services.</div>
+<!--			  <div class="formfontdesc" id="wan_ip_hide2" style="color:#FFCC00;"><#LANHostConfig_x_DDNSEnable_sectiondesc2#></div> -->
 				  <div class="formfontdesc" id="wan_ip_hide3" style="color:#FFCC00;"><#LANHostConfig_x_DDNSEnable_sectiondesc3#></div>
 
 			<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
@@ -427,6 +433,15 @@ function onSubmitApply(s){
 				<td>
 				<input type="radio" value="1" name="ddns_enable_x"onClick="return change_common_radio(this, 'LANHostConfig', 'ddns_enable_x', '1')" <% nvram_match("ddns_enable_x", "1", "checked"); %>><#checkbox_Yes#>
 				<input type="radio" value="0" name="ddns_enable_x"onClick="return change_common_radio(this, 'LANHostConfig', 'ddns_enable_x', '0')" <% nvram_match("ddns_enable_x", "0", "checked"); %>><#checkbox_No#>
+				</td>
+			</tr>
+			<tr id="ddns_ipcheck_tr">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,16);">Method to retrieve WAN IP</a></th>
+                                <td>
+				<select name="ddns_ipcheck" class="input_option">
+					<option class="content_input_fd" value="0" <% nvram_match("ddns_ipcheck", "0","selected"); %>>Internal</option>
+					<option class="content_input_fd" value="1" <% nvram_match("ddns_ipcheck", "1","selected"); %>>External</option>
+				</select>
 				</td>
 			</tr>		
 			<tr>

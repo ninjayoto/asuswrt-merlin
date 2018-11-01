@@ -91,7 +91,8 @@ helpcontent[5] = new Array("",
 							 "<#LANHostConfig_ManualDHCPSTB_itemdesc#>",
 							 "<#LANHostConfig_x_DDNSHostNames_itemdesc#>",
 							 "Bridge multicast snooping is not enabled by default, as it can possibly interfere with various functions such as IPv6, EMF and UPnP.  Enable it if you are encountering performance or stability issues with your LAN or IPTV.",
-							 "EMF / IGMP Snooping allows the router to only forward multicast traffic to the links that have solicited them.  Multicast can cause unnecessary load on connected devices by requiring them to process packets they have not solicited.");
+							 "EMF / IGMP Snooping allows the router to only forward multicast traffic to the links that have solicited them.  Multicast can cause unnecessary load on connected devices by requiring them to process packets they have not solicited.",
+							 "Internal: use the IP configured on your router's WAN.  External: query a remote service to use your public IP.  The latter will work through double NAT, but might not work properly when using a VPN tunnel or with some DDNS providers.");
 helpcontent[6] = new Array("",
 						   "<#RHELP_desc4#>",
 						   "<#RHELP_desc5#>",

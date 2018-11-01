@@ -1385,20 +1385,34 @@ void regular_ddns_check(void)
 {
 	struct in_addr ip_addr;
 	struct hostent *hostinfo;
+	int unit;
+	char *wan_ip, *wan_ifname;
+	char tmp[32], prefix[] = "wanXXXXXXXXXX_";
 
 	//_dprintf("regular_ddns_check...\n");
 
 	hostinfo = gethostbyname(nvram_get("ddns_hostname_x"));
 	ddns_check_count = 0;
 
+	unit = wan_primary_ifunit();
+	snprintf(prefix, sizeof(prefix), "wan%d_", unit);
+
+	wan_ifname = get_wan_ifname(unit);
+	if(nvram_match("ddns_ipcheck", "0"))
+		wan_ip = nvram_safe_get(strcat_r(prefix, "ipaddr", tmp));
+	else {
+		eval("getextip.sh", wan_ifname);
+		wan_ip = nvram_safe_get("ext_ipaddr");
+	}
+
 	if(hostinfo) {
 		ip_addr.s_addr = *(unsigned long *)hostinfo -> h_addr_list[0];
 		//_dprintf("  %s ?= %s\n", nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr));
-		if(strcmp(nvram_safe_get("wan0_ipaddr"), inet_ntoa(ip_addr))) {
+		if(strcmp(wan_ip, inet_ntoa(ip_addr))) {
 			//_dprintf("WAN IP change!\n");
 			nvram_set("ddns_update_by_wdog", "1");
 			unlink("/tmp/ddns.cache"); // force update
-			logmessage("watchdog", "Hostname/IP mapping error! WAN: %s HOST: %s (ddns-check)", nvram_get("wan0_ipaddr"), inet_ntoa(ip_addr) ? : "NA");
+			logmessage("watchdog", "Hostname/IP mapping error! WAN: %s HOST: %s (ddns-check)", wan_ip, inet_ntoa(ip_addr) ? : "NA");
 		}
 		else
 		{
