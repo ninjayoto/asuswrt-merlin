@@ -284,7 +284,8 @@ function display_stubby_opt(){
 	$("stubby_nologs_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_noipv6_tr").style.display = (document.form.stubby_proxy[0].checked && ipv6_enabled) ? "" : "none";
 	$("stubby_ordered_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
-	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
+//	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
+	$("stubby_accessorder").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("dnssec_strict_span").style.display = (document.form.stubby_proxy[0].checked) ? "none" : "";	
 }
 
