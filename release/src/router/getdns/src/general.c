@@ -215,11 +215,14 @@ _getdns_check_dns_req_complete(getdns_dns_req *dns_req)
 
 #ifdef STUB_NATIVE_DNSSEC
 	    || (    dns_req->context->resolution_type == GETDNS_RESOLUTION_STUB
-	        && !dns_req->avoid_dnssec_roadblocks
 	        && (dns_req->dnssec_return_status ||
 	            dns_req->dnssec_return_only_secure ||
 	            dns_req->dnssec_return_all_statuses
-	           ))
+	           )
+#ifdef DNSSEC_ROADBLOCK_AVOIDANCE
+	        && !dns_req->avoid_dnssec_roadblocks
+#endif
+				)
 #endif
 	    || (   dns_req->context->resolution_type == GETDNS_RESOLUTION_RECURSING
 	       && (dns_req->dnssec_return_status ||
