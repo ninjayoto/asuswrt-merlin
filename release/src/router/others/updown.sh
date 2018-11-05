@@ -184,20 +184,20 @@ then
 		fi
 
 		# default block some ipv6 dns queries
-		$(ip6tables-save -t filter | grep -q -i "dport 53 \-j REJECT")
-		if [ $? -eq 1 ]
-		then
-			if [ $(nvram get ipv6_dns_router) == 1 ]
-			then #dnsmasq as ipv6 dns server
-				echo ip6tables -I INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
-				echo ip6tables -I INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
-				logger -t "openvpn-updown" "Block IPv6 DNS queries to router (INPUT mode)"
-			else #router not ipv6 dns server
-				echo ip6tables -I FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
-				echo ip6tables -I FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
-				logger -t "openvpn-updown" "Block IPv6 DNS queries to internet (FORWARD mode)"
-			fi
-		fi
+#		$(ip6tables-save -t filter | grep -q -i "dport 53 \-j REJECT")
+#		if [ $? -eq 1 ]
+#		then
+#			if [ $(nvram get ipv6_dns_router) == 1 ]
+#			then #dnsmasq as ipv6 dns server
+#				echo ip6tables -I INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
+#				echo ip6tables -I INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+#				logger -t "openvpn-updown" "Block IPv6 DNS queries to router (INPUT mode)"
+#			else #router not ipv6 dns server
+#				echo ip6tables -I FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT >> $dnsscript
+#				echo ip6tables -I FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT >> $dnsscript
+#				logger -t "openvpn-updown" "Block IPv6 DNS queries to internet (FORWARD mode)"
+#			fi
+#		fi
 	fi
 fi
 
@@ -215,15 +215,15 @@ then
 
 	if [ $ipv6_enabled == 1 ]
 	then
-		/usr/sbin/ip6tables -D INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
-		/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
-		/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
-		/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
+#		/usr/sbin/ip6tables -D INPUT -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
+#		/usr/sbin/ip6tables -D INPUT -i $lan_if -p udp -m udp --dport 53 -j REJECT
+#		/usr/sbin/ip6tables -D FORWARD -i $lan_if -p tcp -m tcp --dport 53 -j REJECT
+#		/usr/sbin/ip6tables -D FORWARD -i $lan_if -p udp -m udp --dport 53 -j REJECT
 		/usr/sbin/ip6tables -D FORWARD -i $lan_if -o $ipv6_if -j REJECT
 		if [ $vpn_block_ipv6 != 1 ]
 		then
-			logger -t "openvpn-updown" "Removed IPv6 DNS blocking"
-		else
+#			logger -t "openvpn-updown" "Removed IPv6 DNS blocking"
+#		else
 			logger -t "openvpn-updown" "Removed IPv6 blocking"
 		fi
 	fi
