@@ -1169,14 +1169,14 @@ openssl/Makefile:
 #	no-zlib no-engine no-engines no-sse2 no-perlasm \
 #	no-dtls1 no-store no-psk no-md2 no-mdc2 no-ts
 
-	-@$(MAKE) -C openssl clean depend
+	-@$(MAKE) -C openssl depend clean
 	@touch $@
 
 openssl: openssl/Makefile
 	$(MAKE) -C openssl && $(MAKE) $@-stage
 
 openssl-clean:
-	[ ! -f openssl/Makefile ] || $(MAKE) -C openssl clean depend
+	[ ! -f openssl/Makefile ] || $(MAKE) -C openssl clean
 	@rm -f openssl/Makefile
 
 openssl-install:
