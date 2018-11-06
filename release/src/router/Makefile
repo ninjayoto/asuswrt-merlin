@@ -3305,7 +3305,7 @@ avahi-0.6.32/stamp-h1: shared nvram$(BCMEX) expat-2.2.0 libdaemon
 	--disable-pygtk --disable-python-dbus --disable-mono --disable-monodoc \
 	--disable-gtk3 --with-xml=none \
 	LIBDAEMON_LIBS="-L$(TOP)/libdaemon/libdaemon/.libs -ldaemon -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client)" \
-	LIBDAEMON_CFLAGS="-I$(TOP)/libdaemon" --disable-autoipd --with-xml=expat --disable-stack-protector --with-avahi-user="admin" --with-avahi-group="root"
+	LIBDAEMON_CFLAGS="-I$(TOP)/libdaemon" --disable-autoipd --with-xml=expat --disable-stack-protector --with-avahi-user="nobody" --with-avahi-group="nobody"
 	touch $@
 
 avahi-0.6.32: avahi-0.6.32/stamp-h1
