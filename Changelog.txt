@@ -4,6 +4,32 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_37B4j9527  (6-November-2018) ARM SDK, MIPS,ARM KRACK
+- CHANGED: avahi: (backport) no longer run as root, drop privs to nobody
+- CHANGED: openvpn: (backport) replace OPENSSL_SSL_* and OPENSSL_CRYPTO_* with OPENSSL_LIBS and OPENSSL_CFLAGS
+* CHANGED: openssl: (backport) clean up 1.0.2p build
+* CHANGED: dnsmasq: update to 2.80-122392e snapshot
+* CHANGED: getdns: (upstream) X509_get_notAfter not in OpenSSL 1.1.1 anymore
+- CHANGED: udpxy: misc updates to 380.70
+- CHANGED: udpxy: update to build 23
+- FIXED: openssl: apply openwrt 180-fix_link_segfault.patch
+
+
+374.43_37B3j9527  (5-November-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openvpn: no longer default block ipv6 dns for client
+* FIXED: getdns: (upstream) DS is always a delegation and never at the apex
+* FIXED: getdns: (upstream) Fix finding signer of NSEC and NSEC3s
+* FIXED: getdns: (upstream) Bugfix #399: Reinclude <linux/sysctl.h> in getentropy_linux.c
+* FIXED: getdns: fix build errors with --disable-dnssec-roadblock-avoidance
+
+
+374.43_37B2j9527  (4-November-2018) ARM SDK, MIPS,ARM KRACK
+374.43_37B1j9527  (1-November-2018) ARM SDK, MIPS,ARM KRACK
+* NEW: ddns: add ez-ipupdate support for external ip (double NAT)
+* CHANGED: webui: always show stubby selected servers span, including when round-robin mode
+* CHANGED: openssl: update CA bundle to 2018 October 17th version
+
+
 374.43_36EAj9527  (1-November-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: nettle: update to 3.4
 * CHANGED: dnssec: use stubby dnssec if stubby proxy enabled
