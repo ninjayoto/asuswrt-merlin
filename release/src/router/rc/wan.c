@@ -652,7 +652,7 @@ start_igmpproxy(char *wan_ifname)
 {
 	FILE *fp;
 	static char *igmpproxy_conf = "/tmp/igmpproxy.conf";
-	char *altnet = nvram_safe_get("mr_altnet_x");
+	char *altnet;
 
 #ifdef RTCONFIG_DSL /* Paul add 2012/9/21 for DSL model, start on interface br1. */
 	wan_ifname = "br1";
@@ -664,11 +664,13 @@ start_igmpproxy(char *wan_ifname)
 		_dprintf("start udpxy [%s]\n", wan_ifname);
 		eval("/usr/sbin/udpxy",
 			"-m", wan_ifname,
-			"-p", nvram_get("udpxy_enable_x"),
+			"-p", nvram_safe_get("udpxy_enable_x"),
+			"-B", "65536",
+			"-c", nvram_safe_get("udpxy_clients"),
 			"-a", nvram_get("lan_ifname") ? : "br0");
 	}
 
-	if (!nvram_match("mr_enable_x", "1"))
+	if (!nvram_get_int("mr_enable_x"))
 		return;
 
 	_dprintf("start igmpproxy [%s]\n", wan_ifname);
@@ -678,13 +680,15 @@ start_igmpproxy(char *wan_ifname)
 		return;
 	}
 
-	fprintf(fp, "# automagically generated from web settings\n"
-		"quickleave\n\n"
-		"phyint %s upstream  ratelimit 0  threshold 1\n"
-		"\taltnet %s\n\n"
-		"phyint %s downstream  ratelimit 0  threshold 1\n\n",
-		wan_ifname,
-		*altnet ? altnet : "0.0.0.0/0",
+	altnet = nvram_safe_get("mr_altnet_x");
+
+	fprintf(fp, "# automagically generated from web settings\n");
+	if (nvram_get_int("mr_qleave_x"))
+		fprintf(fp, "quickleave\n\n");
+	fprintf(fp,
+		"phyint %s upstream ratelimit 0 threshold 1 altnet %s\n"
+		"phyint %s downstream ratelimit 0 threshold 1\n",
+		wan_ifname, *altnet ? altnet : "0.0.0.0/0",
 		nvram_get("lan_ifname") ? : "br0");
 
 	append_custom_config("igmpproxy.conf", fp);

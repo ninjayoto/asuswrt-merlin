@@ -2669,6 +2669,15 @@ igmpproxy-clean:
 	-@$(MAKE) -C igmpproxy/src clean
 	@rm -f igmpproxy/stamp-h1
 
+udpxy:
+	$(MAKE) -C $@ release NO_UDPXREC=yes \
+	CDEFS="-O2 -ffunction-sections -fdata-sections $(EXTRACFLAGS)" \
+	LDFLAGS="-Wl,--gc-sections"
+
+udpxy-install:
+	install -D udpxy/udpxy $(INSTALLDIR)/udpxy/usr/sbin/udpxy
+	$(STRIP) $(INSTALLDIR)/udpxy/usr/sbin/udpxy
+
 wps$(BCMEX): nvram$(BCMEX) shared libupnp
 ifeq ($(RTCONFIG_WPS),y)
 	-rm -rf $(SRCBASE)/../src/wps

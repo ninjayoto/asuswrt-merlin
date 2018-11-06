@@ -2418,8 +2418,8 @@ TRACE_PT("writing Parental Control\n");
 
 // oleg patch ~
 		/* Pass multicast */
-		if (nvram_match("mr_enable_x", "1") || nvram_invmatch("udpxy_enable_x", "0")) {
-			fprintf(fp, "-A INPUT -p igmp -d 224.0.0.0/4 -j %s\n", logaccept);
+		if (nvram_get_int("mr_enable_x") || nvram_get_int("udpxy_enable_x")) {
+			fprintf(fp, "-A INPUT -p 2 -d 224.0.0.0/4 -j %s\n", logaccept);
 			fprintf(fp, "-A INPUT -p udp -d 224.0.0.0/4 ! --dport 1900 -j %s\n", logaccept);
 		}
 
@@ -3418,8 +3418,8 @@ TRACE_PT("writing Parental Control\n");
 		}
 
 		/* Pass multicast */
-		if (nvram_match("mr_enable_x", "1") || nvram_invmatch("udpxy_enable_x", "0")) {
-			fprintf(fp, "-A INPUT -p igmp -d 224.0.0.0/4 -j %s\n", logaccept);
+		if (nvram_get_int("mr_enable_x") || nvram_get_int("udpxy_enable_x")) {
+			fprintf(fp, "-A INPUT -p 2 -d 224.0.0.0/4 -j %s\n", logaccept);
 			fprintf(fp, "-A INPUT -p udp -d 224.0.0.0/4 ! --dport 1900 -j %s\n", logaccept);
 		}
 
@@ -4816,8 +4816,14 @@ int start_firewall(int wanunit, int lanunit)
 #endif
 
 	/* Mcast needs rp filter to be turned off only for non default iface */
-	if (!(nvram_get_int("mr_enable_x") || nvram_get_int("udpxy_enable_x")) ||
-	    strcmp(wan_if, mcast_ifname) == 0)
+	if (nvram_get_int("mr_enable_x") || nvram_get_int("udpxy_enable_x")) {
+		char wan_prefix[] = "wanXXXXXXXXXX_";
+		char *wan_ifname = get_wan_ifname(wan_primary_ifunit());
+		snprintf(wan_prefix, sizeof(wan_prefix), "wan%d_", wan_primary_ifunit());
+		mcast_ifname = nvram_safe_get(strcat_r(wan_prefix, "ifname", tmp));
+		if (wan_ifname && strcmp(wan_ifname, mcast_ifname) == 0)
+			mcast_ifname = NULL;
+	} else
 		mcast_ifname = NULL;
 
 	/* Block obviously spoofed IP addresses */
