@@ -2797,10 +2797,8 @@ openpam-clean:
 
 openvpn/stamp-h1:
 	cd openvpn && ./autogen.sh && \
-	export OPENSSL_CRYPTO_CFLAGS="-I$(TOP)/openssl"; \
-	export OPENSSL_CRYPTO_LIBS="-L$(TOP)/openssl -lcrypto"; \
-	export OPENSSL_SSL_CFLAGS="-I$(TOP)/openssl"; \
-	export OPENSSL_SSL_LIBS="-L$(TOP)/openssl -lssl"; \
+	export OPENSSL_CFLAGS="-I$(TOP)/openssl"; \
+	export OPENSSL_LIBS="-L$(TOP)/openssl -lcrypto -lssl"; \
 	CFLAGS="-O3 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections $(if $(RTCONFIG_HTTPS),-I$(TOP)/openssl/include/ssl) $(if $(RTCONFIG_BCMARM),,-std=gnu99)" \
 	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl -lcrypto -lssl) -L$(TOP)/zlib -lz -lpthread -ldl -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	CPPFLAGS="-I$(TOP)/lzo/include -I$(TOP)/openssl/include -I$(TOP)/openpam/include -I$(TOP)/shared -I$(SRCBASE)/include" \
