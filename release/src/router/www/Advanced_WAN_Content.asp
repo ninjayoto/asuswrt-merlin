@@ -118,6 +118,10 @@ function initial(){
 		document.getElementById("dnssec_tr").style.display = "";
 		document.getElementById("dnssec_strict_span").style.display = "";
 		document.form.dnssec_strict_ckb.checked = ('<% nvram_get("dnssec_check_unsigned_x"); %>' == 1) ? true : false;
+/* STUBBY-BEGIN */
+		document.getElementById("stubby_dnssec_span").style.display = "";
+		document.form.stubby_dnssec_ckb.checked = ('<% nvram_get("dnssec_check_unsigned_x"); %>' == 1) ? true : false;
+/* STUBBY-END */
 	}
 
 /* DNSCRYPT-BEGIN */
@@ -190,7 +194,7 @@ function update_resolverlist(){
 			}
 //		}
 	}
-	document.getElementById("dnssec_strict_span").style.display = (dnssec_enabled) ? "" : "none";
+	display_dnscrypt_opt();
 }
 
 function set_dnscrypt_protocol(instance, name){
@@ -224,6 +228,7 @@ function update_resolverlist(){
 	var accessindexname = "<br>Selected servers:<br>";
 	var currentserversarray = stubby_dns_value.split("&#60");
 	var dnssec_enabled = document.form.dnssec_enable[0].checked;
+	var stubby_dnssec = document.form.stubby_dnssec[0].checked;
 	var stubby_proxy = document.form.stubby_proxy[0].checked;
 	var stubby_nologs = document.form.stubby_nologs[0].checked;
 	accessindex = [];
@@ -255,8 +260,7 @@ function update_resolverlist(){
 			accessindexname += stubbyarray[accessindex[j]][0] + ", ";
 	}
 	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
-
-	document.getElementById("dnssec_strict_span").style.display = (dnssec_enabled && !stubby_proxy) ? "" : "none";
+	display_stubby_opt();
 }
 
 function update_accessorder(obj) {
@@ -286,7 +290,9 @@ function display_stubby_opt(){
 	$("stubby_ordered_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 //	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
 	$("stubby_accessorder").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
-	$("dnssec_strict_span").style.display = (document.form.stubby_proxy[0].checked) ? "none" : "";	
+	$("dnssec_strict_span").style.display = (document.form.stubby_proxy[0].checked) ? "none" : "";
+	$("stubby_dnssec_tr").style.display = (document.form.stubby_proxy[0].checked && document.form.dnssec_enable[0].checked) ? "" : "none";
+	$("stubby_dnssec_span").style.display = (document.form.stubby_proxy[0].checked) ? ((document.form.dnssec_enable[0].checked && document.form.stubby_dnssec[1].checked) ? "" : "none") : ((document.form.dnssec_enable[0].checked) ? "" : "none");
 }
 
 function stubby_details(i){
@@ -301,6 +307,15 @@ function stubby_details(i){
 	return overlib(statusmenu, OFFSETX, 0, RIGHT, DELAY, 2000);
 }
 /* STUBBY-END */
+
+function warn_dnssec_strict(){
+if (!document.form.dnssec_strict_ckb.checked
+/* STUBBY-BEGIN */
+	|| !document.form.stubby_dnssec_ckb.checked
+/* STUBBY-END */
+	)
+	alert("WARNING:\nDisabling Strict DNSSEC enforcement allows unsigned or misconfigured sites to be accepted as valid\nand should only be used for diagnostic purposes");
+}
 
 function display_upnp_range(){
 	$("upnp_secure_mode").style.display = (document.form.wan_upnp_enable[0].checked) ? "" : "none";
@@ -1380,11 +1395,21 @@ function pass_checked(obj){
 			<tr id="dnssec_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,32);">Enable DNSSEC support<br><i>DNS servers must support DNSSEC</i></a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();warn_dnssec_strict();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
 					<input type="radio" value="0" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
-					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;"> Strict DNSSEC enforcement</input></span>
+					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;warn_dnssec_strict();"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>
+/* STUBBY-BEGIN */
+			<tr id="stubby_dnssec_tr" style="display:none;">
+				<th>DNSSEC validation via</th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="1" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "1", "checked"); %> />GetDNS
+					<input type="radio" value="0" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "0", "checked"); %> />Dnsmasq
+					<span id="stubby_dnssec_span" style="display:none;padding-left:20px;"><input type="checkbox" name="stubby_dnssec_ckb" id="stubby_dnssec_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;warn_dnssec_strict();"> Strict DNSSEC enforcement</input></span>
+				</td>
+			</tr>
+/* STUBBY-END */
 			<tr>
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,35);">Enable DNS Rebind protection</a></th>
 				<td colspan="2" style="text-align:left;">
