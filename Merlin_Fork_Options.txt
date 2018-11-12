@@ -516,6 +516,21 @@ Stubby (DoT) operational parameters
                                   tls_connection_retries:
                                 to customize stubby for your location/hardware.   See the stubby man page for further information.
 ---------------------------------------------------------------------------------------------------------------
+Stubby (DoT) DNSSEC validation
+
+        Can be set in gui:      Yes (WAN/Internet Connection)
+        Enable via NVRAM:       nvram set stubby_dnssec=x
+                                nvram commit
+                                service restart_stubby
+                                  (where x = 0, use getdns DNSSEC validation, x = 1, use dnsmasq DNSSEC validation)
+
+
+        Routers Supported:      All
+        Released:               Update-37B5
+        Reboot Required:        No (must restart stubby to activate changes)
+        Notes:                  Allows changing the DNSSEC validator used for DoT.  By default, DoT will use its own DNSSEC validation.
+                                  This setting allows the user to force dnsmasq DNSSEC validation for DoT servers.
+---------------------------------------------------------------------------------------------------------------
 
 Disabling the special options:
 

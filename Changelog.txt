@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_37E1j9527  (16-November-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dnssec: add DoT option to select dnssec validator
+* CHANGED: webui: add alert warning when disabling strict dnssec
+* CHANGED: samba: add min protocal statement for SMB1+SMB2 option
+
+
 374.43_37B4j9527  (6-November-2018) ARM SDK, MIPS,ARM KRACK
 - CHANGED: avahi: (backport) no longer run as root, drop privs to nobody
 - CHANGED: openvpn: (backport) replace OPENSSL_SSL_* and OPENSSL_CRYPTO_* with OPENSSL_LIBS and OPENSSL_CFLAGS
