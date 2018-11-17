@@ -1100,10 +1100,7 @@ int start_tqos(void)
 			sprintf(qsched, "codel");
 			break;
 		case 2:
-			if (bw < 51200)
-				sprintf(qsched, "fq_codel quantum 300 noecn");
-			else
-				sprintf(qsched, "fq_codel noecn");
+			sprintf(qsched, "fq_codel quantum %u noecn", mtu);
 			break;
 		default:
 			/* qsched = "sfq perturb 10"; */
@@ -1655,6 +1652,7 @@ static int start_bandwidth_limiter(void)
 	int addr_type;
 	char addr_new[30];
 	char qsched[32];
+	unsigned int mtu;
 
 	if (!nvram_match("qos_enable", "1")) return -1;
 
@@ -1666,6 +1664,8 @@ static int start_bandwidth_limiter(void)
 	else
 		logmessage("qos-init", "using wan_ifname %s", wan_ifname);
 
+	mtu = strtoul(nvram_safe_get("wan_mtu"), NULL, 10) + 14; //add 14 bytes for hardware header
+
 	// init guest 3: ~ 12: (9 guestnetwork), start number = 3
 	guest = 3;
 
@@ -1675,7 +1675,7 @@ static int start_bandwidth_limiter(void)
 			sprintf(qsched, "codel");
 			break;
 		case 2:
-			sprintf(qsched, "fq_codel quantum 300");
+			sprintf(qsched, "fq_codel quantum %u", mtu);
 			break;
 		default:
 			sprintf(qsched, "sfq perturb 10");
