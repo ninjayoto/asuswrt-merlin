@@ -1402,10 +1402,11 @@ function pass_checked(obj){
 			</tr>
 /* STUBBY-BEGIN */
 			<tr id="stubby_dnssec_tr" style="display:none;">
-				<th>DNSSEC validation via</th>
+				<th>DNSSEC validation method</th>
 				<td colspan="2" style="text-align:left;">
 					<input type="radio" value="1" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "1", "checked"); %> />GetDNS
 					<input type="radio" value="0" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "0", "checked"); %> />Dnsmasq
+					<input type="radio" value="2" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "2", "checked"); %> />Server Only
 					<span id="stubby_dnssec_span" style="display:none;padding-left:20px;"><input type="checkbox" name="stubby_dnssec_ckb" id="stubby_dnssec_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;warn_dnssec_strict();"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>

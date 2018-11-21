@@ -920,7 +920,7 @@ void start_dnsmasq(int force)
 					logmessage("dnsmasq", "DNSSEC dnssec-check-unsigned disabled");
 				}
 			}
-		} else { /* using stubby dnssec */
+		} else { /* using stubby dnssec or server only */
 			fprintf(fp, "proxy-dnssec\n");
 		}
 	}
