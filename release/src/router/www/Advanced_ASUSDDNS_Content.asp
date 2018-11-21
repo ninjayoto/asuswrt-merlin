@@ -437,10 +437,10 @@ function onSubmitApply(s){
 			</tr>
 			<tr id="ddns_ipcheck_tr">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(5,16);">Method to retrieve WAN IP</a></th>
-                                <td>
-				<select name="ddns_ipcheck" class="input_option">
-					<option class="content_input_fd" value="0" <% nvram_match("ddns_ipcheck", "0","selected"); %>>Internal</option>
-					<option class="content_input_fd" value="1" <% nvram_match("ddns_ipcheck", "1","selected"); %>>External</option>
+				<td>
+				<select id="ddns_ipcheck" class="input_option" name="ddns_ipcheck">
+					<option value="0" <% nvram_match("ddns_ipcheck", "0","selected"); %>>Internal</option>
+					<option value="1" <% nvram_match("ddns_ipcheck", "1","selected"); %>>External</option>
 				</select>
 				</td>
 			</tr>		

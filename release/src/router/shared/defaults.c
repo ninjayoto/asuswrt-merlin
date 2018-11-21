@@ -1104,6 +1104,7 @@ struct nvram_tuple router_defaults[] = {
 	{ "ddns_regular_period", "60"},
 	{ "ddns_transfer", ""},
 	{ "ddns_refresh_x", "21"},	// Forced refresh period (in days)
+	{ "ddns_ipcheck", "0"},	// 0 - from interface, 1 - from ministun
 
 	// NVRAM for start_firewall
 	// Firewall
@@ -2310,7 +2311,6 @@ struct nvram_tuple router_state_defaults[] = {
 #endif
 	{ "ddns_cache", ""},
 	{ "ddns_ipaddr", ""},
-	{ "ddns_ipcheck", "0"}, // 0 - from interface, 1 - from ministun
 	{ "ddns_status", ""},
 	{ "ddns_server_x_old", ""},
 	{ "ddns_hostname_old", ""},
