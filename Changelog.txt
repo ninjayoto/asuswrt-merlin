@@ -4,7 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_37E1j9527  (16-November-2018) ARM SDK, MIPS,ARM KRACK
+374.43_37E2j9527  (23-November-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: dnssec: add server only validation option for DoT
+* CHANGED: wanduck: failsafe restart dns encryption during wan start
+* FIXED: qos: fix quantum calc for fq_codel
+* FIXED: webui: fix saving of ddns internal/external option
+* FIXED: webui: change text space to html nbsp in waiting prompts
+* FIXED: webui: only display dnsmasq strict dnssec option when available
+
+
+374.43_37E1j9527  (21-November-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnssec: add DoT option to select dnssec validator
 * CHANGED: webui: add alert warning when disabling strict dnssec
 * CHANGED: samba: add min protocal statement for SMB1+SMB2 option
