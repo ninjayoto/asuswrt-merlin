@@ -25,7 +25,7 @@ function LoadingTime(seconds, flag){
    			document.body.removeChild(document.body.lastChild);
 			}
 
-			showtext($("proceeding_main_txt"), "<#Main_alert_proceeding_desc4#>");
+			showtext($("proceeding_main_txt"), "<#Main_alert_proceeding_desc4#>&nbsp;");
 			showtext($("proceeding_txt"), Math.round(y)+"% <#Main_alert_proceeding_desc1#>");
 			--seconds;
 			setTimeout("LoadingTime("+seconds+", '"+flag+"');", 1000);

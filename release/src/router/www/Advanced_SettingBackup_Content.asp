@@ -165,7 +165,7 @@ function detect_httpd(){
 	<table cellpadding="5" cellspacing="0" id="dr_sweet_advise" class="dr_sweet_advise" align="center">
 		<tr>
 		<td>
-			<div class="drword" id="drword"><#Main_alert_proceeding_desc4#> <#Main_alert_proceeding_desc1#>...
+			<div class="drword" id="drword"><#Main_alert_proceeding_desc4#>&nbsp;<#Main_alert_proceeding_desc1#>...
 				<br/>
 				<br/>
 		    </div>

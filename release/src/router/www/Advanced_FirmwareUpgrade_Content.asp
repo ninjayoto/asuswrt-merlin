@@ -295,7 +295,7 @@ function submitForm(){
 	<table cellpadding="5" cellspacing="0" id="dr_sweet_advise" class="dr_sweet_advise" align="center" style="height:100px;">
 		<tr>
 		<td>
-			<div class="drword" id="drword" style="">&nbsp;&nbsp;&nbsp;&nbsp;<#Main_alert_proceeding_desc4#> <#Main_alert_proceeding_desc1#>...</div>
+			<div class="drword" id="drword" style="">&nbsp;&nbsp;&nbsp;&nbsp;<#Main_alert_proceeding_desc4#>&nbsp;<#Main_alert_proceeding_desc1#>...</div>
 		</td>
 		</tr>
 	</table>
