@@ -1472,6 +1472,20 @@ void record_conn_status(int wan_unit){
 			sprintf(buf, "wan_t0=%d", 0);
 			eval("nvram", "set", buf);
 		}
+#ifdef RTCONFIG_DNSCRYPT
+		if (nvram_match("dnscrypt_proxy", "1")) {
+			memset(buf, 0, 32);
+			sprintf(buf, "restart_dnscrypt 0");
+			notify_rc_and_wait(buf);
+		}
+#endif
+#ifdef RTCONFIG_STUBBY
+		if (nvram_match("stubby_proxy", "1")) {
+			memset(buf, 0, 32);
+			sprintf(buf, "restart_stubby 0");
+			notify_rc_and_wait(buf);
+		}
+#endif
 	}
 }
 
