@@ -218,6 +218,7 @@ function display_dnscrypt_opt(){
 	$("dnscrypt2_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt_log_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt_nologs_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
+	$("dnssec_strict_span").style.display = (document.form.dnssec_enable[0].checked) ? "" : "none";
 }
 /* DNSCRYPT-END */
 /* STUBBY-BEGIN */
@@ -290,7 +291,7 @@ function display_stubby_opt(){
 	$("stubby_ordered_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 //	$("stubby_accessorder").style.display = (document.form.stubby_access[1].checked) ? "" : "none";
 	$("stubby_accessorder").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
-	$("dnssec_strict_span").style.display = (document.form.stubby_proxy[0].checked) ? "none" : "";
+	$("dnssec_strict_span").style.display = (document.form.stubby_proxy[0].checked || document.form.dnssec_enable[1].checked) ? "none" : "";
 	$("stubby_dnssec_tr").style.display = (document.form.stubby_proxy[0].checked && document.form.dnssec_enable[0].checked) ? "" : "none";
 	$("stubby_dnssec_span").style.display = (document.form.stubby_proxy[0].checked) ? ((document.form.dnssec_enable[0].checked && document.form.stubby_dnssec[1].checked) ? "" : "none") : ((document.form.dnssec_enable[0].checked) ? "" : "none");
 }
