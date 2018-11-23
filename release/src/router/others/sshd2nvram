@@ -13,9 +13,9 @@ do
     FILEPATH=${sshd_dir}$FILENAME
     printf "%-48s" "Processing $FILEPATH"
     if [ $count -eq 1 ]; then
-        VALUE=$(head -c 3499 $FILEPATH)
+        VALUE=$(head -c 2999 $FILEPATH)
     else
-        VALUE=$(head -c 3499 $FILEPATH | openssl enc -base64 | tr -d '\n')
+        VALUE=$(head -c 2999 $FILEPATH | openssl enc -base64 | tr -d '\n')
     fi
     lVALUE=$(echo ${#VALUE})
     if [ $lVALUE -gt 0 ]; then

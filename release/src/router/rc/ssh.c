@@ -58,7 +58,7 @@ static inline int check_host_key(const char *ktype, const char *nvname, const ch
 void start_sshd(void)
 {
 	int dirty = 0;
-	char buf[3500];
+	char buf[3000];
 	char *argv[24];
 	int j, argc;
 	char *p, *str, *token, *saveptr;

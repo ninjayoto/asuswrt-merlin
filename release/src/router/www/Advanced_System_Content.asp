@@ -1459,7 +1459,7 @@ function updateDateTime()
 					<tr>
 						<th>SSH Authentication key</th>
 						<td>
-							<textarea class="textarea_ssh_table_8" name="sshd_authkeys" maxlength="3499"><% nvram_clean_get("sshd_authkeys"); %></textarea>
+							<textarea class="textarea_ssh_table_8" name="sshd_authkeys" maxlength="2999"><% nvram_clean_get("sshd_authkeys"); %></textarea>
 							<span id="ssh_alert_msg"></span>
 						</td>
 				</tr>
