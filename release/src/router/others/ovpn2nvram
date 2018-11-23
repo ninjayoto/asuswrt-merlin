@@ -23,7 +23,7 @@ do
     FILEPATH=${ovpn_jffs}$FILENAME
     printf "%-46s" "Processing $FILEPATH"
     if [ -e $FILEPATH ]; then
-	VALUE=$(head -c 3499 $FILEPATH)
+	VALUE=$(head -c 4999 $FILEPATH)
 	lVALUE=$(echo ${#VALUE})
 	if [ $lVALUE -gt 0 ]; then
 		VALUE=${VALUE//$'\r'/}        # remove cr

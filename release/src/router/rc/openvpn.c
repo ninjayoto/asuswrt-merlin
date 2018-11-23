@@ -53,7 +53,7 @@ void start_vpnclient(int clientNum)
 	FILE *fp;
 	char iface[IF_SIZE];
 	char buffer[BUF_SIZE];
-	char buffer2[4000];
+	char buffer2[5120];
 	char *argv[6];
 	char *buf, *p;
 	int argc = 0;
@@ -669,7 +669,7 @@ void start_vpnserver(int serverNum)
 	FILE *fp, *ccd, *fp_client;;
 	char iface[IF_SIZE];
 	char buffer[BUF_SIZE];
-	char buffer2[4000];
+	char buffer2[5120];
 	char *argv[6], *chp, *route;
 	char *buf, *p;
 	int argc = 0;

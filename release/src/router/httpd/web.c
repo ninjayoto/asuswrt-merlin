@@ -1261,14 +1261,13 @@ ej_vpn_client_get_parameter(int eid, webs_t wp, int argc, char_t **argv)
 #endif
 
 
-//2008.08 magic {
+//2008.08, 2018.04 magic {
 // Largest POST will be the OpenVPN pages with keys:
-// 5 keys * 2 server instances = 10 large fields total
-// Each field can have up to 3500 characters, for a potential
-// total of 35KB.  Going for 40KB to account for additional POST/GET data.
+// 7 fields at up to 8000 bytes each, for 56KB in worst-case scenario
+// Add the other settings, would fit in a 64 KB buffer
 
-static char post_buf[40000] = { 0 };
-static char post_buf_backup[40000] = { 0 };
+static char post_buf[65535] = { 0 };
+static char post_buf_backup[65535] = { 0 };
 
 static void do_html_post_and_get(char *url, FILE *stream, int len, char *boundary){
 	char *query = NULL;
@@ -1455,7 +1454,7 @@ static int validate_apply(webs_t wp) {
 	struct nvram_tuple *t;
 	char *value;
 	char name[64];
-	char tmp[3500], prefix[32];
+	char tmp[5120], prefix[32];
 	int unit=-1, subunit=-1;
 	int nvram_modified = 0;
 #ifdef RTCONFIG_QTN
@@ -10077,7 +10076,7 @@ int is_wlif_up(const char *ifname)
 // ASCII values below 32.
 void write_encoded_crt(char *name, char *value){
 	int len, i, j;
-	char tmp[3500];
+	char tmp[5120];
 
 	if (!value) return;
 

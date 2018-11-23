@@ -26,16 +26,16 @@ do
     DATA=$(nvram get $VARNAME)
     lDATA=$(echo ${#DATA})
     if [ $lDATA -gt 0 ]; then
-	if [ "${DATA:0:5}" == "-----" ]; then
-	        echo "$DATA" | tr '>' '\n' > $FILEPATH
-		nvram set $VARNAME="$FILEPATH"
-		echo -e "\tDone"
-	else
-		echo -e "\tInvalid cert"
-		err=1
-	fi
+		if [ "${DATA:0:5}" == "-----" ] && [ $lDATA -lt 5000 ]; then
+		        echo "$DATA" | tr '>' '\n' > $FILEPATH
+			nvram set $VARNAME="$FILEPATH"
+			echo -e "\tDone"
+		else
+			echo -e "\tInvalid cert or existing cert found"
+			err=1
+		fi
     else
-	echo -e "\tEmpty"
+		echo -e "\tEmpty"
     fi
     let count=count+1
 done
