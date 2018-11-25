@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_37E4j9527  (25-November-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openssl: update to 1.0.2q
+* CHANGED: openvpn: increase allowable key/cert size to 4999 bytes
+- CHANGED: webui: limit SSHD auth key field to 2999 characters matching Merlin limit
+
+
 374.43_37E2j9527  (23-November-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnssec: add server only validation option for DoT
 * CHANGED: wanduck: failsafe restart dns encryption during wan start
