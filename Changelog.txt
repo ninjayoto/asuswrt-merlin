@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_37E5j9527  (30-November-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: stubby: update stubby-resolvers.csv
+* FIXED: dnsmasq: re-apply some dnsmasq customizations dropped in last version update
+* FIXED: getdns: (upstream) bugfix getdnsapi/stubby#140 fallback on getentropy failure
+
+
 374.43_37E4j9527  (25-November-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: openssl: update to 1.0.2q
 * CHANGED: openvpn: increase allowable key/cert size to 4999 bytes
