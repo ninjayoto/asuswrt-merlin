@@ -291,7 +291,7 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 			char service[32];
 			sscanf(type, "pid.%31s", service);
 
-			if (strlen(service))
+			if (*service)
 				sprintf(result, "%d", pidof(service));
 
 		} else if(strncmp(type,"vpnstatus",9) == 0 ) {
@@ -300,7 +300,7 @@ int ej_show_sysinfo(int eid, webs_t wp, int argc, char_t ** argv)
 
 			sscanf(type,"vpnstatus.%9[^.].%d", service, &num);
 
-			if ((strlen(service)) && (num > 0) )
+			if ((*service) && (num > 0) )
 			{
 				snprintf(buf, sizeof(buf), "vpn%s%d", service, num);
 				if ((pid = pidof(buf)) > 0) {
