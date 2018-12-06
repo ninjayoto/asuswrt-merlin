@@ -9505,7 +9505,7 @@ ej_select_list(int eid, webs_t wp, int argc, char_t **argv)
 		refnum = "sh_num";
 		curr = nvram_get_int(ref1);
 		sprintf(idxstr, "%d", curr);
-		strcpy(tmpstr1, nvram_get(strcat_r(ref2, idxstr, tmpstr)));
+		strlcpy(tmpstr1, nvram_get(strcat_r(ref2, idxstr, tmpstr)), sizeof(tmpstr1));
 		sprintf(out, "%s", tmpstr1);
 		ret += websWrite(wp, out);
 		return ret;
@@ -9533,7 +9533,7 @@ ej_select_list(int eid, webs_t wp, int argc, char_t **argv)
 		for (i=0;i<nvram_get_int("acc_num");i++)
 		{
 			 sprintf(idxstr, "%d", i);
-			 strcpy(tmpstr1, nvram_get(strcat_r("acc_username", idxstr, tmpstr)));
+			 strlcpy(tmpstr1, nvram_get(strcat_r("acc_username", idxstr, tmpstr)), sizeof(tmpstr1));
 			 sprintf(out, "<option value=\"%s\">%s</option>", tmpstr1, tmpstr1);
 			 ret += websWrite(wp, out);
 		}
