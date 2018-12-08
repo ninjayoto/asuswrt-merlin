@@ -588,6 +588,11 @@ void start_dnsmasq(int force)
 	if (pids("dnsmasq"))
 		stop_dnsmasq(force);
 
+	if (g_reboot) {
+		TRACE_PT("reboot\n");
+		return;
+	}	
+
 #ifdef RTCONFIG_DNSCRYPT
 	if (nvram_match("dnscrypt_proxy", "1")) {
 		restart_dnscrypt(0);
