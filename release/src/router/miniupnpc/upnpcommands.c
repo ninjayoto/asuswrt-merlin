@@ -1,7 +1,8 @@
-/* $Id: upnpcommands.c,v 1.44 2014/06/10 09:44:07 nanard Exp $ */
-/* Project : miniupnp
+/* $Id: upnpcommands.c,v 1.49 2018/03/13 23:34:47 nanard Exp $ */
+/* vim: tabstop=4 shiftwidth=4 noexpandtab
+ * Project : miniupnp
  * Author : Thomas Bernard
- * Copyright (c) 2005-2012 Thomas Bernard
+ * Copyright (c) 2005-2018 Thomas Bernard
  * This software is subject to the conditions detailed in the
  * LICENCE file provided in this distribution.
  * */
@@ -11,6 +12,7 @@
 #include "upnpcommands.h"
 #include "miniupnpc.h"
 #include "portlistingparse.h"
+#include "upnpreplyparse.h"
 
 static UNSIGNED_INTEGER
 my_atoui(const char * s)
@@ -31,11 +33,11 @@ UPNP_GetTotalBytesSent(const char * controlURL,
 	char * p;
 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                                "GetTotalBytesSent", 0, &bufsize))) {
-		return UPNPCOMMAND_HTTP_ERROR;
+		return (UNSIGNED_INTEGER)UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
 	/*DisplayNameValueList(buffer, bufsize);*/
-	free(buffer); buffer = NULL;
+	free(buffer);
 	p = GetValueFromNameValueList(&pdata, "NewTotalBytesSent");
 	r = my_atoui(p);
 	ClearNameValueList(&pdata);
@@ -55,11 +57,11 @@ UPNP_GetTotalBytesReceived(const char * controlURL,
 	char * p;
 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                                "GetTotalBytesReceived", 0, &bufsize))) {
-		return UPNPCOMMAND_HTTP_ERROR;
+		return (UNSIGNED_INTEGER)UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
 	/*DisplayNameValueList(buffer, bufsize);*/
-	free(buffer); buffer = NULL;
+	free(buffer);
 	p = GetValueFromNameValueList(&pdata, "NewTotalBytesReceived");
 	r = my_atoui(p);
 	ClearNameValueList(&pdata);
@@ -79,11 +81,11 @@ UPNP_GetTotalPacketsSent(const char * controlURL,
 	char * p;
 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                                "GetTotalPacketsSent", 0, &bufsize))) {
-		return UPNPCOMMAND_HTTP_ERROR;
+		return (UNSIGNED_INTEGER)UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
 	/*DisplayNameValueList(buffer, bufsize);*/
-	free(buffer); buffer = NULL;
+	free(buffer);
 	p = GetValueFromNameValueList(&pdata, "NewTotalPacketsSent");
 	r = my_atoui(p);
 	ClearNameValueList(&pdata);
@@ -103,11 +105,11 @@ UPNP_GetTotalPacketsReceived(const char * controlURL,
 	char * p;
 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                                "GetTotalPacketsReceived", 0, &bufsize))) {
-		return UPNPCOMMAND_HTTP_ERROR;
+		return (UNSIGNED_INTEGER)UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
 	/*DisplayNameValueList(buffer, bufsize);*/
-	free(buffer); buffer = NULL;
+	free(buffer);
 	p = GetValueFromNameValueList(&pdata, "NewTotalPacketsReceived");
 	r = my_atoui(p);
 	ClearNameValueList(&pdata);
@@ -140,7 +142,7 @@ UPNP_GetStatusInfo(const char * controlURL,
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
 	/*DisplayNameValueList(buffer, bufsize);*/
-	free(buffer); buffer = NULL;
+	free(buffer);
 	up = GetValueFromNameValueList(&pdata, "NewUptime");
 	p = GetValueFromNameValueList(&pdata, "NewConnectionStatus");
 	err = GetValueFromNameValueList(&pdata, "NewLastConnectionError");
@@ -159,7 +161,7 @@ UPNP_GetStatusInfo(const char * controlURL,
 		if(up)
 			sscanf(up,"%u",uptime);
 		else
-			uptime = 0;
+			*uptime = 0;
 	}
 
 	if(lastconnerror) {
@@ -192,18 +194,15 @@ UPNP_GetConnectionTypeInfo(const char * controlURL,
 	char * p;
 	int ret = UPNPCOMMAND_UNKNOWN_ERROR;
 
-printf("0\n");
 	if(!connectionType)
 		return UPNPCOMMAND_INVALID_ARGS;
-printf("1\n");
 
 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                                "GetConnectionTypeInfo", 0, &bufsize))) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
-printf("2\n");
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	p = GetValueFromNameValueList(&pdata, "NewConnectionType");
 	/*p = GetValueFromNameValueList(&pdata, "NewPossibleConnectionTypes");*/
 	/* PossibleConnectionTypes will have several values.... */
@@ -219,7 +218,6 @@ printf("2\n");
 		sscanf(p, "%d", &ret);
 	}
 	ClearNameValueList(&pdata);
-printf("3\n");
 	return ret;
 }
 
@@ -253,7 +251,7 @@ UPNP_GetLinkLayerMaxBitRates(const char * controlURL,
 	}
 	/*DisplayNameValueList(buffer, bufsize);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	/*down = GetValueFromNameValueList(&pdata, "NewDownstreamMaxBitRate");*/
 	/*up = GetValueFromNameValueList(&pdata, "NewUpstreamMaxBitRate");*/
 	down = GetValueFromNameValueList(&pdata, "NewLayer1DownstreamMaxBitRate");
@@ -317,7 +315,7 @@ UPNP_GetExternalIPAddress(const char * controlURL,
 	}
 	/*DisplayNameValueList(buffer, bufsize);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	/*printf("external ip = %s\n", GetValueFromNameValueList(&pdata, "NewExternalIPAddress") );*/
 	p = GetValueFromNameValueList(&pdata, "NewExternalIPAddress");
 	if(p) {
@@ -358,6 +356,8 @@ UPNP_AddPortMapping(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	AddPortMappingArgs = calloc(9, sizeof(struct UPNParg));
+	if(AddPortMappingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	AddPortMappingArgs[0].elt = "NewRemoteHost";
 	AddPortMappingArgs[0].val = remoteHost;
 	AddPortMappingArgs[1].elt = "NewExternalPort";
@@ -374,17 +374,18 @@ UPNP_AddPortMapping(const char * controlURL, const char * servicetype,
 	AddPortMappingArgs[6].val = desc?desc:"libminiupnpc";
 	AddPortMappingArgs[7].elt = "NewLeaseDuration";
 	AddPortMappingArgs[7].val = leaseDuration?leaseDuration:"0";
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                                "AddPortMapping", AddPortMappingArgs,
-	                                &bufsize))) {
-		free(AddPortMappingArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                           "AddPortMapping", AddPortMappingArgs,
+	                           &bufsize);
+	free(AddPortMappingArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	/*DisplayNameValueList(buffer, bufsize);*/
 	/*buffer[bufsize] = '\0';*/
 	/*puts(buffer);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal) {
 		/*printf("AddPortMapping errorCode = '%s'\n", resVal); */
@@ -394,7 +395,6 @@ UPNP_AddPortMapping(const char * controlURL, const char * servicetype,
 		ret = UPNPCOMMAND_SUCCESS;
 	}
 	ClearNameValueList(&pdata);
-	free(AddPortMappingArgs);
 	return ret;
 }
 
@@ -420,6 +420,8 @@ UPNP_AddAnyPortMapping(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	AddPortMappingArgs = calloc(9, sizeof(struct UPNParg));
+	if(AddPortMappingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	AddPortMappingArgs[0].elt = "NewRemoteHost";
 	AddPortMappingArgs[0].val = remoteHost;
 	AddPortMappingArgs[1].elt = "NewExternalPort";
@@ -436,14 +438,15 @@ UPNP_AddAnyPortMapping(const char * controlURL, const char * servicetype,
 	AddPortMappingArgs[6].val = desc?desc:"libminiupnpc";
 	AddPortMappingArgs[7].elt = "NewLeaseDuration";
 	AddPortMappingArgs[7].val = leaseDuration?leaseDuration:"0";
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                                "AddAnyPortMapping", AddPortMappingArgs,
-	                                &bufsize))) {
-		free(AddPortMappingArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                           "AddAnyPortMapping", AddPortMappingArgs,
+	                           &bufsize);
+	free(AddPortMappingArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal) {
 		ret = UPNPCOMMAND_UNKNOWN_ERROR;
@@ -461,7 +464,6 @@ UPNP_AddAnyPortMapping(const char * controlURL, const char * servicetype,
 		}
 	}
 	ClearNameValueList(&pdata);
-	free(AddPortMappingArgs);
 	return ret;
 }
 
@@ -482,21 +484,24 @@ UPNP_DeletePortMapping(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	DeletePortMappingArgs = calloc(4, sizeof(struct UPNParg));
+	if(DeletePortMappingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	DeletePortMappingArgs[0].elt = "NewRemoteHost";
 	DeletePortMappingArgs[0].val = remoteHost;
 	DeletePortMappingArgs[1].elt = "NewExternalPort";
 	DeletePortMappingArgs[1].val = extPort;
 	DeletePortMappingArgs[2].elt = "NewProtocol";
 	DeletePortMappingArgs[2].val = proto;
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                               "DeletePortMapping",
-	                               DeletePortMappingArgs, &bufsize))) {
-		free(DeletePortMappingArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                          "DeletePortMapping",
+	                          DeletePortMappingArgs, &bufsize);
+	free(DeletePortMappingArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	/*DisplayNameValueList(buffer, bufsize);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal) {
 		ret = UPNPCOMMAND_UNKNOWN_ERROR;
@@ -505,14 +510,13 @@ UPNP_DeletePortMapping(const char * controlURL, const char * servicetype,
 		ret = UPNPCOMMAND_SUCCESS;
 	}
 	ClearNameValueList(&pdata);
-	free(DeletePortMappingArgs);
 	return ret;
 }
 
 MINIUPNP_LIBSPEC int
 UPNP_DeletePortMappingRange(const char * controlURL, const char * servicetype,
-			    const char * extPortStart, const char * extPortEnd,
-			    const char * proto,
+        		    const char * extPortStart, const char * extPortEnd,
+        		    const char * proto,
 			    const char * manage)
 {
 	struct UPNParg * DeletePortMappingArgs;
@@ -526,6 +530,8 @@ UPNP_DeletePortMappingRange(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	DeletePortMappingArgs = calloc(5, sizeof(struct UPNParg));
+	if(DeletePortMappingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	DeletePortMappingArgs[0].elt = "NewStartPort";
 	DeletePortMappingArgs[0].val = extPortStart;
 	DeletePortMappingArgs[1].elt = "NewEndPort";
@@ -535,14 +541,15 @@ UPNP_DeletePortMappingRange(const char * controlURL, const char * servicetype,
 	DeletePortMappingArgs[3].elt = "NewManage";
 	DeletePortMappingArgs[3].val = manage;
 
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                                "DeletePortMappingRange",
-	                                DeletePortMappingArgs, &bufsize))) {
-		free(DeletePortMappingArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                           "DeletePortMappingRange",
+	                           DeletePortMappingArgs, &bufsize);
+	free(DeletePortMappingArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal) {
 		ret = UPNPCOMMAND_UNKNOWN_ERROR;
@@ -551,7 +558,6 @@ UPNP_DeletePortMappingRange(const char * controlURL, const char * servicetype,
 		ret = UPNPCOMMAND_SUCCESS;
 	}
 	ClearNameValueList(&pdata);
-	free(DeletePortMappingArgs);
 	return ret;
 }
 
@@ -579,16 +585,19 @@ UPNP_GetGenericPortMappingEntry(const char * controlURL,
 	intClient[0] = '\0';
 	intPort[0] = '\0';
 	GetPortMappingArgs = calloc(2, sizeof(struct UPNParg));
+	if(GetPortMappingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	GetPortMappingArgs[0].elt = "NewPortMappingIndex";
 	GetPortMappingArgs[0].val = index;
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                               "GetGenericPortMappingEntry",
-	                               GetPortMappingArgs, &bufsize))) {
-		free(GetPortMappingArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                           "GetGenericPortMappingEntry",
+	                           GetPortMappingArgs, &bufsize);
+	free(GetPortMappingArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 
 	p = GetValueFromNameValueList(&pdata, "NewRemoteHost");
 	if(p && rHost)
@@ -610,14 +619,14 @@ UPNP_GetGenericPortMappingEntry(const char * controlURL,
 		protocol[3] = '\0';
 	}
 	p = GetValueFromNameValueList(&pdata, "NewInternalClient");
-	if(p && intClient)
+	if(p)
 	{
 		strncpy(intClient, p, 16);
 		intClient[15] = '\0';
 		r = 0;
 	}
 	p = GetValueFromNameValueList(&pdata, "NewInternalPort");
-	if(p && intPort)
+	if(p)
 	{
 		strncpy(intPort, p, 6);
 		intPort[5] = '\0';
@@ -646,7 +655,6 @@ UPNP_GetGenericPortMappingEntry(const char * controlURL,
 		sscanf(p, "%d", &r);
 	}
 	ClearNameValueList(&pdata);
-	free(GetPortMappingArgs);
 	return r;
 }
 
@@ -655,12 +663,12 @@ UPNP_GetPortMappingNumberOfEntries(const char * controlURL,
                                    const char * servicetype,
                                    unsigned int * numEntries)
 {
-	struct NameValueParserData pdata;
-	char * buffer;
-	int bufsize;
-	char* p;
+ 	struct NameValueParserData pdata;
+ 	char * buffer;
+ 	int bufsize;
+ 	char* p;
 	int ret = UPNPCOMMAND_UNKNOWN_ERROR;
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+ 	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                                "GetPortMappingNumberOfEntries", 0,
 	                                &bufsize))) {
 		return UPNPCOMMAND_HTTP_ERROR;
@@ -668,15 +676,15 @@ UPNP_GetPortMappingNumberOfEntries(const char * controlURL,
 #ifdef DEBUG
 	DisplayNameValueList(buffer, bufsize);
 #endif
-	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+ 	ParseNameValue(buffer, bufsize, &pdata);
+	free(buffer);
 
-	p = GetValueFromNameValueList(&pdata, "NewPortMappingNumberOfEntries");
-	if(numEntries && p) {
+ 	p = GetValueFromNameValueList(&pdata, "NewPortMappingNumberOfEntries");
+ 	if(numEntries && p) {
 		*numEntries = 0;
-		sscanf(p, "%u", numEntries);
+ 		sscanf(p, "%u", numEntries);
 		ret = UPNPCOMMAND_SUCCESS;
-	}
+ 	}
 
 	p = GetValueFromNameValueList(&pdata, "errorCode");
 	if(p) {
@@ -684,7 +692,7 @@ UPNP_GetPortMappingNumberOfEntries(const char * controlURL,
 		sscanf(p, "%d", &ret);
 	}
 
-	ClearNameValueList(&pdata);
+ 	ClearNameValueList(&pdata);
 	return ret;
 }
 
@@ -714,21 +722,24 @@ UPNP_GetSpecificPortMappingEntry(const char * controlURL,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	GetPortMappingArgs = calloc(4, sizeof(struct UPNParg));
+	if(GetPortMappingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	GetPortMappingArgs[0].elt = "NewRemoteHost";
 	GetPortMappingArgs[0].val = remoteHost;
 	GetPortMappingArgs[1].elt = "NewExternalPort";
 	GetPortMappingArgs[1].val = extPort;
 	GetPortMappingArgs[2].elt = "NewProtocol";
 	GetPortMappingArgs[2].val = proto;
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                                "GetSpecificPortMappingEntry",
-	                                GetPortMappingArgs, &bufsize))) {
-		free(GetPortMappingArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                           "GetSpecificPortMappingEntry",
+	                           GetPortMappingArgs, &bufsize);
+	free(GetPortMappingArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	/*DisplayNameValueList(buffer, bufsize);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 
 	p = GetValueFromNameValueList(&pdata, "NewInternalClient");
 	if(p) {
@@ -771,7 +782,6 @@ UPNP_GetSpecificPortMappingEntry(const char * controlURL,
 	}
 
 	ClearNameValueList(&pdata);
-	free(GetPortMappingArgs);
 	return ret;
 }
 
@@ -803,6 +813,8 @@ UPNP_GetListOfPortMappings(const char * controlURL,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	GetListOfPortMappingsArgs = calloc(6, sizeof(struct UPNParg));
+	if(GetListOfPortMappingsArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	GetListOfPortMappingsArgs[0].elt = "NewStartPort";
 	GetListOfPortMappingsArgs[0].val = startPort;
 	GetListOfPortMappingsArgs[1].elt = "NewEndPort";
@@ -814,17 +826,17 @@ UPNP_GetListOfPortMappings(const char * controlURL,
 	GetListOfPortMappingsArgs[4].elt = "NewNumberOfPorts";
 	GetListOfPortMappingsArgs[4].val = numberOfPorts?numberOfPorts:"1000";
 
-	if(!(buffer = simpleUPnPcommand(-1, controlURL, servicetype,
-	                                "GetListOfPortMappings",
-	                                GetListOfPortMappingsArgs, &bufsize))) {
-		free(GetListOfPortMappingsArgs);
+	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
+	                           "GetListOfPortMappings",
+	                           GetListOfPortMappingsArgs, &bufsize);
+	free(GetListOfPortMappingsArgs);
+	if(!buffer) {
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
-	free(GetListOfPortMappingsArgs);
 
 	/*DisplayNameValueList(buffer, bufsize);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 
 	/*p = GetValueFromNameValueList(&pdata, "NewPortListing");*/
 	/*if(p) {
@@ -886,7 +898,7 @@ UPNP_GetFirewallStatus(const char * controlURL,
 		return UPNPCOMMAND_HTTP_ERROR;
 	}
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	fe = GetValueFromNameValueList(&pdata, "FirewallEnabled");
 	ipa = GetValueFromNameValueList(&pdata, "InboundPinholeAllowed");
 	if(ipa && fe)
@@ -930,6 +942,8 @@ UPNP_GetOutboundPinholeTimeout(const char * controlURL, const char * servicetype
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	GetOutboundPinholeTimeoutArgs = calloc(6, sizeof(struct UPNParg));
+	if(GetOutboundPinholeTimeoutArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	GetOutboundPinholeTimeoutArgs[0].elt = "RemoteHost";
 	GetOutboundPinholeTimeoutArgs[0].val = remoteHost;
 	GetOutboundPinholeTimeoutArgs[1].elt = "RemotePort";
@@ -942,10 +956,11 @@ UPNP_GetOutboundPinholeTimeout(const char * controlURL, const char * servicetype
 	GetOutboundPinholeTimeoutArgs[4].val = intClient;
 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                           "GetOutboundPinholeTimeout", GetOutboundPinholeTimeoutArgs, &bufsize);
+	free(GetOutboundPinholeTimeoutArgs);
 	if(!buffer)
 		return UPNPCOMMAND_HTTP_ERROR;
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal)
 	{
@@ -960,7 +975,6 @@ UPNP_GetOutboundPinholeTimeout(const char * controlURL, const char * servicetype
 			*opTimeout = my_atoui(p);
 	}
 	ClearNameValueList(&pdata);
-	free(GetOutboundPinholeTimeoutArgs);
 	return ret;
 }
 
@@ -986,6 +1000,8 @@ UPNP_AddPinhole(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	AddPinholeArgs = calloc(7, sizeof(struct UPNParg));
+	if(AddPinholeArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	/* RemoteHost can be wilcarded */
 	if(strncmp(remoteHost, "empty", 5)==0)
 	{
@@ -1017,10 +1033,11 @@ UPNP_AddPinhole(const char * controlURL, const char * servicetype,
 	AddPinholeArgs[5].val = leaseTime;
 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                           "AddPinhole", AddPinholeArgs, &bufsize);
+	free(AddPinholeArgs);
 	if(!buffer)
 		return UPNPCOMMAND_HTTP_ERROR;
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	p = GetValueFromNameValueList(&pdata, "UniqueID");
 	if(p)
 	{
@@ -1039,7 +1056,6 @@ UPNP_AddPinhole(const char * controlURL, const char * servicetype,
 		ret = UPNPCOMMAND_SUCCESS;
 	}
 	ClearNameValueList(&pdata);
-	free(AddPinholeArgs);
 	return ret;
 }
 
@@ -1059,16 +1075,19 @@ UPNP_UpdatePinhole(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	UpdatePinholeArgs = calloc(3, sizeof(struct UPNParg));
+	if(UpdatePinholeArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	UpdatePinholeArgs[0].elt = "UniqueID";
 	UpdatePinholeArgs[0].val = uniqueID;
 	UpdatePinholeArgs[1].elt = "NewLeaseTime";
 	UpdatePinholeArgs[1].val = leaseTime;
 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                           "UpdatePinhole", UpdatePinholeArgs, &bufsize);
+	free(UpdatePinholeArgs);
 	if(!buffer)
 		return UPNPCOMMAND_HTTP_ERROR;
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal)
 	{
@@ -1081,7 +1100,6 @@ UPNP_UpdatePinhole(const char * controlURL, const char * servicetype,
 		ret = UPNPCOMMAND_SUCCESS;
 	}
 	ClearNameValueList(&pdata);
-	free(UpdatePinholeArgs);
 	return ret;
 }
 
@@ -1100,15 +1118,18 @@ UPNP_DeletePinhole(const char * controlURL, const char * servicetype, const char
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	DeletePinholeArgs = calloc(2, sizeof(struct UPNParg));
+	if(DeletePinholeArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	DeletePinholeArgs[0].elt = "UniqueID";
 	DeletePinholeArgs[0].val = uniqueID;
 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                           "DeletePinhole", DeletePinholeArgs, &bufsize);
+	free(DeletePinholeArgs);
 	if(!buffer)
 		return UPNPCOMMAND_HTTP_ERROR;
 	/*DisplayNameValueList(buffer, bufsize);*/
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 	resVal = GetValueFromNameValueList(&pdata, "errorCode");
 	if(resVal)
 	{
@@ -1120,7 +1141,6 @@ UPNP_DeletePinhole(const char * controlURL, const char * servicetype, const char
 		ret = UPNPCOMMAND_SUCCESS;
 	}
 	ClearNameValueList(&pdata);
-	free(DeletePinholeArgs);
 	return ret;
 }
 
@@ -1139,14 +1159,19 @@ UPNP_CheckPinholeWorking(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	CheckPinholeWorkingArgs = calloc(4, sizeof(struct UPNParg));
+	if(CheckPinholeWorkingArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	CheckPinholeWorkingArgs[0].elt = "UniqueID";
 	CheckPinholeWorkingArgs[0].val = uniqueID;
 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                           "CheckPinholeWorking", CheckPinholeWorkingArgs, &bufsize);
+	free(CheckPinholeWorkingArgs);
 	if(!buffer)
+	{
 		return UPNPCOMMAND_HTTP_ERROR;
+	}
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 
 	p = GetValueFromNameValueList(&pdata, "IsWorking");
 	if(p)
@@ -1165,7 +1190,6 @@ UPNP_CheckPinholeWorking(const char * controlURL, const char * servicetype,
 	}
 
 	ClearNameValueList(&pdata);
-	free(CheckPinholeWorkingArgs);
 	return ret;
 }
 
@@ -1184,14 +1208,17 @@ UPNP_GetPinholePackets(const char * controlURL, const char * servicetype,
 		return UPNPCOMMAND_INVALID_ARGS;
 
 	GetPinholePacketsArgs = calloc(4, sizeof(struct UPNParg));
+	if(GetPinholePacketsArgs == NULL)
+		return UPNPCOMMAND_MEM_ALLOC_ERROR;
 	GetPinholePacketsArgs[0].elt = "UniqueID";
 	GetPinholePacketsArgs[0].val = uniqueID;
 	buffer = simpleUPnPcommand(-1, controlURL, servicetype,
 	                           "GetPinholePackets", GetPinholePacketsArgs, &bufsize);
+	free(GetPinholePacketsArgs);
 	if(!buffer)
 		return UPNPCOMMAND_HTTP_ERROR;
 	ParseNameValue(buffer, bufsize, &pdata);
-	free(buffer); buffer = NULL;
+	free(buffer);
 
 	p = GetValueFromNameValueList(&pdata, "PinholePackets");
 	if(p)
@@ -1208,6 +1235,5 @@ UPNP_GetPinholePackets(const char * controlURL, const char * servicetype,
 	}
 
 	ClearNameValueList(&pdata);
-	free(GetPinholePacketsArgs);
 	return ret;
 }

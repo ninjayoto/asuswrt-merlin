@@ -1,15 +1,13 @@
-/* $Id: upnpcommands.h,v 1.29 2014/06/10 09:44:08 nanard Exp $ */
+/* $Id: upnpcommands.h,v 1.32 2018/03/13 23:34:47 nanard Exp $ */
 /* Miniupnp project : http://miniupnp.free.fr/
  * Author : Thomas Bernard
- * Copyright (c) 2005-2014 Thomas Bernard
+ * Copyright (c) 2005-2018 Thomas Bernard
  * This software is subject to the conditions detailed in the
  * LICENCE file provided within this distribution */
 #ifndef UPNPCOMMANDS_H_INCLUDED
 #define UPNPCOMMANDS_H_INCLUDED
 
-#include "upnpreplyparse.h"
-#include "portlistingparse.h"
-#include "declspec.h"
+#include "miniupnpc_declspec.h"
 #include "miniupnpctypes.h"
 
 /* MiniUPnPc return codes : */
@@ -18,10 +16,13 @@
 #define UPNPCOMMAND_INVALID_ARGS (-2)
 #define UPNPCOMMAND_HTTP_ERROR (-3)
 #define UPNPCOMMAND_INVALID_RESPONSE (-4)
+#define UPNPCOMMAND_MEM_ALLOC_ERROR (-5)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct PortMappingParserData;
 
 MINIUPNP_LIBSPEC UNSIGNED_INTEGER
 UPNP_GetTotalBytesSent(const char * controlURL,
@@ -198,16 +199,16 @@ UPNP_DeletePortMapping(const char * controlURL, const char * servicetype,
  * 733 InconsistentParameters - NewStartPort and NewEndPort values are not consistent. */
 MINIUPNP_LIBSPEC int
 UPNP_DeletePortMappingRange(const char * controlURL, const char * servicetype,
-			    const char * extPortStart, const char * extPortEnd,
-			    const char * proto,
-			    const char * manage);
+        		    const char * extPortStart, const char * extPortEnd,
+        		    const char * proto,
+        		    const char * manage);
 
 /* UPNP_GetPortMappingNumberOfEntries()
  * not supported by all routers */
 MINIUPNP_LIBSPEC int
-UPNP_GetPortMappingNumberOfEntries(const char* controlURL,
-                                   const char* servicetype,
-                                   unsigned int * num);
+UPNP_GetPortMappingNumberOfEntries(const char * controlURL,
+                                   const char * servicetype,
+                                   unsigned int * numEntries);
 
 /* UPNP_GetSpecificPortMappingEntry()
  *    retrieves an existing port mapping
@@ -344,3 +345,4 @@ UPNP_GetPinholePackets(const char * controlURL, const char * servicetype,
 #endif
 
 #endif
+

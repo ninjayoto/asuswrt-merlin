@@ -1,51 +1,53 @@
-# $Id: Makefile,v 1.119 2014/11/26 10:42:03 nanard Exp $
+# $Id: Makefile,v 1.134 2016/10/07 09:04:36 nanard Exp $
 # MiniUPnP Project
 # http://miniupnp.free.fr/
 # http://miniupnp.tuxfamily.org/
 # https://github.com/miniupnp/miniupnp
-# (c) 2005-2014 Thomas Bernard
+# (c) 2005-2018 Thomas Bernard
 # to install use :
 # $ make DESTDIR=/tmp/dummylocation install
 # or
 # $ INSTALLPREFIX=/usr/local make install
 # or
 # $ make install (default INSTALLPREFIX is /usr)
+OS = $(shell $(CC) -dumpmachine)
+VERSION = $(shell cat VERSION)
 
-include ../common.mak
-include ../.config
-
-OS = Linux
-VERSION = 2.6.36
-#OS = $(shell uname -s)
-#VERSION = $(shell cat VERSION)
-
-ifeq ($(OS), Darwin)
+ifneq (, $(findstring darwin, $(OS)))
 JARSUFFIX=mac
+LIBTOOL ?= $(shell which libtool)
 endif
-ifeq ($(OS), Linux)
+ifneq (, $(findstring linux, $(OS)))
 JARSUFFIX=linux
 endif
-ifneq (,$(findstring NT-5.1,$(OS)))
+ifneq (, $(findstring mingw, $(OS))$(findstring cygwin, $(OS))$(findstring msys, $(OS)))
 JARSUFFIX=win32
 endif
 
-#HAVE_IPV6 ?= yes
-#export HAVE_IPV6
+HAVE_IPV6 ?= yes
+export HAVE_IPV6
 
-#CC ?= gcc
+CC ?= gcc
 #AR = gar
-CFLAGS += -O2 -s
-#CFLAGS += -DDEBUG
-FLAGS ?= -O
+#CFLAGS = -O -g -DDEBUG
+CFLAGS ?= -O
 CFLAGS += -Wall
 CFLAGS += -W -Wstrict-prototypes
 CFLAGS += -fno-common
 CFLAGS += -DMINIUPNPC_SET_SOCKET_TIMEOUT
 CFLAGS += -DMINIUPNPC_GET_SRC_ADDR
-CFLAGS += -D_BSD_SOURCE -D_POSIX_C_SOURCE=200112L
+CFLAGS += -D_BSD_SOURCE
+CFLAGS += -D_DEFAULT_SOURCE
+ifneq (, $(findstring netbsd, $(OS)))
+CFLAGS += -D_NETBSD_SOURCE
+endif
+ifeq (, $(findstring freebsd, $(OS))$(findstring darwin, $(OS)))
+#CFLAGS += -D_POSIX_C_SOURCE=200112L
+CFLAGS += -D_XOPEN_SOURCE=600
+endif
 #CFLAGS += -ansi
-# -DNO_GETADDRINFO
-#INSTALL = install
+#CFLAGS += -DNO_GETADDRINFO
+INSTALL = install
 SH = /bin/sh
 JAVA = java
 # see http://code.google.com/p/jnaerator/
@@ -53,43 +55,39 @@ JAVA = java
 #JNAERATOR = jnaerator-0.9.8-shaded.jar
 #JNAERATORARGS = -library miniupnpc
 #JNAERATOR = jnaerator-0.10-shaded.jar
-JNAERATOR = jnaerator-0.11-shaded.jar
+#JNAERATOR = jnaerator-0.11-shaded.jar
+# https://repo1.maven.org/maven2/com/nativelibs4java/jnaerator/0.12/jnaerator-0.12-shaded.jar
+JNAERATOR = jnaerator-0.12-shaded.jar
 JNAERATORARGS = -mode StandaloneJar -runtime JNAerator -library miniupnpc
-JNAERATORBASEURL = http://jnaerator.googlecode.com/files/
+#JNAERATORBASEURL = http://jnaerator.googlecode.com/files/
+JNAERATORBASEURL = https://repo1.maven.org/maven2/com/nativelibs4java/jnaerator/0.12
 
-CFLAGS += -I$(TOP)/shared -I$(SRCBASE)/include
-LDFLAGS += -L$(TOP)/shared -lshared  -L$(TOP)/nvram${BCMEX} -lnvram
-
-ifeq ($(RTCONFIG_BCMARM),y)
-LDFLAGS += -lgcc_s
-endif
-
-ifeq ($(RTCONFIG_QTN),y)
-LDFLAGS += -L$(TOP)/libqcsapi_client -lqcsapi_client
-endif
-
-ifeq (SunOS, $(OS))
-  LDFLAGS=-lsocket -lnsl -lresolv
+ifneq (, $(findstring sun, $(OS)))
+  LDLIBS=-lsocket -lnsl -lresolv
+  CFLAGS += -D__EXTENSIONS__
+  CFLAGS += -std=c99
 endif
 
 # APIVERSION is used to build SONAME
-APIVERSION = 12
+APIVERSION = 17
 
 SRCS = igd_desc_parse.c miniupnpc.c minixml.c minisoap.c miniwget.c \
        upnpc.c upnpcommands.c upnpreplyparse.c testminixml.c \
        minixmlvalid.c testupnpreplyparse.c minissdpc.c \
        upnperrors.c testigddescparse.c testminiwget.c \
        connecthostport.c portlistingparse.c receivedata.c \
-       testportlistingparse.c miniupnpcmodule.c \
+       upnpdev.c testportlistingparse.c miniupnpcmodule.c \
        minihttptestserver.c \
        listdevices.c
 
 LIBOBJS = miniwget.o minixml.o igd_desc_parse.o minisoap.o \
           miniupnpc.o upnpreplyparse.o upnpcommands.o upnperrors.o \
-          connecthostport.o portlistingparse.o receivedata.o
+          connecthostport.o portlistingparse.o receivedata.o upnpdev.o
 
-ifneq ($(OS), AmigaOS)
+ifeq (, $(findstring amiga, $(OS)))
+ifeq (, $(findstring mingw, $(OS))$(findstring cygwin, $(OS))$(findstring msys, $(OS)))
 CFLAGS := -fPIC $(CFLAGS)
+endif
 LIBOBJS := $(LIBOBJS) minissdpc.o
 endif
 
@@ -99,11 +97,12 @@ OBJS = $(patsubst %.c,%.o,$(SRCS))
 HEADERS = miniupnpc.h miniwget.h upnpcommands.h igd_desc_parse.h \
           upnpreplyparse.h upnperrors.h miniupnpctypes.h \
           portlistingparse.h \
-          declspec.h
+          upnpdev.h \
+          miniupnpc_declspec.h
 
 # library names
 LIBRARY = libminiupnpc.a
-ifeq ($(OS), Darwin)
+ifneq (, $(findstring darwin, $(OS)))
   SHAREDLIBRARY = libminiupnpc.dylib
   SONAME = $(basename $(SHAREDLIBRARY)).$(APIVERSION).dylib
   CFLAGS := -D_DARWIN_C_SOURCE $(CFLAGS)
@@ -134,23 +133,28 @@ TESTIGDDESCPARSE = testigddescparse.o igd_desc_parse.o minixml.o \
                    minisoap.o connecthostport.o receivedata.o \
                    portlistingparse.o
 
-ifneq ($(OS), AmigaOS)
-#EXECUTABLES := $(EXECUTABLES) upnpc-shared
-#TESTMINIWGETOBJS := $(TESTMINIWGETOBJS) minissdpc.o
-#TESTIGDDESCPARSE := $(TESTIGDDESCPARSE) minissdpc.o
+ifeq (, $(findstring amiga, $(OS)))
+EXECUTABLES := $(EXECUTABLES) upnpc-shared
+TESTMINIWGETOBJS := $(TESTMINIWGETOBJS) minissdpc.o
+TESTIGDDESCPARSE := $(TESTIGDDESCPARSE) minissdpc.o
 endif
 
 LIBDIR ?= lib
 # install directories
-INSTALLPREFIX ?= $(PREFIX)/usr
+ifeq ($(strip $(PREFIX)),)
+INSTALLPREFIX ?= /usr
+else
+INSTALLPREFIX ?= $(PREFIX)
+endif
 INSTALLDIRINC = $(INSTALLPREFIX)/include/miniupnpc
 INSTALLDIRLIB = $(INSTALLPREFIX)/$(LIBDIR)
 INSTALLDIRBIN = $(INSTALLPREFIX)/bin
 INSTALLDIRMAN = $(INSTALLPREFIX)/share/man
+PKGCONFIGDIR = $(INSTALLDIRLIB)/pkgconfig
 
 FILESTOINSTALL = $(LIBRARY) $(EXECUTABLES)
-ifneq ($(OS), AmigaOS)
-FILESTOINSTALL := $(FILESTOINSTALL) $(SHAREDLIBRARY)
+ifeq (, $(findstring amiga, $(OS)))
+FILESTOINSTALL := $(FILESTOINSTALL) $(SHAREDLIBRARY) miniupnpc.pc
 endif
 
 
@@ -168,18 +172,18 @@ check:	validateminixml validateminiwget validateupnpreplyparse \
 everything:	all $(EXECUTABLES_ADDTESTS)
 
 pythonmodule:	$(LIBRARY) miniupnpcmodule.c setup.py
-	python setup.py build
+	MAKE=$(MAKE) python setup.py build
 	touch $@
 
 installpythonmodule:	pythonmodule
-	python setup.py install
+	MAKE=$(MAKE) python setup.py install
 
 pythonmodule3:	$(LIBRARY) miniupnpcmodule.c setup.py
-	python3 setup.py build
+	MAKE=$(MAKE) python3 setup.py build
 	touch $@
 
 installpythonmodule3:	pythonmodule3
-	python3 setup.py install
+	MAKE=$(MAKE) python3 setup.py install
 
 validateminixml:	minixmlvalid
 	@echo "minixml validation test"
@@ -227,44 +231,70 @@ updateversion:	miniupnpc.h
 	cp miniupnpc.h miniupnpc.h.bak
 	sed 's/\(.*MINIUPNPC_API_VERSION\s\+\)[0-9]\+/\1$(APIVERSION)/' < miniupnpc.h.bak > miniupnpc.h
 
-#install:	updateversion $(FILESTOINSTALL)
-#	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRINC)
-#	$(INSTALL) -m 644 $(HEADERS) $(DESTDIR)$(INSTALLDIRINC)
-#	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRLIB)
-#	$(INSTALL) -m 644 $(LIBRARY) $(DESTDIR)$(INSTALLDIRLIB)
-#ifneq ($(OS), AmigaOS)
-#	$(INSTALL) -m 644 $(SHAREDLIBRARY) $(DESTDIR)$(INSTALLDIRLIB)/$(SONAME)
-#	ln -fs $(SONAME) $(DESTDIR)$(INSTALLDIRLIB)/$(SHAREDLIBRARY)
-#endif
-#	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRBIN)
-#ifeq ($(OS), AmigaOS)
-#	$(INSTALL) -m 755 upnpc-static $(DESTDIR)$(INSTALLDIRBIN)/upnpc
-#else
-#	$(INSTALL) -m 755 upnpc-shared $(DESTDIR)$(INSTALLDIRBIN)/upnpc
-#endif
-#	$(INSTALL) -m 755 external-ip.sh $(DESTDIR)$(INSTALLDIRBIN)/external-ip
-#ifneq ($(OS), AmigaOS)
-#	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRMAN)/man3
-#	$(INSTALL) -m 644 man3/miniupnpc.3 $(DESTDIR)$(INSTALLDIRMAN)/man3/miniupnpc.3
-#ifeq ($(OS), Linux)
-#	gzip -f $(DESTDIR)$(INSTALLDIRMAN)/man3/miniupnpc.3
-#endif
-#endif
+install:	updateversion $(FILESTOINSTALL)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRINC)
+	$(INSTALL) -m 644 $(HEADERS) $(DESTDIR)$(INSTALLDIRINC)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRLIB)
+	$(INSTALL) -m 644 $(LIBRARY) $(DESTDIR)$(INSTALLDIRLIB)
+ifeq (, $(findstring amiga, $(OS)))
+	$(INSTALL) -m 644 $(SHAREDLIBRARY) $(DESTDIR)$(INSTALLDIRLIB)/$(SONAME)
+	ln -fs $(SONAME) $(DESTDIR)$(INSTALLDIRLIB)/$(SHAREDLIBRARY)
+	$(INSTALL) -d $(DESTDIR)$(PKGCONFIGDIR)
+	$(INSTALL) -m 644 miniupnpc.pc $(DESTDIR)$(PKGCONFIGDIR)
+endif
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRBIN)
+ifneq (, $(findstring amiga, $(OS)))
+	$(INSTALL) -m 755 upnpc-static $(DESTDIR)$(INSTALLDIRBIN)/upnpc
+else
+	$(INSTALL) -m 755 upnpc-shared $(DESTDIR)$(INSTALLDIRBIN)/upnpc
+endif
+	$(INSTALL) -m 755 external-ip.sh $(DESTDIR)$(INSTALLDIRBIN)/external-ip
+ifeq (, $(findstring amiga, $(OS)))
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRMAN)/man3
+	$(INSTALL) -m 644 man3/miniupnpc.3 $(DESTDIR)$(INSTALLDIRMAN)/man3/miniupnpc.3
+ifneq (, $(findstring linux, $(OS)))
+	gzip -f $(DESTDIR)$(INSTALLDIRMAN)/man3/miniupnpc.3
+endif
+endif
 
+install-static:	updateversion $(FILESTOINSTALL)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRINC)
+	$(INSTALL) -m 644 $(HEADERS) $(DESTDIR)$(INSTALLDIRINC)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRLIB)
+	$(INSTALL) -m 644 $(LIBRARY) $(DESTDIR)$(INSTALLDIRLIB)
+	$(INSTALL) -d $(DESTDIR)$(INSTALLDIRBIN)
+	$(INSTALL) -m 755 external-ip.sh $(DESTDIR)$(INSTALLDIRBIN)/external-ip
 
 cleaninstall:
 	$(RM) -r $(DESTDIR)$(INSTALLDIRINC)
 	$(RM) $(DESTDIR)$(INSTALLDIRLIB)/$(LIBRARY)
 	$(RM) $(DESTDIR)$(INSTALLDIRLIB)/$(SHAREDLIBRARY)
 
+miniupnpc.pc:	VERSION
+	$(RM) $@
+	echo "prefix=$(INSTALLPREFIX)" >> $@
+	echo "exec_prefix=\$${prefix}" >> $@
+	echo "libdir=\$${exec_prefix}/$(LIBDIR)" >> $@
+	echo "includedir=\$${prefix}/include/miniupnpc" >> $@
+	echo "" >> $@
+	echo "Name: miniUPnPc" >> $@
+	echo "Description: UPnP IGD client lightweight library" >> $@
+	echo "Version: $(VERSION)" >> $@
+	echo "Libs: -L\$${libdir} -lminiupnpc" >> $@
+	echo "Cflags: -I\$${includedir}" >> $@
+
 depend:
 	makedepend -Y -- $(CFLAGS) -- $(SRCS) 2>/dev/null
 
 $(LIBRARY):	$(LIBOBJS)
+ifneq (, $(findstring darwin, $(OS)))
+	$(LIBTOOL) -static -o $@ $?
+else
 	$(AR) crs $@ $?
+endif
 
 $(SHAREDLIBRARY):	$(LIBOBJS)
-ifeq ($(OS), Darwin)
+ifneq (, $(findstring darwin, $(OS)))
 #	$(CC) -dynamiclib $(LDFLAGS) -Wl,-install_name,$(SONAME) -o $@ $^
 	$(CC) -dynamiclib $(LDFLAGS) -Wl,-install_name,$(INSTALLDIRLIB)/$(SONAME) -o $@ $^
 else
@@ -272,13 +302,12 @@ else
 endif
 
 upnpc-static:	upnpc.o $(LIBRARY)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^ $(LOADLIBES) $(LDLIBS)
 
-#upnpc-shared:	upnpc.o $(SHAREDLIBRARY)
-#	$(CC) $(LDFLAGS) -o $@ $^
+upnpc-shared:	upnpc.o $(SHAREDLIBRARY)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LOADLIBES) $(LDLIBS)
 
-listdevices:	listdevices.o $(LIBRARY) $(LDLIBS)
-	$(CC) $(LDFLAGS) -o $@ $^
+listdevices:	listdevices.o $(LIBRARY)
 
 testminixml:	$(TESTMINIXMLOBJS)
 
@@ -303,7 +332,7 @@ jnaerator-%.jar:
 
 jar: $(SHAREDLIBRARY)  $(JNAERATOR)
 	$(JAVA) -jar $(JNAERATOR) $(JNAERATORARGS) \
-	miniupnpc.h declspec.h upnpcommands.h upnpreplyparse.h \
+	miniupnpc.h miniupnpc_declspec.h upnpcommands.h upnpreplyparse.h \
 	igd_desc_parse.h miniwget.h upnperrors.h $(SHAREDLIBRARY) \
 	-package fr.free.miniupnp -o . -jar java/miniupnpc_$(JARSUFFIX).jar -v
 
@@ -336,33 +365,40 @@ minihttptestserver:	minihttptestserver.o
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 igd_desc_parse.o: igd_desc_parse.h
-miniupnpc.o: miniupnpc.h declspec.h igd_desc_parse.h minissdpc.h miniwget.h
-miniupnpc.o: minisoap.h minixml.h upnpcommands.h upnpreplyparse.h
-miniupnpc.o: portlistingparse.h miniupnpctypes.h connecthostport.h
-miniupnpc.o: receivedata.h
+miniupnpc.o: miniupnpc.h miniupnpc_declspec.h igd_desc_parse.h upnpdev.h
+miniupnpc.o: minissdpc.h miniwget.h minisoap.h minixml.h upnpcommands.h
+miniupnpc.o: upnpreplyparse.h portlistingparse.h miniupnpctypes.h
+miniupnpc.o: connecthostport.h
 minixml.o: minixml.h
 minisoap.o: minisoap.h miniupnpcstrings.h
-miniwget.o: miniupnpcstrings.h miniwget.h declspec.h connecthostport.h
-miniwget.o: receivedata.h
-upnpc.o: miniwget.h declspec.h miniupnpc.h igd_desc_parse.h upnpcommands.h
-upnpc.o: upnpreplyparse.h portlistingparse.h miniupnpctypes.h upnperrors.h
-upnpcommands.o: upnpcommands.h upnpreplyparse.h portlistingparse.h declspec.h
-upnpcommands.o: miniupnpctypes.h miniupnpc.h igd_desc_parse.h
+miniwget.o: miniupnpcstrings.h miniwget.h miniupnpc_declspec.h
+miniwget.o: connecthostport.h receivedata.h
+upnpc.o: miniwget.h miniupnpc_declspec.h miniupnpc.h igd_desc_parse.h
+upnpc.o: upnpdev.h upnpcommands.h upnpreplyparse.h portlistingparse.h
+upnpc.o: miniupnpctypes.h upnperrors.h miniupnpcstrings.h
+upnpcommands.o: upnpcommands.h upnpreplyparse.h portlistingparse.h
+upnpcommands.o: miniupnpc_declspec.h miniupnpctypes.h miniupnpc.h
+upnpcommands.o: igd_desc_parse.h upnpdev.h
 upnpreplyparse.o: upnpreplyparse.h minixml.h
 testminixml.o: minixml.h igd_desc_parse.h
 minixmlvalid.o: minixml.h
 testupnpreplyparse.o: upnpreplyparse.h
-minissdpc.o: minissdpc.h miniupnpc.h declspec.h igd_desc_parse.h codelength.h
-upnperrors.o: upnperrors.h declspec.h upnpcommands.h upnpreplyparse.h
-upnperrors.o: portlistingparse.h miniupnpctypes.h miniupnpc.h
-upnperrors.o: igd_desc_parse.h
-testigddescparse.o: igd_desc_parse.h minixml.h miniupnpc.h declspec.h
-testminiwget.o: miniwget.h declspec.h
+minissdpc.o: minissdpc.h miniupnpc_declspec.h upnpdev.h miniupnpc.h
+minissdpc.o: igd_desc_parse.h receivedata.h codelength.h
+upnperrors.o: upnperrors.h miniupnpc_declspec.h upnpcommands.h
+upnperrors.o: upnpreplyparse.h portlistingparse.h miniupnpctypes.h
+upnperrors.o: miniupnpc.h igd_desc_parse.h upnpdev.h
+testigddescparse.o: igd_desc_parse.h minixml.h miniupnpc.h
+testigddescparse.o: miniupnpc_declspec.h upnpdev.h
+testminiwget.o: miniwget.h miniupnpc_declspec.h
 connecthostport.o: connecthostport.h
-portlistingparse.o: portlistingparse.h declspec.h miniupnpctypes.h minixml.h
+portlistingparse.o: portlistingparse.h miniupnpc_declspec.h miniupnpctypes.h
+portlistingparse.o: minixml.h
 receivedata.o: receivedata.h
-testportlistingparse.o: portlistingparse.h declspec.h miniupnpctypes.h
-miniupnpcmodule.o: miniupnpc.h declspec.h igd_desc_parse.h upnpcommands.h
-miniupnpcmodule.o: upnpreplyparse.h portlistingparse.h miniupnpctypes.h
-miniupnpcmodule.o: upnperrors.h
-listdevices.o: miniupnpc.h declspec.h igd_desc_parse.h
+upnpdev.o: upnpdev.h miniupnpc_declspec.h
+testportlistingparse.o: portlistingparse.h miniupnpc_declspec.h
+testportlistingparse.o: miniupnpctypes.h
+miniupnpcmodule.o: miniupnpc.h miniupnpc_declspec.h igd_desc_parse.h
+miniupnpcmodule.o: upnpdev.h upnpcommands.h upnpreplyparse.h
+miniupnpcmodule.o: portlistingparse.h miniupnpctypes.h upnperrors.h
+listdevices.o: miniupnpc.h miniupnpc_declspec.h igd_desc_parse.h upnpdev.h

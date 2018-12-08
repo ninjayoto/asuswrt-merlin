@@ -1,8 +1,8 @@
-/* $Id: testigddescparse.c,v 1.7 2014/11/17 19:28:20 nanard Exp $ */
+/* $Id: testigddescparse.c,v 1.8 2015/02/08 08:46:06 nanard Exp $ */
 /* Project : miniupnp
  * http://miniupnp.free.fr/
  * Author : Thomas Bernard
- * Copyright (c) 2008-2014 Thomas Bernard
+ * Copyright (c) 2008-2015 Thomas Bernard
  * This software is subject to the conditions detailed in the
  * LICENCE file provided in this distribution.
  * */
@@ -141,12 +141,12 @@ int main(int argc, char * * argv)
 	FILE * f;
 	char * buffer;
 	int len;
-	int r = 0;
+	int r;
 	if(argc<2) {
 		fprintf(stderr, "Usage: %s file.xml [file.values]\n", argv[0]);
 		return 1;
 	}
-	f = fopen(argv[1], "r");
+	f = fopen(argv[1], "rb");
 	if(!f) {
 		fprintf(stderr, "Cannot open %s for reading.\n", argv[1]);
 		return 1;
@@ -155,13 +155,26 @@ int main(int argc, char * * argv)
 	len = ftell(f);
 	fseek(f, 0, SEEK_SET);
 	buffer = malloc(len);
-	fread(buffer, 1, len, f);
+	if(!buffer) {
+		fprintf(stderr, "Memory allocation error.\n");
+		fclose(f);
+		return 1;
+	}
+	r = (int)fread(buffer, 1, len, f);
+	if(r != len) {
+		fprintf(stderr, "Failed to read file %s. %d out of %d bytes.\n",
+		        argv[1], r, len);
+		fclose(f);
+		free(buffer);
+		return 1;
+	}
 	fclose(f);
 	f = NULL;
 	if(argc > 2) {
-		f = fopen(argv[2], "r");
+		f = fopen(argv[2], "rb");
 		if(!f) {
 			fprintf(stderr, "Cannot open %s for reading.\n", argv[2]);
+			free(buffer);
 			return 1;
 		}
 	}
@@ -171,3 +184,4 @@ int main(int argc, char * * argv)
 		fclose(f);
 	return r;
 }
+

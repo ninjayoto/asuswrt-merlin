@@ -17,3 +17,4 @@ IPv6FC:
  controlurl = /87895a19/upnp/control/WANIPv6FwCtrl1
  eventsuburl = /87895a19/upnp/control/WANIPv6FwCtrl1
  scpdurl = /87895a19/wanipv6fwctrlSCPD.xml
+

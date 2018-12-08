@@ -11,3 +11,4 @@ first:
  controlurl = /upnp/control/WANPPPConn1
  eventsuburl = /upnp/event/WANPPPConn1
  scpdurl = /pppcfg.xml
+
