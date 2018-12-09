@@ -7,12 +7,11 @@ scrname="updatehosts"
 
 trap "" SIGHUP
 i=$1
-oldpid=$(pidof dnsmasq | cut -f 1 -d " ")
+oldpid=$(cat "/var/run/dnsmasq.pid")
 while [ $i -gt -1 ]; do
-	newpid=$(pidof dnsmasq | cut -f 1 -d " ")
+	newpid=$(cat "/var/run/dnsmasq.pid")
 	if [ "$newpid" == "$oldpid" -a "$newpid" != "" ]; then
 		i=$(($i-1))
-		oldpid=$newpid
 		sleep 1
 	else
 		rm -f /var/lock/autov6.lock
@@ -21,6 +20,6 @@ while [ $i -gt -1 ]; do
 done
 
 echo "updating dnsmasq hosts files" | logger -t "$scrname"
-killall -SIGHUP dnsmasq
+kill -SIGHUP $newpid
 rm -f /var/lock/autov6.lock
 exit 0

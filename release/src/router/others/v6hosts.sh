@@ -13,13 +13,17 @@ else
     LOGB="/dev/null"
 fi
 V6HOSTS="/etc/hosts.autov6"
-DHCPHOSTS=$(grep "dhcp-hostsfile" "/etc/dnsmasq.conf" | awk -F "=" '{ print $NF }')
 
 if [ "$1" != "add" -a "$1" != "old" ]; then
     exit 0
 fi
 
-DHCPNAME=$(grep "$2" "$DHCPHOSTS" | awk -F "," '{ print $NF }')
+DHCPNAME=""
+DHCPHOSTS=$(grep "dhcp-hostsfile" "/etc/dnsmasq.conf" | awk -F "=" '{ print $NF }')
+if [ -n "$DHCPHOSTS" ]; then
+	DHCPNAME=$(grep "$2" "$DHCPHOSTS" | awk -F "," '{ print $NF }')
+fi
+
 if [ -n "$DHCPNAME" ]; then
 	HNAME="$DHCPNAME"
 elif [ -n "$DNSMASQ_OLD_HOSTNAME" ]; then
@@ -35,11 +39,13 @@ fi
 echo "$(date) $1 $2 '$4' '$DNSMASQ_SUPPLIED_HOSTNAME' '$DNSMASQ_OLD_HOSTNAME' ($HNAME)" >> "$LOGA"
 
 DEL_NEEDED=0
-if grep -qi  " ${HNAME}" "$V6HOSTS"; then
+grep -qi  " ${HNAME}" "$V6HOSTS"
+if [ $? == 0 ]; then
     sleep 2
     v6addr=$(grep -i " ${HNAME}" "$V6HOSTS" | awk '{ print $1 }')
     if ping -6 -q -c 1 -W 6 $v6addr; then
         echo "$(date) known name, valid addr $HNAME" >> "$LOGA"
+		#echo "found valid hosts entry $v6addr $HNAME" | logger -t "$scrname"
         exit 0
     else
         echo "$(date) known name, invalid addr error $HNAME" >> "$LOGA"
@@ -62,7 +68,7 @@ V6PFXLEN=$(echo $V6PFX | awk -F ':' '{print NF}')
 if [[ $(($V6PFXLEN + $V6IFLEN)) -eq 4 ]]; then
     V6ADDR="::${V6IFACE}";
     DEL_NEEDED=1;
-    UPDATE_HOSTS=0;	
+    UPDATE_HOSTS=0;
 elif [[ $(($V6PFXLEN + $V6IFLEN)) -lt 8 ]]; then
     V6ADDR="${V6PFX}::${V6IFACE}";
     UPDATE_HOSTS=1;
@@ -76,7 +82,8 @@ fi
 
 ping -6 -q -c 1 -W 6 $V6ADDR > /tmp/ping
 
-if ip -6 neigh | grep -qi "$V6ADDR .* lladdr $2"; then
+ip -6 neigh | grep -qi "$V6ADDR .* lladdr $2"
+if [ $? == 0 ]; then
     if [ $DEL_NEEDED -eq 1 ]; then
         # workaround lack of case insensitivity options
 	echo "$(date) removing hosts entry for $HNAME" >> "$LOGA"
@@ -84,18 +91,20 @@ if ip -6 neigh | grep -qi "$V6ADDR .* lladdr $2"; then
     fi
     if [ $UPDATE_HOSTS -eq 1 ]; then
         echo "$(date) $V6ADDR $HNAME" >> "$LOGB"
-	if grep -qi  "${V6ADDR} ${HNAME}" "$V6HOSTS"; then
-		echo "$(date) skipping duplicate hosts update $V6ADDR $HNAME" >> "$LOGA"
-		exit 0
-	else
-	        echo "$V6ADDR $HNAME" >> "$V6HOSTS"
-        	echo "$(date) updating hosts entry $V6ADDR $HNAME" >> "$LOGA"
-        	echo "updating hosts entry $V6ADDR $HNAME" | logger -t "$scrname"
-        	if [ ! -e /var/lock/autov6.lock ]; then
-        	    touch /var/lock/autov6.lock
-        	    nohup /usr/sbin/updatehosts.sh 60 </dev/null &>/dev/null &
-        	fi
-	fi
+		grep -qi  "${V6ADDR} ${HNAME}" "$V6HOSTS"
+		if [ $? == 0 ]; then
+			echo "$(date) skipping duplicate hosts update $V6ADDR $HNAME" >> "$LOGA"
+			echo "skipping duplicate hosts entry $V6ADDR $HNAME" | logger -t "$scrname"
+			exit 0
+		else
+			echo "$V6ADDR $HNAME" >> "$V6HOSTS"
+			echo "$(date) updating hosts entry $V6ADDR $HNAME" >> "$LOGA"
+			echo "updating hosts entry $V6ADDR $HNAME" | logger -t "$scrname"
+			if [ ! -e /var/lock/autov6.lock ]; then
+				touch /var/lock/autov6.lock
+				/usr/sbin/updatehosts.sh 60 </dev/null &>/dev/null &
+			fi
+		fi
     fi
 else
     echo "$(date) no ping response from $V6ADDR $HNAME" >> "$LOGA"
