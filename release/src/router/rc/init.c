@@ -4278,7 +4278,6 @@ int init_main(int argc, char *argv[])
 
 			stop_lan();
 			stop_vlan();
-			stop_logger();
 
 			if ((state == SIGTERM /* REBOOT */) ||
 				(state == SIGQUIT /* HALT */)) {
@@ -4289,6 +4288,7 @@ int init_main(int argc, char *argv[])
 					stop_usbled();
 				}
 #endif
+				stop_logger();
 				shutdn(state == SIGTERM /* REBOOT */);
 				sync(); sync(); sync();
 				exit(0);
@@ -4300,6 +4300,7 @@ int init_main(int argc, char *argv[])
 			// SIGHUP (RESTART) falls through
 
 		case SIGUSR2:		/* START */
+			stop_logger();
 			start_logger();
 			if(nvram_match("Ate_power_on_off_enable", "1")) {
 				rc_check = nvram_get_int("Ate_rc_check");
