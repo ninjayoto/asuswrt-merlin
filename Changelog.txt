@@ -4,6 +4,22 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_37E9j9527  (15-December-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: miniupnpc: update to 20180507
+- CHANGED: miniupnpd: update to 20181205
+* CHANGED: init: stop logger after unmounting usb
+- CHANGED: iptables: add TEE module for ARM routers
+- CHANGED: openvpn: (backport) push LAN domain to clients if we have one set
+- CHANGED: openvpn: (backport) implement support for server-pushed search domains
+* FIXED: dnsmasq: only sighup to dnsmasq main process for autov6 updates
+
+
+374.43_37E6j9527  (8-December-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: services: do not start dnsmasq/stubby/dnscrypt if in reboot
+- CHANGED: httpd: (backport) made some sysinfo() calls more robust against malformed requests
+* FIXED: httpd: fix CVE-2018-17022 buffer overflow exposure
+
+
 374.43_37E5j9527  (30-November-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: stubby: update stubby-resolvers.csv
 * FIXED: dnsmasq: re-apply some dnsmasq customizations dropped in last version update
