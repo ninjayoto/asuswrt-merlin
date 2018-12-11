@@ -6,6 +6,8 @@ resolvfile=$filebase\.resolv
 dnsscript=$(echo /etc/openvpn/fw/$(echo $dev)-dns\.sh | sed 's/\(tun\|tap\)1/client/;s/\(tun\|tap\)2/server/')
 fileexists=
 instance=$(echo $dev | sed "s/tun1//;s/tun2*/0/")
+serverips=
+searchdomains=
 lan_if=$(nvram get lan_ifname)
 lan_ip=$(nvram get lan_ipaddr)
 vpn_dns_mode=$(nvram get vpn_dns_mode); if [ "$vpn_dns_mode" == "" ]; then vpn_dns_mode=0; fi
@@ -146,24 +148,29 @@ then
 		logger -t "openvpn-updown" "Using `if [ $(nvram get vpn_client$(echo $instance)_adns) == 4 ]; then echo $ext_proxy; elif [ $(nvram get vpn_client$(echo $instance)_adns) == 3 ]; then echo 'VPN'; else echo 'Default'; fi` DNS for non-VPN clients"
 	fi
 
-	if [ $(nvram get vpn_client$(echo $instance)_adns) -gt 0 ]
-	then
-		for optionname in `set | grep "^foreign_option_" | sed "s/^\(.*\)=.*$/\1/g"`
+	# Extract IPs and search domains; write WINS
+	for optionname in `set | grep "^foreign_option_" | sed "s/^\(.*\)=.*$/\1/g"`
+	do
+		option=`eval "echo \\$$optionname"`
+		if echo $option | grep "dhcp-option WINS "; then echo $option | sed "s/ WINS /=44,/" >> $conffile; fi
+		if echo $option | grep "dhcp-option DNS"; then serverips="$serverips $(echo $option | sed "s/dhcp-option DNS //")"; fi
+		if echo $option | grep "dhcp-option DOMAIN"; then searchdomains="$searchdomains $(echo $option | sed "s/dhcp-option DOMAIN //")"; fi
+	done
+
+	# Write resolv file
+	for server in $serverips
+	do
+		echo "server=$server" >> $resolvfile
+		if [ $setdns == 0 ]
+		then
+			create_client_list $server
+			setdns=1
+		fi
+		for domain in $searchdomains
 		do
-			option=`eval "echo \\$$optionname"`
-			if echo $option | grep "dhcp-option WINS "; then echo $option | sed "s/ WINS /=44,/" >> $conffile; fi
-			if echo $option | grep "dhcp-option DNS"
-			then
-				echo $option | sed "s/dhcp-option DNS/nameserver/" >> $resolvfile
-				if [ $setdns == 0 ]
-				then
-					create_client_list $(echo $option | sed "s/dhcp-option DNS//")
-					setdns=1
-				fi
-			fi
-			if echo $option | grep "dhcp-option DOMAIN"; then echo $option | sed "s/dhcp-option DOMAIN/search/" >> $resolvfile; fi
+			echo "server=/$domain/$server" >> $resolvfile
 		done
-	fi
+	done
 
 	if [ $setdns == 1 ]
 	then
