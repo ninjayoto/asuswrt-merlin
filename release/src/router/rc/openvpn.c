@@ -1081,8 +1081,8 @@ void start_vpnserver(int serverNum)
 		sprintf(&buffer[0], "vpn_server%d_pdns", serverNum);
 		if ( nvram_get_int(&buffer[0]) )
 		{
-			if ( nvram_safe_get("wan_domain")[0] != '\0' )
-				fprintf(fp, "push \"dhcp-option DOMAIN %s\"\n", nvram_safe_get("wan_domain"));
+			if ( nvram_safe_get("lan_domain")[0] != '\0' )
+				fprintf(fp, "push \"dhcp-option DOMAIN %s\"\n", nvram_safe_get("lan_domain"));
 			if ( (nvram_safe_get("wan_wins")[0] != '\0' && strcmp(nvram_safe_get("wan_wins"), "0.0.0.0") != 0) )
 				fprintf(fp, "push \"dhcp-option WINS %s\"\n", nvram_safe_get("wan_wins"));
 			fprintf(fp, "push \"dhcp-option DNS %s\"\n", nvram_safe_get("lan_ipaddr"));
