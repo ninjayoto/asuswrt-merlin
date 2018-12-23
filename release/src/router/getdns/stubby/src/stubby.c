@@ -139,8 +139,6 @@ print_usage(FILE *out)
 	fprintf(out, "\t\t\t\"%s/stubby.yml\"\n", STUBBYCONFDIR);
 	fprintf(out, "\t\tAn default file (Using Strict mode) is installed as\n");
 	fprintf(out, "\t\t\t\"%s/stubby.yml\"\n", STUBBYCONFDIR);
-	fprintf(out, "\t-F\t<filename>\n");
-	fprintf(out, "\t\tWrite log output to <filename> (used with -g background mode)\n");
 #if !defined(STUBBY_ON_WINDOWS) && !defined(GETDNS_ON_WINDOWS)
 	fprintf(out, "\t-g\tRun stubby in background (default is foreground)\n");
 #endif
@@ -706,8 +704,6 @@ main(int argc, char **argv)
 {
 	char home_stubby_conf_fn_spc[1024], *home_stubby_conf_fn = NULL;
 	const char *custom_config_fn = NULL;
-	const char *custom_log_fn = NULL;
-	FILE *lfn;
 	int fn_sz;
 	int print_api_info = 0;
 	int log_connections = 0;
@@ -719,21 +715,10 @@ main(int argc, char **argv)
 	getdns_list *api_info_keys = NULL;
 	getdns_bindata *api_info_key = NULL;
 
-	while ((opt = getopt(argc, argv, "C:F:ighlv:V")) != -1) {
+	while ((opt = getopt(argc, argv, "C:ighlv:V")) != -1) {
 		switch (opt) {
 		case 'C':
 			custom_config_fn = optarg;
-			break;
-		case 'F':
-			custom_log_fn = optarg;
-			if ((lfn = fopen(custom_log_fn, "w")) != NULL) {
-				dup2(fileno(lfn), STDOUT_FILENO);
-				dup2(fileno(lfn), STDERR_FILENO);
-				fclose(lfn);
-			} else {
-				fprintf(stderr, "Could not open log file '%s'\n", custom_log_fn);
-				exit(EXIT_FAILURE);
-			}
 			break;
 		case 'g':
 			run_in_foreground = 0;
@@ -758,7 +743,7 @@ main(int argc, char **argv)
 				exit(EXIT_FAILURE);
 			}
 			break;
-		case 'V':
+                case 'V':
 			print_version(stdout);
 			exit(EXIT_SUCCESS);
 		default:
@@ -845,7 +830,8 @@ main(int argc, char **argv)
 		    ; !dnssec_validation &&
 		      !getdns_list_get_bindata(api_info_keys, i, &api_info_key)
 		    ; i++) {
-			if (!strncmp((const char *)api_info_key->data, "dnssec_", 7)
+			if ((  !strncmp((const char *)api_info_key->data, "dnssec_", 7)
+			    || !strcmp ((const char *)api_info_key->data, "dnssec"))
 			   && !getdns_dict_get_int(api_information, (const char *)api_info_key->data, &value)
 			   && value == GETDNS_EXTENSION_TRUE)
 				dnssec_validation = 1;
@@ -860,7 +846,8 @@ main(int argc, char **argv)
 			    ; !dnssec_validation &&
 			      !getdns_list_get_bindata(api_info_keys, i, &api_info_key)
 			    ; i++) {
-				if (!strncmp((const char *)api_info_key->data, "dnssec_", 7)
+				if ((  !strncmp((const char *)api_info_key->data, "dnssec_", 7)
+				    || !strcmp ((const char *)api_info_key->data, "dnssec"))
 				   && !getdns_dict_get_int(all_context, (const char *)api_info_key->data, &value)
 				   && value == GETDNS_EXTENSION_TRUE)
 					dnssec_validation = 1;
