@@ -1346,7 +1346,7 @@ getdns/stamp-h1:
 	CPPFLAGS="-I$(TOP)/libyaml/include -I$(TOP)/openssl/include" \
 	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/openssl -lcrypto -lssl -ldl -L$(TOP)/libyaml/src/.libs -lyaml" \
 	$(CONFIGURE) --enable-static --disable-shared --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib --sysconfdir=/etc --localstatedir=/var \
-	--enable-stub-only --without-libidn --without-libidn2 --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby
+	--enable-stub-only --without-libidn --without-libidn2 --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby $(if $(RTCONFIG_BCMARM),,--enable-old-getaddrinfo)
 	touch getdns/stamp-h1
 
 getdns: getdns/stamp-h1 openssl libyaml
