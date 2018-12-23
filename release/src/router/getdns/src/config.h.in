@@ -12,6 +12,9 @@
 /* Define this to enable the experimental dnssec roadblock avoidance. */
 #undef DNSSEC_ROADBLOCK_AVOIDANCE
 
+/* Define this to apply workaround for older linux getaddrinfo bug. */
+#undef HAVE_OLD_GETADDRINFO
+
 /* Define this to enable all rrtypes in gldns. */
 #undef DRAFT_RRTYPES
 
