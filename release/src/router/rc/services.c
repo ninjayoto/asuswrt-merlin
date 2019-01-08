@@ -826,6 +826,12 @@ void start_dnsmasq(int force)
 			fprintf(fp, "dhcp-option=lan,44,%s\n"
 			/*	    "dhcp-option=lan,46,8\n"*/, nv);
 		}
+
+		/* NTP server */
+		if (nvram_get_int("ntpd_server")) {
+			fprintf(fp, "dhcp-option=lan,42,%s\n", lan_ipaddr);
+		}
+
 #ifdef RTCONFIG_SAMBASRV
 		/* Samba will serve as a WINS server */
 		else if (nvram_invmatch("lan_domain", "") && nvram_get_int("smbd_wins")) {
