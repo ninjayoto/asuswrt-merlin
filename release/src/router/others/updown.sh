@@ -157,10 +157,10 @@ then
 		if echo $option | grep "dhcp-option DOMAIN"; then searchdomains="$searchdomains $(echo $option | sed "s/dhcp-option DOMAIN //")"; fi
 	done
 
-	# Write resolv file
+	# Write resolv/conf file
 	for server in $serverips
 	do
-		echo "server=$server" >> $resolvfile
+		echo "nameserver $server" >> $resolvfile
 		if [ $setdns == 0 ]
 		then
 			create_client_list $server
@@ -168,7 +168,7 @@ then
 		fi
 		for domain in $searchdomains
 		do
-			echo "server=/$domain/$server" >> $resolvfile
+			echo "server=/$domain/$server" >> $conffile
 		done
 	done
 
