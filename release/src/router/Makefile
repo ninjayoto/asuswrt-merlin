@@ -489,6 +489,7 @@ obj-y += libsodium
 obj-y += dnscrypt
 endif
 ifeq ($(RTCONFIG_STUBBY),y)
+obj-y += openssl-1.1.x
 obj-y += libyaml
 obj-y += getdns
 endif
@@ -1198,6 +1199,31 @@ endif
 openssl-stage:
 	$(MAKE) -C openssl install_sw INSTALL_PREFIX=$(STAGEDIR)
 
+openssl-1.1.x/Makefile:
+	cd $(TOP)/openssl-1.1.x && \
+	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
+	LDFLAGS="-static -ffunction-sections -fdata-sections -Wl,--gc-sections -fPIC -ldl" \
+	./Configure $(HOSTCONFIG) -DOPENSSL_NO_BUF_FREELISTS --prefix=/usr --openssldir=/etc --cross-compile-prefix=' ' \
+	no-shared no-async $(OPENSSL_CIPHERS)
+	-@$(MAKE) -C openssl-1.1.x clean depend
+	@touch $@
+
+openssl-1.1.x: openssl-1.1.x/Makefile
+	$(MAKE) -C openssl-1.1.x && $(MAKE) $@-stage
+
+openssl-1.1.x-clean:
+	[ ! -f openssl-1.1.x/Makefile ] || $(MAKE) -C openssl-1.1.x clean
+	@rm -f openssl-1.1.x/Makefile
+
+openssl-1.1.x-install:
+	@echo "do nothing"
+	@$(SEP)
+
+openssl-1.1.x-stage:
+#	only main staged
+#	@$(MAKE) -C openssl-1.1.x install_sw INSTALL_PREFIX=$(STAGEDIR)
+	@true
+
 mssl: openssl
 
 mssl-install:
@@ -1343,13 +1369,13 @@ getdns/stamp-h1:
 	cd $(TOP)/getdns && CC=$(CC) AR=$(AR) LD=$(LD) STRIP=$(CROSS_COMPILE)strip \
 	autoreconf -i -f && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
-	CPPFLAGS="-I$(TOP)/libyaml/include -I$(TOP)/openssl/include" \
-	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/openssl -lcrypto -lssl -ldl -L$(TOP)/libyaml/src/.libs -lyaml" \
-	$(CONFIGURE) --enable-static --disable-shared --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib --sysconfdir=/etc --localstatedir=/var \
-	--enable-stub-only --without-libidn --without-libidn2 --with-ssl=$(TOP)/openssl --with-libyaml=$(TOP)/libyaml --with-stubby $(if $(RTCONFIG_BCMARM),,--enable-old-getaddrinfo)
+	CPPFLAGS="-I$(TOP)/libyaml/include -I$(TOP)/openssl-1.1.x/include" \
+	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/libyaml/src/.libs -lyaml -L$(TOP)/openssl-1.1.x -lpthread -lcrypto -lssl -ldl" \
+	$(CONFIGURE) --enable-static --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib --sysconfdir=/etc --localstatedir=/var \
+	--enable-stub-only --without-libidn --without-libidn2 --with-ssl=$(TOP)/openssl-1.1.x --with-libyaml=$(TOP)/libyaml --with-stubby $(if $(RTCONFIG_BCMARM),,--enable-old-getaddrinfo)
 	touch getdns/stamp-h1
 
-getdns: getdns/stamp-h1 openssl libyaml
+getdns: getdns/stamp-h1 openssl-1.1.x libyaml
 	$(MAKE) -C getdns
 
 getdns-install:
