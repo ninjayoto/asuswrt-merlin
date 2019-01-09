@@ -1263,7 +1263,7 @@ void start_stubby(int force)
 				logmessage("stubby-proxy", "configured opportunistic mode");
 			}
 			if (nvram_match("dnssec_enable", "1") && nvram_match("stubby_dnssec", "1")) {
-				fprintf(fp, "dnssec_return_status: GETDNS_EXTENSION_TRUE\n");
+				fprintf(fp, "dnssec: GETDNS_EXTENSION_TRUE\n");
 				logmessage("stubby-proxy", "DNSSEC enabled");
 			}
 		} else {	//time not set, no TLS, no DNSSEC
