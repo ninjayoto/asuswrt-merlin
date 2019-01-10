@@ -1204,7 +1204,7 @@ openssl-1.1.x/Makefile:
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections" \
 	LDFLAGS="-static -ffunction-sections -fdata-sections -Wl,--gc-sections -fPIC -ldl" \
 	./Configure $(HOSTCONFIG) -DOPENSSL_NO_BUF_FREELISTS --prefix=/usr --openssldir=/etc --cross-compile-prefix=' ' \
-	no-shared no-async $(OPENSSL_CIPHERS)
+	no-shared no-async $(if $(RTCONFIG_BCMARM),,no-threads) $(OPENSSL_CIPHERS)
 	-@$(MAKE) -C openssl-1.1.x clean depend
 	@touch $@
 
