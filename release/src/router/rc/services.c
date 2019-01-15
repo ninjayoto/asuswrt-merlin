@@ -491,10 +491,8 @@ void create_passwd(void)
 
 		fappend(f, "/etc/shadow.custom");
 		append_custom_config("shadow", f);
-#ifdef RTCONFIG_OPENVPN
-		fappend(f, "/etc/shadow.openvpn");
-#endif
 		fclose(f);
+
 		run_postconf("shadow.postconf", "/etc/shadow");
 	}
 	umask(m);
