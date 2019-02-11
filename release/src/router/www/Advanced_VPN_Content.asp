@@ -27,6 +27,8 @@ wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 <% wanlink(); %>
 
 <% login_state_hook(); %>
+var machine_name = '<% get_machine_name(); %>';
+var machine_arm = (machine_name.search("arm") == -1) ? false : true;
 var wireless = [<% wl_auth_list(); %>];	// [[MAC, associated, authorized], ...]
 var pptpd_clientlist_array_ori = '<% nvram_char_to_ascii("","pptpd_clientlist"); %>';
 var pptpd_clientlist_array = decodeURIComponent(pptpd_clientlist_array_ori);
@@ -400,7 +402,8 @@ function showopenvpnd_clientlist(){
 
 	code +='<table width="100%" cellspacing="0" cellpadding="4" align="center" class="list_table" id="openvpnd_clientlist_table">';
 
-	code +='<tr id="row0"><td width="15%" id="conn0"></td><td width="35%"><% nvram_get("http_username"); %></td><td width="35%" style="text-align:center;">-</td><td width="15%" style="text-align:center;">-</td></tr>';
+	if(machine_arm)  // default http user only active for ARM
+		code +='<tr id="row0"><td width="15%" id="conn0"></td><td width="35%"><% nvram_get("http_username"); %></td><td width="35%" style="text-align:center;">-</td><td width="15%" style="text-align:center;">-</td></tr>';
 	if(vpn_server_clientlist_row.length > 1){
 
 		for(var i = 1; i < vpn_server_clientlist_row.length; i++){
