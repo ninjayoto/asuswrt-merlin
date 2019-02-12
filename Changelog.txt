@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38D1j9527  (24-December-2018) ARM SDK, MIPS,ARM KRACK
+* CHANGED: stubby: add logfile support when run as daemon
+* CHANGED: make: getdns: use enable-old-getaddrinfo for MIPS compile
+* CHANGED: getdns: add enable-old-getaddrinfo compile flag for older linux releases
+* CHANGED: getdns: update to 1.50 final dist
+* FIXED: getdns: fix build errors with disable-dnssec-roadblock-avoidance
+* FIXED: getdns: add missing define for log_warn
+
+
 374.43_37EAj9527  (8-January-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: dnsmasq: add dhcp-option 42 if router ntpd server is enabled
 * FIXED: openvpn: correct error in vpn resolv.conf gen introduced by b30b11d32
