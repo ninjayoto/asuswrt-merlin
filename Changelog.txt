@@ -4,9 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38D3j9527  (10-January-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: stubby: force tls1.3 and customer ciphers with openssl 1.1.x
+* CHANGED: make: disable multi-thread support for openssl 1.1.1 on MIPS
+* FIXED: webui: restart dnsmasq if changing state of sntp server
+
+
 374.43_38D2j9527  (9-January-2019) ARM SDK, MIPS,ARM KRACK
 * NEW: openssl: add 1.1.1a source
 * CHANGED: make: static link openssl 1.1.x for getdns/stubby
+* CHANGED: stubby: update yml gen to support new 0.2.4 dnssec extension
 
 
 374.43_38D1j9527  (24-December-2018) ARM SDK, MIPS,ARM KRACK
