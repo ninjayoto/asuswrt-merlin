@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38D2j9527  (9-January-2019) ARM SDK, MIPS,ARM KRACK
+* NEW: openssl: add 1.1.1a source
+* CHANGED: make: static link openssl 1.1.x for getdns/stubby
+
+
 374.43_38D1j9527  (24-December-2018) ARM SDK, MIPS,ARM KRACK
 * CHANGED: stubby: add logfile support when run as daemon
 * CHANGED: make: getdns: use enable-old-getaddrinfo for MIPS compile
