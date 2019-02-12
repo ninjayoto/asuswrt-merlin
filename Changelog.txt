@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38E1j9527  (12-February-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: webui: do not add default http user for openvpn server on MIPS
+- FIXED: infosvr: (backport) correct order of memset parameters
+* FIXED: services: remove duplicate openvpn users from shadow
+
+
 374.43_38D3j9527  (10-January-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: stubby: force tls1.3 and customer ciphers with openssl 1.1.x
 * CHANGED: make: disable multi-thread support for openssl 1.1.1 on MIPS
