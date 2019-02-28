@@ -11,6 +11,21 @@ version 2.81
 	This fix passes cache entries back from the TCP child process to
 	the main server process, and fixes the problem.
 
+	Remove the NO_FORK compile-time option, and support for uclinux.
+	In an era where everything has an MMU, this looks like
+	an anachronism, and it adds to (Ok, multiplies!) the
+	combinatorial explosion of compile-time options. Thanks to
+	Kevin Darbyshire-Bryant for the patch.
+
+	Fix line-counting when reading /etc/hosts and friends; for
+	correct error messages. Thanks to Christian Rosentreter
+	for reporting this.
+
+	Fix bug in DNS non-terminal code, added in 2.80, which could
+	sometimes cause a NODATA rather than an NXDOMAIN reply.
+	Thanks to Sven Mueller and Maciej Żenczykowski for spotting
+	and diagnosing the bug and providing patches.
+
 
 version 2.80
 	Add support for RFC 4039 DHCP rapid commit. Thanks to Ashram Method
