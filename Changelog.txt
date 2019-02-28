@@ -4,6 +4,20 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38E2j9527  (28-February-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openssl-1.1.x: update to 1.1.1b
+* CHANGED: openssl: update to 1.0.2r
+* CHANGED: openvpn: update to 2.4.7
+* CHANGED: dnsmasq: update to g162e5e0 snapshot
+* CHANGED: arm: (backport) performance optimization
+* CHANGED: openvpn: (backport) remove OFB ciphers from client, not supported by current OpenSSL build
+* CHANGED: openvpn: (backport) drop CFB ciphers from client as they are never really used
+* FIXED: phddns: (backport) use sizeof in fgets to reduce risk of buffer over runs
+* FIXED: phddns: (backport) don't risk over running the buffer
+* FIXED: ebtables: (backport) check -C parameters correctly
+* FIXED: pppd: (backport) don't compare the pointer, compare the value
+
+
 374.43_38E1j9527  (12-February-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: webui: do not add default http user for openvpn server on MIPS
 - FIXED: infosvr: (backport) correct order of memset parameters
