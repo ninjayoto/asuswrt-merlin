@@ -721,7 +721,7 @@ crypto_adjust_frame_parameters(struct frame *frame,
                                bool packet_id,
                                bool packet_id_long_form)
 {
-    size_t crypto_overhead = 0;
+    unsigned int crypto_overhead = 0;
 
     if (packet_id)
     {
@@ -749,10 +749,10 @@ crypto_adjust_frame_parameters(struct frame *frame,
     frame_add_to_extra_frame(frame, crypto_overhead);
 
     msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %u bytes",
-        __func__, (unsigned int) crypto_overhead);
+        __func__, crypto_overhead);
 }
 
-size_t
+unsigned int
 crypto_max_overhead(void)
 {
     return packet_id_size(true) + OPENVPN_MAX_IV_LENGTH
@@ -840,35 +840,6 @@ init_key_type(struct key_type *kt, const char *ciphername,
     }
 }
 
-const char *
-kt_cipher_name (const struct key_type *kt)
-{
-  if (kt->cipher)
-    return EVP_CIPHER_name (kt->cipher);
-  else
-    return "[null-cipher]";
-}
-
-const char *
-kt_digest_name (const struct key_type *kt)
-{
-  if (kt->digest)
-    return EVP_MD_name (kt->digest);
-  else
-    return "[null-digest]";
-}
-
-int
-kt_key_size (const struct key_type *kt)
-{
-  if (kt->cipher_length)
-    return kt->cipher_length * 8;
-  else if (kt->cipher)
-    return EVP_CIPHER_key_length (kt->cipher) * 8;
-  else
-    return 0;
-}
-
 /* given a key and key_type, build a key_ctx */
 void
 init_key_ctx(struct key_ctx *ctx, const struct key *key,
@@ -884,7 +855,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher_length,
                         kt->cipher, enc);
 
-        msg(M_INFO, "%s: Cipher '%s' initialized with %d bit key",
+        msg(D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
             prefix,
             translate_cipher_name_to_openvpn(cipher_kt_name(kt->cipher)),
             kt->cipher_length *8);
