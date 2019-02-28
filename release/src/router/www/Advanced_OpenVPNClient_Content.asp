@@ -163,27 +163,19 @@ var adns_orig = "<% nvram_get("vpn_client_adns"); %>";
 
 ciphersarray = [
 		["AES-128-CBC"],
-		["AES-128-OFB"],
 		["AES-192-CBC"],
-		["AES-192-OFB"],
 		["AES-256-CBC"],
-		["AES-256-OFB"],
 		["AES-128-GCM"],
 		["AES-192-GCM"],
 		["AES-256-GCM"],
 		["BF-CBC"],
-		["BF-OFB"],
 		["CAST5-CBC"],
-		["CAST5-OFB"],
 		["DES-CBC"],
 		["DES-EDE3-CBC"],
-		["DES-EDE3-OFB"],
 		["DES-EDE-CBC"],
 		["DES-EDE-OFB"],
-		["DES-OFB"],
 		["DESX-CBC"],
 		["IDEA-CBC"],
-		["IDEA-OFB"]
 ];
 
 var digestsarray = [
