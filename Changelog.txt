@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38E3j9527  (28-February-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: curl: update to 7.64.0
+* CHANGED: nano: update to 3.2
+* FIXED: wps: fix build env to correctly point to openssl dirs
+* FIXED: openssl: properly specify rehash working directories
+* FIXED: lan: fix error in dfs enable for AC66/N66
+
+
 374.43_38E2j9527  (28-February-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: openssl-1.1.x: update to 1.1.1b
 * CHANGED: openssl: update to 1.0.2r
