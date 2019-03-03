@@ -1231,7 +1231,7 @@ void start_stubby(int force)
 
 	// Only start on first call or clock sync
 	ntp_sync = nvram_get_int("ntp_sync");
-	if (time_valid == ntp_sync)
+	if ((time_valid == ntp_sync) && !force)
 		return;
 
 	if(!force && getpid() != 1){
