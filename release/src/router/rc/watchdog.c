@@ -1529,15 +1529,33 @@ void sshd_check()
 }
 
 static int dnsmasq_err=0;
-void dnsmasq_check()
+static int stubby_err=0;
+void dns_check()
 {
-/* this is a failsafe recovery - dnsmasq must be dead for at least 1m 30s
+	int stubby_fail;
+	stubby_fail = 0;
+
+/* this is a failsafe recovery - stubby/dnsmasq must be dead for at least 1m 30s
    to avoid false postives during startup */
-	if (!pids("dnsmasq") && !g_reboot){
+#ifdef RTCONFIG_STUBBY
+	if (nvram_get_int("stubby_proxy")){
+		if (!pids("stubby") && !g_reboot){
+			stubby_err++;
+			if (stubby_err == 4) {
+				logmessage("watchdog", "restart stubby");
+				stubby_fail = 1;
+	        	restart_stubby(1);
+			}
+		}
+		else
+			stubby_err = 0;
+	}
+#endif //STUBBY
+	if (!pids("dnsmasq") && !stubby_fail && !g_reboot){
 		dnsmasq_err++;
 		if (dnsmasq_err == 4) {
-	        logmessage("watchdog", "restart dnsmasq");
-	        restart_dnsmasq(0);
+			logmessage("watchdog", "restart dnsmasq");
+	        restart_dnsmasq(1);
 		}
 	}
 	else
@@ -2139,7 +2157,7 @@ void watchdog(int sig)
 #endif
 
 	if (nvram_get_int("sw_mode") == SW_MODE_ROUTER)
-		dnsmasq_check();
+		dns_check();
 
 	/* Force a DDNS update every "x" days - default is 21 days */
 	period = nvram_get_int("ddns_refresh_x");
