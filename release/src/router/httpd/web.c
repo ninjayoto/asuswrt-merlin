@@ -3748,7 +3748,8 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 	FILE *fp;
 	char hostname[64], macaddr[32], ipaddr[8192], ipaddrs[8192];
 	char word[48], ipv6_dns_str[1024];
-	char *wan_type, *wan_dns, *p;
+	char *wan_type, *wan_dns, *buf, *g, *p;
+	char *dotname, *ip4addr, *ip6addr, *tlsport, *authname, *tlsdigest, *tlspubkey, *dnssec, *nolog;
 	int service, i, ret = 0, first;
 
 	if (!(ipv6_enabled() && is_routing_enabled())) {
@@ -3788,28 +3789,49 @@ ej_lan_ipv6_network(int eid, webs_t wp, int argc, char_t **argv)
 	ret += websWrite(wp, "%30s: %s/%d\n", "LAN IPv6 Prefix",
 			 nvram_safe_get("ipv6_prefix"), nvram_get_int("ipv6_prefix_length"));
 
-	if (service == IPV6_NATIVE_DHCP &&
-	    nvram_get_int("ipv6_dnsenable")) {
+#ifdef RTCONFIG_STUBBY
+	if (nvram_get_int("stubby_proxy") && !nvram_get_int("stubby_noipv6")) {
+		g = buf = strdup(nvram_safe_get("stubby_dns"));
 		memset(ipv6_dns_str, 0, sizeof(ipv6_dns_str));
 		first = 1;
-		foreach(word, nvram_safe_get("ipv6_get_dns"), p) {
-			if (first)
-				first = 0;
-			else
-				sprintf(ipv6_dns_str, "%s,\n%-32s", ipv6_dns_str, " ");
+		while (g) {
+			if ((p = strsep(&g, "<")) == NULL) break;
+			if ((vstrsep(p, ">", &dotname, &ip4addr, &ip6addr, &tlsport, &authname, &tlsdigest, &tlspubkey, &dnssec, &nolog)) != 9) continue;
+			if (strlen(ip6addr) > 0) {
+				if (first)
+					first = 0;
+				else
+					sprintf(ipv6_dns_str, "%s,\n%-32s", ipv6_dns_str, " ");
 
-                        sprintf(ipv6_dns_str, "%s%s", ipv6_dns_str, word);
-                }
-	} else {
-		char nvname[sizeof("ipv6_dnsXXX")];
-		char *next = ipv6_dns_str;
+				sprintf(ipv6_dns_str, "%s%s", ipv6_dns_str, ip6addr);
+			}
+		}
+	} else
+#endif //STUBBY
+	{
+		if (service == IPV6_NATIVE_DHCP &&
+		    nvram_get_int("ipv6_dnsenable")) {
+			memset(ipv6_dns_str, 0, sizeof(ipv6_dns_str));
+			first = 1;
+			foreach(word, nvram_safe_get("ipv6_get_dns"), p) {
+				if (first)
+					first = 0;
+				else
+					sprintf(ipv6_dns_str, "%s,\n%-32s", ipv6_dns_str, " ");
 
-		ipv6_dns_str[0] = '\0';
-		for (i = 1; i <= 3; i++) {
-			snprintf(nvname, sizeof(nvname), "ipv6_dns%d", i);
-			wan_dns = nvram_safe_get(nvname);
-			if (*wan_dns)
-				next += sprintf(next, *ipv6_dns_str ? "\n%-32s%s" : "%s%s", *ipv6_dns_str ? " " : "", wan_dns);
+				sprintf(ipv6_dns_str, "%s%s", ipv6_dns_str, word);
+			}
+		} else {
+			char nvname[sizeof("ipv6_dnsXXX")];
+			char *next = ipv6_dns_str;
+	
+			ipv6_dns_str[0] = '\0';
+			for (i = 1; i <= 3; i++) {
+				snprintf(nvname, sizeof(nvname), "ipv6_dns%d", i);
+				wan_dns = nvram_safe_get(nvname);
+				if (*wan_dns)
+					next += sprintf(next, *ipv6_dns_str ? "\n%-32s%s" : "%s%s", *ipv6_dns_str ? " " : "", wan_dns);
+			}
 		}
 	}
 	ret += websWrite(wp, "%30s: %s\n", "DNS Address", ipv6_dns_str);
