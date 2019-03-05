@@ -404,6 +404,8 @@ function showopenvpnd_clientlist(){
 
 	if(machine_arm)  // default http user only active for ARM
 		code +='<tr id="row0"><td width="15%" id="conn0"></td><td width="35%"><% nvram_get("http_username"); %></td><td width="35%" style="text-align:center;">-</td><td width="15%" style="text-align:center;">-</td></tr>';
+	else
+		code +='<tr id="row0"><td width="15%">Disabled</td><td width="35%"><% nvram_get("http_username"); %></td><td width="35%" style="text-align:center;">-</td><td width="15%" style="text-align:center;">-</td></tr>';
 	if(vpn_server_clientlist_row.length > 1){
 
 		for(var i = 1; i < vpn_server_clientlist_row.length; i++){
