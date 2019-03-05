@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38E4j9527  (5-March-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: watchdog: check both stubby and dnsmasq in new dns_check
+* FIXED: watchdog: prevent reboot scheduler from firing multiple times
+* FIXED: services: fix handling of force mode in start_stubby
+* FIXED: web: show DoT ipv6 dns servers on ipv6 system log page
+* FIXED: webui: mark admin user disabled for mips openvpn server instead of removing entry
+
+
 374.43_38E3j9527  (28-February-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: curl: update to 7.64.0
 * CHANGED: nano: update to 3.2
