@@ -243,7 +243,8 @@ function update_resolverlist(){
 					var searchip = "";
 					for(var j = 1; j < currentserversarray.length; j++){
 						searchip = "&#62" + ((stubbyarray[i][1].length > 0) ? stubbyarray[i][1] : stubbyarray[i][2]);
-						if ((currentserversarray[j].indexOf(searchip) >= 0) && (currentserversarray[j].indexOf("&#62"+stubbyarray[i][3]) >= 0)){	// use ip address and port as lookup
+						if ((currentserversarray[j].indexOf(searchip) >= 0) && (currentserversarray[j].indexOf("&#62"+stubbyarray[i][3]) >= 0)
+						 && (stubbyarray[i][6].length > 0 ? currentserversarray[j].indexOf("&#62"+stubbyarray[i][6]) >= 0 : true)){	// use ip address,port and public key as lookup
 							isselected = true;
 							accessindex[j-1] = i;
 							break;
