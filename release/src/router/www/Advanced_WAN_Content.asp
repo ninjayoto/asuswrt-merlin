@@ -259,7 +259,7 @@ function update_resolverlist(){
 	}
 	for(var j = 0; j < accessindex.length; j++){
 		if (accessindex[j] >= 0)
-			accessindexname += stubbyarray[accessindex[j]][0] + ", ";
+			accessindexname += stubbyarray[accessindex[j]][0] + (stubbyarray[accessindex[j]][3] != "853" ? " (Port: " + stubbyarray[accessindex[j]][3] + ")" : "") + ", ";
 	}
 	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
 	display_stubby_opt();
@@ -278,7 +278,7 @@ function update_accessorder(obj) {
 	}
 	for(var j = 0; j < accessindex.length; j++){
 		if (accessindex[j] >= 0)
-			accessindexname += stubbyarray[accessindex[j]][0] + ", ";
+			accessindexname += stubbyarray[accessindex[j]][0] + (stubbyarray[accessindex[j]][3] != "853" ? " (Port: " + stubbyarray[accessindex[j]][3] + ")" : "") + ", ";
 	}
 	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
 }
