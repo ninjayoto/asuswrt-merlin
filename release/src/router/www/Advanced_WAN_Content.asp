@@ -283,6 +283,15 @@ function update_accessorder(obj) {
 	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
 }
 
+function is_ctrla(o,event){
+	if(event.ctrlKey && event.keyCode == 65) {
+		for(var i = 0; i < document.form.stubby_server.length; i++)
+			document.form.stubby_server[i].selected = true;
+		update_accessorder(o);
+	}
+	return true;
+}
+
 function display_stubby_opt(){
 	$("stubby_port_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_server_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
@@ -1366,7 +1375,7 @@ function pass_checked(obj){
 			<tr id="stubby_server_tr" style="display:none;">
 				<th>DoT Servers<br><i>Hold Ctrl / Cmd to select multiple servers<br>Hover on selection for server details</i></th>
 				<td colspan="2" style="text-align:left;">
-					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5" onclick="update_accessorder(this);" onmouseout="nd();">
+					<select id="stubby_server" name="stubby_server" class="multi_option" multiple size="5" onclick="update_accessorder(this);" onKeyDown="return is_ctrla(this, event);" onmouseout="nd();">
 						<option value="none"></option>
 					</select>
 					<span id="stubby_accessorder" style="display:none;"><br>Selected servers</span>
