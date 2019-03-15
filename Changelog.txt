@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_38E6j9527  (15-March-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: webui: add port info to stubby selected servers list
+* FIXED: webui: add public key to criteria for marking selected stubby servers
+* FIXED: webui: capture ctrl-a in stubby servers selection
+* FIXED: webui: correctly filter stubby ipv6 servers
+* FIXED: webui: use correct resolver index when updating stubby server selection
+* FIXED: webui: fix saving selected stubby servers on apply
+* FIXED: stubby: fix bad addresses and reorder resolver csv
+
+
 374.43_38E4j9527  (5-March-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: watchdog: check both stubby and dnsmasq in new dns_check
 * FIXED: watchdog: prevent reboot scheduler from firing multiple times
