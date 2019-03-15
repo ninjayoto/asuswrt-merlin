@@ -232,12 +232,13 @@ function update_resolverlist(){
 	var stubby_dnssec = document.form.stubby_dnssec[0].checked;
 	var stubby_proxy = document.form.stubby_proxy[0].checked;
 	var stubby_nologs = document.form.stubby_nologs[0].checked;
+	var stubby_noipv6 = document.form.stubby_noipv6[1].checked;
 	accessindex = [];
 	//	add_option(document.form.stubby_servers, "Not Defined","none",(currentservers == "none"));
 	for(var i = 0; i < stubbyarray.length; i++){
 		if ((dnssec_enabled == 1 && stubbyarray[i][7] == "yes") || dnssec_enabled == 0) {	// Exclude non-dnssec servers if dnssec is enabled
 			if ((stubby_nologs == 1 && stubbyarray[i][8] == "yes") || stubby_nologs == 0) {	// Exclude logging servers
-				if ((ipv6_enabled && stubbyarray[i][2].length > 0) || stubbyarray[i][1].length > 0) {	// Exclude ipv6 only servers if ipv6 not enabled
+				if ((ipv6_enabled && stubbyarray[i][2].length > 0 && stubby_noipv6 == 0) || stubbyarray[i][1].length > 0) {	// Exclude ipv6 only servers if ipv6 not enabled
 					// check if selected
 					isselected = false;
 					var searchip = "";
