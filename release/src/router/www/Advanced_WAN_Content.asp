@@ -78,6 +78,7 @@ var stubby_proxy_orig = '<% nvram_get("stubby_proxy"); %>';
 var stubby_csv = '<% nvram_get("stubby_csv"); %>';
 var stubby_dns_value = '<% nvram_get("stubby_dns"); %>';
 var accessindex = [];
+var serverindex = [];
 /* STUBBY-END */
 var vpn_client1_adns = '<% nvram_get("vpn_client1_adns"); %>';
 var vpn_client2_adns = '<% nvram_get("vpn_client2_adns"); %>';
@@ -233,7 +234,7 @@ function update_resolverlist(){
 	var stubby_proxy = document.form.stubby_proxy[0].checked;
 	var stubby_nologs = document.form.stubby_nologs[0].checked;
 	var stubby_noipv6 = document.form.stubby_noipv6[1].checked;
-	accessindex = [];
+	accessindex = []; serverindex = [];  var k = 0;
 	//	add_option(document.form.stubby_servers, "Not Defined","none",(currentservers == "none"));
 	for(var i = 0; i < stubbyarray.length; i++){
 		if ((dnssec_enabled == 1 && stubbyarray[i][7] == "yes") || dnssec_enabled == 0) {	// Exclude non-dnssec servers if dnssec is enabled
@@ -254,6 +255,7 @@ function update_resolverlist(){
 					// add to selection list
 					add_option(document.form.stubby_server,
 						stubbyarray[i][0] + (stubbyarray[i][3] != "853" ? " (Port: " + stubbyarray[i][3] + ")" : ""), i, isselected);
+					serverindex[k] = i; k++;
 				}
 			}
 		}
@@ -269,10 +271,10 @@ function update_resolverlist(){
 function update_accessorder(obj) {
 	var accessindexname = "<br>Selected servers:<br>";
 	for(var i = 0; i < document.form.stubby_server.length; i++){
-		var currindex = accessindex.indexOf(parseInt(document.form.stubby_server[i].value));
+		var currindex = accessindex.indexOf(serverindex[i]);
 		if (document.form.stubby_server[i].selected){
 			if (currindex < 0)
-				accessindex[accessindex.length] = parseInt(document.form.stubby_server[i].value);	// add selection
+				accessindex[accessindex.length] = serverindex[i];	// add selection
 		}
 		else
 			accessindex[currindex] = -1;	// mark as deleted
