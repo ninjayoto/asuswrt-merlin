@@ -676,19 +676,17 @@ function validForm(){
 	var stubby_dns_value = "";
 	for (i=0; i < accessindex.length; i++) {
 		currindex = accessindex[i];
-		if (currindex < 0)
-			continue;
-		if (document.form.stubby_server[currindex].selected) {
+		if (currindex >= 0) {
 			stubby_dns_value += "<"+stubbyarray[currindex][0];
 			for (j=1; j < stubbyarray[currindex].length; j++)
 				stubby_dns_value += ">"+stubbyarray[currindex][j];
-			document.form.stubby_dns.value = stubby_dns_value;	//save selected server info
 			if (stubbyarray[currindex][1].length > 0)
 				document.form.stubby_ipv4.value++;	// number of ipv4 servers
 			if (stubbyarray[currindex][2].length > 0)
 				document.form.stubby_ipv6.value++;	// number of ipv6 servers
 		}
 	}
+	document.form.stubby_dns.value = stubby_dns_value;	//save selected server info
 	if (document.form.stubby_ipv4.value == 0 && document.form.stubby_ipv6.value == 0 && document.form.stubby_proxy[0].checked) {
 		document.form.stubby_server.focus();
 		alert("Must select at least one DoT server!");
