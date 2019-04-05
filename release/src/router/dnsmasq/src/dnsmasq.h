@@ -128,6 +128,7 @@ typedef unsigned long long u64;
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
 #include <netinet/ip_icmp.h>
+#include <netinet/tcp.h>
 #include <sys/uio.h>
 #include <syslog.h>
 #include <dirent.h>
@@ -909,6 +910,16 @@ struct dhcp_context {
   struct dhcp_context *next, *current;
 };
 
+struct shared_network {
+  int if_index;
+  struct in_addr match_addr, shared_addr;
+#ifdef HAVE_DHCP6
+  /* shared_addr == 0 for IP6 entries. */
+  struct in6_addr match_addr6, shared_addr6;
+#endif
+  struct shared_network *next;
+};
+
 #define CONTEXT_STATIC         (1u<<0)
 #define CONTEXT_NETMASK        (1u<<1)
 #define CONTEXT_BRDCAST        (1u<<2)
@@ -1106,6 +1117,7 @@ extern struct daemon {
   struct ping_result *ping_results;
   FILE *lease_stream;
   struct dhcp_bridge *bridges;
+  struct shared_network *shared_networks;
 #ifdef HAVE_DHCP6
   int duid_len;
   unsigned char *duid;
@@ -1205,9 +1217,6 @@ size_t resize_packet(struct dns_header *header, size_t plen,
 int add_resource_record(struct dns_header *header, char *limit, int *truncp,
 			int nameoffset, unsigned char **pp, unsigned long ttl, 
 			int *offset, unsigned short type, unsigned short class, char *format, ...);
-unsigned char *skip_questions(struct dns_header *header, size_t plen);
-int extract_name(struct dns_header *header, size_t plen, unsigned char **pp, 
-		 char *name, int isExtract, int extrabytes);
 int in_arpa_name_2_addr(char *namein, union all_addr *addrp);
 int private_net(struct in_addr addr, int ban_localhost);
 
@@ -1245,7 +1254,6 @@ unsigned short rand16(void);
 u32 rand32(void);
 u64 rand64(void);
 int legal_hostname(char *name);
-int valid_hostname(char *name);
 char *canonicalise(char *in, int *nomem);
 unsigned char *do_rfc1035_name(unsigned char *p, char *sval, char *limit);
 void *safe_malloc(size_t size);
@@ -1549,8 +1557,6 @@ void dhcp_update_configs(struct dhcp_config *configs);
 void display_opts(void);
 int lookup_dhcp_opt(int prot, char *name);
 int lookup_dhcp_len(int prot, int val);
-char *option_string(int prot, unsigned int opt, unsigned char *val, 
-		    int opt_len, char *buf, int buf_len);
 struct dhcp_config *find_config(struct dhcp_config *configs,
 				struct dhcp_context *context,
 				unsigned char *clid, int clid_len,

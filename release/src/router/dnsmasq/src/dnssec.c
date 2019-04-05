@@ -24,8 +24,6 @@
 #define SERIAL_LT       -1
 #define SERIAL_GT        1
 
-#define MSG_INTERVAL	20
-
 /* Convert from presentation format to wire format, in place.
    Also map UC -> LC.
    Note that using extract_name to get presentation format
@@ -853,7 +851,6 @@ int dnssec_validate_by_ds(time_t now, struct dns_header *header, size_t plen, ch
    STAT_NEED_DS     DS record needed.
 */
 
-static int insecure_count = 0;
 int dnssec_validate_ds(time_t now, struct dns_header *header, size_t plen, char *name, char *keyname, int class)
 {
   unsigned char *p = (unsigned char *)(header+1);
@@ -876,13 +873,7 @@ int dnssec_validate_ds(time_t now, struct dns_header *header, size_t plen, char 
   
   if (rc == STAT_INSECURE)
     {
-	  if (strchr(name, '.') != NULL) // is a full qualified domain
-		my_syslog(LOG_WARNING, _("Insecure DS reply received from %s"), name);
-	  else {
-		insecure_count++;
-		if (insecure_count % MSG_INTERVAL == 0 || insecure_count == 1)
-			my_syslog(LOG_WARNING, _("Insecure DS replies received, do upstream DNS servers support DNSSEC?"));
-	  }
+      my_syslog(LOG_WARNING, _("Insecure DS reply received, do upstream DNS servers support DNSSEC?"));
       rc = STAT_BOGUS;
     }
   
@@ -1031,8 +1022,7 @@ int dnssec_validate_ds(time_t now, struct dns_header *header, size_t plen, char 
 	  log_query(F_NOEXTRA | F_UPSTREAM, name, NULL, "no DS");
 	}
     }
-
-  insecure_count = 0;
+      
   return STAT_OK;
 }
 

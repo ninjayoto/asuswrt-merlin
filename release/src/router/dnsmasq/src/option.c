@@ -166,6 +166,7 @@ struct myoption {
 #define LOPT_UBUS          354
 #define LOPT_NAME_MATCH    355
 #define LOPT_CAA           356
+#define LOPT_SHARED_NET    357
  
 #ifdef HAVE_GETOPT_LONG
 static const struct option opts[] =  
@@ -259,6 +260,7 @@ static const struct myoption opts[] =
     { "ptr-record", 1, 0, LOPT_PTR },
     { "naptr-record", 1, 0, LOPT_NAPTR },
     { "bridge-interface", 1, 0 , LOPT_BRIDGE },
+    { "shared-network", 1, 0, LOPT_SHARED_NET },
     { "dhcp-option-force", 1, 0, LOPT_FORCE },
     { "tftp-no-blocksize", 0, 0, LOPT_NOBLOCK },
     { "log-dhcp", 0, 0, LOPT_LOG_OPTS },
@@ -431,6 +433,7 @@ static struct {
   { '3', ARG_DUP, "[=tag:<tag>]...", gettext_noop("Enable dynamic address allocation for bootp."), NULL },
   { '4', ARG_DUP, "set:<tag>,<mac address>", gettext_noop("Map MAC address (with wildcards) to option set."), NULL },
   { LOPT_BRIDGE, ARG_DUP, "<iface>,<alias>..", gettext_noop("Treat DHCP requests on aliases as arriving from interface."), NULL },
+  { LOPT_SHARED_NET, ARG_DUP, "<iface>|<addr>,<addr>", gettext_noop("Specify extra networks sharing a broadcast domain for DHCP"), NULL},
   { '5', OPT_NO_PING, NULL, gettext_noop("Disable ICMP echo address checking in the DHCP server."), NULL },
   { '6', ARG_ONE, "<path>", gettext_noop("Shell script to run on DHCP lease creation and destruction."), NULL },
   { LOPT_LUASCRIPT, ARG_DUP, "path", gettext_noop("Lua script to run on DHCP lease creation and destruction."), NULL },
@@ -1181,7 +1184,7 @@ static int parse_dhcp_opt(char *errstr, char *arg, int flags)
     {
       /* characterise the value */
       char c;
-      int found_dig = 0;
+      int found_dig = 0, found_colon = 0;
       is_addr = is_addr6 = is_hex = is_dec = is_string = 1;
       addrs = digs = 1;
       dots = 0;
@@ -1195,6 +1198,7 @@ static int parse_dhcp_opt(char *errstr, char *arg, int flags)
 	  {
 	    digs++;
 	    is_dec = is_addr = 0;
+	    found_colon = 1;
 	  }
 	else if (c == '/') 
 	  {
@@ -1236,6 +1240,9 @@ static int parse_dhcp_opt(char *errstr, char *arg, int flags)
      
       if (!found_dig)
 	is_dec = is_addr = 0;
+
+      if (!found_colon)
+	is_addr6 = 0;
      
       /* We know that some options take addresses */
       if (opt_len & OT_ADDR_LIST)
@@ -2869,6 +2876,44 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
       }
 
 #ifdef HAVE_DHCP
+    case LOPT_SHARED_NET: /* --shared-network */
+      {
+	struct shared_network *new = opt_malloc(sizeof(struct shared_network));
+
+#ifdef HAVE_DHCP6
+	new->shared_addr.s_addr = 0;
+#endif
+	new->if_index = 0;
+	
+	if (!(comma = split(arg)))
+	  {
+	  snerr:
+	    free(new);
+	    ret_err(_("bad shared-network"));
+	  }
+	
+	if (inet_pton(AF_INET, comma, &new->shared_addr))
+	  {
+	    if (!inet_pton(AF_INET, arg, &new->match_addr) &&
+		!(new->if_index = if_nametoindex(arg)))
+	      goto snerr;
+	  }
+#ifdef HAVE_DHCP6
+	else if (inet_pton(AF_INET6, comma, &new->shared_addr6))
+	  {
+	    if (!inet_pton(AF_INET6, arg, &new->match_addr6) &&
+		!(new->if_index = if_nametoindex(arg)))
+	      goto snerr;
+	  }
+#endif
+	else
+	  goto snerr;
+
+	new->next = daemon->shared_networks;
+	daemon->shared_networks = new;
+	break;
+      }
+	  
     case 'F':  /* --dhcp-range */
       {
 	int k, leasepos = 2;
@@ -4967,9 +5012,14 @@ void read_opts(int argc, char **argv, char *compile_opts)
         }
       else if (option == 'C')
 	{
-          if (conffile)
-            free(conffile);
-	  conffile = opt_string_alloc(arg);
+          if (!conffile)
+	    conffile = opt_string_alloc(arg);
+	  else
+	    {
+	      char *extra = opt_string_alloc(arg);
+	      one_file(extra, 0);
+	      free(extra);
+	    }
 	}
       else
 	{
