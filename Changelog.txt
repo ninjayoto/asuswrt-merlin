@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_39E1j9527  (5-April-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: rc: (backport) provide filesystem type as second argument to pre-mount script
+- CHANGED: curl: update to 7.64.1
+- CHANGED: nano: update to 4.0
+- CHANGED: dropbear: update to 2019.78
+- CHANGED: openvpn: (backport) increase interface queue length from 100 to 1000 bytes
+- CHANGED: openssl: update CA bundle to 2019 January 23rd version
+* CHANGED: dnsmasq: update to g5c464ef snapshot
+
+
 374.43_38E6j9527  (15-March-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: webui: add port info to stubby selected servers list
 * FIXED: webui: add public key to criteria for marking selected stubby servers
