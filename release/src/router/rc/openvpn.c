@@ -210,6 +210,7 @@ void start_vpnclient(int clientNum)
 	if ( cryptMode == TLS )
 		fprintf(fp, "client\n");
 	fprintf(fp, "dev %s\n", &iface[0]);
+	fprintf(fp, "txqueuelen 1000\n");
 	sprintf(&buffer[0], "vpn_client%d_proto", clientNum);
 	fprintf(fp, "proto %s\n", nvram_safe_get(&buffer[0]));
 	sprintf(&buffer[0], "vpn_client%d_addr", clientNum);
@@ -903,8 +904,8 @@ void start_vpnserver(int serverNum)
 	}
 
 	fprintf(fp_client, "float\n");
-
 	fprintf(fp, "dev %s\n", &iface[0]);
+	fprintf(fp, "txqueuelen 1000\n");
 
 	//cipher
 	if ( cryptMode == TLS ) {
