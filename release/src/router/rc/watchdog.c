@@ -1634,7 +1634,8 @@ void syslog_commit_check(void)
 			return;
 		}
 
-		if(tmp_log_stat.st_size > jffs_log_stat.st_size)
+		if((tmp_log_stat.st_size > jffs_log_stat.st_size) ||
+		  difftime(tmp_log_stat.st_mtime, jffs_log_stat.st_mtime) > 0)
 			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
 
 		log_commit_count = 0;
