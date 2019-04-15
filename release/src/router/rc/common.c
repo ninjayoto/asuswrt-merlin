@@ -1481,6 +1481,7 @@ void setup_dnsmq(int mode)
 
 void run_custom_script(char *name, char *args)
 {
+	struct stat sb;
 	char script[120];
 
 	snprintf(script, sizeof(script), "/jffs/scripts/%s", name);
@@ -1488,6 +1489,10 @@ void run_custom_script(char *name, char *args)
 	if(f_exists(script)) {
 		if (nvram_match("jffs2_scripts", "0")) {
 			logmessage("custom_script", "Found %s, but custom script execution is disabled!", name);
+			return;
+		}
+		if ((stat(script, &sb) == 0) && ((sb.st_mode & S_IXUSR) == 0)) {
+			logmessage("custom_script", "Found %s, but script is not marked executable!", name);
 			return;
 		}
 		if (args)
@@ -1500,6 +1505,7 @@ void run_custom_script(char *name, char *args)
 
 void run_custom_script_blocking(char *name, char *arg1, char *arg2)
 {
+	struct stat sb;
 	char script[120];
 
 	snprintf(script, sizeof(script), "/jffs/scripts/%s", name);
@@ -1507,6 +1513,10 @@ void run_custom_script_blocking(char *name, char *arg1, char *arg2)
 	if(f_exists(script)) {
 		if (nvram_match("jffs2_scripts", "0")) {
 			logmessage("custom_script", "Found %s, but custom script execution is disabled!", name);
+			return;
+		}
+		if ((stat(script, &sb) == 0) && ((sb.st_mode & S_IXUSR) == 0)) {
+			logmessage("custom_script", "Found %s, but script is not marked executable!", name);
 			return;
 		}
 		if (arg1)
