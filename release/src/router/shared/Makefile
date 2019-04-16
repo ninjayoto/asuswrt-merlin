@@ -58,6 +58,7 @@ OBJS += misc.o version.o files.o strings.o process.o
 OBJS += bin_sem_asus.o semaphore.o pids.o notify_rc.o discover.o
 OBJS += base64.o
 OBJS += nvparse.o
+OBJS += scripts.o
 
 ifeq ($(RTCONFIG_RALINK),y)
 OBJS += $(TOP)/wireless_tools/iwlib.o

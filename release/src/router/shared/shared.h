@@ -3,7 +3,9 @@
 
 #include <rtconfig.h>
 #include <netinet/in.h>
+#include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <net/if.h>
 #include <rtstate.h>
@@ -12,6 +14,9 @@
 #ifdef RTCONFIG_USB
 #include <mntent.h>	// !!TB
 #endif
+
+#include <sys/stat.h>
+#include <ftw.h>
 
 #ifdef RTCONFIG_PUSH_EMAIL
 #define logmessage logmessage_push
@@ -568,6 +573,15 @@ extern char *get_parsed_crt(const char *name, char *buf, size_t buf_len);
 extern int set_crt_parsed(const char *name, char *file_path);
 extern int set_crt_parsed(const char *name, char *file_path);
 #endif
+
+/* scripts.c */
+#define xstart(args...) _xstart(args, NULL)
+extern int _xstart(const char *cmd, ...);
+extern void run_custom_script(char *name, char *args);
+extern void run_custom_script_blocking(char *name, char *arg1, char*arg2);
+extern void run_postconf(char *name, char *config);
+extern void use_custom_config(char *config, char *target);
+extern void append_custom_config(char *config, FILE *fp);
 
 /* mt7620.c */
 extern void ATE_mt7620_esw_port_status(void);

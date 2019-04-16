@@ -15,9 +15,19 @@
 #ifndef _shutils_h_
 #define _shutils_h_
 #include <string.h>
+#include <stdlib.h>
+#include <rtconfig.h>
 
 #define MAX_NVPARSE 255
 #define sin_addr(s) (((struct sockaddr_in *)(s))->sin_addr)
+
+#ifndef max
+#define max(a,b)  (((a) > (b)) ? (a) : (b))
+#endif /* max */
+
+#ifndef min
+#define min(a,b)  (((a) < (b)) ? (a) : (b))
+#endif /* min */
 
 extern int doSystem(char *fmt, ...);
 
