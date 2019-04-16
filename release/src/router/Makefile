@@ -110,6 +110,7 @@ endif
 ifneq ($(RTCONFIG_BCMARM),y)
 obj-y += lzma-loader
 endif
+obj-y += busybox
 obj-y += shared
 obj-y += nvram$(BCMEX)
 ifneq ($(RTCONFIG_RALINK),y)
@@ -1089,7 +1090,9 @@ exfat-utils-clean:
 	-@$(MAKE) -C exfat-utils clean
 	@rm -rf exfat-utils/stamp-h1
 
-infosvr: shared nvram${BCMEX}
+infosvr: shared nvram$(BCMEX)
+
+libdisk: shared nvram$(BCMEX)
 
 httpd: shared nvram$(BCMEX) libdisk $(if $(RTCONFIG_HTTPS),mssl) $(PUSH_LOG)
 	@$(SEP)
@@ -1235,7 +1238,10 @@ wb: openssl libxml2 curl
 
 push_log: wb
 
-rc: nvram$(BCMEX) shared libbcmcrypto libdisk $(PUSH_LOG) $(if $(RTCONFIG_QTN),libqcsapi_client) $(if $(CONFIG_LIBBCM),libbcm)
+rc: shared nvram$(BCMEX)libbcmcrypto libdisk $(PUSH_LOG) $(if $(RTCONFIG_QTN),libqcsapi_client) $(if $(CONFIG_LIBBCM),libbcm)
+
+rc-install:
+	$(MAKE) -C rc INSTALLDIR=$(INSTALLDIR)/rc install
 
 bridge/stamp-h1:
 	cd bridge && CFLAGS="-Os -g $(EXTRACFLAGS)" \
@@ -1581,11 +1587,14 @@ miniupnpc-install:
 
 
 # !!TB
-shared: busybox $(if $(RTCONFIG_QTN),libqcsapi_client)
+shared: $(if $(RTCONFIG_QTN),libqcsapi_client) $(if $(RTCONFIG_HTTPS),openssl)
 ifeq ($(RTCONFIG_RALINK),y)
 	make -C wireless_tools wireless.h	
 endif
 	$(MAKE) -C shared
+
+shared-install:
+	$(MAKE) -C shared INSTALLDIR=$(INSTALLDIR)/shared install
 
 ifeq ($(RTCONFIG_FTP_SSL),y)
 ftp_dep=openssl
@@ -1980,6 +1989,9 @@ samba-3.5.8:
 
 nvram$(BCMEX): shared
 
+nvram$(BCMEX)-install:
+	$(MAKE) -C nvram$(BCMEX) INSTALLDIR=$(INSTALLDIR)/nvram$(BCMEX) install
+
 prebuilt: shared
 
 vlan:
@@ -2125,7 +2137,7 @@ ez-ipupdate-install:
 phddns/stamp-h1:
 	cd phddns && $(CONFIGURE) --prefix="" \
 		CFLAGS="-Os -I$(SRCBASE)/include -I$(TOP)/shared $(EXTRACFLAGS)" \
-		LDFLAGS="-L$(TOP)/nvram$(BCMEX)$(EX7) -L$(TOP)/shared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client) $(EXTRALDFLAGS)" \
+		LDFLAGS="-L$(TOP)/nvram$(BCMEX) -L$(TOP)/shared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client) $(EXTRALDFLAGS)" \
 		LIBS="-lnvram -lshared $(if $(RTCONFIG_QTN),-lqcsapi_client)"
 	@touch $@
 
