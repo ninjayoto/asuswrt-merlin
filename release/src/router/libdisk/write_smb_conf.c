@@ -23,7 +23,6 @@
 #include <ctype.h>
 #include <bcmnvram.h>
 #include <shutils.h>
-#include <rtconfig.h>
 #include <shared.h>
 
 #include "usb_info.h"
@@ -755,26 +754,13 @@ int main(int argc, char *argv[])
 confpage:
 	if(fp != NULL) {
 
-	    if (nvram_match("jffs2_scripts", "1")) {
-			if (check_if_file_exist("/jffs/configs/smb.conf.add")) {
-				char *addendum = read_whole_file("/jffs/configs/smb.conf.add");
-				if (addendum) {
-					fwrite(addendum, 1, strlen(addendum), fp);
-					free(addendum);
-				}
+		append_custom_config("smb.conf", fp);
+		fclose(fp);
 
-			}
-			fclose(fp);
+		use_custom_config("smb.conf", SAMBA_CONF);
+		run_postconf("smb.postconf", SAMBA_CONF);
+		chmod(SAMBA_CONF, 0644);
 
-			if (check_if_file_exist("/jffs/configs/smb.conf")) {
-				eval("cp","/jffs/configs/smb.conf",SAMBA_CONF,NULL);
-			}
-
-			if (check_if_file_exist("/jffs/scripts/smb.postconf")) {
-				eval("/jffs/scripts/smb.postconf", SAMBA_CONF);
-			}
-			chmod(SAMBA_CONF, 0644);
-	    }
 	}
 
 	free_disk_data(&disks_info);
