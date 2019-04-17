@@ -4,6 +4,19 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_39E3j9527  (17-April-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: shared: move custom script subroutines to shared directory
+- CHANGED: samba: use common subroutines for custom scripts
+* CHANGED: common: issue log for custom scripts which are not marked executable
+* CHANGED: make: misc makefile cleanup
+- FIXED: httpd: (backport) fix potential buffer overrun in alloc_string() - 384_45708
+- FIXED: httpd: (backport) fix potential buffer overrun in ej_select_list
+
+
+374.43_39D2j9527  (9-April-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: watchdog: force jffs syslog copy to be updated if earlier timestamp
+
+
 374.43_39E1j9527  (5-April-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: rc: (backport) provide filesystem type as second argument to pre-mount script
 - CHANGED: curl: update to 7.64.1
