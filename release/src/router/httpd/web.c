@@ -9527,9 +9527,7 @@ ej_select_list(int eid, webs_t wp, int argc, char_t **argv)
 		refnum = "sh_num";
 		curr = nvram_get_int(ref1);
 		sprintf(idxstr, "%d", curr);
-		strlcpy(tmpstr1, nvram_get(strcat_r(ref2, idxstr, tmpstr)), sizeof(tmpstr1));
-		sprintf(out, "%s", tmpstr1);
-		ret += websWrite(wp, out);
+		ret += websWrite(wp, nvram_safe_get(strcat_r(ref2, idxstr, tmpstr)));
 		return ret;
 	}
 	else if (strncmp(id, "Storage_x_AccUser", 17)==0)
@@ -9556,7 +9554,7 @@ ej_select_list(int eid, webs_t wp, int argc, char_t **argv)
 		{
 			 sprintf(idxstr, "%d", i);
 			 strlcpy(tmpstr1, nvram_get(strcat_r("acc_username", idxstr, tmpstr)), sizeof(tmpstr1));
-			 sprintf(out, "<option value=\"%s\">%s</option>", tmpstr1, tmpstr1);
+			 snprintf(out ,sizeof(out), "<option value=\"%s\">%s</option>", tmpstr1, tmpstr1);
 			 ret += websWrite(wp, out);
 		}
 		return ret;
