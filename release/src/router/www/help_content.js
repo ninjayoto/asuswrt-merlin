@@ -163,7 +163,7 @@ helpcontent[8] = new Array("",
 						   "Some ISPs incorrectly filter the DSCP priority, resulting in reduced performance on wireless connectons.  Enabling this option forces a correct DSCP value to be used.",
 						   "Automatically blocks repeated attempts from the same IP address to the Telnet/SSH ports.  If you are using a third-party router addon that provides similar protection, you may want to disable this option.",
 						   "Adjusts the number of buffers and thresholds used for managing TCP and UDP traffic.",
-						   "Redirects all NTP requests from the local LAN to the router NTPD server.");
+						   "Redirects all NTP requests from the local LAN to the router SNTP server.");
 helpcontent[9] = new Array("",
 						   "<#FirewallConfig_URLActiveDate_itemdesc#>",
 						   "<#FirewallConfig_URLActiveTime_itemdesc#>");
