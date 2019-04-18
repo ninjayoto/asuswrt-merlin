@@ -128,7 +128,7 @@ function initial(){
 /* DNSCRYPT-BEGIN */
 	if (isSupport("dnscrypt")){
 		document.getElementById("dnscrypt_tr").style.display = "";
-		display_dnscrypt_opt();
+		display_resolver_opt();
 		if (dnscrypt_csv != "/rom/dnscrypt-resolvers.csv")  // warn if not using rom csv file
 			showhide("dnscrypt_csvwarn", true);
 		else
@@ -139,7 +139,7 @@ function initial(){
 /* STUBBY-BEGIN */
 	if (isSupport("stubby")){
 		document.getElementById("stubby_tr").style.display = "";
-		display_stubby_opt();
+		display_resolver_opt();
 		if (stubby_csv != "/rom/stubby-resolvers.csv")  // warn if not using rom csv file
 			showhide("stubby_csvwarn", true);
 		else
@@ -195,7 +195,7 @@ function update_resolverlist(){
 			}
 //		}
 	}
-	display_dnscrypt_opt();
+	display_resolver_opt();
 }
 
 function set_dnscrypt_protocol(instance, name){
@@ -212,7 +212,7 @@ function set_dnscrypt_protocol(instance, name){
 		document.form.dnscrypt2_ipv6.value = 1;
 	}
 }
-function display_dnscrypt_opt(){
+function display_resolver_opt(){
 	$("dnscrypt1_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt1_port_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
 	$("dnscrypt2_resolv_tr").style.display = (document.form.dnscrypt_proxy[0].checked) ? "" : "none";
@@ -265,7 +265,7 @@ function update_resolverlist(){
 			accessindexname += stubbyarray[accessindex[j]][0] + (stubbyarray[accessindex[j]][3] != "853" ? " (Port: " + stubbyarray[accessindex[j]][3] + ")" : "") + ", ";
 	}
 	$("stubby_accessorder").innerHTML = accessindexname.substring(0, accessindexname.length-2);
-	display_stubby_opt();
+	display_resolver_opt();
 }
 
 function update_accessorder(obj) {
@@ -295,7 +295,7 @@ function is_ctrla(o,event){
 	return true;
 }
 
-function display_stubby_opt(){
+function display_resolver_opt(){
 	$("stubby_port_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 	$("stubby_server_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
 //	$("stubby_log_tr").style.display = (document.form.stubby_proxy[0].checked) ? "" : "none";
@@ -1287,8 +1287,8 @@ function pass_checked(obj){
 			<tr id="dnscrypt_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,33);">Enable DNSCRYPT support<br><i>DNSCRYPT becomes primary DNS server(s)</i></a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_dnscrypt_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="dnscrypt_proxy" onclick="display_resolver_opt();" <% nvram_match("dnscrypt_proxy", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnscrypt_proxy" onclick="display_resolver_opt();" <% nvram_match("dnscrypt_proxy", "0", "checked"); %> /><#checkbox_No#>
 				<span id="dnscrypt_csvwarn" style="padding-left:42px;">Using updated resolver file</span>
 				</td>
 			</tr>
@@ -1347,8 +1347,8 @@ function pass_checked(obj){
 			<tr id="stubby_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,36);">Enable DNS over TLS support<br><i>DoT becomes primary DNS server(s)</i></a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="stubby_proxy" onclick="display_stubby_opt();" <% nvram_match("stubby_proxy", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="stubby_proxy" onclick="display_stubby_opt();" <% nvram_match("stubby_proxy", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="stubby_proxy" onclick="display_resolver_opt();" <% nvram_match("stubby_proxy", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="stubby_proxy" onclick="display_resolver_opt();" <% nvram_match("stubby_proxy", "0", "checked"); %> /><#checkbox_No#>
 				<span id="stubby_csvwarn" style="padding-left:42px;">Using updated server file</span>
 				</td>
 			</tr>
@@ -1369,8 +1369,8 @@ function pass_checked(obj){
 			<tr id="stubby_ordered_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,39);">DoT server access</a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="stubby_access" onclick="display_stubby_opt();" <% nvram_match("stubby_access", "1", "checked"); %> />RoundRobin
-					<input type="radio" value="0" name="stubby_access" onclick="display_stubby_opt();" <% nvram_match("stubby_access", "0", "checked"); %> />Ordered
+					<input type="radio" value="1" name="stubby_access" onclick="display_resolver_opt();" <% nvram_match("stubby_access", "1", "checked"); %> />RoundRobin
+					<input type="radio" value="0" name="stubby_access" onclick="display_resolver_opt();" <% nvram_match("stubby_access", "0", "checked"); %> />Ordered
 				</td>
 			</tr>
 			<tr id="stubby_server_tr" style="display:none;">
@@ -1407,8 +1407,8 @@ function pass_checked(obj){
 			<tr id="dnssec_tr" style="display:none;">
 				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,32);">Enable DNSSEC support<br><i>DNS servers must support DNSSEC</i></a></th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="dnssec_enable" onclick="update_resolverlist();warn_dnssec_strict();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
-					<input type="radio" value="0" name="dnssec_enable" onclick="update_resolverlist();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
+					<input type="radio" value="1" name="dnssec_enable" onclick="display_resolver_opt();warn_dnssec_strict();" <% nvram_match("dnssec_enable", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="0" name="dnssec_enable" onclick="display_resolver_opt();" <% nvram_match("dnssec_enable", "0", "checked"); %> /><#checkbox_No#>
 					<span id="dnssec_strict_span" style="display:none;padding-left:20px;"><input type="checkbox" name="dnssec_strict_ckb" id="dnssec_strict_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;warn_dnssec_strict();"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>
@@ -1416,9 +1416,9 @@ function pass_checked(obj){
 			<tr id="stubby_dnssec_tr" style="display:none;">
 				<th>DNSSEC validation method</th>
 				<td colspan="2" style="text-align:left;">
-					<input type="radio" value="1" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "1", "checked"); %> />GetDNS
-					<input type="radio" value="0" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "0", "checked"); %> />Dnsmasq
-					<input type="radio" value="2" name="stubby_dnssec" onclick="update_resolverlist();" <% nvram_match("stubby_dnssec", "2", "checked"); %> />Server Only
+					<input type="radio" value="1" name="stubby_dnssec" onclick="display_resolver_opt();" <% nvram_match("stubby_dnssec", "1", "checked"); %> />GetDNS
+					<input type="radio" value="0" name="stubby_dnssec" onclick="display_resolver_opt();" <% nvram_match("stubby_dnssec", "0", "checked"); %> />Dnsmasq
+					<input type="radio" value="2" name="stubby_dnssec" onclick="display_resolver_opt();" <% nvram_match("stubby_dnssec", "2", "checked"); %> />Server Only
 					<span id="stubby_dnssec_span" style="display:none;padding-left:20px;"><input type="checkbox" name="stubby_dnssec_ckb" id="stubby_dnssec_ckb" value="<% nvram_get("dnssec_check_unsigned_x"); %>" onclick="document.form.dnssec_check_unsigned_x.value=(this.checked==true)?1:0;warn_dnssec_strict();"> Strict DNSSEC enforcement</input></span>
 				</td>
 			</tr>
