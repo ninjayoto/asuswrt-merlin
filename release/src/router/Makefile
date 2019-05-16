@@ -496,6 +496,10 @@ obj-y += getdns
 endif
 obj-$(RTCONFIG_NANO) += ncurses
 obj-$(RTCONFIG_NANO) += nano
+ifeq ($(RTCONFIG_SAMBASRV),y)
+obj-y += wsdd2
+endif
+# End merlin/fork addons
 
 obj-clean := $(foreach obj, $(obj-y) $(obj-n) $(obj-), $(obj)-clean)
 obj-install := $(foreach obj,$(obj-y),$(obj)-install)
@@ -3579,6 +3583,17 @@ nano-install:
 nano: ncurses nano/Makefile
 	@$(SEP)
 	$(MAKE) -C $@
+
+wsdd2:
+	@$(SEP)
+	$(MAKE) CFLAGS+="-DASUSWRT -Os" -C $@
+
+wsdd2-install:
+	install -D wsdd2/wsdd2 $(INSTALLDIR)/wsdd2/usr/sbin/wsdd2
+	$(STRIP) $(INSTALLDIR)/wsdd2/usr/sbin/wsdd2
+
+wsdd2-clean:
+	$(MAKE) -C wsdd2 clean
 
 tftp:
 	cd tftp-1.0 && CC=$(CC) && $(MAKE)
