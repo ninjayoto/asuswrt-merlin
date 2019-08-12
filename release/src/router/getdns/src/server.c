@@ -860,9 +860,15 @@ static getdns_return_t add_listeners(listen_set *set)
 			break;
 
 		if (setsockopt(l->fd, SOL_SOCKET, SO_REUSEADDR,
-		    &enable, sizeof(int)) < 0) {
+		    &enable, sizeof(enable)) < 0) {
 			; /* Ignore */
 		}
+#if defined(HAVE_DECL_TCP_FASTOPEN) && HAVE_DECL_TCP_FASTOPEN
+		if (setsockopt(l->fd, IPPROTO_TCP, TCP_FASTOPEN,
+		    &enable, sizeof(enable)) < 0) {
+			; /* Ignore */
+		}
+#endif
 		if (bind(l->fd, (struct sockaddr *)&l->addr,
 		    l->addr_len) == -1)
 			/* IO error */
@@ -970,18 +976,9 @@ getdns_return_t getdns_context_set_listen_addresses(
 	for (i = 0; i < new_set->count; i++)
 		new_set->items[i].fd = -1;
 
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family    = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
-#ifdef HAVE_OLD_GETADDRINFO
-	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
-#else
-	hints.ai_socktype  = 0;              /* Datagram socket */
-#endif
-	hints.ai_flags     = AI_NUMERICHOST; /* No reverse name lookups */
-	hints.ai_protocol  = 0;              /* Any protocol */
-	hints.ai_canonname = NULL;
-	hints.ai_addr      = NULL;
-	hints.ai_next      = NULL;
+	(void) memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family    = AF_UNSPEC;
+	hints.ai_flags     = AI_NUMERICHOST;
 
 	for (i = 0; !r && i < new_set_count; i++) {
 		getdns_dict             *dict = NULL;
