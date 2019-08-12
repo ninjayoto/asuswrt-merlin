@@ -39,18 +39,37 @@ fi
 echo "$(date) $1 $2 '$4' '$DNSMASQ_SUPPLIED_HOSTNAME' '$DNSMASQ_OLD_HOSTNAME' ($HNAME)" >> "$LOGA"
 
 DEL_NEEDED=0
+WL_FLAGS=0
 grep -qi  " ${HNAME}" "$V6HOSTS"
 if [ $? == 0 ]; then
     sleep 2
     v6addr=$(grep -i " ${HNAME}" "$V6HOSTS" | awk '{ print $1 }')
+    # Skip address verification if wireless client in powersave mode
+    wl assoclist | grep -q -i $2
+    if [ $? == 0 ]; then
+        WL_FLAGS=$(wl sta_info $2 | grep flags | awk -F'[ :]' '{print $3}')
+        if [[ $(($WL_FLAGS & 0x100)) -gt 0 ]]; then
+            echo "$(date) known name for 2.4GHz wireless client $HNAME in powersave mode" >> "$LOGA"
+            exit 0
+        fi
+    fi
+    wl -i eth2 assoclist | grep -q i $2
+    if [ $? == 0 ]; then
+        WL_FLAGS=$(wl -i eth2 sta_info $2 | grep flags | awk -F'[ :]' '{print $3}')
+        if [[ $(($WL_FLAGS & 0x100)) -gt 0 ]]; then
+            echo "$(date) known name for 5GHz wireless client $HNAME in powersave mode" >> "$LOGA"
+            exit 0
+        fi
+    fi
+    # Do ping test
     if ping -6 -q -c 1 -W 6 $v6addr; then
         echo "$(date) known name, valid addr $HNAME" >> "$LOGA"
-		#echo "found valid hosts entry $v6addr $HNAME" | logger -t "$scrname"
+        #echo "found valid hosts entry $v6addr $HNAME" | logger -t "$scrname"
         exit 0
     else
         echo "$(date) known name, invalid addr error $HNAME" >> "$LOGA"
         DEL_NEEDED=1
-        fi
+    fi
 else
     sleep 2
 fi
