@@ -4,6 +4,23 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E1j9527  (14-August-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: openssl: update to 1.0.2s
+- CHANGED: stubby: update to 0.2.6
+* CHANGED: getdns: use upstream accepted typedef fix
+* CHANGED: stubby: add logfile support when run as daemon
+* CHANGED: getdns: add missing define for log_warn
+* CHANGED: getdns: fix build errors with disable-dnssec-roadblock-avoidance
+- CHANGED: getdns: update to 1.5.2
+* CHANGED: make: remove deprecated enable-old-getaddrinfo define from getdns
+* CHANGED: v6hosts: skip address verification if wireless client in powersave mode
+
+
+374.43_39D4j9527  (18-April-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: webui: change label for ntp filter to SNTP
+* CHANGED: webui: do not refresh dnscrypt/stubby server list when changing non-server options
+
+
 374.43_39E3j9527  (17-April-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: shared: move custom script subroutines to shared directory
 - CHANGED: samba: use common subroutines for custom scripts
