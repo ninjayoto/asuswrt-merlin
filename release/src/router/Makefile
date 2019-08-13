@@ -2845,9 +2845,9 @@ openpam-clean:
 openvpn/stamp-h1:
 	cd openvpn && ./autogen.sh && \
 	export OPENSSL_CFLAGS="-I$(TOP)/openssl"; \
-	export OPENSSL_LIBS="-L$(TOP)/openssl -lcrypto -lssl"; \
+	export OPENSSL_LIBS="-L$(TOP)/openssl -lssl -lcrypto"; \
 	CFLAGS="-O3 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections $(if $(RTCONFIG_HTTPS),-I$(TOP)/openssl/include/ssl) $(if $(RTCONFIG_BCMARM),,-std=gnu99)" \
-	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl -lcrypto -lssl) -L$(TOP)/zlib -lz -lpthread -ldl -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl -lssl -lcrypto) -L$(TOP)/zlib -lz -lpthread -ldl -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
 	CPPFLAGS="-I$(TOP)/lzo/include -I$(TOP)/openssl/include -I$(TOP)/openpam/include -I$(TOP)/shared -I$(SRCBASE)/include" \
 	IPROUTE="/usr/sbin/ip" IFCONFIG="/sbin/ifconfig" ROUTE="/sbin/route" \
 	$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib  --enable-iproute2 \
@@ -3128,7 +3128,7 @@ curl/Makefile: curl/configure
 	--disable-gopher --disable-dict --disable-telnet \
 	--disable-proxy --disable-manual --disable-libcurl-option \
 	--with-ca-bundle=/rom/ca-bundle.crt \
-	LDFLAGS='$(LDFLAGS) -L$(TOP)/openssl' LIBS='-lcrypto -lssl -ldl'
+	LDFLAGS='$(LDFLAGS) -L$(TOP)/openssl' LIBS='-lssl -lcrypto -ldl'
 
 curl-install: curl
 	@$(SEP)
@@ -3622,7 +3622,7 @@ norton${BCMEX}-clean:
 email-3.1.3:
 	echo "Build emailaaa"
 	cd email-3.1.3 && \
-	./configure --with-ssl --sysconfdir=/etc --host=mipsel-uclibc CFLAGS=-I$(SRCBASE)/router/openssl/include LDFLAGS="-L$(SRCBASE)/router/openssl"  LIBS="-lcrypto -lssl"
+	./configure --with-ssl --sysconfdir=/etc --host=mipsel-uclibc CFLAGS=-I$(SRCBASE)/router/openssl/include LDFLAGS="-L$(SRCBASE)/router/openssl"  LIBS="-lssl -lcrypto"
 	echo "Build emailbbb"
 	$(MAKE) -C email-3.1.3
 
