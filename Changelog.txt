@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E2j9527  (14-August-2019) ARM SDK, MIPS,ARM KRACK
+* CHANGED: make: ensure openssl lib link order correct for all components
+* CHANGED: make: update recipes for openssl11 and getdns
+- CHANGED: openssl11: The SHA256 is not a mandatory digest for DSA.
+- CHANGED: openssl11: issue-8998: Ensure that the alert is generated and reaches the remote
+- CHANGED: openssl11: Revert the DEVRANDOM_WAIT feature
+- CHANGED: openssl11: update to 1.1.1c
+
+
 374.43_40E1j9527  (14-August-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: openssl: update to 1.0.2s
 - CHANGED: stubby: update to 0.2.6
