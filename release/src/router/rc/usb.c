@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <proto/ethernet.h>
 #include <time.h>
 #include <sys/time.h>
 #include <errno.h>
@@ -4016,6 +4017,7 @@ void start_wsdd()
 {
 	unsigned char ea[ETHER_ADDR_LEN];
 	char serial[18];
+	int i;
 	pid_t pid;
 	char bootparms[64];
 	char *wsdd_argv[] = { "/usr/sbin/wsdd2",
@@ -4028,11 +4030,17 @@ void start_wsdd()
 				NULL };
 	stop_wsdd();
 
-	if (!ether_atoe(get_lan_hwaddr(), ea))
+	strcpy(serial, nvram_safe_get("lan_hwaddr"));
+	if (strlen(serial)) {
+		for (i = 0; i < strlen(serial); i++)
+			serial[i] = tolower(serial[i]);
+		remove_char(serial, ':'); //remove colons from mac for serial
+	}
+	else {
 		f_read("/dev/urandom", ea, sizeof(ea));
-
-	snprintf(serial, sizeof(serial), "%02x%02x%02x%02x%02x%02x",
-		ea[0], ea[1], ea[2], ea[3], ea[4], ea[5]);
+		snprintf(serial, sizeof(serial), "%02x%02x%02x%02x%02x%02x",
+			ea[0], ea[1], ea[2], ea[3], ea[4], ea[5]);
+	}
 
 	snprintf(bootparms, sizeof(bootparms), "sku:%s,serial:%s", get_productid(), serial);
 	wsdd_argv[6] = bootparms;
