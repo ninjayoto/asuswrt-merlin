@@ -531,6 +531,21 @@ Stubby (DoT) DNSSEC validation
         Notes:                  Allows changing the DNSSEC validator used for DoT.  By default, DoT will use its own DNSSEC validation.
                                   This setting allows the user to force dnsmasq DNSSEC validation for DoT servers.
 ---------------------------------------------------------------------------------------------------------------
+WSD Discovery enable
+
+        Can be set in gui:      No
+        Enable via NVRAM:       nvram set wsdd_enable=x
+                                nvram commit
+                                service restart_samba
+                                  (where x = 0, disable wsdd, x = 1, enable wsdd - default)
+
+
+        Routers Supported:      All
+        Released:               Update-40E3
+        Reboot Required:        No (must restart samba to activate changes)
+        Notes:                  Allows Windows WSD to find samba shares on the router if Windows SMB1 is disabled.
+---------------------------------------------------------------------------------------------------------------
+
 
 Disabling the special options:
 

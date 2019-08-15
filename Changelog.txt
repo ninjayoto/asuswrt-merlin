@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E3j9527  (16-August-2019) ARM SDK, MIPS,ARM KRACK
+- NEW: wsdd: (backport) add support for windows ws device discovery
+* CHANGED: wsdd: work around function differences in merlin vs fork
+* CHANGED: wsdd: add nvram wsdd_enable
+- CHANGED: shared: update ifaddrs.c to 384.13
+- CHANGED: kernel: (backport) fix squashfs false-positive decode error
+- CHANGED: kernel 2.6.36: (backport) improve sack handling and resource usage
+
+
 374.43_40E2j9527  (14-August-2019) ARM SDK, MIPS,ARM KRACK
 * CHANGED: make: ensure openssl lib link order correct for all components
 * CHANGED: make: update recipes for openssl11 and getdns
