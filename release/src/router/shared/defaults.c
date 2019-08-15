@@ -1262,6 +1262,7 @@ struct nvram_tuple router_defaults[] = {
 #else
 	{ "smbd_buffers", "1"},
 #endif
+	{ "wsdd_enable", "1"},		/* WSD Discovery Name Service daemon */
 
 #ifdef RTCONFIG_NFS
 	{ "nfsd_enable", "0"},

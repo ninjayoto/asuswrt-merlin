@@ -2117,9 +2117,10 @@ _dprintf("%s: cmd=%s.\n", __FUNCTION__, cmd);
 #endif
 		xstart(smbd_cmd, "-D", "-s", "/etc/smb.conf");
 
-	start_wsdd();
-
 	logmessage("Samba Server", "daemon is started");
+
+	/* Start wsdd2 */
+	start_wsdd();
 
 	return;
 }
@@ -2131,7 +2132,9 @@ void stop_samba(void)
 		return;
 	}
 
+	/* Stop wsdd2 */
 	stop_wsdd();
+
 	kill_samba(SIGTERM);
 	/* clean up */
 	unlink("/var/log/smb");
@@ -4028,6 +4031,10 @@ void start_wsdd()
 				"-b",
 				NULL,	// boot parameters
 				NULL };
+
+	if (!nvram_get_int("wsdd_enable"))
+		return;
+
 	stop_wsdd();
 
 	strcpy(serial, nvram_safe_get("lan_hwaddr"));
@@ -4051,11 +4058,19 @@ void start_wsdd()
 #endif
 
 	_eval(wsdd_argv, NULL, 0, &pid);
+
+	logmessage("WSD Discovery Server", "daemon is started");
+
+	return;
 }
 
 void stop_wsdd() {
-	if (pids("wsdd2"))
+	if (pids("wsdd2")) {
 		killall_tk("wsdd2");
+
+		logmessage("WSD Discovery Server", "daemon is stopped");
+	}
+	return;
 }
 
 #endif
