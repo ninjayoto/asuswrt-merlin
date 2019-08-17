@@ -4,6 +4,15 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E4j9527  (17-August-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: gencert: (backport) replace deprecated genrsa command with genpkey
+- CHANGED: rc: (backport) add service-event-end custom script support
+- CHANGED: iptables: (backport) fix handling IPCMv6 reject --with-tcp-reset
+- CHANGED: miniupnpd: (backport) fix ssdp notify on wrong interfaces
+- CHANGED: rc: firewall: (backport) define VUPNP and PUPNP chains in repeater nat_settings
+- CHANGED: sqlite3: (backport) add sqlite3 CLI command to firmware
+
+
 374.43_40E3j9527  (16-August-2019) ARM SDK, MIPS,ARM KRACK
 - NEW: wsdd: (backport) add support for windows ws device discovery
 * CHANGED: wsdd: work around function differences in merlin vs fork
