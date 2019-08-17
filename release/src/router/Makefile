@@ -2407,7 +2407,8 @@ sqlite-clean:
 
 sqlite-install: sqlite
 	@$(SEP)
-
+	install -D sqlite/.libs/sqlite3 $(INSTALLDIR)/sqlite/usr/sbin/sqlite3
+	$(STRIP) $(INSTALLDIR)/sqlite/usr/sbin/sqlite3
 # commented out for mt-daapd-svn-1696
 ifneq ($(MEDIA_SERVER_STATIC),y)
 	install -D sqlite/.libs/libsqlite3.so.0 $(INSTALLDIR)/sqlite/usr/lib/libsqlite3.so.0
