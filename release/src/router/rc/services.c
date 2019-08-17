@@ -6367,6 +6367,8 @@ _dprintf("test 2. turn off the USB power during %d seconds.\n", reset_seconds[re
                                         script);
 	}
 
+	run_custom_script_blocking("service-event-end", actionstr, script);
+
 	if(nvptr){
 _dprintf("goto again(%d)...\n", getpid());
 		goto again;
