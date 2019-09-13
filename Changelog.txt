@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E5j9527  (13-September-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: webui: (backport) update OUI database to 2018-08-17 version
+- CHANGED: httpd: (backport) add "TLS Web Server Authentication" to certificate's extended attributes
+- CHANGED: curl: (backport) update to 7.65.3
+* CHANGED: dnsmasq: update to e24abf2 snapshot
+
+
 374.43_40E4j9527  (17-August-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: gencert: (backport) replace deprecated genrsa command with genpkey
 - CHANGED: rc: (backport) add service-event-end custom script support
