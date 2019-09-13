@@ -21,11 +21,15 @@ echo "$I.organizationName_value=$(uname -o)" >> /etc/openssl.config
 for CN in $NVCN; do
         echo "$I.commonName=CN" >> /etc/openssl.config
         echo "$I.commonName_value=$CN" >> /etc/openssl.config
+		echo "$I.emailAddress=E" >> /etc/openssl.config
+		echo "$I.emailAddress_value=root@localhost" >> /etc/openssl.config
         I=$(($I + 1))
 done
 IFS=$OLDIFS
 
 pc_insert "[ CA_default ]" "copy_extensions = copy" /etc/openssl.config
+# Required extension
+pc_insert "[ v3_ca ]" "extendedKeyUsage = serverAuth" /etc/openssl.config
 pc_insert "[ v3_ca ]" "subjectAltName = @alt_names" /etc/openssl.config
 #pc_insert "[ v3_ca ]" "certificatePolicies = 2.5.29.32.0" /etc/openssl.config
 pc_insert "[ v3_req ]" "subjectAltName = @alt_names" /etc/openssl.config
