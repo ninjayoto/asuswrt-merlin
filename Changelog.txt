@@ -4,6 +4,13 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E6j9527  (13-September-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: miniupnpd: updated to 20190604 (git 765156b)
+- CHANGED: nano: update to 4.2
+- CHANGED: httpd: (backport) fix out-of-bounds read in handle_request()
+- CHANGED: kernel-arm: tcp: (backport) refine memory limit test in tcp_fragment()
+
+
 374.43_40E5j9527  (13-September-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: webui: (backport) update OUI database to 2018-08-17 version
 - CHANGED: httpd: (backport) add "TLS Web Server Authentication" to certificate's extended attributes
