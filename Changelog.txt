@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E7j9527  (9-October-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: openssl11: update to 1.1.1d
+- CHANGED: ssl: update root certificates to October 9th 2019 version
+* CHANGED: openssl: update to 1.0.2t
+
+
 374.43_40E6j9527  (13-September-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: miniupnpd: updated to 20190604 (git 765156b)
 - CHANGED: nano: update to 4.2
