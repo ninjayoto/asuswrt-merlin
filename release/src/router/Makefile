@@ -3137,9 +3137,9 @@ curl/Makefile: curl/configure
 
 curl-install: curl
 	@$(SEP)
-	install -D curl/lib/.libs/libcurl.so.4.5.0 $(INSTALLDIR)/curl/usr/lib/libcurl.so.4.5.0
-	$(STRIP) $(INSTALLDIR)/curl/usr/lib/libcurl.so.4.5.0
-	cd $(INSTALLDIR)/curl/usr/lib && ln -sf libcurl.so.4.5.0 libcurl.so && ln -sf libcurl.so.4.5.0 libcurl.so.4
+	install -D curl/lib/.libs/libcurl.so.4.6.0 $(INSTALLDIR)/curl/usr/lib/libcurl.so.4.6.0
+	$(STRIP) $(INSTALLDIR)/curl/usr/lib/libcurl.so.4.6.0
+	cd $(INSTALLDIR)/curl/usr/lib && ln -sf libcurl.so.4.6.0 libcurl.so && ln -sf libcurl.so.4.6.0 libcurl.so.4
 	install -D curl/src/.libs/curl $(INSTALLDIR)/curl/usr/sbin/curl
 	$(STRIP) $(INSTALLDIR)/curl/usr/sbin/curl
 
