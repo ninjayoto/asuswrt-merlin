@@ -774,6 +774,9 @@ struct nvram_tuple router_defaults[] = {
 	{ "stubby_dnssec", "0" },			// 1-use dnsmasq for stubby dnssec validation
 #endif
 
+	// Override client DoH
+	{ "dns_priv_override", "0"},		// Override DoH - 0: auto, 1: yes, 2: disable
+
 #ifdef RTCONFIG_BCMARM
 	{ "allow_routelocal", "1" },		// allow routing to localhost for ARM
 #else

@@ -144,11 +144,17 @@ helpcontent[7] = new Array("",
 							 "Enables DoT DNS Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
 							 "Exclude DoT DNS Servers which maintain logs from selection.",
 /* STUBBY-END */
-							 "Enabling this will protect your LAN against DNS rebind attacks, however it will prevent upstream DNS servers from resolving queries to any non-routable IP (for example, 192.168.1.1).",
+							 "Enabling this will protect your LAN against DNS rebind attacks, however it will prevent upstream DNS servers from resolving queries to any non-routable IP (for example, 192.168.1.1).", //35
 							 "Enables DNS over TLS (DoT) Servers.  These servers will become the primary DNS servers for the system, replacing previously specified WAN DNS servers.",
 							 "Exclude DoT DNS Servers which maintain logs from selection.",
 							 "Automatically adds available IPv6 DoT servers",
-							 "When ordered access is selected, the DoT servers will be queried in the order they are selected.");
+							 "When ordered access is selected, the DoT servers will be queried in the order they are selected.",
+/* DNSCRYPT-BEGIN */
+							 "Some clients like Firefox will automatically switch to DNS over HTTPS, bypassing your preferred DNS servers.  This option may prevent that.  If set to Auto (the default), it will only prevent it if either DNSCrypt or DNSFilter in global mode are enabled.");
+/* DNSCRYPT-END */
+/* STUBBY-BEGIN */
+							 "Some clients like Firefox will automatically switch to DNS over HTTPS, bypassing your preferred DNS servers.  This option may prevent that.  If set to Auto (the default), it will only prevent it if either DNS over TLS (DoT) or DNSFilter in global mode are enabled.");
+/* STUBBY-END */
 //Firewall
 helpcontent[8] = new Array("",
 						   "<#FirewallConfig_WanLanLog_itemdesc#>",

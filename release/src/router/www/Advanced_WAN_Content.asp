@@ -1430,6 +1430,14 @@ function pass_checked(obj){
 					<input type="radio" value="0" name="dns_norebind" <% nvram_match("dns_norebind", "0", "checked"); %> /><#checkbox_No#>
 				</td>
 			</tr>
+			<tr id="dns_priv_override_tr">
+				<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(7,40);">Prevent client auto DoH</a></th>
+				<td colspan="2" style="text-align:left;">
+					<input type="radio" value="0" name="dns_priv_override" <% nvram_match("dns_priv_override", "0", "checked"); %> />Auto
+					<input type="radio" value="1" name="dns_priv_override" <% nvram_match("dns_priv_override", "1", "checked"); %> /><#checkbox_Yes#>
+					<input type="radio" value="2" name="dns_priv_override" <% nvram_match("dns_priv_override", "2", "checked"); %> /><#checkbox_No#>
+				</td>
+			</tr>
         		</table>
 
 		  			<table id="PPPsetting" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">

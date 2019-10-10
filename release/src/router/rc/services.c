@@ -947,6 +947,23 @@ void start_dnsmasq(int force)
 #endif
 	}
 
+	/* Instruct clients like Firefox to not auto-enable DoH */
+	n = nvram_get_int("dns_priv_override");
+	if ((n == 1) ||
+	    (n == 0 && (
+#ifdef RTCONFIG_DNSCRYPT
+	       nvram_get_int("dnscrypt_proxy") ||
+#endif
+#ifdef RTCONFIG_STUBBY
+	       nvram_get_int("stubby_proxy") ||
+#endif
+	       (nvram_get_int("dnsfilter_enable_x") && nvram_get_int("dnsfilter_mode")) )	// DNSFilter enabled in Global mode
+	    )
+	) {
+
+		fprintf(fp, "address=/use-application-dns.net/\n");
+	}
+
 	/* Protect against VU#598349 */
 	fprintf(fp,"dhcp-name-match=set:wpad-ignore,wpad\n"
 		   "dhcp-ignore-names=tag:wpad-ignore\n");
