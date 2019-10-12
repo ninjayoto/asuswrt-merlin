@@ -1199,7 +1199,7 @@ void start_vpnserver(int serverNum)
 		sprintf(nv1, "vpn_crt_server%d_ca", serverNum);
 		sprintf(nv2, "vpn_crt_server%d_key", serverNum);
 		sprintf(nv3, "vpn_crt_server%d_crt", serverNum);
-		if( ovpn_crt_is_empty(nv1) || ovpn_crt_is_empty(nv2) || ovpn_crt_is_empty(nv3) ) {
+		if( ovpn_crt_is_empty(nv1) ) {
 			sprintf(fpath, "/tmp/genvpncert.sh");
 			fp = fopen(fpath, "w");
 			if(fp) {
