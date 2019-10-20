@@ -4,6 +4,12 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40E9j9527  (20-October-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: rc: openvpn: (backport) only re-generate server CA if it's missing, ignore server key/cert
+- FIXED: httpd: (backport) fix incorrect mimetype for wcdma_list.js and help_content.js
+- FIXED: openvpn: (backport) properly extract instance number in updown script
+
+
 374.43_40E8j9527  (9-October-2019) ARM SDK, MIPS,ARM KRACK
 - NEW: dns: (backport) implement option to prevent Firefox's automatic usage of DoH
 - CHANGED: nano: update to 4.4
