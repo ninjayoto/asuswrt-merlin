@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40EAj9527  (11-November-2019) ARM SDK, MIPS,ARM KRACK
+- CHANGED: openvpn: update to 2.4.8
+- FIXED: webui: allow empty local IP for IPv6 firewall rule
+
+
 374.43_40E9j9527  (20-October-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: rc: openvpn: (backport) only re-generate server CA if it's missing, ignore server key/cert
 - FIXED: httpd: (backport) fix incorrect mimetype for wcdma_list.js and help_content.js
