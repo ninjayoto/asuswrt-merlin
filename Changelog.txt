@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40ECj9527  (12-December-2019) ARM SDK, MIPS,ARM KRACK
+* FIXED: https:  workaround for logon failure in chrome browser
+
+
 374.43_40EBj9527  (21-November-2019) ARM SDK, MIPS,ARM KRACK
 - CHANGED: dnsmasq: update to 2.80-g456a319
 
