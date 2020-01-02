@@ -3,7 +3,7 @@
 
 DEV=$1
 max_instance=2
-servers="stun.l.google.com:19302 stun.stunprotocol.org stun.iptel.org default"
+servers="stun.l.google.com:19302 stun.stunprotocol.org default"
 
 if [ "$DEV" == "-h" ]
 then
@@ -17,7 +17,7 @@ fi
 if [ ${#DEV} -eq 1 ] # instance specified
 then
 	if [ "${DEV}" == "0" ]; then DEV=$(nvram get wan0_ifname); else DEV="tun1${DEV}"; fi
-fi 
+fi
 INSTANCE="${DEV:$((${#DEV}-1)):1}"
 if [ "${DEV:0:3}" == "tun" -a $INSTANCE -gt $max_instance ]
 then
