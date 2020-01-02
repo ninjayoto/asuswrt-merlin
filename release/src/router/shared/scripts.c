@@ -91,6 +91,10 @@ void run_custom_script_blocking(char *name, char *arg1, char *arg2)
 {
 	struct stat sb;
 	char script[120];
+    char *cmd[4];
+	int pid;
+    int timeout = 120;
+	char *error;    
 
 	snprintf(script, sizeof(script), "/jffs/scripts/%s", name);
 
@@ -107,7 +111,12 @@ void run_custom_script_blocking(char *name, char *arg1, char *arg2)
 			logmessage("custom_script" ,"Running %s (args: %s %s)", script, arg1, (arg2 ? arg2 : ""));
 		else
 			logmessage("custom_script" ,"Running %s", script);
-		eval(script, arg1, arg2);
+
+        cmd[0] = script;
+		cmd[1] = arg1;
+		cmd[2] = arg2;
+		cmd[3] = NULL;
+		_eval( cmd, NULL, timeout, (timeout ? NULL : &pid));
 	}
 
 }
