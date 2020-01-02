@@ -3,7 +3,7 @@ include ../common.mak
 CFLAGS += -O3 -Wall $(EXTRACFLAGS)
 CFLAGS += -I$(SRCBASE) -I$(SRCBASE)/include -I. -I$(TOP)/shared -I$(TOP)/zlib
 CFLAGS += -I$(TOP)/push_log
-CFLAGS += -DASUS_DDNS -DTRANSLATE_ON_FLY -DFLASH_EMULATOR -DLinux -DWSC 
+CFLAGS += -DASUS_DDNS -DTRANSLATE_ON_FLY -DFLASH_EMULATOR -DLinux -DWSC
 
 ifeq ($(RTCONFIG_RALINK),y)
 CFLAGS += -DRalink_WPS
@@ -37,15 +37,15 @@ CFLAGS += -I$(TOP)/mssl
 endif
 
 ifeq ($(RTCONFIG_USB),y)
-CFLAGS += -I$(TOP)/libdisk	
+CFLAGS += -I$(TOP)/libdisk
 endif
 
 ifeq ($(RTCONFIG_DNSMASQ),y)
 CFLAGS += -DDNSMASQ
 endif
 
-OBJS = httpd.o cgi.o ej.o 
-OBJS += web.o common.o nvram_f.o 
+OBJS = httpd.o cgi.o ej.o
+OBJS += web.o common.o nvram_f.o
 OBJS += aspbw.o initial_web_hook.o
 OBJS += apps.o
 OBJS += sysinfo.o data_arrays.o
@@ -103,6 +103,10 @@ ifeq ($(RTCONFIG_OPENVPN),y)
 OBJS += openvpn_options.o
 LIBS += -L$(TOP)/openssl -lssl -lcrypto
 endif
+
+#add json support
+CFLAGS += -I$(TOP)/json-c
+LIBS += -L$(TOP)/json-c/.libs -ljson-c
 
 export CFLAGS
 ifeq ($(RTCONFIG_QTN),y)

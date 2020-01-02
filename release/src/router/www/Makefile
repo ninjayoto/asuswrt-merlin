@@ -15,7 +15,7 @@ install:
 	cp ../www $(INSTALLDIR)/. -rf
 	# INSTALL MODEL DEPENDENT files
 	cp ../www/sysdep/$(BUILD_NAME)/www $(INSTALLDIR)/. -rfL || true
-ifeq ($(RTN14U),y)   
+ifeq ($(RTN14U),y)
 	### patch file
 	./model_patch $(INSTALLDIR)/www ../www/sysdep/$(BUILD_NAME)_patch/www || true
 endif
@@ -244,9 +244,9 @@ ifneq ($(RTCONFIG_ACCEL_PPTPD), y)
 	rm -rf $(INSTALLDIR)/www/Advanced_VPN_Content.asp
 endif
 endif
-ifneq ($(RTCONFIG_VPNC), y)	
+ifneq ($(RTCONFIG_VPNC), y)
 	rm -rf $(INSTALLDIR)/www/Advanced_VPNClient_Content.asp
-endif	
+endif
 ifneq ($(RTCONFIG_TIMEMACHINE),y)
 	rm -rf $(INSTALLDIR)/www/Advanced_TimeMachine.asp
 	rm -rf $(INSTALLDIR)/www/images/New_ui/USBExt/time_machine_banner.png
@@ -293,3 +293,14 @@ endif
 		|| true; \
 	done
 
+# mountpoints for user-provided webui pages
+	ln -sf user/user1.asp $(INSTALLDIR)/www/user1.asp
+	ln -sf user/user2.asp $(INSTALLDIR)/www/user2.asp
+	ln -sf user/user3.asp $(INSTALLDIR)/www/user3.asp
+	ln -sf user/user4.asp $(INSTALLDIR)/www/user4.asp
+	ln -sf user/user5.asp $(INSTALLDIR)/www/user5.asp
+	ln -sf user/user6.asp $(INSTALLDIR)/www/user6.asp
+	ln -sf user/user7.asp $(INSTALLDIR)/www/user7.asp
+	ln -sf user/user8.asp $(INSTALLDIR)/www/user8.asp
+	ln -sf user/user9.asp $(INSTALLDIR)/www/user9.asp
+	ln -sf user/user10.asp $(INSTALLDIR)/www/user10.asp

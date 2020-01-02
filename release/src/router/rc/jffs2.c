@@ -171,6 +171,7 @@ _dprintf("*** jffs2: %d, %d\n", part, size);
 
 	if (!check_if_dir_exist("/jffs/scripts/")) mkdir("/jffs/scripts/", 0755);
 	if (!check_if_dir_exist("/jffs/configs/")) mkdir("/jffs/configs/", 0755);
+    if (!check_if_dir_exist("/jffs/addons/")) mkdir("/jffs/addons/", 0755);
 
 }
 

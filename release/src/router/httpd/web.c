@@ -1601,6 +1601,13 @@ static int validate_apply(webs_t wp) {
 				nvram_modified = 1;
 				_dprintf("set %s=%s\n", name, tmp);
 			}
+
+			else if(!strcmp(name, "amng_custom")) {
+				write_custom_settings(value);
+				_dprintf("set amng_custom to %s\n", value);
+				nvram_modified = 1;
+			}
+
 #ifdef RTCONFIG_DISK_MONITOR
 			else if(!strncmp(name, "diskmon_", 8) && unit != -1) {
 				snprintf(prefix, sizeof(prefix), "usb_path%d_diskmon_", unit);
@@ -9649,6 +9656,7 @@ struct ej_handler ej_handlers[] = {
 	{ "get_tcclass_array", ej_tcclass_dump_array},
 	{ "get_resolver_array", ej_resolver_dump_array},
 	{ "get_stubby_array", ej_stubby_dump_array},
+    { "get_custom_settings", ej_get_custom_settings},
 
 	{ "iptraffic", ej_iptraffic},
 	{ "iptmon", ej_iptmon},

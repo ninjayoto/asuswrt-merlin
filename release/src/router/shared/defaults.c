@@ -42,6 +42,7 @@ struct nvram_tuple router_defaults[] = {
 
 	/* WebUI parameters */
 	{ "showloading_x", "0" },		//dummy var to force progress bar
+    { "amng_custom", "" },          //dummy var for user added web pages
 
 	// NVRAM for switch	
 	{ "switch_stb_x", "0"}, 		// oleg patch
