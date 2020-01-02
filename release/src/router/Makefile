@@ -164,6 +164,7 @@ endif
 obj-y += others
 obj-y += busybox
 obj-y += httpd
+obj-y += json-c
 obj-y += www
 obj-y += bridge
 ifeq ($(RTCONFIG_DNSMASQ),y)
@@ -1098,7 +1099,7 @@ infosvr: shared nvram$(BCMEX)
 
 libdisk: shared nvram$(BCMEX)
 
-httpd: shared nvram$(BCMEX) libdisk $(if $(RTCONFIG_HTTPS),mssl) $(PUSH_LOG)
+httpd: shared nvram$(BCMEX) libdisk json-c $(if $(RTCONFIG_HTTPS),mssl) $(PUSH_LOG)
 	@$(SEP)
 	@$(MAKE) -C httpd
 
@@ -3595,6 +3596,28 @@ wsdd2-install:
 
 wsdd2-clean:
 	$(MAKE) -C wsdd2 clean
+
+json-c/stamp-h1:
+	cd $(TOP)/json-c && \
+	$(CONFIGURE) --prefix=/usr --enable-shared --disable-static \
+	ac_cv_func_realloc_0_nonnull=yes ac_cv_func_malloc_0_nonnull=yes \
+	CFLAGS="-Os -Wno-error $(EXTRACFLAGS)" \
+	LDFLAGS="$(EXTRALDFLAGS) -Wl,--as-needed -lm"
+	touch $@
+
+json-c: json-c/stamp-h1
+	$(MAKE) -C $@ && $(MAKE) $@-stage
+
+json-c-install:
+	install -D json-c/.libs/libjson-c.so.2.0.2 $(INSTALLDIR)/json-c/usr/lib/libjson-c.so.2.0.2
+	$(STRIP) $(INSTALLDIR)/json-c/usr/lib/libjson-c.so.2.0.2
+	cd $(INSTALLDIR)/json-c/usr/lib && \
+		ln -sf libjson-c.so.2.0.2 libjson-c.so && \
+		ln -sf libjson-c.so.2.0.2 libjson-c.so.2
+
+json-c-clean:
+	-@[ ! -f json-c/Makefile ] || $(MAKE) -C json-c clean
+	-@rm -f json-c/stamp-h1
 
 tftp:
 	cd tftp-1.0 && CC=$(CC) && $(MAKE)
