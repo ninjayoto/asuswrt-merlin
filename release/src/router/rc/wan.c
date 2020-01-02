@@ -810,8 +810,12 @@ int enable_qos()
 void update_wan_state(char *prefix, int state, int reason)
 {
 	char tmp[100], tmp1[100], *ptr;
+    int unit = -1;
 
 	_dprintf("%s(%s, %d, %d)\n", __FUNCTION__, prefix, state, reason);
+
+    if (strncmp(prefix, "wan", 3) == 0)
+		unit = atoi(prefix + 3);
 
 	nvram_set_int(strcat_r(prefix, "state_t", tmp), state);
 	nvram_set_int(strcat_r(prefix, "sbstate_t", tmp), 0);
@@ -877,10 +881,44 @@ void update_wan_state(char *prefix, int state, int reason)
 	else if(state == WAN_STATE_STOPPING){
 		unlink("/tmp/wanstatus.log");
 	}
-        else if (state == WAN_STATE_CONNECTED) {
+
+	sprintf(tmp,"%d", unit);
+	sprintf(tmp1,"%d", state);
+
+	switch (state) {
+	case WAN_STATE_INITIALIZING:
+		strcpy(tmp1, "init");
+		break;
+	case WAN_STATE_CONNECTING:
+		strcpy(tmp1, "connecting");
+		break;
+	case WAN_STATE_CONNECTED:
+		strcpy(tmp1, "connected");
+		break;
+	case WAN_STATE_DISCONNECTED:
+		strcpy(tmp1, "disconnected");
+		break;
+	case WAN_STATE_STOPPED:
+		strcpy(tmp1, "stopped");
+		break;
+	case WAN_STATE_DISABLED:
+		strcpy(tmp1, "disabled");
+		break;
+	case WAN_STATE_STOPPING:
+		strcpy(tmp1, "stopping");
+		break;
+	default:
+		sprintf(tmp1, "state %d", state);
+	}
+
+	run_custom_script_blocking("wan-event", tmp, tmp1);
+
+	/* For backward/legacy compatibility */
+	if (state == WAN_STATE_CONNECTED) {
 		sprintf(tmp,"%c",prefix[3]);
-                run_custom_script("wan-start", tmp);
-        }
+		run_custom_script("wan-start", tmp);
+	}
+
 }
 
 #ifdef RTCONFIG_IPV6
