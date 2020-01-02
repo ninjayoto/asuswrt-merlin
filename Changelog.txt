@@ -4,6 +4,17 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_40EDj9527  (02-Janary-2020) ARM SDK, MIPS,ARM KRACK
+- CHANGED: updown: (backport) do not run openvpn-event if custom scripts are disabled
+- CHANGED: rc: (backport) implement wan-event
+- CHANGED: others: update stun servers used by getextip.sh
+- CHANGED: curl: update to 7.67.0; fix build with CURL_DISABLE_DOH
+- CHANGED: wsdd2: only retrieve missing parameters from smb.conf, in case one was already provided at runtime
+- CHANGED: wsdd2: implement -N and -G parameters from upstream
+- CHANGED: wsdd2: fix listening on dynamic interfaces
+* CHANGED: shared: add 120sec timeout when running blocking scripts
+
+
 374.43_40ECj9527  (12-December-2019) ARM SDK, MIPS,ARM KRACK
 * FIXED: https:  workaround for logon failure in chrome browser
 
