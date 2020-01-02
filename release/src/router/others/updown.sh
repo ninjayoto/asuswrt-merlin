@@ -256,8 +256,13 @@ rmdir /etc/openvpn
 
 if [ -f /jffs/scripts/openvpn-event ]
 then
-	logger -t "custom_script" "Running /jffs/scripts/openvpn-event (args: $*)"
-	sh /jffs/scripts/openvpn-event $*
+    if [ "$(nvram get jffs2_scripts)" = "0" ]
+		then
+            logger -t "custom_script" "Found openvpn-event, but custom script execution is disabled!"
+		else
+            logger -t "custom_script" "Running /jffs/scripts/openvpn-event (args: $*)"
+            sh /jffs/scripts/openvpn-event $*
+    fi
 fi
 
 exit 0
