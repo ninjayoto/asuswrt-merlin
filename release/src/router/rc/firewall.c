@@ -5250,9 +5250,8 @@ void ntpdfilter_settings(FILE *fp, char *lan_ip) {
 		/* Reroute all NTP requests from LAN */
 		ip2class(lan_ip, nvram_safe_get("lan_netmask"), lan_class);
 		fprintf(fp,
-			"-A PREROUTING -s %s -p udp -m udp --dport 123 -j DNAT --to-destination %s\n"
-			"-A PREROUTING -s %s -p tcp -m tcp --dport 123 -j DNAT --to-destination %s\n",
-			lan_class, lan_ip, lan_class, lan_ip);
+			"-A PREROUTING -s %s -p udp -m udp --dport 123 -j DNAT --to-destination %s\n",
+			lan_class, lan_ip);
 	}
 }
 
@@ -5264,7 +5263,6 @@ void ntpdfilter6_settings() {
 
 	if (nvram_get_int("ntpd_server") && nvram_get_int("ntpdfilter_enable")) {
 		eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-p", "udp", "--dport", "123", "-j", "DROP");
-		eval("ip6tables", "-t", "mangle", "-A", "PREROUTING", "-p", "tcp", "--dport", "123", "-j", "DROP");
 	}
 }
 #endif	// RTCONFIG_IPV6
