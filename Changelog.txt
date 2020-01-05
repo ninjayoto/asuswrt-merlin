@@ -4,6 +4,25 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41E3j9527  (07-Janary-2020) ARM SDK, MIPS,ARM KRACK
+- CHANGED: openssl: openssl11: change directory naming conventions
+- CHANGED: openvpn: add errno status reporting
+* CHANGED: openvpn: update build recipe
+* CHANGED: easyrsa: add default openssl.cnf
+* FIXED: stubby: re-add getaddrinfo workaround for MIPS dropped in last release
+* FIXED: www: fix initialization of openvpn client dns privacy option
+
+
+374.43_41D2j9527  (05-Janary-2020) ARM SDK, MIPS,ARM KRACK
+* CHANGED: openssl: update to 1.0.2u
+
+
+374.43_41D1j9527  (02-Janary-2020) ARM SDK, MIPS,ARM KRACK
+- NEW: webui: (backport) add support for user-provided webui pages
+- NEW: webui: (backport) add support for jsonc
+- CHANGED: rc: (backport) only intercept udp requests to port 123, ntpd does not listen to tcp
+
+
 374.43_40EDj9527  (02-Janary-2020) ARM SDK, MIPS,ARM KRACK
 - CHANGED: updown: (backport) do not run openvpn-event if custom scripts are disabled
 - CHANGED: rc: (backport) implement wan-event
