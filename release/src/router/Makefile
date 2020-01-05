@@ -1594,7 +1594,7 @@ miniupnpc-install:
 # !!TB
 shared: $(if $(RTCONFIG_QTN),libqcsapi_client) $(if $(RTCONFIG_HTTPS),openssl)
 ifeq ($(RTCONFIG_RALINK),y)
-	make -C wireless_tools wireless.h	
+	make -C wireless_tools wireless.h
 endif
 	$(MAKE) -C shared
 
@@ -1630,7 +1630,7 @@ ntfs-3g/stamp-h1:
 	touch $@
 
 ntfs-3g: ntfs-3g/stamp-h1
-	@$(MAKE) -C ntfs-3g 
+	@$(MAKE) -C ntfs-3g
 
 ntfs-3g-clean:
 	-@$(MAKE) -C ntfs-3g clean
@@ -1961,7 +1961,7 @@ dhcpv6-install: dhcpv6
 
 dhcpv6-clean:
 	-@$(MAKE) -C dhcpv6 clean
-	@rm -f dhcpv6/stamp-h1 
+	@rm -f dhcpv6/stamp-h1
 
 ecmh/stamp-h1:
 	@touch ecmh/src/stamp-h1
@@ -2325,7 +2325,7 @@ iperf-clean:
 iproute2:
 	@$(SEP)
 	@$(MAKE) -C $@ KERNEL_INCLUDE=$(LINUXDIR)/include EXTRACFLAGS="$(EXTRACFLAGS) $(if $(RTCONFIG_IPV6),-DUSE_IPV6,-DNO_IPV6)" $(PARALLEL_BUILD)
-	
+
 iproute2-install: iproute2
 	install -D iproute2/tc/tc $(INSTALLDIR)/iproute2/usr/sbin/tc
 	$(STRIP) $(INSTALLDIR)/iproute2/usr/sbin/tc
@@ -2632,7 +2632,7 @@ minidlna: zlib sqlite ffmpeg libogg flac jpeg libexif libid3tag libvorbis
 	@cd minidlna && ./genosver.sh
 	@$(MAKE) -C minidlna CC=$(CC) $(if $(MEDIA_SERVER_STATIC),STATIC=1,) minidlna $(PARALLEL_BUILD)
 
-libgdbm/stamp-h1: 
+libgdbm/stamp-h1:
 	cd libgdbm && \
 	CFLAGS="-Os -Wall $(EXTRACFLAGS) -fPIC -ffunction-sections -fdata-sections" \
 	CPPFLAGS="-I$(TOP)/zlib" \
@@ -2641,7 +2641,7 @@ libgdbm/stamp-h1:
 	touch $@
 
 libgdbm: libgdbm/stamp-h1
-	@$(MAKE) -C libgdbm 
+	@$(MAKE) -C libgdbm
 
 libgdbm-clean:
 	-@$(MAKE) -C libgdbm clean
@@ -2690,7 +2690,7 @@ mt-daapd-svn-1696-install:
 	install -D mt-daapd-svn-1696/src/.libs/mt-daapd $(INSTALLDIR)/mt-daapd-svn-1696/usr/sbin/mt-daapd
 	$(STRIP) $(INSTALLDIR)/mt-daapd-svn-1696/usr/sbin/mt-daapd
 
-mDNSResponder: 
+mDNSResponder:
 	@$(SEP)
 	@$(MAKE) -C mDNSResponder CC=$(CC) all $(PARALLEL_BUILD)
 
@@ -2848,7 +2848,10 @@ openpam-clean:
 	[ ! -f openpam/Makefile ] || $(MAKE) -C openpam distclean
 	@rm -f openpam/Makefile
 
-openvpn/stamp-h1:
+openvpn: shared nvram lzo zlib openssl openpam openvpn/Makefile
+	$(MAKE) -C $@ $(PARALLEL_BUILD)
+
+openvpn/Makefile:
 	cd openvpn && ./autogen.sh && \
 	export OPENSSL_CFLAGS="-I$(TOP)/openssl"; \
 	export OPENSSL_LIBS="-L$(TOP)/openssl -lssl -lcrypto"; \
@@ -2862,12 +2865,9 @@ openvpn/stamp-h1:
 	ac_cv_lib_resolv_gethostbyname=no
 	touch $@
 
-openvpn: openvpn/stamp-h1 shared nvram lzo zlib openssl openpam
-	$(MAKE) -C $@
-
 openvpn-clean:
 	@[ ! -f openvpn/Makefile ] || $(MAKE) -C openvpn clean
-	@rm -f openvpn/stamp-h1
+	@rm -f openvpn/Makefile
 
 openvpn-install: openvpn
 	install -D openvpn/src/openvpn/.libs/openvpn $(INSTALLDIR)/openvpn/usr/sbin/openvpn
@@ -3057,9 +3057,9 @@ libxml2: libxml2/stamp-h1
 libxml2-install: libxml2
 	@$(SEP)
 	install -D libxml2/.libs/libxml2.so.2 $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2
-	$(STRIP) $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2 
+	$(STRIP) $(INSTALLDIR)/libxml2/usr/lib/libxml2.so.2
 	cd $(INSTALLDIR)/libxml2/usr/lib && ln -sf libxml2.so.2 libxml2.so
-	
+
 libxml2-clean:
 	-@$(MAKE) -C libxml2 clean
 	@rm -f libxml2/stamp-h1
@@ -3087,8 +3087,8 @@ libiconv-1.14-clean:
 	-@$(MAKE) -C libiconv-1.14 clean
 	@rm -f libiconv-1.14/stamp-h1
 
-#add by alan 
-#add install neon 
+#add by alan
+#add install neon
 neon/stamp-h1 neon/config.h:
 	cd neon && \
 	$(CONFIGURE) CC=$(CC) --enable-shared --disable-static --disable-nls --with-zlib --with-ssl=openssl --with-libs=$(TOP)/openssl:$(TOP)/libxml2 CFLAGS='-I$(TOP)/zlib -I$(TOP)/libxml2/include -I$(TOP)/openssl/include' LDFLAGS='-L$(TOP)/libxml2/.libs -L$(TOP)/openssl -L$(TOP)/zlib' LIBS='-lxml2 -lssl -lcrypto -lz' XML2_CONFIG='$(TOP)/libxml2/xml2-config'
@@ -3109,7 +3109,7 @@ neon-clean:
 	@rm -f neon/stamp-h1
 
 #webdav_client
-webdav_client$(BCMEX): 
+webdav_client$(BCMEX):
 	@$(MAKE) -C webdav_client$(BCMEX)
 
 webdav_client$(BCMEX)-install: webdav_client$(BCMEX)
@@ -3161,7 +3161,7 @@ asuswebstorage$(BCMEX)-clean:
 	-@$(MAKE) -C asuswebstorage$(BCMEX) clean
 
 #inotify
-inotify: 
+inotify:
 	@$(MAKE) -C inotify
 
 inotify-install: inotify
@@ -3174,7 +3174,7 @@ inotify-clean:
 
 wl$(BCMEX):
 	-@$(MAKE) -C wl_arm
-	
+
 wl$(BCMEX)-install:
 	@$(SEP)
 
@@ -3258,7 +3258,7 @@ db-4.8.30-install: db-4.8.30
 	cd $(INSTALLDIR)/db-4.8.30/usr/lib && ln -sf libdb-4.8.so libdb-4.so
 
 #	@$(MAKE) -C db-4.8.30/build_unix install
-	
+
 db-4.8.30-clean:
 	-@$(MAKE) -C db-4.8.30 clean
 	-@$(MAKE) -C db-4.8.30/build_unix clean
@@ -3690,9 +3690,9 @@ diskdev_cmds-332.14-install: diskdev_cmds-332.14
 diskdev_cmds-332.14-clean:
 	cd $(TOP)/diskdev_cmds-332.14 && \
 	make -f Makefile.lnx clean
-	rm -f $(INSTALLDIR)/diskdev_cmds-332.14/usr/sbin/mkfs.hfs 
-	rm -f $(INSTALLDIR)/diskdev_cmds-332.14/usr/sbin/fsck.hfs 
-	
+	rm -f $(INSTALLDIR)/diskdev_cmds-332.14/usr/sbin/mkfs.hfs
+	rm -f $(INSTALLDIR)/diskdev_cmds-332.14/usr/sbin/fsck.hfs
+
 wget/Makefile.in: wget/Makefile.am
 	cd wget && autoreconf -fi
 
@@ -3756,5 +3756,4 @@ $(obj-y) $(obj-n) $(obj-clean) $(obj-install): dummy
 .PHONY: all clean distclean mrproper install package image
 .PHONY: conf mconf oldconf kconf kmconf config menuconfig oldconfig
 .PHONY: dummy libnet libpcap
-
 
