@@ -5,6 +5,13 @@ source /usr/sbin/helper.sh
 PID=$$
 SECS=1262278080
 
+if [ -f /usr/sbin/openssl11 ]
+then
+	OPENSSL=/usr/sbin/openssl11
+else
+	OPENSSL=/usr/sbin/openssl
+fi
+
 OPENSSLCNF="/etc/openssl.config.$PID"
 
 cp -L /etc/ssl/openssl.cnf $OPENSSLCNF
@@ -107,9 +114,9 @@ fi
 #OPENSSL_CONF=$OPENSSLCNF RANDFILE=/dev/urandom openssl x509 -in /tmp/cert.csr -out cert.pem -req -signkey key.pem -days 3653 -sha256
 
 # create the key
-openssl genpkey -out key.pem -algorithm rsa -pkeyopt rsa_keygen_bits:2048
+$OPENSSL genpkey -out key.pem -algorithm rsa -pkeyopt rsa_keygen_bits:2048
 # create certificate request and sign it
-RANDFILE=/dev/urandom openssl req -new -x509 -key key.pem -sha256 -out cert.pem -days 3653 -config $OPENSSLCNF
+RANDFILE=/dev/urandom $OPENSSL req -new -x509 -key key.pem -sha256 -out cert.pem -days 3653 -config $OPENSSLCNF
 
 #	openssl x509 -in /etc/cert.pem -text -noout
 
