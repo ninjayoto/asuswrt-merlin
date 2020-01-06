@@ -32,10 +32,6 @@ ifeq ($(RTN14U)$(RTAC52U)$(RTAC51U)$(RTN11P),y)
 CFLAGS += -DRA_ESW
 endif
 
-ifeq ($(RTCONFIG_HTTPS),y)
-CFLAGS += -I$(TOP)/mssl
-endif
-
 ifeq ($(RTCONFIG_USB),y)
 CFLAGS += -I$(TOP)/libdisk
 endif
@@ -96,8 +92,10 @@ LIBS += -L$(TOP)/libdisk -ldisk
 endif
 
 ifeq ($(RTCONFIG_HTTPS),y)
+CFLAGS += -I$(TOP)/mssl
 LIBS += -L$(TOP)/mssl -lmssl
-LIBS += -L$(TOP)/openssl -lssl -lcrypto
+CFLAGS += -I$(TOP)/openssl-1.1/include
+LIBS += -L$(TOP)/openssl-1.1 -lssl -lcrypto
 endif
 
 ifeq ($(RTCONFIG_OPENVPN),y)
