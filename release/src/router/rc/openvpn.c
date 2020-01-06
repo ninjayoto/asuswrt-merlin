@@ -550,7 +550,7 @@ void start_vpnclient(int clientNum)
 	{
 		vpnlog(VPN_LOG_EXTRA,"Adding cron job");
 		argv[0] = "cru";
-		argv[1] = "a";	
+		argv[1] = "a";
 		sprintf(&buffer[0], "CheckVPNClient%d", clientNum);
 		argv[2] = &buffer[0];
 		sprintf(&buffer[strlen(&buffer[0])+1], "*/%d * * * * service start_vpnclient%d", nvi, clientNum);
@@ -586,7 +586,7 @@ void stop_vpnclient(int clientNum)
 	// Remove cron job
 	vpnlog(VPN_LOG_EXTRA,"Removing cron job");
 	argv[0] = "cru";
-	argv[1] = "d";	
+	argv[1] = "d";
 	sprintf(&buffer[0], "CheckVPNClient%d", clientNum);
 	argv[2] = &buffer[0];
 	argv[3] = NULL;
@@ -713,7 +713,7 @@ void start_vpnserver(int serverNum)
 		vpnlog(VPN_LOG_INFO,"PID: %d", pid);
 
 		sprintf(&buffer[0], "vpn_server%d_state", serverNum); // re-write state
-		nvram_set(&buffer[0], "2");     //running 
+		nvram_set(&buffer[0], "2");     //running
 		sprintf(&buffer[0], "vpn_server%d_errno", serverNum);
 		nvram_set(&buffer[0], "0");
 		return;
@@ -860,7 +860,7 @@ void start_vpnserver(int serverNum)
 	else if ( cryptMode == SECRET )
 	{
 		fprintf(fp_client, "mode p2p\n");
-		
+
 		if ( ifType == TUN )
 		{
 			sprintf(&buffer[0], "vpn_server%d_local", serverNum);
@@ -1205,9 +1205,13 @@ void start_vpnserver(int serverNum)
 			if(fp) {
 				fprintf(fp, "#!/bin/sh\n");
 				//fprintf(fp, ". /rom/easy-rsa/vars\n");
+#ifdef RTCONFIG_OPENSSL11
+				fprintf(fp, "export OPENSSL=\"openssl11\"\n");
+#else
 				fprintf(fp, "export OPENSSL=\"openssl\"\n");
+#endif
 				fprintf(fp, "export GREP=\"grep\"\n");
-				fprintf(fp, "export KEY_CONFIG=\"/rom/easy-rsa/openssl-1.0.0.cnf\"\n");
+				fprintf(fp, "export KEY_CONFIG=\"/rom/easy-rsa/openssl.cnf\"\n");
 				fprintf(fp, "export KEY_DIR=\"/etc/openvpn/server%d\"\n", serverNum);
 				fprintf(fp, "export KEY_SIZE=1024\n");
 				fprintf(fp, "export CA_EXPIRE=3650\n");
@@ -1339,7 +1343,7 @@ void start_vpnserver(int serverNum)
 		// Only do this if we do not have both userauth and useronly enabled at the same time
 		if ( !(userauth && useronly) ) {
 			/*
-			   See if stored client cert was signed with our stored CA.  If not, it means 
+			   See if stored client cert was signed with our stored CA.  If not, it means
 			   the CA was changed by the user and the current client crt/key no longer match,
 			   so we should not insert them in the exported client ovp file.
 			*/
@@ -1611,7 +1615,7 @@ void start_vpnserver(int serverNum)
 	{
 		vpnlog(VPN_LOG_EXTRA,"Adding cron job");
 		argv[0] = "cru";
-		argv[1] = "a";	
+		argv[1] = "a";
 		sprintf(&buffer[0], "CheckVPNServer%d", serverNum);
 		argv[2] = &buffer[0];
 		sprintf(&buffer[strlen(&buffer[0])+1], "*/%d * * * * service start_vpnserver%d", nvi, serverNum);
@@ -1655,7 +1659,7 @@ void stop_vpnserver(int serverNum)
 	// Remove cron job
 	vpnlog(VPN_LOG_EXTRA,"Removing cron job");
 	argv[0] = "cru";
-	argv[1] = "d";	
+	argv[1] = "d";
 	sprintf(&buffer[0], "CheckVPNServer%d", serverNum);
 	argv[2] = &buffer[0];
 	argv[3] = NULL;
@@ -1722,10 +1726,10 @@ void stop_vpnserver(int serverNum)
 //	try_enabling_fastnat();
 #endif
 
-	sprintf(&buffer[0], "vpn_server%d_state", serverNum); 
-	nvram_set(&buffer[0], "0"); 
-	sprintf(&buffer[0], "vpn_server%d_errno", serverNum); 
-	nvram_set(&buffer[0], "0"); 
+	sprintf(&buffer[0], "vpn_server%d_state", serverNum);
+	nvram_set(&buffer[0], "0");
+	sprintf(&buffer[0], "vpn_server%d_errno", serverNum);
+	nvram_set(&buffer[0], "0");
 
 	vpnlog(VPN_LOG_INFO,"VPN GUI server backend stopped.");
 }
@@ -1792,7 +1796,7 @@ void stop_vpn_eas()
 {
 	char buffer[16], *cur;
 	int nums[4], i;
-	
+
 	// Parse and stop servers
 	strlcpy(&buffer[0], nvram_safe_get("vpn_serverx_eas"), sizeof(buffer));
 	if ( strlen(&buffer[0]) != 0 ) vpnlog(VPN_LOG_INFO, "Stopping OpenVPN servers (eas): %s", &buffer[0]);
