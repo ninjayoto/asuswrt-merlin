@@ -1209,7 +1209,7 @@ openssl-stage:
 
 openssl-1.1/Makefile:
 	cd $(TOP)/openssl-1.1 && \
-	./Configure $(HOSTCONFIG) --prefix=/usr --openssldir=/etc/ssl --cross-compile-prefix=' ' --api=1.1.0 \
+	./Configure $(HOSTCONFIG) --prefix=/usr --openssldir=/etc/ssl --cross-compile-prefix=' ' --api=1.0.0 \
 	-O2 -ffunction-sections -fdata-sections -Wl,--gc-sections \
 	shared no-err no-async $(if $(RTCONFIG_BCMARM),,no-threads) $(OPENSSL_CIPHERS) \
 	no-aria no-sm2 no-sm3 no-sm4
@@ -2855,20 +2855,20 @@ openpam-clean:
 	[ ! -f openpam/Makefile ] || $(MAKE) -C openpam distclean
 	@rm -f openpam/Makefile
 
-openvpn: shared nvram lzo zlib openssl openpam openvpn/Makefile
+openvpn: shared nvram lzo zlib openssl-1.1 openpam openvpn/Makefile
 	$(MAKE) -C $@ $(PARALLEL_BUILD)
 
 openvpn/Makefile:
 	cd openvpn && ./autogen.sh && \
-	export OPENSSL_CFLAGS="-I$(TOP)/openssl"; \
-	export OPENSSL_LIBS="-L$(TOP)/openssl -lssl -lcrypto"; \
-	CFLAGS="-O3 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections $(if $(RTCONFIG_HTTPS),-I$(TOP)/openssl/include/ssl) $(if $(RTCONFIG_BCMARM),,-std=gnu99)" \
-	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl -lssl -lcrypto) -L$(TOP)/zlib -lz -lpthread -ldl -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
-	CPPFLAGS="-I$(TOP)/lzo/include -I$(TOP)/openssl/include -I$(TOP)/openpam/include -I$(TOP)/shared -I$(SRCBASE)/include" \
+	OPENSSL_CFLAGS="-I$(TOP)/openssl-1.1/include" \
+	OPENSSL_LIBS="-L$(TOP)/openssl-1.1 -lssl -lcrypto" \
+	CFLAGS="-O3 -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections -I$(TOP)/openssl-1.1/include/openssl $(if $(RTCONFIG_BCMARM),,-std=gnu99)" \
+	LDFLAGS="$(EXTRALDFLAGS) -L$(TOP)/nvram$(BCMEX) -lnvram -L$(TOP)/shared -lshared $(if $(RTCONFIG_QTN),-L$(TOP)/libqcsapi_client -lqcsapi_client) $(if $(RTCONFIG_HTTPS),-L$(TOP)/openssl-1.1 -lssl -lcrypto) -L$(TOP)/zlib -lz -lpthread -ldl -L$(TOP)/lzo/src/.libs -L$(TOP)/openpam/lib/libpam/.libs -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+	CPPFLAGS="-I$(TOP)/lzo/include -I$(TOP)/openssl-1.1/include -I$(TOP)/openpam/include -I$(TOP)/shared -I$(SRCBASE)/include" \
 	IPROUTE="/usr/sbin/ip" IFCONFIG="/sbin/ifconfig" ROUTE="/sbin/route" \
 	$(CONFIGURE) --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib  --enable-iproute2 \
-	--disable-debug --enable-management --disable-small \
-	--disable-selinux $(if $(RTCONFIG_BCMARM),--enable-plugin-auth-pam) \
+	--disable-debug --enable-management \
+	$(if $(RTCONFIG_BCMARM),--enable-plugin-auth-pam) \
 	ac_cv_lib_resolv_gethostbyname=no
 	touch $@
 

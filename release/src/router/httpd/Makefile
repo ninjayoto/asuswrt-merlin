@@ -101,7 +101,7 @@ endif
 
 ifeq ($(RTCONFIG_OPENVPN),y)
 OBJS += openvpn_options.o
-LIBS += -L$(TOP)/openssl -lssl -lcrypto
+LIBS += -L$(TOP)/openssl-1.1 -lssl -lcrypto -ldl
 endif
 
 #add json support
