@@ -12,13 +12,13 @@ LDFLAGS = -ffunction-sections -fdata-sections -Wl,--gc-sections
 
 #LIBS	=	`./vsf_findlibs.sh`
 #LINK	=	-Wl,-s
-LIBS	=	-lcrypt -lnsl
-LINK	=	
+LIBS	=	-lcrypt -lnsl -lpthread
+LINK	=
 
 CFLAGS	+=	-I../shared
 ifeq ($(RTCONFIG_FTP_SSL),y)
 LIBS	=	-lnsl
-OPENSSLDIR = ../openssl
+OPENSSLDIR = ../openssl-1.1
 OPENSSLINC = $(OPENSSLDIR)/include
 LIBS	+=	-L$(OPENSSLDIR)/ -lssl -lcrypto
 CFLAGS	+=	-I$(OPENSSLINC)
@@ -46,7 +46,7 @@ OBJS	=	main.o utility.o prelogin.o ftpcmdio.o postlogin.o privsock.o \
 .c.o:
 	$(CC) -c $*.c $(CFLAGS) $(IFLAGS)
 
-vsftpd: $(OBJS) 
+vsftpd: $(OBJS)
 	$(CC) -o vsftpd $(OBJS) $(LINK) $(LIBS) $(LDFLAGS)
 
 install:
