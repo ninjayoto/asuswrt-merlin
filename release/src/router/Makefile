@@ -436,7 +436,7 @@ obj-n += lsof
 obj-$(RTCONFIG_IPERF) += iperf
 
 obj-$(RTCONFIG_PUSH_EMAIL) += zlib # for libxml2, curl.
-obj-$(RTCONFIG_PUSH_EMAIL) += openssl
+obj-$(RTCONFIG_PUSH_EMAIL) += openssl-1.1
 obj-$(RTCONFIG_PUSH_EMAIL) += libxml2
 obj-$(RTCONFIG_PUSH_EMAIL) += curl
 obj-$(RTCONFIG_PUSH_EMAIL) += wb
@@ -3665,19 +3665,27 @@ norton${BCMEX}-clean:
 	[ ! -f $(NORTEON_DIR)/Makefile ] || -@$(MAKE) -C $(NORTON_DIR) clean
 
 .PHONY : email-3.1.3 email-3.1.3-clean
-email-3.1.3:
-	echo "Build emailaaa"
-	cd email-3.1.3 && \
-	./configure --with-ssl --sysconfdir=/etc --host=mipsel-uclibc CFLAGS=-I$(SRCBASE)/router/openssl/include LDFLAGS="-L$(SRCBASE)/router/openssl"  LIBS="-lssl -lcrypto"
-	echo "Build emailbbb"
+
+email-3.1.3/Makefile: openssl-1.1
+	cd $(TOP)/email-3.1.3 && \
+	$(CONFIGURE) --with-ssl --sysconfdir=/etc \
+		CFLAGS="-Os -Wall -I$(SRCBASE)/router/openssl-1.1/include" \
+		LDFLAGS="-L$(SRCBASE)/router/openssl-1.1" \
+		LIBS="-lcrypto -lssl $(if $(RTCONFIG_QCA), -ldl)"
+	touch $@
+
+email-3.1.3: email-3.1.3/Makefile
 	$(MAKE) -C email-3.1.3
 
 email-3.1.3-clean:
-	-@$(MAKE) -C email-3.1.3 clean
+	-[ ! -f email-3.1.3/Makefile ] || $(MAKE) -C email-3.1.3 distclean
+	@rm -f email-3.1.3/Makefile
 
-email-3.1.3-install: email-3.1.3
-	install -D email-3.1.3/src/email $(INSTALLDIR)/email-3.1.3/usr/sbin/email
-	$(STRIP) $(INSTALLDIR)/email-3.1.3/usr/sbin/email
+email-3.1.3-install:
+	if [ -f email-3.1.3/Makefile ] ; then \
+		install -D email-3.1.3/src/email $(INSTALLDIR)/email-3.1.3/usr/sbin/email ; \
+		$(STRIP) $(INSTALLDIR)/email-3.1.3/usr/sbin/email ; \
+	fi
 
 #diskdev_cmds-332.14
 diskdev_cmds-332.14:

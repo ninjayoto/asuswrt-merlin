@@ -73,7 +73,8 @@ endif
 LIBS = -L$(TOP)/nvram${BCMEX} -lnvram -L$(TOP)/shared -lshared
 
 ifeq ($(RTCONFIG_PUSH_EMAIL),y)
-LIBS += -L$(TOP)/openssl -lcrypto -lssl
+CFLAGS += -I$(TOP)/openssl-1.1/include
+LIBS += -L$(TOP)/openssl-1.1 -lssl -lcrypto -ldl
 LIBS += -L$(TOP)/curl-7.21.7/lib/.libs -lcurl
 LIBS += -L$(TOP)/libxml2/.libs -lxml2
 LIBS += -L$(TOP)/wb -lws
