@@ -3272,7 +3272,7 @@ db-4.8.30-clean:
 	@rm -f db-4.8.30/build_unix/stamp-h1
 
 #netatalk-3.0.5
-netatalk-3.0.5/stamp-h1: openssl libgcrypt-1.5.1 db-4.8.30
+netatalk-3.0.5/stamp-h1: openssl-1.1 libgcrypt-1.5.1 db-4.8.30
 	cd $(TOP)/netatalk-3.0.5 && \
 	$(CONFIGURE) CPPFLAGS="-I$(TOP)/db-4.8.30/build_unix -I$(TOP)/libgcrypt-1.5.1/src" \
 	LDFLAGS="-L$(TOP)/db-4.8.30/build_unix/.libs -L$(TOP)/libgcrypt-1.5.1/src/.libs" \
@@ -3289,7 +3289,7 @@ netatalk-3.0.5/stamp-h1: openssl libgcrypt-1.5.1 db-4.8.30
 	--with-bdb=$(TOP)/db-4.8.30/build_unix \
 	--prefix=$(INSTALLDIR)/netatalk-3.0.5/usr \
 	--program-prefix= \
-	--with-ssl-dir=$(TOP)/openssl \
+	--with-ssl-dir=$(TOP)/openssl-1.1 \
 	--disable-static \
 	--with-libgcrypt-dir=$(TOP)/libgcrypt-1.5.1 \
 	--without-dtrace
