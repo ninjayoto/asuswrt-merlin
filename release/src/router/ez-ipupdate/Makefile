@@ -61,15 +61,15 @@ host_alias = i686-pc-linux-gnu
 host_triplet = i686-pc-linux-gnu
 #CC = gcc
 #CPP = gcc -E
-EXTRAOBJ = 
-EXTRASRC = 
+EXTRAOBJ =
+EXTRASRC =
 MAKEINFO = makeinfo
 PACKAGE = ez-ipupdate
 VERSION = 3.0.11b7
 
 bin_PROGRAMS = ez-ipupdate
-ez_ipupdate_SOURCES = ez-ipupdate.c conf_file.c conf_file.h md5.c md5.h cache_file.c cache_file.h error.h pid_file.c pid_file.h dprintf.h 
-ez_ipupdate_LDADD = 
+ez_ipupdate_SOURCES = ez-ipupdate.c conf_file.c conf_file.h md5.c md5.h cache_file.c cache_file.h error.h pid_file.c pid_file.h dprintf.h
+ez_ipupdate_LDADD =
 
 EXTRA_DIST = getpass.c ez-ipupdate.lsm example.conf example-pgpow.conf example-dhs.conf example-dnsomatic.conf example-dyndns.conf example-ods.conf example-tzo.conf example-gnudip.conf example-easydns.conf example-justlinux.conf example-dyns.conf CHANGELOG mkbinary example-heipv6tb.conf
 
@@ -77,33 +77,33 @@ AUTOMAKE_OPTIONS = foreign
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = 
+CONFIG_CLEAN_FILES =
 PROGRAMS =  $(bin_PROGRAMS)
 
 #2007.03.14 Yau add
 MD5_CHECK = md5_check
 
 DEFS = -DHAVE_CONFIG_H -I. -I$(srcdir) -I.
-CPPFLAGS = 
-#LDFLAGS = 
+CPPFLAGS =
+#LDFLAGS =
 LIBS = $(LDLIBS)
 
 ez_ipupdate_OBJECTS =  ez-ipupdate.o conf_file.o md5.o cache_file.o \
 pid_file.o
 
-ez_ipupdate_DEPENDENCIES = 
-ez_ipupdate_LDFLAGS = 
+ez_ipupdate_DEPENDENCIES =
+ez_ipupdate_LDFLAGS =
 #CFLAGS = -g -O2
 
 # 2007.03.14 Yau add for ASUS DDNS
 ez_ipupdate_OBJECTS += asus_ddns.o
 CFLAGS += -I$(SRCBASE)/include -I$(TOP)/shared -DASUS_DDNS
-LDFLAGS += -L$(TOP)/shared -lshared -L$(TOP)/nvram${BCMEX} -lnvram 
+LDFLAGS += -L$(TOP)/shared -lshared -L$(TOP)/nvram${BCMEX} -lnvram
 #end of Yau add
 ifeq ($(RTCONFIG_HTTPS),y)
-CFLAGS += -I$(TOP)/mssl -I$(TOP)/openssl/include -DHAVE_SSL
-LDFLAGS += -L$(TOP)/mssl -L$(TOP)/openssl
-LIBS += -lmssl -lssl -lcrypto -ldl
+CFLAGS += -I$(TOP)/mssl -I$(TOP)/openssl-1.1/include -DHAVE_SSL
+LDFLAGS += -L$(TOP)/mssl -L$(TOP)/openssl-1.1
+LIBS += -lmssl -lssl -lcrypto -ldl -lpthread
 endif
 ifeq ($(RTCONFIG_BCMARM),y)
 LDFLAGS += -lgcc_s
@@ -134,14 +134,14 @@ OBJECTS = $(ez_ipupdate_OBJECTS)
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign --include-deps Makefile
 
 #Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 #	cd $(top_builddir) \
 #	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(ACLOCAL_M4):  configure.in 
+$(ACLOCAL_M4):  configure.in
 	cd $(srcdir) && $(ACLOCAL)
 
 config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)

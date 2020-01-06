@@ -2140,7 +2140,7 @@ ifeq ($(RTCONFIG_L2TP),y)
 	$(STRIP) $(INSTALLDIR)/pppd/usr/lib/pppd/*.so
 endif
 
-ez-ipupdate: openssl mssl
+ez-ipupdate: openssl-1.1 mssl
 
 ez-ipupdate-install:
 	install -D ez-ipupdate/ez-ipupdate $(INSTALLDIR)/ez-ipupdate/usr/sbin/ez-ipupdate
