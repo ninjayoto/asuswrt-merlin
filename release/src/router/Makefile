@@ -1211,26 +1211,32 @@ openssl-1.1/Makefile:
 	cd $(TOP)/openssl-1.1 && \
 	./Configure $(HOSTCONFIG) --prefix=/usr --openssldir=/etc/ssl --cross-compile-prefix=' ' --api=1.1.0 \
 	-O2 -ffunction-sections -fdata-sections -Wl,--gc-sections \
-	no-shared no-async $(if $(RTCONFIG_BCMARM),,no-threads) $(OPENSSL_CIPHERS) \
+	shared no-err no-async $(if $(RTCONFIG_BCMARM),,no-threads) $(OPENSSL_CIPHERS) \
 	no-aria no-sm2 no-sm3 no-sm4
-	-@$(MAKE) -C openssl-1.1 clean depend
+	-@$(MAKE) -C openssl-1.1 depend clean
 	@touch $@
 
 openssl-1.1: openssl-1.1/Makefile
-	$(MAKE) -C openssl-1.1
+	$(MAKE) -C openssl-1.1 $(PARALLEL_BUILD)
 
 openssl-1.1-clean:
 	[ ! -f openssl-1.1/Makefile ] || $(MAKE) -C openssl-1.1 clean
 	@rm -f openssl-1.1/Makefile
 
 openssl-1.1-install:
-	@echo "do nothing"
-	@$(SEP)
+	$(SEP)
+	if [ -f openssl-1.1/Makefile ] ; then \
+		install -D openssl-1.1/libcrypto.so.1.1 $(INSTALLDIR)/openssl-1.1/usr/lib/libcrypto.so.1.1 ; \
+		install -D openssl-1.1/libssl.so.1.1 $(INSTALLDIR)/openssl-1.1/usr/lib/libssl.so.1.1 ; \
+		$(STRIP) $(INSTALLDIR)/openssl-1.1/usr/lib/libssl.so.1.1 ; \
+		$(STRIP) $(INSTALLDIR)/openssl-1.1/usr/lib/libcrypto.so.1.1 ; \
+		install -D openssl-1.1/apps/openssl $(INSTALLDIR)/openssl/usr/sbin/openssl11 ; \
+		$(STRIP) $(INSTALLDIR)/openssl/usr/sbin/openssl11 ; \
+		chmod 0500 $(INSTALLDIR)/openssl/usr/sbin/openssl11 ; \
+	fi
 
-#openssl-1.1-stage:
-#	only main staged
-#	@$(MAKE) -C openssl-1.1 install_sw INSTALL_PREFIX=$(STAGEDIR)
-#	@true
+openssl-1.1-stage:
+	 $(MAKE) -C openssl-1.1 install_sw INSTALL_PREFIX=$(STAGEDIR)
 
 mssl: openssl
 
