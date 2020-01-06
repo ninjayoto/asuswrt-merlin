@@ -108,6 +108,15 @@ typedef unsigned long long u64;
 #endif
 
 #ifdef RTCONFIG_HTTPS
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/pem.h>
+#include <openssl/opensslconf.h>
+#include <openssl/opensslv.h>
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#define X509_getm_notBefore X509_get_notBefore
+#define X509_getm_notAfter X509_get_notAfter
+#endif
 extern int do_ssl;
 extern int ssl_stream_fd;
 #endif
