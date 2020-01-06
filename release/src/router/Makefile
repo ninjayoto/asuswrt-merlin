@@ -1238,7 +1238,7 @@ openssl-1.1-install:
 openssl-1.1-stage:
 	 $(MAKE) -C openssl-1.1 install_sw INSTALL_PREFIX=$(STAGEDIR)
 
-mssl: openssl
+mssl: openssl-1.1
 
 mssl-install:
 	$(MAKE) -C mssl INSTALLDIR=$(INSTALLDIR)/mssl install

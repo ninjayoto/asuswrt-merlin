@@ -1,11 +1,11 @@
 include ../common.mak
 
-CFLAGS	= -Os -Wall $(EXTRACFLAGS) -fPIC 
-LIBS = 
-LDFLAGS	= 
+CFLAGS	= -Os -Wall $(EXTRACFLAGS) -fPIC
+LIBS =
+LDFLAGS	=
 
-CFLAGS	+= -I$(TOP)/openssl/include
-LIBS += -L$(TOP)/openssl -lssl -lcrypto
+CFLAGS += -I$(TOP)/openssl-1.1/include
+LIBS += -L$(TOP)/openssl-1.1 -lssl -lcrypto
 
 ifneq ($(RTCONFIG_BCMARM),y)
 LIBS += -lpthread
