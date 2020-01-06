@@ -1,10 +1,13 @@
 #!/bin/sh
 
 source /usr/sbin/helper.sh
+
+PID=$$
 SECS=1262278080
 
-cd /etc
-cp -L openssl.cnf openssl.config
+OPENSSLCNF="/etc/openssl.config.$PID"
+
+cp -L /etc/ssl/openssl.cnf $OPENSSLCNF
 
 NVCN=`nvram get https_crt_cn`
 if [ "$NVCN" == "" ]; then
@@ -15,40 +18,40 @@ OLDIFS=$IFS
 IFS=","
 I=0
 
-echo "$I.organizationName=O" >> /etc/openssl.config
-echo "$I.organizationName_value=$(uname -o)" >> /etc/openssl.config
+echo "$I.organizationName=O" >> $OPENSSLCNF
+echo "$I.organizationName_value=$(uname -o)" >> $OPENSSLCNF
 
 for CN in $NVCN; do
-        echo "$I.commonName=CN" >> /etc/openssl.config
-        echo "$I.commonName_value=$CN" >> /etc/openssl.config
-		echo "$I.emailAddress=E" >> /etc/openssl.config
-		echo "$I.emailAddress_value=root@localhost" >> /etc/openssl.config
+        echo "$I.commonName=CN" >> $OPENSSLCNF
+        echo "$I.commonName_value=$CN" >> $OPENSSLCNF
+		echo "$I.emailAddress=E" >> $OPENSSLCNF
+		echo "$I.emailAddress_value=root@localhost" >> $OPENSSLCNF
         I=$(($I + 1))
 done
 IFS=$OLDIFS
 
-pc_insert "[ CA_default ]" "copy_extensions = copy" /etc/openssl.config
+pc_insert "[ CA_default ]" "copy_extensions = copy" $OPENSSLCNF
 # Required extension
-pc_insert "[ v3_ca ]" "extendedKeyUsage = serverAuth" /etc/openssl.config
-pc_insert "[ v3_ca ]" "subjectAltName = @alt_names" /etc/openssl.config
-#pc_insert "[ v3_ca ]" "certificatePolicies = 2.5.29.32.0" /etc/openssl.config
-pc_insert "[ v3_req ]" "subjectAltName = @alt_names" /etc/openssl.config
+pc_insert "[ v3_ca ]" "extendedKeyUsage = serverAuth" $OPENSSLCNF
+pc_insert "[ v3_ca ]" "subjectAltName = @alt_names" $OPENSSLCNF
+#pc_insert "[ v3_ca ]" "certificatePolicies = 2.5.29.32.0" $OPENSSLCNF
+pc_insert "[ v3_req ]" "subjectAltName = @alt_names" $OPENSSLCNF
 
 # Complete SAN definitions
-echo "[ alt_names ]" >> /etc/openssl.config
+echo "[ alt_names ]" >> $OPENSSLCNF
 
 I=0
 # Add IPs to SAN
 LANIP=`nvram get lan_ipaddr`
-echo "IP.$I = $LANIP" >> /etc/openssl.config
-echo "DNS.$I = $LANIP" >> /etc/openssl.config	# workaround for IE not supporting IP SAN
+echo "IP.$I = $LANIP" >> $OPENSSLCNF
+echo "DNS.$I = $LANIP" >> $OPENSSLCNF	# workaround for IE not supporting IP SAN
 I=$(($I + 1))
 
 # Add DNS names to SAN
 SWMODE=$(nvram get sw_mode)
 if [ $SWMODE -eq 1 ] # only add DUT_DOMAIN for router mode
 then
-	echo "DNS.$I = router.asus.com" >> /etc/openssl.config
+	echo "DNS.$I = router.asus.com" >> $OPENSSLCNF
 	I=$(($I + 1))
 fi
 
@@ -58,24 +61,24 @@ LANHOSTNAME=$(nvram get lan_hostname)
 COMPUTERNAME=$(nvram get computer_name)
 if [ "$LANHOSTNAME" != "" ]
 then
-	echo "DNS.$I = $LANHOSTNAME" >> /etc/openssl.config
+	echo "DNS.$I = $LANHOSTNAME" >> $OPENSSLCNF
 	I=$(($I + 1))
 
 	if [ "$LANDOMAIN" != "" ]
 	then
-		echo "DNS.$I = $LANHOSTNAME.$LANDOMAIN" >> /etc/openssl.config
+		echo "DNS.$I = $LANHOSTNAME.$LANDOMAIN" >> $OPENSSLCNF
 		I=$(($I + 1))
 	fi
 fi
 
 if [ "$COMPUTERNAME" != "" ]
 then
-	echo "DNS.$I = $COMPUTERNAME" >> /etc/openssl.config
+	echo "DNS.$I = $COMPUTERNAME" >> $OPENSSLCNF
 	I=$(($I + 1))
 
 	if [ "$LANDOMAIN" != "" ]
 	then
-		echo "DNS.$I = $COMPUTERNAME.$LANDOMAIN" >> /etc/openssl.config
+		echo "DNS.$I = $COMPUTERNAME.$LANDOMAIN" >> $OPENSSLCNF
 		I=$(($I + 1))
 	fi
 fi
@@ -88,25 +91,25 @@ if [ "$(nvram get ddns_enable_x)" == "1" -a "$DDNSSERVER" != "WWW.DNSOMATIC.COM"
 then
 	if [ "$DDNSSERVER" == "WWW.NAMECHEAP.COM" -a "$DDNSUSER" != "" ]
 	then
-		echo "DNS.$I = $DDNSHOSTNAME.$DDNSUSER" >> /etc/openssl.config
+		echo "DNS.$I = $DDNSHOSTNAME.$DDNSUSER" >> $OPENSSLCNF
 		I=$(($I + 1))
 	else
-		echo "DNS.$I = $DDNSHOSTNAME" >> /etc/openssl.config
+		echo "DNS.$I = $DDNSHOSTNAME" >> $OPENSSLCNF
 		I=$(($I + 1))
 	fi
 fi
 
 # create the key and certificate request
-#OPENSSL_CONF=/etc/openssl.config openssl req -new -out /tmp/cert.csr -keyout /tmp/privkey.pem -newkey rsa:1024 -passout pass:password
+#OPENSSL_CONF=$OPENSSLCNF openssl req -new -out /tmp/cert.csr -keyout /tmp/privkey.pem -newkey rsa:1024 -passout pass:password
 # remove the passphrase from the key
-#OPENSSL_CONF=/etc/openssl.config openssl rsa -in /tmp/privkey.pem -out key.pem -passin pass:password
+#OPENSSL_CONF=$OPENSSLCNF openssl rsa -in /tmp/privkey.pem -out key.pem -passin pass:password
 # convert the certificate request into a signed certificate
-#OPENSSL_CONF=/etc/openssl.config RANDFILE=/dev/urandom openssl x509 -in /tmp/cert.csr -out cert.pem -req -signkey key.pem -days 3653 -sha256
+#OPENSSL_CONF=$OPENSSLCNF RANDFILE=/dev/urandom openssl x509 -in /tmp/cert.csr -out cert.pem -req -signkey key.pem -days 3653 -sha256
 
 # create the key
 openssl genpkey -out key.pem -algorithm rsa -pkeyopt rsa_keygen_bits:2048
 # create certificate request and sign it
-RANDFILE=/dev/urandom openssl req -new -x509 -key key.pem -sha256 -out cert.pem -days 3653 -config /etc/openssl.config
+RANDFILE=/dev/urandom openssl req -new -x509 -key key.pem -sha256 -out cert.pem -days 3653 -config $OPENSSLCNF
 
 #	openssl x509 -in /etc/cert.pem -text -noout
 
@@ -114,5 +117,5 @@ RANDFILE=/dev/urandom openssl req -new -x509 -key key.pem -sha256 -out cert.pem 
 cat key.pem cert.pem > server.pem
 
 if [ "$(nvram get https_crt_save)" == "0" ]; then
-	rm -f /etc/openssl.config
+	rm -f $OPENSSLCNF
 fi
