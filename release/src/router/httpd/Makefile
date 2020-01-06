@@ -84,7 +84,7 @@ endif
 ifeq ($(RTCONFIG_BCMARM),y)
 CFLAGS += -I$(SRCBASE)/shared/bcmwifi/include
 CFLAGS += -I$(SRCBASE)/common/include
-LIBS += -lgcc_s
+LIBS += -lgcc_s -lpthread
 ifeq ($(RTCONFIG_QTN),y)
 CFLAGS += -I$(TOP)/libqcsapi_client
 LIBS += -L$(TOP)/libqcsapi_client -lqcsapi_client

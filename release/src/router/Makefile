@@ -1099,7 +1099,7 @@ infosvr: shared nvram$(BCMEX)
 
 libdisk: shared nvram$(BCMEX)
 
-httpd: shared nvram$(BCMEX) libdisk json-c $(if $(RTCONFIG_HTTPS),mssl) $(PUSH_LOG)
+httpd: shared nvram$(BCMEX) libdisk json-c $(if $(RTCONFIG_HTTPS),openssl-1.1 mssl,) $(PUSH_LOG)
 	@$(SEP)
 	@$(MAKE) -C httpd
 
