@@ -1169,7 +1169,7 @@ endif
 
 openssl/Makefile:
 	cd openssl && \
-	./Configure $(HOSTCONFIG) -DOPENSSL_NO_BUF_FREELISTS --prefix=/usr --openssldir=/etc --cross-compile-prefix=' ' \
+	./Configure $(HOSTCONFIG) -DOPENSSL_NO_BUF_FREELISTS --prefix=/usr --openssldir=/etc/ssl --cross-compile-prefix=' ' \
 	-ffunction-sections -fdata-sections -Wl,--gc-sections \
 	shared $(OPENSSL_CIPHERS)
 #	no-sha0 no-smime no-camellia no-krb5 no-rmd160 no-ripemd \
@@ -1209,7 +1209,7 @@ openssl-stage:
 
 openssl-1.1/Makefile:
 	cd $(TOP)/openssl-1.1 && \
-	./Configure $(HOSTCONFIG) --prefix=/usr --openssldir=/etc --cross-compile-prefix=' ' --api=1.1.0 \
+	./Configure $(HOSTCONFIG) --prefix=/usr --openssldir=/etc/ssl --cross-compile-prefix=' ' --api=1.1.0 \
 	-O2 -ffunction-sections -fdata-sections -Wl,--gc-sections \
 	no-shared no-async $(if $(RTCONFIG_BCMARM),,no-threads) $(OPENSSL_CIPHERS) \
 	no-aria no-sm2 no-sm3 no-sm4

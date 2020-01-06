@@ -89,7 +89,8 @@ endif
 	sed 's/#.*//g;s/[ \t]\+/ /g;s/^[ \t]*//;s/[ \t]*$$//;/^$$/d' < rom/etc/ethertypes > $(INSTALLDIR)/rom/etc/ethertypes
 
 ifeq ($(RTCONFIG_HTTPS),y)
-	sed 's/#.*//g;s/[ \t]\+/ /g;s/^[ \t]*//;s/[ \t]*$$//;/^$$/d' < rom/etc/openssl.cnf > $(INSTALLDIR)/rom/etc/openssl.cnf
+	sed 's/#.*//g;s/[ \t]\+/ /g;s/^[ \t]*//;s/[ \t]*$$//;/^$$/d' < rom/etc/ssl/openssl.cnf > $(INSTALLDIR)/rom/etc/ssl/openssl.cnf
+	ln -s rom/ca-bundle.crt $(INSTALLDIR)/rom/etc/ssl/cert.pem
 else
 	rm -f $(INSTALLDIR)/rom/etc/openssl.cnf
 endif
