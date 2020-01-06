@@ -149,7 +149,7 @@ endif
 
 obj-y += libbcmcrypto
 ifeq ($(RTCONFIG_HTTPS),y)
-obj-y += openssl
+obj-y += openssl-1.1
 obj-y += wget zlib
 obj-y += mssl
 endif
@@ -3705,14 +3705,14 @@ wget/Makefile.in: wget/Makefile.am
 
 wget/Makefile: wget/Makefile.in
 	cd wget && $(CONFIGURE) \
-		--with-ssl=openssl --with-libssl-prefix=$(TOP)/openssl \
+		--with-ssl=openssl --with-libssl-prefix=$(TOP)/openssl-1.1 \
 		--sysconfdir=/etc --disable-opie --disable-ntlm --disable-debug --disable-nls --disable-rpath \
 		$(if $(RTCONFIG_IPV6),,--disable-ipv6) --disable-iri --without-included-regex  \
 		--disable-dependency-tracking \
-		CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections -I$(TOP)/openssl/include -I$(TOP)/zlib" \
-		LDFLAGS="$(EXTRALDFLAGS) -Wl,--gc-sections -L$(TOP)/openssl -lssl -lcrypto -L$(TOP)/zlib -lz"
+		CFLAGS="-Os -Wall $(EXTRACFLAGS) -ffunction-sections -fdata-sections -I$(TOP)/openssl-1.1/include -I$(TOP)/zlib" \
+		LDFLAGS="$(EXTRALDFLAGS) -Wl,--gc-sections -L$(TOP)/openssl-1.1 -lssl -lcrypto -L$(TOP)/zlib -lz -lpthread"
 
-wget: openssl zlib wget/Makefile
+wget: openssl-1.1 zlib wget/Makefile
 	$(MAKE) -C $@
 
 wget-clean:
@@ -3723,7 +3723,6 @@ wget-install:
 	install -D wget/src/wget $(INSTALLDIR)/wget/usr/sbin/wget
 	$(STRIP) $(INSTALLDIR)/wget/usr/sbin/wget
 
-#
 # Generic rules
 #
 
