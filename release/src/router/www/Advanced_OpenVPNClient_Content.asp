@@ -132,6 +132,7 @@ var $j = jQuery.noConflict();
 var wan_route_x = '<% nvram_get("wan_route_x"); %>';
 var wan_nat_x = '<% nvram_get("wan_nat_x"); %>';
 var wan_proto = '<% nvram_get("wan_proto"); %>';
+var ext_name = ""
 /* DNSCRYPT-BEGIN */
 var ext_name = "DNSCrypt"
 var ext_proxy = '<% nvram_get("dnscrypt_proxy"); %>';
@@ -365,9 +366,10 @@ function update_visibility(){
 	showhide("ipv6warning", (ipv6_enabled == 1 && blockipv6 == 0));
 	showhide("client_blockipv6", (ipv6_enabled == 1 && rgw > 0));
 
+	$('ext_adns').innerHTML = ext_name;
+
 	if (rgw == 2) {
 		$('ext_opt').innerHTML = "";
-		$('ext_adns').innerHTML = ext_name;
 		if (adns == 3) {
 			if (ext_proxy == 1 && ext_ipv6 == 0 && allow_routelocal)
 				$('ext_opt').innerHTML = ext_name + " Resolver";
