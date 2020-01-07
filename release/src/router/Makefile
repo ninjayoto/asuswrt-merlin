@@ -1383,7 +1383,8 @@ getdns/stamp-h1:
 	LDFLAGS="$(LDFLAGS) -static -ffunction-sections -fdata-sections -Wl,--gc-sections -L$(TOP)/libyaml/src/.libs -lyaml -L$(TOP)/openssl-1.1" \
 	LIBS="-lpthread -lssl -lcrypto -ldl" \
 	$(CONFIGURE) --enable-static --disable-shared --disable-gost --prefix=/usr --bindir=/usr/sbin --libdir=/usr/lib --sysconfdir=/etc --localstatedir=/var \
-	--enable-stub-only --without-libidn --without-libidn2 --without-getdns_query --without-getdns_server_mon --with-ssl=$(TOP)/openssl-1.1 --with-libyaml=$(TOP)/libyaml --with-stubby
+	--enable-stub-only --without-libidn --without-libidn2 --without-getdns_query --without-getdns_server_mon $(if $(RTCONFIG_BCMARM),,--enable-old-getaddrinfo) \
+	--with-ssl=$(TOP)/openssl-1.1 --with-libyaml=$(TOP)/libyaml --with-stubby
 	touch getdns/stamp-h1
 
 getdns: getdns/stamp-h1 openssl-1.1 libyaml

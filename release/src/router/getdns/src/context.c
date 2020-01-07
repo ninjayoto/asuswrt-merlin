@@ -302,7 +302,7 @@ add_local_host(getdns_context *context, getdns_dict *address, const char *str)
 		return GETDNS_RETURN_BAD_DOMAIN_NAME;
 
 	canonicalize_dname(host_name);
-	
+
 	if (!(hnas = (host_name_addrs *)_getdns_rbtree_search(
 	    &context->local_hosts, host_name))) {
 
@@ -317,7 +317,7 @@ add_local_host(getdns_context *context, getdns_dict *address, const char *str)
 
 	} else
 		hnas_found = 1;
-	
+
 	if ((r = getdns_dict_get_bindata(address,"address_type",&address_type))
 	||  address_type->size < 4
 	||  !(addrs = address_type->data[3] == '4'? &hnas->ipv4addrs
@@ -414,7 +414,7 @@ str_addr_dict(getdns_context *context, const char *str)
 		return NULL;
 	if (!ai)
 		return NULL;
-		
+
 	address = sockaddr_dict(context, ai->ai_addr);
 	freeaddrinfo(ai);
 
@@ -873,7 +873,7 @@ static getdns_tsig_algo _getdns_get_tsig_algo(getdns_bindata *algo)
 			    strncasecmp((const char *)algo->data, i->name,
 			    i->strlen_name) == 0)
 				return i->alg;
-		
+
 	} else if (!_getdns_bindata_is_dname(algo)) {
 		/* Terminated string */
 		for (i = tsig_info; i < last_tsig_info; i++)
@@ -1048,7 +1048,11 @@ set_os_defaults_windows(getdns_context *context)
 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
-    hints.ai_socktype = 0;              /* Datagram socket */
+#ifdef HAVE_OLD_GETADDRINFO
+	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
+#else
+	hints.ai_socktype  = 0;              /* Datagram socket */
+#endif
     hints.ai_flags = AI_NUMERICHOST; /* No reverse name lookups */
     hints.ai_protocol = 0;              /* Any protocol */
     hints.ai_canonname = NULL;
@@ -1161,7 +1165,11 @@ getdns_context_set_resolvconf(getdns_context *context, const char *resolvconf)
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family    = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
+#ifdef HAVE_OLD_GETADDRINFO
+	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
+#else
 	hints.ai_socktype  = 0;              /* Datagram socket */
+#endif
 	hints.ai_flags     = AI_NUMERICHOST; /* No reverse name lookups */
 	hints.ai_protocol  = 0;              /* Any protocol */
 	hints.ai_canonname = NULL;
@@ -2020,7 +2028,7 @@ getdns_set_base_dns_transports(
 	}
 	if ( u>1 || t>1 || l>1)
 		return GETDNS_RETURN_CONTEXT_UPDATE_FAIL;
-	
+
 	if (!(new_transports = GETDNS_XMALLOC(context->my_mf,
 		getdns_transport_list_t, transport_count)))
 		return GETDNS_RETURN_CONTEXT_UPDATE_FAIL;
@@ -2455,7 +2463,7 @@ getdns_context_set_dns_root_servers(
 			if (ub_ctx_set_stub(context->unbound_ctx,".",dst,1)) {
 				return GETDNS_RETURN_CONTEXT_UPDATE_FAIL;
 			}
-		
+
 		} else if (addr_bd->size == 4 &&
 		    inet_ntop(AF_INET, addr_bd->data, dst, sizeof(dst))) {
 			if (ub_ctx_set_stub(context->unbound_ctx,".",dst,1)) {
@@ -2736,7 +2744,11 @@ getdns_context_set_upstream_recursive_servers(struct getdns_context *context,
 	}
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family    = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
+#ifdef HAVE_OLD_GETADDRINFO
+	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
+#else
 	hints.ai_socktype  = 0;              /* Datagram socket */
+#endif
 	hints.ai_flags     = AI_NUMERICHOST; /* No reverse name lookups */
 	hints.ai_protocol  = 0;              /* Any protocol */
 	hints.ai_canonname = NULL;
@@ -3606,8 +3618,8 @@ _getdns_context_prepare_for_resolution(getdns_context *context)
 				_getdns_tls_context_free(&context->my_mf, context->tls_ctx);
 				context->tls_ctx = NULL;
 				return r;
-			}			
-			
+			}
+
 			/* For strict authentication, we must have local root certs available
 		       Set up is done only when the tls_ctx is created (per getdns_context)*/
 			if (_getdns_tls_context_set_ca(context->tls_ctx, context->tls_ca_file, context->tls_ca_path)) {
@@ -3856,7 +3868,7 @@ _get_context_settings(const getdns_context* context)
 	                           context->trust_anchors_backoff_time)
 	    )
 		goto error;
-	
+
 	/* list fields */
 	if (getdns_context_get_suffix(context, &list))
 		goto error;
@@ -4019,7 +4031,7 @@ getdns_context_get_api_information(const getdns_context* context)
 	getdns_dict* settings;
 
 	if ((result = getdns_dict_create_with_context(context))
-			
+
 	    && ! getdns_dict_util_set_string(
 	    result, "version_string", GETDNS_VERSION)
 
@@ -4309,7 +4321,7 @@ getdns_context_get_suffix(const getdns_context *context, getdns_list **value)
 
 	if (!(list = getdns_list_create_with_context(context)))
 		return GETDNS_RETURN_MEMORY_ERROR;
-	
+
 	assert(context->suffixes);
 	dname_len = context->suffixes[0];
 	dname = context->suffixes + 1;

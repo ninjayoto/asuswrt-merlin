@@ -473,7 +473,7 @@ AC_ARG_WITH([gnutls],
         AC_SUBST([TLSDIR], 'gnutls')
         AC_DEFINE([USE_GNUTLS], [1], [Use the GnuTLS library])
 	if test $USE_NSS = "no" -a $USE_NETTLE = "no"; then
-		
+
 	        AX_LIB_NETTLE(yes)
 		USE_NETTLE="yes"
 		AC_DEFINE(HAVE_NETTLE, 1, [Use libnettle for crypto])
@@ -501,7 +501,7 @@ AC_ARG_WITH([gnutls],
         if test "x$ac_cv_func_X509_check_host" != xyes; then
            AC_MSG_ERROR([getdns requires OpenSSL version 1.0.2 or later])
         fi
-        
+
         AC_MSG_CHECKING([whether we need to compile/link DANE support])
         DANESSL_XTRA_OBJS=""
         if test "x$ac_cv_func_SSL_dane_enable" = xyes; then
@@ -627,7 +627,7 @@ int load_gost_id(void)
 	EVP_PKEY_asn1_get0_info(&gost_id, NULL, NULL, NULL, NULL, meth);
 	return gost_id;
 }
-int main(void) { 
+int main(void) {
 	EVP_MD_CTX* ctx;
 	const EVP_MD* md;
 	unsigned char digest[64]; /* its a 256-bit digest, so uses 32 bytes */
@@ -800,6 +800,14 @@ AC_ARG_ENABLE(all-drafts, AC_HELP_STRING([--enable-all-drafts], [Enables the dra
 case "$enable_all_drafts" in
 	yes)
 		AC_DEFINE_UNQUOTED([HAVE_MDNS_SUPPORT], [1], [Define this to enable the draft mdns client support.])
+		;;
+	no|*)
+		;;
+esac
+AC_ARG_ENABLE(enable-old-getaddrinfo, AC_HELP_STRING([--enable-old-getaddrinfo], [Work around error in older linux getaddrinfo]))
+case "$enable_old_getaddrinfo" in
+	yes)
+		AC_DEFINE_UNQUOTED([HAVE_OLD_GETADDRINFO], [1], [Set this to work around error in older linux getaddrinfo function.])
 		;;
 	no|*)
 		;;
@@ -1094,7 +1102,7 @@ AC_DEFINE(HAVE_IOCTLSOCKET, 1, [if the function 'ioctlsocket' is available])
 #
 #	LIBS="$getdns_LIBS"
 #	LDFLAGS="$getdns_LDFLAGS"
-# 
+#
 # afterwards.
 getdns_LIBS="$LIBS"
 getdns_LDFLAGS="$LDFLAGS"
@@ -1271,7 +1279,7 @@ AS_IF([test x_$have_libuv = x_1],
 		AC_DEFINE(HAVE_NEW_UV_TIMER_CB, [1], [Does libuv have the new uv_time_cb signature])
              ],[AC_MSG_RESULT([no])
 	     ])
-     AC_LANG_POP(C)] 
+     AC_LANG_POP(C)]
 )
 
 AC_SUBST(have_libuv)
@@ -1496,7 +1504,7 @@ dnl ---------------------------------------------------------------------------
 AC_CHECK_HEADERS([stdarg.h stdint.h netinet/in.h arpa/inet.h netdb.h sys/socket.h time.h sys/time.h sys/select.h endian.h limits.h sys/limits.h],,, [AC_INCLUDES_DEFAULT])
 
 dnl Check the printf-format attribute (if any)
-dnl result in HAVE_ATTR_FORMAT.  
+dnl result in HAVE_ATTR_FORMAT.
 dnl
 AC_MSG_CHECKING(whether the C compiler (${CC-cc}) accepts the "format" attribute)
 AC_CACHE_VAL(ac_cv_c_format_attribute,
@@ -1658,7 +1666,7 @@ AH_BOTTOM([
 # ifdef HAVE_WINSOCK2_H
 #  define FD_SET_T (u_int)
 # else
-#  define FD_SET_T 
+#  define FD_SET_T
 # endif
 
  /* Windows wants us to use _strdup instead of strdup */
@@ -1694,7 +1702,7 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 #if !defined(HAVE_ARC4RANDOM) || !HAVE_DECL_ARC4RANDOM
 uint32_t arc4random(void);
 #endif
-#if !defined(HAVE_ARC4RANDOM_UNIFORM) || !HAVE_DECL_ARC4RANDOM_UNIFORM 
+#if !defined(HAVE_ARC4RANDOM_UNIFORM) || !HAVE_DECL_ARC4RANDOM_UNIFORM
 uint32_t arc4random_uniform(uint32_t upper_bound);
 #endif
 #ifndef HAVE_ARC4RANDOM
@@ -1866,7 +1874,7 @@ typedef _sigset_t sigset_t;
 struct ub_event_base;
 struct ub_ctx* ub_ctx_create_ub_event(struct ub_event_base* base);
 typedef void (*ub_event_callback_t)(void*, int, void*, int, int, char*);
-int ub_resolve_event(struct ub_ctx* ctx, const char* name, int rrtype, 
+int ub_resolve_event(struct ub_ctx* ctx, const char* name, int rrtype,
         int rrclass, void* mydata, ub_event_callback_t callback, int* async_id);
 #   endif
 #  endif

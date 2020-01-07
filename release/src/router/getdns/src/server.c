@@ -220,7 +220,7 @@ static void tcp_write_cb(void *userarg)
 		return;
 	}
 	to_write = conn->to_write;
-	if (conn->fd == -1 || 
+	if (conn->fd == -1 ||
 	    (written = send(conn->fd,
 	    (const void *)&to_write->write_buf[to_write->written],
 	    to_write->write_buf_len - to_write->written, 0)) == -1) {
@@ -594,7 +594,7 @@ static void tcp_accept_cb(void *userarg)
 		conn->super.next->prev_next = &conn->super.next;
 	conn->super.prev_next = &l->connections;
 	l->connections = (connection *)conn;
-	
+
 
 	(void) loop->vmt->schedule(loop, conn->fd,
 	    DOWNSTREAM_IDLE_TIMEOUT, &conn->event);
@@ -612,7 +612,7 @@ static void udp_read_cb(void *userarg)
 	uint8_t buf[4096];
 	ssize_t len;
 	getdns_return_t r;
-	
+
 	assert(userarg);
 
 	if (l->fd == -1)
@@ -656,7 +656,7 @@ static void udp_read_cb(void *userarg)
 
 				l = strlen(addrbuf);
 				(void) snprintf(addrbuf + l,
-				    sizeof(addrbuf) - l, ":%d", 
+				    sizeof(addrbuf) - l, ":%d",
 				    (int)((struct sockaddr_in*)
 				    &conn->remote_in)->sin_port);
 			} else
@@ -672,7 +672,7 @@ static void udp_read_cb(void *userarg)
 
 				l = strlen(addrbuf);
 				(void) snprintf(addrbuf + l,
-				    sizeof(addrbuf) - l, ":%d", 
+				    sizeof(addrbuf) - l, ":%d",
 				    (int)((struct sockaddr_in6*)
 				    &conn->remote_in)->sin6_port);
 			} else
@@ -799,7 +799,7 @@ static void remove_listeners(listen_set *set)
 
 		if (l->transport != GETDNS_TRANSPORT_TCP)
 			continue;
-		
+
 		conn_p = (tcp_connection **)&l->connections;
 		while (*conn_p) {
 			tcp_connection *prev_conn_p = *conn_p;
@@ -948,7 +948,7 @@ getdns_return_t getdns_context_set_listen_addresses(
 	if (new_set_count == 0) {
 		if (!current_set)
 			return GETDNS_RETURN_GOOD;
-		
+
 		context->server = NULL;
 		/* action is already to_remove */
 		remove_listeners(current_set);
@@ -977,8 +977,17 @@ getdns_return_t getdns_context_set_listen_addresses(
 		new_set->items[i].fd = -1;
 
 	(void) memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family    = AF_UNSPEC;
-	hints.ai_flags     = AI_NUMERICHOST;
+	hints.ai_family    = AF_UNSPEC;      /* Allow IPv4 or IPv6 */
+#ifdef HAVE_OLD_GETADDRINFO
+	hints.ai_socktype  = SOCK_STREAM;    /* Datagram socket */
+#else
+	hints.ai_socktype  = 0;              /* Datagram socket */
+#endif
+	hints.ai_flags     = AI_NUMERICHOST; /* No reverse name lookups */
+	hints.ai_protocol  = 0;              /* Any protocol */
+	hints.ai_canonname = NULL;
+	hints.ai_addr      = NULL;
+	hints.ai_next      = NULL;
 
 	for (i = 0; !r && i < new_set_count; i++) {
 		getdns_dict             *dict = NULL;
@@ -1061,7 +1070,7 @@ getdns_return_t getdns_context_set_listen_addresses(
 			}
 			for (j = 0; j < current_set->count; j++) {
 				cl = &current_set->items[j];
-				
+
 				if (l->transport == cl->transport &&
 				    l->addr_len == cl->addr_len &&
 				    !memcmp(&l->addr, &cl->addr, l->addr_len))
