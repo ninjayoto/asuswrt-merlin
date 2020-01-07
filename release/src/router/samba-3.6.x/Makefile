@@ -13,7 +13,7 @@ SMBCFLAGS += -DBCMARM
 SMBLDFLAGS += -lgcc_s
 endif
 
-SMBLDFLAGS += -ldl
+SMBLDFLAGS += -ldl -lpthread
 
 ifneq ($(CONFIG_LINUX26),y)
 SMBCFLAGS += -DMAX_DEBUG_LEVEL="-1"
@@ -170,7 +170,7 @@ endif
 #	@install -D $(srcdir)/bin/libsmbclient.so.0 $(INSTALLDIR)/usr/lib/libsmbclient.so.0
 #	@ln -sf libsmbclient.so.0 $(INSTALLDIR)/usr/lib/libsmbclient.so
 #	@install -D $(srcdir)/bin/libbigballofmud.so $(INSTALLDIR)/usr/lib/libbigballofmud.so
-###############################Charles Modify##########	
+###############################Charles Modify##########
 
 ifeq ($(SMB_USE_MULTICALL), 1)
 	$(STRIP) -s $(INSTALLDIR)/usr/bin/samba_multicall
