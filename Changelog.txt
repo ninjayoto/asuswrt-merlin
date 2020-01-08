@@ -4,6 +4,21 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41E5j9527  (07-Janary-2020) ARM SDK, MIPS,ARM KRACK
+* CHANGED: wget: enable openssl11
+* CHANGED: vsftpd: enable openssl11
+- CHANGED: email: enable openssl11; (backport) fix forced tls 1.0 connections
+- CHANGED: netatalk: (backport) patch for OpenSSL 1.1.x support
+* CHANGED: netatalk: enable openssl11
+* CHANGED: ez-ipupdate: enable openssl11
+* CHANGED: httpd: enable openssl11
+* CHANGED: httpd: additional includes for openssl11
+- CHANGED: httpd: (backport) use openssl11 when available for certificate generation
+* CHANGED: https: enable openssl11
+* CHANGED: mssl: enable openssl11
+* CHANGED: samba3: enable lpthread
+
+
 374.43_41E4j9527  (07-Janary-2020) ARM SDK, MIPS,ARM KRACK
 - CHANGED: rc: (backport) use openssl11 when available for generating OpenVPN's certs
 * CHANGED: openvpn: make: link to openvpn11
