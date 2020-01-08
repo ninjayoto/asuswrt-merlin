@@ -4,6 +4,14 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41E4j9527  (07-Janary-2020) ARM SDK, MIPS,ARM KRACK
+- CHANGED: rc: (backport) use openssl11 when available for generating OpenVPN's certs
+* CHANGED: openvpn: make: link to openvpn11
+* CHANGED: openssl11: make: shared compile
+- CHANGED: httpd: (backport) update location of openssl.cnf in gencert.sh script
+- CHANGED: openssl: openssl11: (backport) set OpenSSL's default location to /etc/ssl/ and provide a link to the CA bundle
+
+
 374.43_41E3j9527  (07-Janary-2020) ARM SDK, MIPS,ARM KRACK
 - CHANGED: openssl: openssl11: change directory naming conventions
 - CHANGED: openvpn: add errno status reporting
