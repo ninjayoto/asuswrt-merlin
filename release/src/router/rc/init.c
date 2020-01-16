@@ -3348,6 +3348,9 @@ int init_nvram(void)
 	// update features for script support
 	add_rc_support("jffs2_scripts");
 
+	// addon web page support
+	add_rc_support("am_addons");
+
 // End special fork processing
 
 #if defined(CONFIG_BCMWL5) && !defined(RTCONFIG_DUALWAN)
@@ -4088,8 +4091,8 @@ static void sysinit(void)
 #endif
 #ifdef RTCONFIG_BCMARM
 	// f_write_string("/proc/sys/vm/min_free_kbytes", "14336", 0, 0);
-	// fix _dma_rxfill error under stress test 
-	f_write_string("/proc/sys/vm/min_free_kbytes", "20480", 0, 0); 
+	// fix _dma_rxfill error under stress test
+	f_write_string("/proc/sys/vm/min_free_kbytes", "20480", 0, 0);
 #endif
 	force_free_caches();
 
