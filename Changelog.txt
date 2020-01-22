@@ -4,6 +4,11 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41E6j9527  (xx-Janary-2020) ARM SDK, MIPS,ARM KRACK
+- CHANGED: rc: (backport) add am_addons RC flag to denote support for third party addons
+* FIXED: firewall: fix bad nvram nat_tuning reference
+
+
 374.43_41E5j9527  (07-Janary-2020) ARM SDK, MIPS,ARM KRACK
 * CHANGED: wget: enable openssl11
 * CHANGED: vsftpd: enable openssl11
