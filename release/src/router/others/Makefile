@@ -64,11 +64,12 @@ endif
 	install -m 0755 getextip.sh $(INSTALLDIR)/usr/sbin
 	ln -sf getextip.sh $(INSTALLDIR)/usr/sbin/gettunnelip.sh
 
-# Entware setup script
-	install -m 0700 entware-setup.sh $(INSTALLDIR)/usr/sbin
-
 # Postconf helper script
 	install -m 0755 helper.sh $(INSTALLDIR)/usr/sbin
+
+# amtm script + legacy Entware installer link
+	install -m 0700 amtm $(INSTALLDIR)/usr/sbin
+	ln -sf /usr/sbin/amtm $(INSTALLDIR)/usr/sbin/entware-setup.sh
 
 # Conntrack connection counts script
 	install -m 0755 conntrkcnt.sh $(INSTALLDIR)/usr/sbin
