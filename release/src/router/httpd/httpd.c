@@ -1240,7 +1240,7 @@ handle_request(void)
 				return;
 			}
 
-			send_headers( 200, "Ok", handler->extra_header, handler->mime_type );
+			send_headers( 200, "OK", handler->extra_header, handler->mime_type );
 			if (strcasecmp(method, "head") != 0 && handler->output) {
 				handler->output(file, conn_fp);
 			}
