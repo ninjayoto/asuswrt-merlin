@@ -102,8 +102,8 @@ typedef union {
     } usockaddr;
 
 #include "queue.h"
-#define MAX_CONN_ACCEPT 64
-#define MAX_CONN_TIMEOUT 60
+#define MAX_CONN_ACCEPT 128
+#define MAX_CONN_TIMEOUT 5
 /* #define MAX_DISC_TIMEOUT 15 */
 #define max_disc_timeout() (nvram_get_int("http_disc_timeout") ? : 60)
 
@@ -111,6 +111,7 @@ typedef struct conn_item {
 	TAILQ_ENTRY(conn_item) entry;
 	int fd;
 	usockaddr usa;
+	time_t deadline;
 } conn_item_t;
 
 typedef struct conn_list {
@@ -264,6 +265,7 @@ int temp_turn_off_auth = 0;	// for QISxxx.htm pages
 
 /* Const vars */
 const int int_1 = 1;
+const struct linger linger = { 1, 0 };
 
 void http_login(unsigned int ip, char *url);
 void http_login_timeout(unsigned int ip);
@@ -335,7 +337,7 @@ initialize_listen_socket( usockaddr* usaP )
 	perror( "bind" );
 	return -1;
 	}
-    if ( listen( listen_fd, 1024 ) < 0 )
+    if ( listen( listen_fd, MAX_CONN_ACCEPT ) < 0 )
 	{
 	close(listen_fd);	// 1104 chk
 	perror( "listen" );
@@ -2095,6 +2097,9 @@ QTN_RESET:
 			return errno;
 		}
 
+		/* Reuse timestamp */
+		tv.tv_sec = uptime();
+
 		/* Check and accept new connection */
 		if (count && FD_ISSET(listen_fd, &rfds)) {
 			item = malloc(sizeof(*item));
@@ -2112,6 +2117,7 @@ QTN_RESET:
 
 			/* Set the KEEPALIVE option to cull dead connections */
 			setsockopt(item->fd, SOL_SOCKET, SO_KEEPALIVE, &int_1, sizeof(int_1));
+			item->deadline = tv.tv_sec + MAX_CONN_TIMEOUT;
 
 			/* Add to active connections */
 			FD_SET(item->fd, &active_rfds);
@@ -2124,7 +2130,7 @@ QTN_RESET:
 
 		/* Check and process pending or expired requests */
 		TAILQ_FOREACH_SAFE(item, &pool.head, entry, next) {
-			if (count && !FD_ISSET(item->fd, &rfds))
+			if (count && item->deadline > tv.tv_sec && !FD_ISSET(item->fd, &rfds))
 				continue;
 
 			/* Delete from active connections */
@@ -2133,19 +2139,19 @@ QTN_RESET:
 			pool.count--;
 
 			/* Process request if any */
-			if (count) {
+			if (count && FD_ISSET(item->fd, &rfds)) {
 #ifdef RTCONFIG_HTTPS
 				if (do_ssl) {
 					ssl_stream_fd = item->fd;
 					if (!(conn_fp = ssl_server_fopen(item->fd))) {
 						perror("fdopen(ssl)");
-						goto skip;
+						goto reset;
 					}
 				} else
 #endif
 				if (!(conn_fp = fdopen(item->fd, "r+"))) {
 					perror("fdopen");
-					goto skip;
+					goto reset;
 				}
 
 				http_login_cache(&item->usa);
@@ -2156,19 +2162,22 @@ QTN_RESET:
 #ifdef RTCONFIG_HTTPS
 				if (!do_ssl)
 #endif
-				shutdown(item->fd, 2), item->fd = -1;
+				{
+					shutdown(item->fd, SHUT_RDWR);
+					item->fd = -1;
+				}
 				fclose(conn_fp);
 
-			skip:
-				/* Skip the rest of */
-				if (--count == 0)
-					next = NULL;
+			} else {
+			/* Reset connection */
+			reset:
+				setsockopt(item->fd, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger));
 
 			}
 
 			/* Close timed out and/or still alive */
 			if (item->fd >= 0) {
-				shutdown(item->fd, 2);
+				shutdown(item->fd, SHUT_RDWR);
 				close(item->fd);
 			}
 
