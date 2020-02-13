@@ -4,7 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
-374.43_41E6j9527  (xx-Janary-2020) ARM SDK, MIPS,ARM KRACK
+374.43_41E7j9527  (12-February-2020) ARM SDK, MIPS,ARM KRACK
+- CHANGED: other: (backport) update get_webui_page(), add functions to get/set addon settings
+- CHANGED: others: (backport) replace Entware setup script with link to amtm
+- CHANGED: others: (backport) added amtm script merlinng 384.15
+- CHANGED: httpd: (backport) improve connection acceptance and handling
+- CHANGED: httpd: (backport) fix malformed 200 OK status
+* FIXED: others: fix script permissions
+
+
+374.43_41E6j9527  (22-Janary-2020) ARM SDK, MIPS,ARM KRACK
 - CHANGED: rc: (backport) add am_addons RC flag to denote support for third party addons
 * FIXED: firewall: fix bad nvram nat_tuning reference
 
