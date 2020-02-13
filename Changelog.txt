@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41E8j9527  (13-February-2020) ARM SDK, MIPS,ARM KRACK
+* FIXED: webui: fix for formatting problem in Chrome layoutNG
+
+
 374.43_41E7j9527  (12-February-2020) ARM SDK, MIPS,ARM KRACK
 - CHANGED: other: (backport) update get_webui_page(), add functions to get/set addon settings
 - CHANGED: others: (backport) replace Entware setup script with link to amtm
