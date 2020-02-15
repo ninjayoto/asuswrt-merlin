@@ -106,6 +106,9 @@ then
 	fi
 fi
 
+# set working directory for httpd
+cd /etc
+
 # create the key and certificate request
 #OPENSSL_CONF=$OPENSSLCNF openssl req -new -out /tmp/cert.csr -keyout /tmp/privkey.pem -newkey rsa:1024 -passout pass:password
 # remove the passphrase from the key
