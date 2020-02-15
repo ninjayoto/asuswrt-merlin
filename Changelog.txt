@@ -4,6 +4,10 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41E9j9527  (15-February-2020) ARM SDK, MIPS,ARM KRACK
+* FIXED: httpd: gencert: correctly set common work directory for key/cert gen
+
+
 374.43_41E8j9527  (13-February-2020) ARM SDK, MIPS,ARM KRACK
 * FIXED: webui: fix for formatting problem in Chrome layoutNG
 
