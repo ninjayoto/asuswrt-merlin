@@ -12,12 +12,12 @@ LDFLAGS = -ffunction-sections -fdata-sections -Wl,--gc-sections
 
 #LIBS	=	`./vsf_findlibs.sh`
 #LINK	=	-Wl,-s
-LIBS	=	-lcrypt -lnsl -lpthread
+LIBS	=	-lcrypt -lnsl
 LINK	=
 
 CFLAGS	+=	-I../shared
 ifeq ($(RTCONFIG_FTP_SSL),y)
-LIBS	=	-lnsl
+LIBS	=	-lnsl -lpthread
 OPENSSLDIR = ../openssl-1.1
 OPENSSLINC = $(OPENSSLDIR)/include
 LIBS	+=	-L$(OPENSSLDIR)/ -lssl -lcrypto
