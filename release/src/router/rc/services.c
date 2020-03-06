@@ -2,11 +2,11 @@
  * Miscellaneous services
  *
  * Copyright (C) 2009, Broadcom Corporation. All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -78,7 +78,7 @@ int g_reboot = 0;
 // Pop an alarm to recheck pids in 500 msec.
 static const struct itimerval pop_tv = { {0,0}, {0, 500 * 1000} };
 
-// Pop an alarm to reap zombies. 
+// Pop an alarm to reap zombies.
 static const struct itimerval zombie_tv = { {0,0}, {307, 0} };
 
 // -----------------------------------------------------------------------------
@@ -589,7 +589,7 @@ void start_dnsmasq(int force)
 	if (g_reboot) {
 		TRACE_PT("reboot\n");
 		return;
-	}	
+	}
 
 #ifdef RTCONFIG_DNSCRYPT
 	if (nvram_match("dnscrypt_proxy", "1")) {
@@ -909,7 +909,7 @@ void start_dnsmasq(int force)
 #endif
 
 #ifdef RTCONFIG_DNSSEC
-	if (nvram_match("dnssec_enable", "1")) { 
+	if (nvram_match("dnssec_enable", "1")) {
 		if (nvram_match("stubby_proxy", "0") || nvram_match("stubby_dnssec", "0")) {
 			fprintf(fp, "trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n"
 					    "trust-anchor=.,20326,8,2,E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D\n"
@@ -977,7 +977,7 @@ void start_dnsmasq(int force)
 		}
 	}
 #endif
-		
+
 //#ifdef WEB_REDIRECT
 //	/* Web redirection - all unresolvable will return the router's IP */
 //	if((nvram_get_int("nat_state") == NAT_STATE_REDIRECT) && (nvram_get_int("web_redirect") > 0))
@@ -2103,7 +2103,7 @@ int wps_band_radio_off(int wps_band)
 	return ret;
 }
 
-int 
+int
 wl_wpsPincheck(char *pin_string)
 {
 	unsigned long PIN = strtoul(pin_string, NULL, 10);
@@ -2132,7 +2132,7 @@ wl_wpsPincheck(char *pin_string)
 	return -1;
 }
 
-int 
+int
 start_wps_pbc(int unit)
 {
 	if (wps_band_radio_off(get_radio_band(unit))) return 1;
@@ -2166,7 +2166,7 @@ start_wps_pbc(int unit)
 	return start_wps_method();
 }
 
-int 
+int
 start_wps_pin(int unit)
 {
 	if(!strlen(nvram_safe_get("wps_sta_pin"))) return 0;
@@ -2456,7 +2456,7 @@ stop_infosvr()
 		killall_tk("infosvr");
 }
 
-int 
+int
 start_infosvr()
 {
 	char *infosvr_argv[] = {"/usr/sbin/infosvr", "br0", NULL};
@@ -2765,7 +2765,7 @@ start_dns(void)
 	/* Create resolv.conf with empty nameserver list */
 	if (!(fp = fopen("/tmp/resolv.conf", "r")))
 	{
-		if (!(fp = fopen("/tmp/resolv.conf", "w"))) 
+		if (!(fp = fopen("/tmp/resolv.conf", "w")))
 		{
 			perror("/tmp/resolv.conf");
 			return errno;
@@ -2889,7 +2889,7 @@ stop_dns(void)
 //	unlink("/tmp/dproxy.deny");
 }
 
-int 
+int
 restart_dns()
 {
 	FILE *fp = NULL;
@@ -2933,7 +2933,7 @@ ddns_updated_main(int argc, char *argv[])
 }
 
 // TODO: handle wan0 only now
-int 
+int
 start_ddns(void)
 {
 	FILE *fp;
@@ -3199,7 +3199,7 @@ asusddns_reg_domain(int reg)
 
 	nvram_set("ddns_return_code", "ddns_query");
 
-	if (pids("ez-ipupdate")) 
+	if (pids("ez-ipupdate"))
 	{
 		killall("ez-ipupdate", SIGINT);
 		sleep(1);
@@ -3238,7 +3238,7 @@ stop_klogd(void)
 	killall_tk("klogd");
 }
 
-int 
+int
 start_syslogd(void)
 {
 	int argc;
@@ -3309,7 +3309,7 @@ start_klogd(void)
 	return _eval(klogd_argv, NULL, 0, &pid);
 }
 
-int 
+int
 start_logger(void)
 {
 _dprintf("%s:\n", __FUNCTION__);
@@ -3319,7 +3319,7 @@ _dprintf("%s:\n", __FUNCTION__);
 	return 0;
 }
 
-int 
+int
 start_misc(void)
 {
 	char *infosvr_argv[] = {"infosvr", "br0", NULL};
@@ -3425,7 +3425,7 @@ chpass(char *user, char *pass)
 	return 0;
 }
 
-int 
+int
 start_telnetd(void)
 {
 	if (getpid() != 1) {
@@ -3444,7 +3444,7 @@ start_telnetd(void)
 	return xstart("telnetd");
 }
 
-void 
+void
 stop_telnetd(void)
 {
 	if (getpid() != 1) {
@@ -3456,7 +3456,7 @@ stop_telnetd(void)
 		killall_tk("telnetd");
 }
 
-int 
+int
 run_telnetd(void)
 {
 //	char *telnetd_argv[] = {"telnetd", NULL};
@@ -3510,7 +3510,7 @@ start_httpd(void)
 #ifdef DEBUG_RCTEST // Left for UI debug
 	httpd_dir = nvram_safe_get("httpd_dir");
 	if(strlen(httpd_dir)) chdir(httpd_dir);
-	else 
+	else
 #endif
 	chdir("/www");
 
@@ -4443,7 +4443,7 @@ stop_services(void)
 #endif /* __CONFIG_NORTON__ */
 }
 
-// 2008.10 magic 
+// 2008.10 magic
 int start_wanduck(void)
 {
 	char *argv[] = {"/sbin/wanduck", NULL};
@@ -4466,7 +4466,7 @@ void stop_wanduck(void)
 	killall("wanduck", SIGTERM);
 }
 
-int 
+int
 stop_watchdog(void)
 {
 	if (pids("watchdog"))
@@ -4481,7 +4481,7 @@ stop_watchdog02(void)
 	return;
 }
 
-int 
+int
 start_watchdog(void)
 {
 	char *watchdog_argv[] = {"watchdog", NULL};
@@ -4724,7 +4724,7 @@ again:
 	nvp = strsep(&nvptr, ";");
 
 	count = 0;
-	while ((b = strsep(&nvp, " ")) != NULL) 
+	while ((b = strsep(&nvp, " ")) != NULL)
 	{
 		_dprintf("cmd[%d]=%s\n", count, b);
 		cmd[count] = b;
@@ -4832,7 +4832,7 @@ again:
                         logmessage("usb", "USB is ejected");
 
 			stop_wan();
-			// what process need to stop to free memory or 
+			// what process need to stop to free memory or
 			// to avoid affecting upgrade
 			stop_misc();
 			stop_logger();
@@ -5200,7 +5200,7 @@ again:
 #elif defined RTCONFIG_RALINK
 			stop_8021x();
 #if defined(RTCONFIG_PPTPD) || defined(RTCONFIG_ACCEL_PPTPD)
-			if(nvram_match("pptpd_enable", "1")) 
+			if(nvram_match("pptpd_enable", "1"))
 				stop_pptpd();
 #endif
 #endif
@@ -5523,7 +5523,7 @@ check_ddr_done:
 #ifdef RTCONFIG_WEBDAV
 	else if (strcmp(script, "webdav") == 0)
 	{
-		if(action&RC_SERVICE_STOP){ 
+		if(action&RC_SERVICE_STOP){
 			stop_webdav();
 		}
 		if(action&RC_SERVICE_START) {
@@ -5621,7 +5621,7 @@ check_ddr_done:
 			kill_pidfile_s("/var/run/disk_monitor.pid", SIGUSR2);
 	}
 #endif
-	else if(!strncmp(script, "apps_", 5)) 
+	else if(!strncmp(script, "apps_", 5))
 	{
 		if(action&RC_SERVICE_START) {
 			if(strcmp(script, "apps_update")==0)
@@ -5662,7 +5662,7 @@ check_ddr_done:
 		}
 	}
 #endif
-	else if(!strncmp(script, "webs_", 5)) 
+	else if(!strncmp(script, "webs_", 5))
 	{
 		if(action&RC_SERVICE_START) {
 #ifdef DEBUG_RCTEST // Left for UI debug
@@ -5761,7 +5761,7 @@ check_ddr_done:
 #else
 		if(action&RC_SERVICE_START) restart_dns();
 #endif
-	} 
+	}
 	else if (strcmp(script, "dhcpd") == 0)
 	{
 #ifdef RTCONFIG_DNSMASQ
@@ -5919,7 +5919,7 @@ check_ddr_done:
 //		regen_passwd_files(); /* Must be called before regen_cifs_config_file(). */
 //		regen_cifs_config_file();
 	}
-	else if (strcmp(script, "time") == 0) 
+	else if (strcmp(script, "time") == 0)
 	{
 		if(action&RC_SERVICE_STOP) {
 			stop_telnetd();
@@ -6208,7 +6208,7 @@ check_ddr_done:
 #endif
 
 #ifdef RTCONFIG_VPNC
-	else if (strcmp(script, "vpncall") == 0) 
+	else if (strcmp(script, "vpncall") == 0)
 	{
 #if defined(RTCONFIG_OPENVPN)
 		int openvpnc_unit = nvram_get_int("vpn_client_unit");
@@ -6378,9 +6378,9 @@ _dprintf("test 2. turn off the USB power during %d seconds.\n", reset_seconds[re
 	else
 	{
 		fprintf(stderr,
-			"WARNING: rc notified of unrecognized event '%s'.\n",
+			"INFO: rc notified of unrecognized or custom event '%s'.\n",
 					script);
-		logmessage("rc_service", "WARNING: rc notified of unrecognized event '%s'\n",
+		logmessage("rc_service", "INFO: rc notified of unrecognized or custom event '%s'\n",
                                         script);
 	}
 
@@ -6412,7 +6412,7 @@ start_wlcscan(void)
 	_eval(wlcscan_argv, NULL, 0, &pid);
 }
 
-void 
+void
 stop_wlcscan(void)
 {
 	if(getpid()!=1) {
@@ -6445,7 +6445,7 @@ start_wlcconnect(void)
 	_eval(wlcconnect_argv, NULL, 0, &pid);
 }
 
-void 
+void
 stop_wlcconnect(void)
 {
 	if(getpid()!=1) {
@@ -6473,7 +6473,7 @@ start_autodet(void)
 	_eval(autodet_argv, NULL, 0, &pid);
 }
 
-void 
+void
 stop_autodet(void)
 {
 	if(getpid()!=1) {
