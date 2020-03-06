@@ -277,25 +277,40 @@ static int check_if_inviteCode(const char *dirpath){
 	return 1;
 }
 #endif
-void sethost(char *host)
+void sethost(const char *host)
 {
-	char *cp;
+	char *p = host_name;
+	size_t len;
 
-	if(!host) return;
+	if (!host || *host == '\0')
+		goto error;
 
-	memset(host_name, 0, sizeof(host_name));
-	strncpy(host_name, host, sizeof(host_name));
+	while (*host == '.') host++;
 
-	for ( cp = host_name; *cp && *cp != '\r' && *cp != '\n'; cp++ );
-	*cp = '\0';
+	len = strcspn(host, "\r\n");
+	while (len > 0 && strchr(" \t", host[len - 1]) != NULL)
+		len--;
+	if (len > sizeof(host_name) - 1)
+		goto error;
+
+	while (len-- > 0) {
+		int c = *host++;
+		if (((c | 0x20) < 'a' || (c | 0x20) > 'z') &&
+		    ((c < '0' || c > '9')) &&
+		    strchr(".-_:[]", c) == NULL) {
+			p = host_name;
+			break;
+		}
+		*p++ = c;
+	}
+
+error:
+	*p = '\0';
 }
 
 char *gethost(void)
 {
-	if(strlen(host_name)) {
-		return host_name;
-	}
-	else return(nvram_safe_get("lan_ipaddr"));
+	return host_name[0] ? host_name : nvram_safe_get("lan_ipaddr");
 }
 
 #include <sys/sysinfo.h>
