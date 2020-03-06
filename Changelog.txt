@@ -4,6 +4,16 @@ NOTE: [*] Indicated fork unique change
 
 Changelog
 ---------
+374.43_41EAj9527  (6-March-2020) ARM SDK, MIPS,ARM KRACK
+- CHANGED: nano: update to 4.8
+- CHANGED: curl: update to 7.68.0
+- CHANGED: others: (backport) update amtm to 3.1.4
+- CHANGED: busybox: (backport) add false applet
+* CHANGED: rc: change unknown rc event log to info and account for possible custom events by script authors
+- FIXED: httpd: (backport) fix host header parsing
+* FIXED: vsftpd: fix segfault with openssl11 (error in backport)
+
+
 374.43_41E9j9527  (15-February-2020) ARM SDK, MIPS,ARM KRACK
 * FIXED: httpd: gencert: correctly set common work directory for key/cert gen
 
